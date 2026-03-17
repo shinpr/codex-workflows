@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-plan"
+  short_description: "Design document to work plan creation"
+  default_prompt: "Use $recipe-plan to start planning: "
+
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-front-plan"
+  short_description: "Frontend design doc to work plan with tests"
+  default_prompt: "Use $recipe-front-plan to plan frontend work: "
+
+policy:
+  allow_implicit_invocation: false

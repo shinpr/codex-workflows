@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-fullstack-build"
+  short_description: "Layer-aware fullstack task execution with routing"
+  default_prompt: "Use $recipe-fullstack-build to start building fullstack: "
+
+policy:
+  allow_implicit_invocation: false

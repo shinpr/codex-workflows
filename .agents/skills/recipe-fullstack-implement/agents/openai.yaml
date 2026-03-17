@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-fullstack-implement"
+  short_description: "Full-cycle cross-layer implementation orchestration"
+  default_prompt: "Use $recipe-fullstack-implement to implement a fullstack feature: "
+
+policy:
+  allow_implicit_invocation: false

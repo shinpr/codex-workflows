@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-diagnose"
+  short_description: "Structured investigation and solution derivation"
+  default_prompt: "Use $recipe-diagnose to investigate: "
+
+policy:
+  allow_implicit_invocation: false

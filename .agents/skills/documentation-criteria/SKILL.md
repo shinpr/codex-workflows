@@ -1,0 +1,127 @@
+---
+name: documentation-criteria
+description: "Documentation creation criteria for PRD, ADR, Design Doc, UI Spec, and Work Plan with templates. Use when: creating or reviewing technical documents, determining which documents are required, or following document templates."
+---
+
+# Documentation Creation Criteria
+
+## Templates
+
+- **[prd-template.md](references/prd-template.md)** - Product Requirements Document template
+- **[adr-template.md](references/adr-template.md)** - Architecture Decision Record template
+- **[ui-spec-template.md](references/ui-spec-template.md)** - UI Specification template (frontend/fullstack features)
+- **[design-template.md](references/design-template.md)** - Technical Design Document template
+- **[plan-template.md](references/plan-template.md)** - Work Plan template
+- **[task-template.md](references/task-template.md)** - Task file template for implementation tasks
+
+## Creation Decision Matrix [MANDATORY]
+
+| Condition | Required Documents | Creation Order |
+|-----------|-------------------|----------------|
+| New Feature Addition (backend) | PRD -> [ADR] -> Design Doc -> Work Plan | After PRD approval |
+| New Feature Addition (frontend/fullstack) | PRD -> **UI Spec** -> [ADR] -> Design Doc -> Work Plan | UI Spec before Design Doc |
+| ADR Conditions Met (see below) | ADR -> Design Doc -> Work Plan | Start immediately |
+| 6+ Files | ADR -> Design Doc -> Work Plan (REQUIRED) | Start immediately |
+| 3-5 Files | Design Doc -> Work Plan (REQUIRED) | Start immediately |
+| 1-2 Files | None | Direct implementation |
+
+**ENFORCEMENT**: EVALUATE file count and ADR conditions BEFORE starting implementation
+
+## ADR Creation Conditions [MANDATORY if Any Apply]
+
+### 1. Contract System Changes
+- **Adding nested contracts with 3+ levels**
+- **Changing/deleting contracts used in 3+ locations**
+- **Contract responsibility changes** (e.g., DTO to Entity, Request to Domain)
+
+### 2. Data Flow Changes
+- **Storage location changes** (DB to File, Memory to Cache)
+- **Processing order changes with 3+ steps**
+- **Data passing method changes** (parameter passing to shared state, direct reference to event-based)
+
+### 3. Architecture Changes
+- Layer addition, responsibility changes, component relocation
+
+### 4. External Dependency Changes
+- Library/framework/external API introduction or replacement
+
+### 5. Complex Implementation Logic (Regardless of Scale)
+- Managing 3+ states
+- Coordinating 5+ asynchronous processes
+
+## Detailed Document Definitions
+
+### PRD (Product Requirements Document)
+**Purpose**: Define business requirements and user value
+**Includes**: Business requirements, success metrics, user stories, MoSCoW prioritization, MVP/Future phase separation, user journey diagram, scope boundary diagram
+**Excludes**: Technical implementation details, technical selection rationale, implementation phases, task breakdown
+
+### ADR (Architecture Decision Record)
+**Purpose**: Record technical decision rationale and background
+**Includes**: Decision, rationale, option comparison (minimum 3 options), architecture impact, principled implementation guidelines
+**Excludes**: Implementation schedule, detailed procedures, specific code examples, resource assignments
+
+### UI Specification
+**Purpose**: Define UI structure, screen transitions, component decomposition, and interaction design
+**Includes**: Screen list and transitions, component state x display matrix, interaction definitions, AC traceability, existing component reuse map, accessibility requirements
+**Excludes**: Technical implementation details, API contracts, test implementation, implementation schedule
+
+### Design Document
+**Purpose**: Define technical implementation methods in detail
+**Includes**: Existing codebase analysis, technical approach, dependencies and constraints, interface/contract definitions, data flow, acceptance criteria, change impact map, code inspection evidence
+**Excludes**: Why that technology was chosen (reference ADR), when/who to implement (reference Work Plan)
+
+### Work Plan
+**Purpose**: Implementation task management and progress tracking
+**Includes**: Task breakdown, schedule estimates, E2E verification procedures, Phase 4 Quality Assurance Phase (required), progress records
+**Excludes**: Technical rationale, design details
+
+**Phase Division Criteria**:
+1. **Phase 1: Foundation Implementation** - Contract definitions, interfaces, test preparation
+2. **Phase 2: Core Feature Implementation** - Business logic, unit tests
+3. **Phase 3: Integration Implementation** - External connections, presentation layer
+4. **Phase 4: Quality Assurance (Required)** - Acceptance criteria, all tests, quality checks
+
+## Creation Process [MANDATORY]
+
+**STEP 1**: **Problem Analysis** — Change scale assessment, ADR condition check
+**STEP 2**: **ADR Option Consideration** (ADR only) — Compare 3+ options, specify trade-offs
+**STEP 3**: **Creation** — Use templates, include measurable conditions
+**STEP 4**: **Approval** — "Accepted" after review enables implementation
+
+**ENFORCEMENT**: Implementation CANNOT begin without approved documents for the relevant scale
+
+## Storage Locations
+
+| Document | Path | Naming Convention |
+|----------|------|------------------|
+| PRD | `docs/prd/` | `[feature-name]-prd.md` |
+| ADR | `docs/adr/` | `ADR-[4-digits]-[title].md` |
+| UI Spec | `docs/ui-spec/` | `[feature-name]-ui-spec.md` |
+| Design Doc | `docs/design/` | `[feature-name]-design.md` |
+| Work Plan | `docs/plans/` | `YYYYMMDD-{type}-{description}.md` |
+| Task File | `docs/plans/tasks/` | `{plan-name}-task-{number}.md` |
+
+## ADR Status
+`Proposed` -> `Accepted` -> `Deprecated`/`Superseded`/`Rejected`
+
+## AI Automation Rules [MANDATORY]
+- 5+ files: MUST suggest ADR creation
+- Contract/data flow change detected: ADR REQUIRED
+- Check existing ADRs before implementation — ALWAYS verify alignment
+
+## Diagram Requirements
+
+| Document | Required Diagrams | Purpose |
+|----------|------------------|---------|
+| PRD | User journey, Scope boundary | Clarify user experience and scope |
+| ADR | Option comparison (when needed) | Visualize trade-offs |
+| UI Spec | Screen transition, Component tree | Clarify screen flow and structure |
+| Design Doc | Architecture, Data flow | Understand technical structure |
+| Work Plan | Phase structure, Task dependency | Clarify implementation order |
+
+## Common ADR Relationships
+1. **At creation**: Identify common technical areas, reference existing common ADRs
+2. **When missing**: Consider creating necessary common ADRs
+3. **Design Doc**: Specify common ADRs in "Prerequisite ADRs" section
+4. **Compliance check**: Verify design aligns with common ADR decisions

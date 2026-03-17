@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-design"
+  short_description: "Requirement analysis to design document creation"
+  default_prompt: "Use $recipe-design to start designing: "
+
+policy:
+  allow_implicit_invocation: false

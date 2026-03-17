@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-front-design"
+  short_description: "Frontend requirements to design docs"
+  default_prompt: "Use $recipe-front-design to design a frontend feature: "
+
+policy:
+  allow_implicit_invocation: false

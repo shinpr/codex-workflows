@@ -1,0 +1,7 @@
+interface:
+  display_name: "Implementation Approach"
+  short_description: "Strategy selection framework"
+  default_prompt: "Use $implementation-approach to select an implementation strategy."
+
+policy:
+  allow_implicit_invocation: true

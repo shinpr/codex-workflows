@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-add-integration-tests"
+  short_description: "Add integration/E2E tests from Design Doc"
+  default_prompt: "Use $recipe-add-integration-tests to add tests for: "
+
+policy:
+  allow_implicit_invocation: false

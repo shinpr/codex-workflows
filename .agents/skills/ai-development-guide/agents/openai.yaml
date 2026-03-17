@@ -1,0 +1,7 @@
+interface:
+  display_name: "AI Development Guide"
+  short_description: "Anti-patterns and quality workflow"
+  default_prompt: "Use $ai-development-guide to check for anti-patterns in my code."
+
+policy:
+  allow_implicit_invocation: true

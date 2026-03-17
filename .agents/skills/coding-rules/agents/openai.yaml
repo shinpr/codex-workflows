@@ -1,0 +1,7 @@
+interface:
+  display_name: "Coding Rules"
+  short_description: "Clean, maintainable code standards"
+  default_prompt: "Use $coding-rules to apply coding standards to my implementation."
+
+policy:
+  allow_implicit_invocation: true

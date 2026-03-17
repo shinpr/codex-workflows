@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-build"
+  short_description: "Autonomous backend task execution with quality gates"
+  default_prompt: "Use $recipe-build to start building: "
+
+policy:
+  allow_implicit_invocation: false

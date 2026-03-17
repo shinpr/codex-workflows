@@ -1,0 +1,7 @@
+interface:
+  display_name: "Testing"
+  short_description: "TDD and test quality standards"
+  default_prompt: "Use $testing to guide my test implementation."
+
+policy:
+  allow_implicit_invocation: true

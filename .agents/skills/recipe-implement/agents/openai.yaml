@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-implement"
+  short_description: "Requirements to deployment lifecycle"
+  default_prompt: "Use $recipe-implement to start implementing: "
+
+policy:
+  allow_implicit_invocation: false

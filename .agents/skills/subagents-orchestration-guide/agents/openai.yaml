@@ -1,0 +1,7 @@
+interface:
+  display_name: "Subagents Orchestration"
+  short_description: "Agent coordination guide"
+  default_prompt: "Use $subagents-orchestration-guide to coordinate workflow agents."
+
+policy:
+  allow_implicit_invocation: true

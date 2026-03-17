@@ -1,0 +1,7 @@
+interface:
+  display_name: "Documentation Criteria"
+  short_description: "Document creation rules and templates"
+  default_prompt: "Use $documentation-criteria to determine what documents I need."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-front-build"
+  short_description: "Autonomous frontend task execution with quality gates"
+  default_prompt: "Use $recipe-front-build to start building frontend: "
+
+policy:
+  allow_implicit_invocation: false

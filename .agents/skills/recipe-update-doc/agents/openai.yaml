@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-update-doc"
+  short_description: "Update design documents with review verification"
+  default_prompt: "Use $recipe-update-doc to update: "
+
+policy:
+  allow_implicit_invocation: false

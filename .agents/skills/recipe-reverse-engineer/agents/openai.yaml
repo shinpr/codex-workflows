@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-reverse-engineer"
+  short_description: "Generate documentation from existing codebase"
+  default_prompt: "Use $recipe-reverse-engineer to document: "
+
+policy:
+  allow_implicit_invocation: false

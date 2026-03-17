@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-review"
+  short_description: "Design Doc compliance validation with auto-fixes"
+  default_prompt: "Use $recipe-review to validate: "
+
+policy:
+  allow_implicit_invocation: false
