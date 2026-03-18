@@ -6,7 +6,7 @@
 
 **End-to-end AI coding workflows for [Codex CLI](https://developers.openai.com/codex/cli)** — specialized subagents handle requirements, design, implementation, and quality checks so you get code with explicit design docs, test coverage, and commit-level traceability — not just raw generations.
 
-Built on the [Agent Skills specification](https://developers.openai.com/codex/skills/) and [Codex subagents](https://developers.openai.com/codex/subagents). Works with GPT-5.4 and GPT-5.3-Codex-Spark.
+Built on the [Agent Skills specification](https://developers.openai.com/codex/skills/) and [Codex subagents](https://developers.openai.com/codex/subagents). Works with the latest GPT models.
 
 ---
 
@@ -332,7 +332,7 @@ your-project/
 
 **Q: What models does this work with?**
 
-A: Designed for GPT-5.4 (default). Subagents like rule-advisor use GPT-5.3-Codex-Spark for faster lightweight analysis. Models are configurable per agent in the TOML files.
+A: Designed for the latest GPT models. Lightweight subagents (e.g. rule-advisor) can use smaller models for faster analysis. Models are configurable per agent in the TOML files.
 
 **Q: Can I customize the agents?**
 
