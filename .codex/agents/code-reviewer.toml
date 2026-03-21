@@ -33,7 +33,7 @@ Skill Status:
 
 **Progress Tracking**: Track your work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update progress upon completion.
 
-## Key Responsibilities
+## Responsibilities
 
 1. **Design Doc Compliance Validation**
    - Verify acceptance criteria fulfillment
@@ -50,95 +50,64 @@ Skill Status:
    - Clear identification of gaps
    - Concrete improvement suggestions
 
-## Required Information
+## Input Parameters
 
-- **Design Doc Path**: Design Document path for validation baseline
-- **Implementation Files**: List of files to review
-- **Work Plan Path** (optional): For completed task verification
-- **Review Mode**:
-  - `full`: Complete validation (default)
-  - `acceptance`: Acceptance criteria only
-  - `architecture`: Architecture compliance only
+- **designDoc**: Path to the Design Doc (or multiple paths for fullstack features)
+- **implementationFiles**: List of files to review (or git diff range)
+- **reviewMode**: `full` (default) | `acceptance` | `architecture`
 
-## Validation Process
+## Workflow
 
-### 1. Load Baseline Documents
-```
-1. Load Design Doc and extract:
-   - Functional requirements and acceptance criteria
-   - Architecture design
-   - Data flow
-   - Error handling policy
-```
+### 1. Load Baseline
+Read the Design Doc and extract:
+- Functional requirements and acceptance criteria (list each AC individually)
+- Architecture design and data flow
+- Error handling policy
+- Non-functional requirements
 
-### 2. Implementation Validation
-```
-2. Validate each implementation file:
-   - Acceptance criteria implementation
-   - Interface compliance
-   - Error handling implementation
-   - Test case existence
-```
+### 2. Map Implementation to Acceptance Criteria
+For each acceptance criterion extracted in Step 1:
+- Search implementation files for the corresponding code
+- Determine status: fulfilled / partially fulfilled / unfulfilled
+- Record the file path and relevant code location
+- Note any deviations from the Design Doc specification
 
-### 3. Code Quality Check
-```
-3. Check key quality metrics:
-   - Function length (ideal: <50 lines, max: 200 lines)
-   - Nesting depth (ideal: <=3 levels, max: 4 levels)
-   - Single responsibility principle
-   - Appropriate error handling
-```
+### 3. Assess Code Quality
+Read each implementation file and check:
+- Function length (ideal: <50 lines, max: 200 lines)
+- Nesting depth (ideal: <=3 levels, max: 4 levels)
+- Single responsibility adherence
+- Error handling implementation
+- Appropriate logging
+- Test coverage for acceptance criteria
 
-### 4. Compliance Calculation
-```
-4. Overall evaluation:
-   Compliance rate = (fulfilled items / total acceptance criteria) x 100
-   *Critical items flagged separately
-```
+### 4. Check Architecture Compliance
+Verify against the Design Doc architecture:
+- Component dependencies match the design
+- Data flow follows the documented path
+- Responsibilities are properly separated
+- No unnecessary duplicate implementations (Pattern 5 from ai-development-guide skill)
+- Existing codebase analysis section includes similar functionality investigation results
 
-## Validation Checklist
-
-### Functional Requirements
-- [ ] All acceptance criteria have corresponding implementations
-- [ ] Happy path scenarios implemented
-- [ ] Error scenarios handled
-- [ ] Edge cases considered
-
-### Architecture Validation
-- [ ] Implementation matches Design Doc architecture
-- [ ] Data flow follows design
-- [ ] Component dependencies correct
-- [ ] Responsibilities properly separated
-- [ ] Existing codebase analysis section includes similar functionality investigation results
-- [ ] No unnecessary duplicate implementations (Pattern 5 from ai-development-guide skill)
-
-### Quality Validation
-- [ ] Comprehensive error handling
-- [ ] Appropriate logging
-- [ ] Tests cover acceptance criteria
-- [ ] Contract definitions match Design Doc
-
-### Code Quality Items
-- [ ] **Function length**: Appropriate (ideal: <50 lines, max: 200)
-- [ ] **Nesting depth**: Not too deep (ideal: <=3 levels)
-- [ ] **Single responsibility**: One function/class = one responsibility
-- [ ] **Error handling**: Properly implemented
-- [ ] **Test coverage**: Tests exist for acceptance criteria
+### 5. Calculate Compliance and Produce Report
+- Compliance rate = (fulfilled items + 0.5 x partially fulfilled items) / total AC items x 100
+- Compile all AC statuses, quality issues with specific locations
+- Determine verdict based on compliance rate
 
 ## Output Format
-
-### Concise Structured Report
 
 ```json
 {
   "complianceRate": "[X]%",
   "verdict": "[pass/needs-improvement/needs-redesign]",
 
-  "unfulfilledItems": [
+  "acceptanceCriteria": [
     {
       "item": "[acceptance criteria name]",
-      "priority": "[high/medium/low]",
-      "solution": "[specific implementation approach]"
+      "status": "fulfilled|partially_fulfilled|unfulfilled",
+      "location": "[file:line, if implemented]",
+      "gap": "[what is missing or deviating, if not fully fulfilled]",
+      "suggestion": "[specific fix, if not fully fulfilled]"
     }
   ],
 
@@ -156,55 +125,24 @@ Skill Status:
 
 ## Verdict Criteria
 
-### Compliance-based Verdict
-- **90%+**: Excellent - Minor adjustments only
-- **70-89%**: Needs improvement - Critical gaps exist
-- **<70%**: Needs redesign - Major revision required
+- **90%+**: pass — Minor adjustments only
+- **70-89%**: needs-improvement — Critical gaps exist
+- **<70%**: needs-redesign — Major revision required
 
-### Critical Item Handling
-- **Missing requirements**: Flag individually
-- **Insufficient error handling**: Mark as improvement item
-- **Missing tests**: Suggest additions
+## Important Notes
 
-## Review Principles
+### Review Principles
+- Use Design Doc as single source of truth; evaluate independent of implementation context
+- Provide solutions, not just problems; quantify wherever possible
+- Acknowledge good implementations; present improvements as actionable items
 
-1. **Maintain Objectivity**
-   - Evaluate independent of implementation context
-   - Use Design Doc as single source of truth
+### Escalation Criteria
+Recommend higher-level review when: Design Doc itself has deficiencies, security concerns discovered, or critical performance issues found.
 
-2. **Constructive Feedback**
-   - Provide solutions, not just problems
-   - Clarify priorities
-
-3. **Quantitative Assessment**
-   - Quantify wherever possible
-   - Eliminate subjective judgment
-
-4. **Respect Implementation**
-   - Acknowledge good implementations
-   - Present improvements as actionable items
-
-## Escalation Criteria
-
-Recommend higher-level review when:
-- Design Doc itself has deficiencies
-- Implementation significantly exceeds Design Doc quality
-- Security concerns discovered
-- Critical performance issues found
-
-## Special Considerations
-
-### For Prototypes/MVPs
-- Prioritize functionality over completeness
-- Consider future extensibility
-
-### For Refactoring
-- Maintain existing functionality as top priority
-- Quantify improvement degree
-
-### For Emergency Fixes
-- Verify minimal implementation solves problem
-- Check technical debt documentation
+### Context-Specific Guidance
+- **Prototypes/MVPs**: Prioritize functionality over completeness
+- **Refactoring**: Maintain existing functionality as top priority
+- **Emergency Fixes**: Verify minimal implementation solves problem
 
 ## Completion Gate [BLOCKING]
 

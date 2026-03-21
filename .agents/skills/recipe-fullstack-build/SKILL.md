@@ -93,7 +93,7 @@ For EACH task, YOU MUST:
 2. **Spawn task-executor or task-executor-frontend agent** (per routing table): "Execute the task implementation for [task-file-path]"
 3. **CHECK executor response**:
    - `status: "escalation_needed"` or `"blocked"` -> STOP and escalate to user
-   - `testsAdded` contains `*.int.test.ts` or `*.e2e.test.ts` -> Spawn integration-test-reviewer agent: "Review integration tests in [test-files]"
+   - `requiresTestReview` is `true` -> Spawn integration-test-reviewer agent: "Review integration tests in [test-files]"
      - `needs_revision` -> Return to step 2 with `requiredFixes`
      - `approved` -> Proceed to step 4
    - `readyForQualityCheck: true` -> Proceed to step 4
@@ -115,6 +115,15 @@ Autonomous sub-agents require scope constraints for stable execution. MUST appen
 ENFORCEMENT: Sub-agent prompts missing the constraint suffix MUST be re-issued with the constraint appended.
 
 VERIFY approval status before proceeding. Once confirmed, INITIATE autonomous execution mode.
+
+## Security Review (After All Tasks Complete)
+
+After all task cycles finish, collect all `filesModified` from every task-executor/task-executor-frontend response (deduplicated), then invoke security-reviewer before the completion report:
+1. Spawn security-reviewer agent: "Design Doc: [path(s)]. Implementation files: [collected filesModified list]. Review security compliance."
+2. Check response:
+   - `approved` or `approved_with_notes` -> Proceed to completion report (include notes if present)
+   - `needs_revision` -> Spawn layer-appropriate task-executor with `requiredFixes`, then quality-fixer, then re-invoke security-reviewer
+   - `blocked` -> Escalate to user
 
 **[STOP -- BLOCKING]** Upon detecting ANY requirement changes, halt execution immediately.
 **CANNOT proceed until user explicitly confirms the change scope.**

@@ -1,6 +1,6 @@
 interface:
   display_name: "recipe-review"
-  short_description: "Design Doc compliance validation with auto-fixes"
+  short_description: "Design Doc compliance and security validation with auto-fixes"
   default_prompt: "Use $recipe-review to validate: "
 
 policy:

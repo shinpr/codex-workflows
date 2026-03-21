@@ -11,6 +11,13 @@ description: "Guides subagent coordination through implementation workflows. Use
 
 All investigation, analysis, and implementation work flows through specialized subagents.
 
+### Prompt Construction Rule
+Every subagent prompt must include:
+1. Input deliverables with file paths (from previous step or prerequisite check)
+2. Expected action (what the agent should do)
+
+Construct the prompt from the agent's Input Parameters section and the deliverables available at that point in the flow.
+
 ### Automatic Responses
 
 | Trigger | Action |
@@ -54,16 +61,17 @@ The following subagents are available:
 2. **task-decomposer**: Appropriate task decomposition of work plans
 3. **task-executor**: Individual task execution and structured response
 4. **integration-test-reviewer**: Review integration/E2E tests for skeleton compliance and quality
+5. **security-reviewer**: Security compliance review against Design Doc and coding-rules after all tasks complete
 
 ### Document Creation Agents
-5. **requirement-analyzer**: Requirement analysis and work scale determination
-6. **prd-creator**: Product Requirements Document creation
-7. **ui-spec-designer**: UI Specification creation from PRD and optional prototype code (frontend/fullstack features)
-8. **technical-designer**: ADR/Design Doc creation
-9. **work-planner**: Work plan creation from Design Doc and test skeletons
-10. **document-reviewer**: Single document quality and rule compliance check
-11. **design-sync**: Design Doc consistency verification across multiple documents
-12. **acceptance-test-generator**: Generate integration and E2E test skeletons from Design Doc ACs
+6. **requirement-analyzer**: Requirement analysis and work scale determination
+7. **prd-creator**: Product Requirements Document creation
+8. **ui-spec-designer**: UI Specification creation from PRD and optional prototype code (frontend/fullstack features)
+9. **technical-designer**: ADR/Design Doc creation
+10. **work-planner**: Work plan creation from Design Doc and test skeletons
+11. **document-reviewer**: Single document quality and rule compliance check
+12. **design-sync**: Design Doc consistency verification across multiple documents
+13. **acceptance-test-generator**: Generate integration and E2E test skeletons from Design Doc ACs
 
 ## Orchestration Principles
 
@@ -128,19 +136,26 @@ Autonomous execution MUST stop and wait for user input at these points.
 
 All agents MUST use this vocabulary consistently:
 
-| Status | Meaning | Next Action |
-|--------|---------|-------------|
-| `approved` | All criteria met | Proceed to next phase |
-| `approved_with_conditions` | Criteria met with minor open items | Proceed — carry conditions as input to next phase |
-| `needs_revision` | Significant issues found | Return to author agent for revision (max 2 iterations) |
-| `rejected` | Fundamental problems | Halt workflow, escalate to user |
-| `skipped` | Preconditions not met for this step | Report reason, proceed |
+| Status | Scope | Meaning | Next Action |
+|--------|-------|---------|-------------|
+| `approved` | All agents | All criteria met | Proceed to next phase |
+| `approved_with_conditions` | Document agents | Criteria met with minor open items | Proceed — carry conditions as input to next phase |
+| `approved_with_notes` | security-reviewer | Only hardening/policy findings | Proceed — include notes in completion report (no resolution required) |
+| `needs_revision` | All agents | Significant issues found | Return to author agent for revision (max 2 iterations) |
+| `rejected` | Document agents | Fundamental problems | Halt workflow, escalate to user |
+| `blocked` | security-reviewer | Committed secrets or high-confidence exploitable risk | Halt workflow immediately, escalate to user (requires human intervention) |
+| `skipped` | All agents | Preconditions not met for this step | Report reason, proceed |
 
-**approved_with_conditions handling**:
+**approved_with_conditions handling** (document agents):
 - Conditions MUST be listed explicitly in the agent's output
 - Orchestrator MUST append conditions to the document's "Undetermined Items" or "Open Items" section before proceeding
 - Orchestrator MUST pass conditions to the next phase's agent as context
 - Conditions do not block progression but MUST be resolved before implementation phase
+
+**approved_with_notes handling** (security-reviewer):
+- Notes are informational — they do NOT require resolution before proceeding
+- Orchestrator MUST include notes in the completion report for awareness
+- Do not apply approved_with_conditions handling (no resolution tracking)
 
 **ENFORCEMENT**: Using any status value outside this vocabulary is a VIOLATION.
 
@@ -160,11 +175,12 @@ All agents MUST use this vocabulary consistently:
 
 Subagents respond in JSON format. Key fields for orchestrator decisions:
 - **requirement-analyzer**: scale, confidence, affectedLayers, adrRequired, scopeDependencies, questions
-- **task-executor**: status (escalation_needed/blocked/completed), testsAdded
+- **task-executor**: status (escalation_needed/blocked/completed), testsAdded, requiresTestReview
 - **quality-fixer**: approved (true/false)
 - **document-reviewer**: verdict.decision (approved/approved_with_conditions/needs_revision/rejected)
 - **design-sync**: sync_status (CONFLICTS_FOUND/NO_CONFLICTS) — text format with [SUMMARY] block
 - **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
+- **security-reviewer**: status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes
 - **acceptance-test-generator**: status, generatedFiles
 
 ## Handling Requirement Changes
@@ -260,7 +276,7 @@ Batch approval -> Start autonomous execution mode
       -> task-executor: Implementation
       -> Escalation judgment:
           - escalation_needed/blocked -> Escalate to user
-          - testsAdded has int/e2e -> integration-test-reviewer
+          - requiresTestReview: true -> integration-test-reviewer
               - needs_revision -> back to task-executor
               - approved -> quality-fixer
           - No issues -> quality-fixer
@@ -268,7 +284,10 @@ Batch approval -> Start autonomous execution mode
       -> Orchestrator: Execute git commit
       -> Check remaining tasks:
           - Yes -> next task
-          - No -> Completion report
+          - No -> security-reviewer: Security review
+              - approved/approved_with_notes -> Completion report
+              - needs_revision -> layer-appropriate task-executor: Security fixes -> quality-fixer -> security-reviewer
+              - blocked -> Escalate to user
 ```
 
 ### Conditions for Stopping Autonomous Execution
@@ -286,7 +305,7 @@ Stop autonomous execution and escalate to user in the following cases:
 1. task-executor: Implementation
 2. Check task-executor response:
    - `escalation_needed` or `blocked`: Escalate to user
-   - `testsAdded` contains integration/e2e tests: Execute integration-test-reviewer
+   - `requiresTestReview` is `true`: Execute integration-test-reviewer
      - `needs_revision`: Return to step 1 with requiredFixes
      - `approved`: Proceed to step 3
    - Otherwise: Proceed to step 3

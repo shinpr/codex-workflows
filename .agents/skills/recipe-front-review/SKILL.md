@@ -1,6 +1,6 @@
 ---
 name: recipe-front-review
-description: "Frontend Design Doc compliance validation with optional auto-fixes using React-specific quality checks."
+description: "Frontend Design Doc compliance and security validation with optional auto-fixes using React-specific quality checks."
 ---
 
 **Context**: Post-implementation quality assurance for React/TypeScript frontend
@@ -14,10 +14,11 @@ description: "Frontend Design Doc compliance validation with optional auto-fixes
 ## Execution Method
 
 - Compliance validation -> performed by code-reviewer
+- Security validation -> performed by security-reviewer
 - Rule analysis -> performed by rule-advisor
 - Fix implementation -> performed by task-executor-frontend
 - Quality checks -> performed by quality-fixer-frontend
-- Re-validation -> performed by code-reviewer
+- Re-validation -> performed by code-reviewer / security-reviewer
 
 Orchestrator spawns agents and passes structured data between them.
 
@@ -32,22 +33,44 @@ Identify the Design Doc in docs/design/ and check implementation files changed f
 **CANNOT proceed without both a Design Doc and implementation files.**
 
 ### 2. Execute code-reviewer
-Spawn code-reviewer agent: "Validate Design Doc compliance for [design-doc-path]. Check: acceptance criteria fulfillment, code quality, implementation completeness."
+Spawn code-reviewer agent: "Validate Design Doc compliance for [design-doc-path]. Implementation files: [git diff file list]. Review mode: full. Return structured JSON report with complianceRate, verdict, acceptanceCriteria, and qualityIssues."
 
-### 3. Verdict and Response
+**Store output as**: `$STEP_2_OUTPUT`
 
-**Criteria (considering project stage)**:
+### 3. Execute security-reviewer
+Spawn security-reviewer agent: "Design Doc: [path]. Implementation files: [file list from git diff in Step 1]. Review security compliance."
+
+**Store output as**: `$STEP_3_OUTPUT` and `$STEP_1_FILES` (the initial file list)
+
+### 4. Verdict and Response
+
+**If security-reviewer returned `blocked`**: Stop immediately. Report the blocked finding and escalate to user. Do not proceed to fix steps.
+
+**Code compliance criteria (considering project stage)**:
 - Prototype: Pass at 70%+
 - Production: 90%+ recommended
-- Critical items (security, etc.): Required regardless of rate
 
-**Compliance-based response**:
+**Security criteria**:
+- `approved` or `approved_with_notes` -> Pass
+- `needs_revision` -> Fail
 
-For low compliance (production <90%):
+**Report both results independently using subagent output fields only** (do not add fields that are not in the subagent response):
+
 ```
-Validation Result: [X]% compliance
-Unfulfilled items:
-- [item list]
+Code Compliance: [complianceRate from code-reviewer]
+  Verdict: [verdict from code-reviewer]
+  Acceptance Criteria:
+  - [fulfilled] [item]
+  - [partially_fulfilled] [item]: [gap] — [suggestion]
+  - [unfulfilled] [item]: [gap] — [suggestion]
+
+Security Review: [status from security-reviewer]
+  Findings by category:
+  - [confirmed_risk] [location]: [description] — [rationale]
+  - [defense_gap] [location]: [description] — [rationale]
+  - [hardening] [location]: [description] — [rationale]
+  - [policy] [location]: [description] — [rationale]
+  Notes: [notes from security-reviewer, if present]
 
 Execute fixes? (y/n):
 ```
@@ -55,24 +78,31 @@ Execute fixes? (y/n):
 **[STOP -- BLOCKING]** Wait for user response on whether to execute fixes.
 **CANNOT proceed with auto-fixes without user approval.**
 
+If both pass and user selects `n`: Skip fix steps, proceed to Final Report.
+
 If user selects `y`:
 
 ## Pre-fix Metacognition
-**Required flow**: rule-advisor -> task registration -> task-executor-frontend -> quality-fixer-frontend
 
-1. **Spawn rule-advisor agent**: "Analyze fixes needed for [unfulfilled items]. Determine root solutions vs symptomatic treatments."
-2. **Register tasks**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Create task file -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`
+1. **Spawn rule-advisor agent**: "Analyze fixes needed. Code issues: $STEP_2_OUTPUT. Security findings: $STEP_3_OUTPUT. Determine root solutions vs symptomatic treatments."
+2. **Register tasks**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Create task file -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`. Include both code compliance issues and security requiredFixes.
 3. **Spawn task-executor-frontend agent**: "Execute staged auto-fixes for [task-file-path]. Stop at 5 files."
 4. **Spawn quality-fixer-frontend agent**: "Execute all frontend quality checks and confirm quality gate passage"
-5. **Re-validate**: Spawn code-reviewer agent: "Re-validate compliance for [design-doc-path]. Measure improvement."
+5. **Re-validate code-reviewer**: Spawn code-reviewer agent: "Re-validate compliance for [design-doc-path]. Prior issues: $STEP_2_OUTPUT. Measure improvement."
+6. **Re-validate security-reviewer** (only if security fixes were applied): Spawn security-reviewer agent: "Re-validate security after fixes. Prior findings: $STEP_3_OUTPUT. Design Doc: [path]. Implementation files: [union of $STEP_1_FILES and task-executor-frontend filesModified from step 3, deduplicated]."
 
 ENFORCEMENT: Auto-fixes MUST go through quality-fixer-frontend before re-validation. Skipping quality checks invalidates fixes.
 
-### 4. Final Report
+### Final Report
 ```
-Initial compliance: [X]%
-Final compliance: [Y]% (if fixes executed)
-Improvement: [Y-X]%
+Code Compliance:
+  Initial: [X]%
+  Final: [Y]% (if fixes executed)
+
+Security Review:
+  Initial: [status]
+  Final: [status] (if fixes executed)
+  Notes: [notes from approved_with_notes, if any]
 
 Remaining issues:
 - [items requiring manual intervention]
@@ -83,19 +113,22 @@ Remaining issues:
 - Error handling additions
 - Contract definition fixes
 - Function splitting (length/complexity improvements)
+- Security confirmed_risk and defense_gap fixes (input validation, auth checks, output encoding)
 
 ## Non-fixable Items
 - Fundamental business logic changes
 - Architecture-level modifications
 - Design Doc deficiencies
+- Committed secrets (blocked -> human intervention)
 
 ## Completion Criteria
 
 - [ ] Design Doc compliance validated
+- [ ] Security review completed
 - [ ] Compliance percentage calculated
 - [ ] User informed of results
 - [ ] Fixes executed if requested and approved
 - [ ] Quality gates passed for all fixes
-- [ ] Final compliance re-measured
+- [ ] Final compliance and security re-measured
 
-**Scope**: Design Doc compliance validation and auto-fixes.
+**Scope**: Design Doc compliance validation, security review, and auto-fixes.

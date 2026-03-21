@@ -101,12 +101,21 @@ After user grants "batch approval for entire implementation phase", enter autono
 1. Spawn task-executor (or task-executor-frontend) agent: "Implement task [task-file-path]"
 2. Check task-executor response:
    - `status: escalation_needed` or `blocked` -> Escalate to user
-   - `testsAdded` contains `*.int.test.ts` or `*.e2e.test.ts` -> Spawn integration-test-reviewer agent
+   - `requiresTestReview` is `true` -> Spawn integration-test-reviewer agent
      - `needs_revision` -> Return to step 1 with `requiredFixes`
      - `approved` -> Proceed to step 3
    - Otherwise -> Proceed to step 3
 3. Spawn quality-fixer (or quality-fixer-frontend) agent: "Quality check and fixes"
 4. git commit -> Execute on `approved: true`
+
+### Security Review (After All Tasks Complete)
+
+After all task cycles finish, collect all `filesModified` from every executor response (task-executor and task-executor-frontend, deduplicated), then invoke security-reviewer before the completion report:
+1. Spawn security-reviewer agent: "Design Doc: [path]. Implementation files: [collected filesModified list]. Review security compliance."
+2. Check response:
+   - `approved` or `approved_with_notes` -> Proceed to completion report (include notes if present)
+   - `needs_revision` -> Spawn layer-appropriate executor (task-executor or task-executor-frontend per task filename routing) with `requiredFixes`, then layer-appropriate quality-fixer, then re-invoke security-reviewer
+   - `blocked` -> Escalate to user
 
 ### Test Information Communication
 After acceptance-test-generator execution, when spawning work-planner, communicate:

@@ -144,7 +144,7 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 | `$recipe-design` | Requirements → ADR/Design Doc | Architecture planning |
 | `$recipe-plan` | Design Doc → test skeletons → work plan | Planning phase |
 | `$recipe-build` | Execute backend tasks autonomously | Resume backend implementation |
-| `$recipe-review` | Design Doc compliance validation with auto-fixes | Post-implementation check |
+| `$recipe-review` | Design Doc compliance and security validation with auto-fixes | Post-implementation check |
 | `$recipe-diagnose` | Problem investigation → verification → solution | Bug investigation |
 | `$recipe-reverse-engineer` | Generate PRD + Design Docs from existing code | Legacy system documentation |
 | `$recipe-add-integration-tests` | Add integration/E2E tests from Design Doc | Test coverage for existing code |
@@ -157,7 +157,7 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 | `$recipe-front-design` | Requirements → UI Spec → frontend Design Doc | Frontend architecture planning |
 | `$recipe-front-plan` | Frontend Design Doc → test skeletons → work plan | Frontend planning phase |
 | `$recipe-front-build` | Execute frontend tasks with RTL + quality checks | Resume frontend implementation |
-| `$recipe-front-review` | Frontend compliance validation with React-specific fixes | Frontend post-implementation check |
+| `$recipe-front-review` | Frontend compliance and security validation with React-specific fixes | Frontend post-implementation check |
 
 ### Fullstack (Cross-Layer)
 
@@ -244,6 +244,7 @@ Codex spawns these as needed during recipe execution. Each agent runs in its own
 |-------|------|
 | `code-reviewer` | Design Doc compliance validation |
 | `code-verifier` | Document-code consistency verification |
+| `security-reviewer` | Security compliance review after implementation |
 | `rule-advisor` | Skill selection via metacognitive analysis |
 | `scope-discoverer` | Codebase scope discovery for reverse docs |
 
@@ -316,7 +317,7 @@ your-project/
 │   ├── requirement-analyzer.toml
 │   ├── technical-designer.toml
 │   ├── task-executor.toml
-│   └── ... (22 agents total)
+│   └── ... (23 agents total)
 └── docs/                     # Created as you use the recipes
     ├── prd/
     ├── design/

@@ -39,7 +39,12 @@ Skill Status:
 3. Classify work scale (small/medium/large)
 4. Determine ADR necessity (based on ADR conditions)
 5. Initial assessment of technical constraints and risks
-6. **Research latest technical information**: Verify current technical landscape with web search when evaluating technical constraints
+6. Research latest technical information when evaluating technical constraints
+
+## Input Parameters
+
+- **requirements**: User request describing what to achieve
+- **context** (optional): Recent changes, related issues, or additional constraints
 
 ## Work Scale Determination Criteria
 
@@ -51,18 +56,6 @@ Scale determination and required document details follow the principles in docum
 - **Large**: 6+ files, architecture-level changes
 
 ※ADR conditions (contract system changes, data flow changes, architecture changes, external dependency changes) require ADR regardless of scale
-
-### File Count Estimation (MANDATORY)
-
-Before determining scale, investigate existing code:
-1. Identify entry point files using search tools
-2. Trace imports and callers
-3. Include related test files
-4. List affected file paths explicitly in output
-
-**Scale determination MUST cite specific file paths as evidence**
-
-**ENFORCEMENT**: Scale determination without file path evidence is invalid
 
 ### Important: Clear Determination Expressions
 MUST use the following expressions to show clear determinations:
@@ -95,14 +88,29 @@ Detailed ADR creation conditions follow the principles in documentation-criteria
 ### Complete Self-Containment Principle
 Each analysis is stateless and deterministic: same input produces same output via fixed rules (file count for scale, documented criteria for ADR). All determination rationale must be explicit and unambiguous.
 
-## Required Information
+## Workflow
 
-Required input (in natural language):
+### 1. Extract Purpose
+Read the requirements and identify the essential purpose in 1-2 sentences. Distinguish the core need from implementation suggestions.
 
-- **User request**: Description of what to achieve
-- **Current context** (optional):
-  - Recent changes
-  - Related issues
+### 2. Estimate Impact Scope
+Investigate the existing codebase to identify affected files:
+- Search for entry point files related to the requirements using search tools
+- Trace imports and callers from entry points
+- Include related test files
+- List all affected file paths explicitly
+
+### 3. Determine Scale
+Classify based on the file count from Step 2 (small: 1-2, medium: 3-5, large: 6+). Scale determination must cite specific file paths as evidence.
+
+### 4. Evaluate ADR Necessity
+Check each ADR condition individually against the requirements (see Conditions Requiring ADR section).
+
+### 5. Assess Technical Constraints and Risks
+Identify constraints, risks, and dependencies. Use web search to verify current technical landscape when evaluating unfamiliar technologies or dependencies.
+
+### 6. Formulate Questions
+Identify any ambiguities that affect scale determination (scopeDependencies) or require user confirmation before proceeding.
 
 ## Output Format
 

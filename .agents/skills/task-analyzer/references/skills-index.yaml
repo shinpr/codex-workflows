@@ -23,7 +23,7 @@ skills:
       - "Code Organization"
       - "Commenting Principles"
       - "Refactoring [SAFE CHANGE PROTOCOL]"
-      - "Security"
+      - "Security (Secure Defaults, Input and Output Boundaries, Access Control, Knowledge Cutoff Supplement)"
       - "Version Control [MANDATORY]"
     references:
       - "references/typescript.md"

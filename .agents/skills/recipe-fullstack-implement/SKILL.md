@@ -125,6 +125,15 @@ ENFORCEMENT: Sub-agent prompts missing the constraint suffix MUST be re-issued w
 3. Quality-fixer MUST run after each executor (no skipping)
 4. Commit MUST execute when quality-fixer returns `approved: true` (do not defer to end)
 
+### Security Review (After All Tasks Complete)
+
+After all task cycles finish, collect all `filesModified` from every task-executor/task-executor-frontend response (deduplicated), then invoke security-reviewer before the completion report:
+1. Spawn security-reviewer agent: "Design Doc: [path(s)]. Implementation files: [collected filesModified list]. Review security compliance."
+2. Check response:
+   - `approved` or `approved_with_notes` -> Proceed to completion report (include notes if present)
+   - `needs_revision` -> Spawn layer-appropriate task-executor with `requiredFixes`, then quality-fixer, then re-invoke security-reviewer
+   - `blocked` -> Escalate to user
+
 ### Test Information Communication
 After acceptance-test-generator execution, when calling work-planner, communicate:
 - Generated integration test file path

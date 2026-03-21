@@ -1,6 +1,6 @@
 interface:
   display_name: "recipe-front-review"
-  short_description: "Frontend Design Doc compliance with React-specific checks"
+  short_description: "Frontend Design Doc compliance and security validation with React-specific checks"
   default_prompt: "Use $recipe-front-review to validate frontend: "
 
 policy:
