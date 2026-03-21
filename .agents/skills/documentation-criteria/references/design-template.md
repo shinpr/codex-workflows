@@ -179,12 +179,12 @@ No Ripple Effect:
 
 ```yaml
 Input:
-  Type: [Type/interface definition]
+  Type: [Data shape, contract, or schema]
   Preconditions: [Required items, format constraints]
   Validation: [Validation method]
 
 Output:
-  Type: [Type/interface definition]
+  Type: [Data shape, contract, or schema]
   Guarantees: [Conditions that must always be met]
   On Error: [Exception/null/default value]
 

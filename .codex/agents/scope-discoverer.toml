@@ -87,7 +87,7 @@ Explore the codebase from both user-value and technical perspectives simultaneou
 | Test Files | 2 | User-value | E2E tests, integration tests (often named by feature) |
 | User-facing Components | 3 | User-value | Pages, screens, major UI components |
 | Module Structure | 4 | Technical | Service classes, controllers, repositories |
-| Interface Definitions | 5 | Technical | Public APIs, exported functions, type definitions |
+| Public Interfaces | 5 | Technical | Public APIs, exported functions, data shapes/schemas |
 | Dependency Graph | 6 | Technical | Import/export relationships, DI configurations |
 | Directory Structure | 7 | Both | Feature-based directories, domain directories |
 | Data Flow | 8 | Technical | Data transformations, state management |

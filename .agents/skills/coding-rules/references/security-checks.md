@@ -14,17 +14,17 @@ These patterns have low false-positive rates and are detectable through grep or 
 
 ### SQL String Concatenation
 - SQL statements constructed through string concatenation or interpolation with variables
-- Detection approach: search for SQL keywords (`SELECT`, `INSERT`, `UPDATE`, `DELETE`) combined with string concatenation operators or template literals containing variable references
+- Detection approach: search for SQL keywords (`SELECT`, `INSERT`, `UPDATE`, `DELETE`) combined with string concatenation operators or string interpolation containing variable references
 
 ### Dynamic Code Execution
-- Use of `eval()`, `Function()`, `exec()`, `compile()` with dynamic input
-- Dynamic import or require with variable paths
-- Detection approach: search for these function calls where the argument is not a static literal
+- Use of dynamic code execution functions (e.g., `eval`, `exec`) with non-static input
+- Dynamic module loading with variable paths
+- Detection approach: search for dynamic code execution or module loading calls where the argument is not a static literal
 
 ### Insecure Deserialization
-- `pickle.loads()`, `yaml.load()` without SafeLoader, `marshal.loads()` with untrusted input
-- `JSON.parse()` followed by direct use in `eval()` or `Function()`
-- Detection approach: search for deserialization calls that accept external input without safe loader configuration
+- Deserialization of untrusted input using unsafe loaders or formats that allow arbitrary object construction (e.g., native serialization, YAML without safe loader)
+- Parsed data passed directly into dynamic code execution
+- Detection approach: search for deserialization calls that accept external input without safe loader or type-restricted configuration
 
 ### Path Traversal
 - File system paths constructed from user-supplied input without sanitization

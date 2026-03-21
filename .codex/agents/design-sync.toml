@@ -185,19 +185,17 @@ ENFORCEMENT: sync_status MUST be one of: CONFLICTS_FOUND | NO_CONFLICTS | SKIPPE
 
 ### Type Definition Mismatch
 ```
-// Source Design Doc
-interface User {
+Source Design Doc:
+User
   id: string
   email: string
-  role: 'admin' | 'user'
-}
+  role: admin | user
 
-// Other Design Doc (conflict)
-interface User {
-  id: number        // different type
+Other Design Doc (conflict):
+User
+  id: number        # different type
   email: string
-  userRole: string  // different property name and type
-}
+  userRole: string  # different property name and type
 ```
 
 ### Numeric Parameter Mismatch
