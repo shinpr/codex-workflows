@@ -74,7 +74,7 @@ Verify generated task files exist in docs/plans/tasks/.
 Each sub-agent responds in JSON format:
 - **task-executor-frontend**: status, filesModified, testsAdded, requiresTestReview, readyForQualityCheck
 - **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
-- **quality-fixer-frontend**: status, checksPerformed, fixesApplied, approved
+- **quality-fixer-frontend**: status, checksPerformed, fixesApplied
 
 ### Execution Flow for Each Task
 
@@ -88,7 +88,7 @@ For EACH task, YOU MUST:
      - `approved` -> Proceed to step 4
    - `readyForQualityCheck: true` -> Proceed to step 4
 4. **Spawn quality-fixer-frontend agent**: "Execute all frontend quality checks and fixes"
-5. **COMMIT on approval**: After `approved: true` from quality-fixer-frontend -> Execute git commit. Use `changeSummary` for commit message.
+5. **COMMIT on approval**: After `status: "approved"` from quality-fixer-frontend -> Execute git commit. Use `changeSummary` for commit message.
 
 **CRITICAL**: MUST monitor ALL structured responses WITHOUT EXCEPTION and ENSURE every quality gate is passed.
 ENFORCEMENT: Proceeding past a failed quality gate invalidates all subsequent work.

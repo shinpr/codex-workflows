@@ -106,7 +106,7 @@ After user grants "batch approval for entire implementation phase", enter autono
      - `approved` -> Proceed to step 3
    - Otherwise -> Proceed to step 3
 3. Spawn quality-fixer (or quality-fixer-frontend) agent: "Quality check and fixes"
-4. git commit -> Execute on `approved: true`
+4. git commit -> Execute on `status: "approved"`
 
 ### Security Review (After All Tasks Complete)
 

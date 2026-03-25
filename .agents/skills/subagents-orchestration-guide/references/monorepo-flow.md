@@ -99,13 +99,13 @@ Each task uses the standard 4-step cycle with layer-appropriate agents:
 1. task-executor: Implementation
 2. Escalation check
 3. quality-fixer: Quality check and fixes
-4. git commit (on approved: true)
+4. git commit (on status: "approved")
 
 ### frontend-task
 1. task-executor-frontend: Implementation
 2. Escalation check
 3. quality-fixer-frontend: Quality check and fixes
-4. git commit (on approved: true)
+4. git commit (on status: "approved")
 
 ### integration-test-reviewer Placement
 

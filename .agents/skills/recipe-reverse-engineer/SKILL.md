@@ -20,7 +20,7 @@ Target: $ARGUMENTS
 **Execution Protocol**:
 1. **Spawn agents for all work** -- your role is to invoke sub-agents, pass data between them, and report results
 2. **Process one step at a time**: Execute steps sequentially within each unit (2 -> 3 -> 4 -> 5). Each step's output is the required input for the next step. Complete all steps for one unit before starting the next
-3. **Pass `$STEP_N_OUTPUT` as-is** to sub-agents -- the orchestrator bridges data without processing or filtering it
+3. **Pass `$STEP_N_OUTPUT` as-is** to sub-agents -- the orchestrator bridges data without processing or filtering it, except for steps that explicitly define a deterministic transformation with an input schema, output schema, and mapping rules
 
 **Task Registration**: Register phases first, then steps within each phase as you enter it. Track status for each step.
 
@@ -44,7 +44,7 @@ Ask the user to confirm:
 
 ```
 Phase 1: PRD Generation
-  Step 1: Scope Discovery (unified, single pass)
+  Step 1: Scope Discovery (unified, single pass -> group into PRD units -> human review)
   Step 2-5: Per-unit loop (Generation -> Verification -> Review -> Revision)
 
 Phase 2: Design Doc Generation (if requested)
@@ -67,17 +67,19 @@ Spawn scope-discoverer agent: "Discover functional scope targets in the codebase
 **Quality Gate**:
 - At least one unit discovered -> proceed
 - No units discovered -> ask user for hints
+- `$STEP_1_OUTPUT.prdUnits` exists
+- All `sourceUnits` across `prdUnits` (flattened, deduplicated) match the set of `discoveredUnits` IDs — no unit missing, no unit duplicated
 
-**[STOP — BLOCKING]** If human review enabled: Present discovered units to user for confirmation.
+**[STOP — BLOCKING]** If human review enabled: Present `$STEP_1_OUTPUT.prdUnits` with their source unit mapping to user for confirmation.
 **CANNOT proceed until user explicitly confirms.**
 
 ### Step 2-5: Per-Unit Processing
 
-**FOR** each unit in `$STEP_1_OUTPUT.discoveredUnits` **(sequential, one unit at a time)**:
+**FOR** each unit in `$STEP_1_OUTPUT.prdUnits` **(sequential, one unit at a time)**:
 
 #### Step 2: PRD Generation
 
-Spawn prd-creator agent: "Create reverse-engineered PRD for the following feature. Operation Mode: reverse-engineer. External Scope Provided: true. Feature: $UNIT_NAME. Description: $UNIT_DESCRIPTION. Related Files: $UNIT_RELATED_FILES. Entry Points: $UNIT_ENTRY_POINTS. Skip independent scope discovery. Use provided scope data. Create final version PRD based on code investigation within specified scope."
+Spawn prd-creator agent: "Create reverse-engineered PRD for the following feature. Operation Mode: reverse-engineer. External Scope Provided: true. Feature: $PRD_UNIT_NAME. Description: $PRD_UNIT_DESCRIPTION. Related Files: $PRD_UNIT_COMBINED_RELATED_FILES. Entry Points: $PRD_UNIT_COMBINED_ENTRY_POINTS. Source Units: $PRD_UNIT_SOURCE_UNITS. Skip independent scope discovery. Use provided scope data. Create final version PRD based on code investigation within specified scope."
 
 **Store output as**: `$STEP_2_OUTPUT` (PRD path)
 
@@ -85,7 +87,7 @@ Spawn prd-creator agent: "Create reverse-engineered PRD for the following featur
 
 **Prerequisite**: $STEP_2_OUTPUT (PRD path from Step 2)
 
-Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. code_paths: $UNIT_RELATED_FILES. verbose: false."
+Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. code_paths: $PRD_UNIT_COMBINED_RELATED_FILES. verbose: false."
 
 **Store output as**: `$STEP_3_OUTPUT`
 
@@ -130,17 +132,51 @@ ENFORCEMENT: Exceeding 2 revision cycles without flagging produces unreviewed ou
 
 ### Step 6: Design Doc Scope Mapping
 
-**No additional discovery required.** Use `$STEP_1_OUTPUT` (scope discovery results) directly.
+**Step type**: Deterministic transformation step executed by the orchestrator.
 
-Each PRD unit from Phase 1 maps to one Design Doc unit (using technical-designer).
+**No additional discovery required.** Use `$STEP_1_OUTPUT.discoveredUnits` (implementation-granularity units) for technical profiles. Use `$STEP_1_OUTPUT.prdUnits[].sourceUnits` to trace which discovered units belong to each PRD unit.
 
-Map `$STEP_1_OUTPUT` units to Design Doc generation targets, carrying forward:
+**Default mapping rule**: Each PRD unit maps to exactly 1 Design Doc unit.
+
+Only split one PRD unit into multiple Design Doc units when BOTH are true:
+1. The source units contain clearly separate technical boundaries with low shared-file overlap
+2. Separate Design Docs would improve verification clarity (different public interfaces, dependencies, or module groups)
+
+If the split conditions are not clearly met, keep 1 PRD unit -> 1 Design Doc unit.
+
+Transform `$STEP_1_OUTPUT` into `$STEP_6_OUTPUT` using only the mapping rules in this step.
+
+Map PRD units to Design Doc generation targets by resolving each PRD unit's `sourceUnits` back to `$STEP_1_OUTPUT.discoveredUnits`, carrying forward:
 - `technicalProfile.primaryModules` -> Primary Files
 - `technicalProfile.publicInterfaces` -> Public Interfaces
 - `dependencies` -> Dependencies
 - `relatedFiles` -> Scope boundary
 
 **Store output as**: `$STEP_6_OUTPUT`
+
+`$STEP_6_OUTPUT` MUST be a JSON array of Design Doc generation targets in the following shape:
+
+```json
+[
+  {
+    "unitId": "DD-001",
+    "parentPrdUnitId": "PRD-001",
+    "unitName": "Authentication",
+    "unitDescription": "Current implementation for sign-in and session management",
+    "sourceUnits": ["UNIT-001", "UNIT-002"],
+    "primaryModules": ["src/auth/service.ts", "src/auth/controller.ts"],
+    "publicInterfaces": ["AuthService.login()", "AuthController.handleLogin()"],
+    "dependencies": ["UNIT-003"],
+    "scopeBoundary": ["src/auth/*"],
+    "mappingRationale": "Default 1:1 mapping from PRD unit because technical scope is cohesive"
+  }
+]
+```
+
+**Quality Gate**:
+- Every PRD unit appears in at least one `$STEP_6_OUTPUT` item
+- Every `$STEP_6_OUTPUT` item references only discovered units from its parent PRD unit
+- `mappingRationale` explicitly states whether the mapping is default 1:1 or an intentional split
 
 ### Step 7-10: Per-Unit Processing
 

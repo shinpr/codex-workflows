@@ -123,7 +123,7 @@ ENFORCEMENT: Sub-agent prompts missing the constraint suffix MUST be re-issued w
 1. Execute ONE task completely before starting next (each task goes through the full 4-step cycle individually, using the correct executor per filename pattern)
 2. Check executor status before quality-fixer (escalation check)
 3. Quality-fixer MUST run after each executor (no skipping)
-4. Commit MUST execute when quality-fixer returns `approved: true` (do not defer to end)
+4. Commit MUST execute when quality-fixer returns `status: "approved"` (do not defer to end)
 
 ### Security Review (After All Tasks Complete)
 

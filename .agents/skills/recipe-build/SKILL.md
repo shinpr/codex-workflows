@@ -80,7 +80,7 @@ For EACH task, YOU MUST:
      - `approved` -> Proceed to step 4
    - `readyForQualityCheck: true` -> Proceed to step 4
 4. **Spawn quality-fixer agent**: "Execute all quality checks and fixes"
-5. **COMMIT on approval**: After `approved: true` from quality-fixer -> Execute git commit
+5. **COMMIT on approval**: After `status: "approved"` from quality-fixer -> Execute git commit
 
 **CRITICAL**: MUST monitor ALL structured responses WITHOUT EXCEPTION and ENSURE every quality gate is passed.
 ENFORCEMENT: Proceeding past a failed quality gate invalidates all subsequent work.

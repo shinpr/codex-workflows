@@ -31,7 +31,7 @@ ENFORCEMENT: Skipping document-reviewer risks propagating inconsistencies to dow
 ```
 Target document -> [Stop: Confirm changes]
                         |
-              technical-designer / prd-creator (update mode)
+              technical-designer / technical-designer-frontend / prd-creator (update mode)
                         |
               document-reviewer -> [Stop: Review approval]
                         | (Design Doc only)
@@ -70,15 +70,20 @@ Check for existing documents in docs/design/, docs/prd/, docs/adr/.
 | Multiple candidates found | Present options to user |
 | No documents found | Report and end (suggest $recipe-design instead) |
 
-### Step 2: Document Type Determination
+### Step 2: Document Type and Layer Determination
 
-Determine type from document path:
+Determine type from document path, then determine the layer to select the correct update agent:
 
 | Path Pattern | Type | Update Agent | Notes |
 |-------------|------|--------------|-------|
-| `docs/design/*.md` | Design Doc | technical-designer | - |
+| `docs/design/*.md` | Design Doc | technical-designer or technical-designer-frontend | See layer detection below |
 | `docs/prd/*.md` | PRD | prd-creator | - |
-| `docs/adr/*.md` | ADR | technical-designer | Minor changes: update existing file; Major changes: create new ADR file |
+| `docs/adr/*.md` | ADR | technical-designer or technical-designer-frontend | See layer detection below |
+
+**Layer detection** (for Design Doc and ADR):
+Read the document and determine its layer from content signals:
+- **Frontend** (-> technical-designer-frontend): Document title/scope mentions React, components, UI, frontend; or file contains component hierarchy, state management, UI interactions
+- **Backend** (-> technical-designer): All other cases (API, data layer, business logic, infrastructure)
 
 **ADR Update Guidance**:
 - **Minor changes** (clarification, typo fix, small scope adjustment): Update the existing ADR file

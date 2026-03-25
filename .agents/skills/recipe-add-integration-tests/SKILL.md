@@ -109,11 +109,11 @@ Check Step 5 result:
 
 Spawn quality-fixer agent: "Final quality assurance for test files added in this workflow. Run all tests and verify coverage."
 
-**Expected output**: `approved` (true/false)
+**Expected output**: `status` (`approved`/`blocked`)
 
 ### Step 8: Commit
 
-On `approved: true` from quality-fixer:
+On `status: "approved"` from quality-fixer:
 - MUST commit test files with appropriate message
 ENFORCEMENT: Commits without quality-fixer approval are invalid.
 

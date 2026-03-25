@@ -88,7 +88,7 @@ Problem → investigator → verifier (ACH + Devil's Advocate) → solver → Ac
 ### Reverse Engineering
 
 ```
-Existing code → scope-discoverer → prd-creator → code-verifier → document-reviewer → Design Docs
+Existing code → scope-discoverer (discoveredUnits + prdUnits) → prd-creator → code-verifier → document-reviewer → Design Docs
 ```
 
 ---
@@ -246,7 +246,7 @@ Codex spawns these as needed during recipe execution. Each agent runs in its own
 | `code-verifier` | Document-code consistency verification |
 | `security-reviewer` | Security compliance review after implementation |
 | `rule-advisor` | Skill selection via metacognitive analysis |
-| `scope-discoverer` | Codebase scope discovery for reverse docs |
+| `scope-discoverer` | Codebase scope discovery for reverse docs, including PRD unit grouping |
 
 ### Diagnosis Agents
 

@@ -173,10 +173,10 @@ All agents MUST use this vocabulary consistently:
 
 ## Structured Response Specification
 
-Subagents respond in JSON format. Key fields for orchestrator decisions:
+Subagents respond in JSON format. The final response from each JSON-returning subagent must be the JSON payload itself, with no trailing prose. Key fields for orchestrator decisions:
 - **requirement-analyzer**: scale, confidence, affectedLayers, adrRequired, scopeDependencies, questions
 - **task-executor**: status (escalation_needed/blocked/completed), testsAdded, requiresTestReview
-- **quality-fixer**: approved (true/false)
+- **quality-fixer**: status (approved/blocked)
 - **document-reviewer**: verdict.decision (approved/approved_with_conditions/needs_revision/rejected)
 - **design-sync**: sync_status (CONFLICTS_FOUND/NO_CONFLICTS) — text format with [SUMMARY] block
 - **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
@@ -310,7 +310,7 @@ Stop autonomous execution and escalate to user in the following cases:
      - `approved`: Proceed to step 3
    - Otherwise: Proceed to step 3
 3. quality-fixer: Quality check and fixes
-4. git commit (on `approved: true`)
+4. git commit (on `status: "approved"`)
 
 ## Main Orchestrator Roles
 

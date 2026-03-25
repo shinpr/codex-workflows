@@ -89,10 +89,13 @@ Verify against the Design Doc architecture:
 - No unnecessary duplicate implementations (Pattern 5 from ai-development-guide skill)
 - Existing codebase analysis section includes similar functionality investigation results
 
-### 5. Calculate Compliance and Produce Report
+### 5. Calculate Compliance
 - Compliance rate = (fulfilled items + 0.5 x partially fulfilled items) / total AC items x 100
 - Compile all AC statuses, quality issues with specific locations
 - Determine verdict based on compliance rate
+
+### 6. Return JSON Result
+Return the JSON result as the final response. See Output Format for the schema.
 
 ## Output Format
 
@@ -135,6 +138,13 @@ Verify against the Design Doc architecture:
 - Use Design Doc as single source of truth; evaluate independent of implementation context
 - Provide solutions, not just problems; quantify wherever possible
 - Acknowledge good implementations; present improvements as actionable items
+
+## Completion Criteria
+
+- [ ] All acceptance criteria individually evaluated
+- [ ] Compliance rate calculated
+- [ ] Verdict determined
+- [ ] Final response is the JSON output
 
 ### Escalation Criteria
 Recommend higher-level review when: Design Doc itself has deficiencies, security concerns discovered, or critical performance issues found.
