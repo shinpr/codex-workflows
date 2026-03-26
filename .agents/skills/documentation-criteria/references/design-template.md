@@ -259,39 +259,14 @@ System Invariants:
    - Prerequisites: [Required pre-implementations]
 
 ### Integration Points
-Each integration point requires E2E verification:
 
 **Integration Point 1: [Name]**
 - Components: [Component A] to [Component B]
-- Verification: [How to verify integration works]
+- Contract: [Interface/API contract between components]
 
 ### Migration Strategy
 
 [Technical migration approach, ensuring backward compatibility]
-
-## Test Strategy
-
-### Basic Test Design Policy
-
-Automatically derive test cases from acceptance criteria:
-- Create at least one test case for each acceptance criterion
-- Implement measurable standards from acceptance criteria as assertions
-
-### Unit Tests
-
-[Unit testing policy and coverage goals]
-
-### Integration Tests
-
-[Integration testing policy and important test cases]
-
-### E2E Tests
-
-[E2E testing policy]
-
-### Performance Tests
-
-[Performance testing methods and standards]
 
 ## Security Considerations
 

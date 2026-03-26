@@ -338,9 +338,9 @@ function useUserData(userId: string) {
 - [ ] **Agreement checklist completed** (most important)
 - [ ] **Prerequisite common ADRs referenced** (required)
 - [ ] **Change impact map created** (required)
-- [ ] **Component verification procedures for each phase** (required)
 - [ ] Response to requirements and design validity
-- [ ] Test strategy (React Testing Library) and error handling (Error Boundary)
+- [ ] Error handling strategy
+- [ ] Acceptance criteria written in testable format: each criterion includes a measurable condition and expected outcome (verifiable by acceptance-test-generator)
 - [ ] Props change matrix completeness
 - [ ] Implementation approach selection rationale (vertical/horizontal/hybrid)
 - [ ] Latest React best practices researched and references cited

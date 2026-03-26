@@ -1,6 +1,6 @@
 ---
 name: recipe-add-integration-tests
-description: "Add integration/E2E tests to existing codebase using Design Doc acceptance criteria."
+description: "Add integration/E2E tests to existing codebase using Design Docs."
 ---
 
 ## Required Skills [LOAD BEFORE EXECUTION]
@@ -26,11 +26,11 @@ description: "Add integration/E2E tests to existing codebase using Design Doc ac
 - Test review -> Spawn integration-test-reviewer agent
 - Quality checks -> Spawn quality-fixer agent
 
-Design Doc path: $ARGUMENTS
+Document paths: $ARGUMENTS
 
 ## Prerequisites
 
-- Design Doc must exist (created manually or via reverse-engineer)
+- At least one Design Doc must exist (created manually or via reverse-engineer)
 - Existing implementation to test
 
 ## Execution Flow
@@ -39,27 +39,59 @@ Design Doc path: $ARGUMENTS
 
 Reference documentation-criteria skill for task file template in Step 3.
 
-### Step 1: Validate Design Doc
+### Step 1: Discover and Validate Documents
 
-Verify Design Doc exists at $ARGUMENTS or find the most recent in docs/design/.
+```bash
+# Verify at least one document path was provided
+test -n "$ARGUMENTS" || { echo "ERROR: No document paths provided"; exit 1; }
+
+# Verify provided paths exist
+ls $ARGUMENTS
+```
+
+Use only the user-provided paths in `$ARGUMENTS`. Do not auto-discover additional Design Docs or UI Specs.
+
+Classify provided documents by path and filename, using first-match-wins:
+- Path matches `docs/ui-spec/*.md` -> **UI Spec**
+- Path matches `docs/design/*-backend-*.md` or `docs/design/*backend*.md` -> **Design Doc (backend)**
+- Path matches `docs/design/*-frontend-*.md` or `docs/design/*frontend*.md` -> **Design Doc (frontend)**
+- Path matches `docs/design/*.md` and none of the above -> **single-layer Design Doc**
+
+If a filename appears to match both backend and frontend, halt and ask the user which layer it belongs to.
 
 ### Step 2: Skeleton Generation
 
-Spawn acceptance-test-generator agent: "Generate test skeletons from Design Doc at [path from Step 1]."
+Spawn acceptance-test-generator agent with only the documents that exist from Step 1:
+```text
+Generate test skeletons from the following documents:
+- Design Doc (backend): [path]    <- include only if exists
+- Design Doc (frontend): [path]   <- include only if exists
+- UI Spec: [path]                 <- include only if exists
+```
 
-**Expected output**: `generatedFiles` containing integration and e2e paths
+**Expected output**: `generatedFiles` as a structured object grouped by layer, for example:
+```json
+{
+  "backend": ["path/to/backend.int.test.ts"],
+  "frontend": ["path/to/frontend.int.test.ts"],
+  "e2e": ["path/to/flow.e2e.test.ts"]
+}
+```
 
-### Step 3: Create Task File [GATE]
+### Step 3: Create Task Files [GATE]
 
 **[STOP — BLOCKING]** Present task file content to user for confirmation before proceeding to implementation.
 **CANNOT proceed until user explicitly confirms.**
 
-Create task file at: `docs/plans/tasks/integration-tests-YYYYMMDD.md`
+Create one task file per layer, using the monorepo-flow.md naming convention for deterministic agent routing:
+- Backend skeletons exist -> `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
+- Frontend skeletons exist -> `docs/plans/tasks/integration-tests-frontend-task-YYYYMMDD.md`
+- Single-layer (no backend/frontend distinction) -> `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
 
-**Template**:
+**Template** (per task file):
 ```markdown
 ---
-name: Implement integration tests for [feature name]
+name: Implement [layer] integration tests for [feature name]
 type: test-implementation
 ---
 
@@ -69,8 +101,8 @@ Implement test cases defined in skeleton files.
 
 ## Target Files
 
-- Skeleton: [path from Step 2 generatedFiles]
-- Design Doc: [path from Step 1]
+- Skeleton: [layer-specific paths from Step 2 generatedFiles]
+- Design Doc: [layer-specific Design Doc from Step 1]
 
 ## Tasks
 
@@ -85,17 +117,22 @@ Implement test cases defined in skeleton files.
 - No quality issues
 ```
 
-**Output**: "Task file created at [path]. Ready for Step 4."
+**Output**: "Task file(s) created at [path(s)]. Ready for Step 4."
 
 ### Step 4: Test Implementation
 
-Spawn task-executor agent: "Implement integration tests. Task file: docs/plans/tasks/integration-tests-YYYYMMDD.md. Implement tests following the task file."
+For each task file from Step 3, invoke task-executor routed by filename pattern:
+- `*-backend-task-*` -> Spawn `task-executor`
+- `*-frontend-task-*` -> Spawn `task-executor-frontend`
+- Prompt: "Task file: [task file path from Step 3]. Implement tests following the task file."
+
+Execute one task file at a time through Steps 4 -> 5 -> 6 -> 7 before starting the next.
 
 **Expected output**: `status`, `testsAdded`
 
 ### Step 5: Test Review
 
-Spawn integration-test-reviewer agent: "Review test quality. Test files: [paths from Step 4 testsAdded]. Skeleton files: [paths from Step 2 generatedFiles]."
+Spawn integration-test-reviewer agent: "Review test quality. Test files: [paths from Step 4 testsAdded]. Skeleton files: [layer-specific paths from Step 2 generatedFiles matching current task's layer]."
 
 **Expected output**: `status` (approved/needs_revision), `requiredFixes`
 
@@ -103,11 +140,14 @@ Spawn integration-test-reviewer agent: "Review test quality. Test files: [paths 
 
 Check Step 5 result:
 - `status: approved` -> Mark complete, proceed to Step 7
-- `status: needs_revision` -> Spawn task-executor agent: "Fix the following issues in test files: [requiredFixes from Step 5]." Then return to Step 5.
+- `status: needs_revision` -> Spawn the layer-appropriate executor with: "Fix the following issues in test files: [requiredFixes from Step 5]." Then return to Step 5. Maximum 2 revision cycles per task file; if still `needs_revision`, escalate to the user.
 
 ### Step 7: Quality Check
 
-Spawn quality-fixer agent: "Final quality assurance for test files added in this workflow. Run all tests and verify coverage."
+Spawn quality-fixer routed by task filename pattern:
+- `*-backend-task-*` -> Spawn `quality-fixer`
+- `*-frontend-task-*` -> Spawn `quality-fixer-frontend`
+- Prompt: "Final quality assurance for test files added in this workflow. Run all tests and verify coverage."
 
 **Expected output**: `status` (`approved`/`blocked`)
 
