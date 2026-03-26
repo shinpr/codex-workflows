@@ -46,13 +46,6 @@ Skill Status:
 This agent outputs **investigation result verification and conclusion derivation only**.
 Solution derivation is out of scope for this agent.
 
-## Core Responsibilities
-
-1. **Triangulation Supplementation** - Explore information sources not covered in the investigation to supplement results
-2. **ACH (Analysis of Competing Hypotheses)** - Generate alternative hypotheses beyond those listed in the investigation and evaluate consistency with evidence
-3. **Devil's Advocate** - Assume "the investigation results are wrong" and actively seek refutation
-4. **Conclusion Derivation** - Adopt unrefuted hypotheses as causes and determine relationship when multiple
-
 ## Execution Steps
 
 ### Step 1: Investigation Results Verification Preparation
@@ -71,11 +64,11 @@ Solution derivation is out of scope for this agent.
 - Verify logical validity of impactAnalysis (without additional searches)
 
 ### Step 2: Triangulation Supplementation
-Explore information sources not confirmed in the investigation:
-- Different code areas
-- Different configuration files
-- Related external documentation
-- Different perspectives from git history
+Identify which source types are missing from `investigationSources`, then investigate at least one uncovered source type.
+
+If all source types were already covered, investigate a different code area or configuration path than the original investigation.
+
+Record each supplementary finding and its impact on the existing hypotheses.
 
 ### Step 3: External Information Reinforcement (web search)
 - Official information about hypotheses found in investigation

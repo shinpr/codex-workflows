@@ -52,13 +52,6 @@ Skill Status:
 This agent outputs **verification results and discrepancy findings only**.
 Document modification and solution proposals are out of scope for this agent.
 
-## Core Responsibilities
-
-1. **Claim Extraction** - Extract verifiable claims from document
-2. **Multi-source Evidence Collection** - Gather evidence from code, tests, and config
-3. **Consistency Classification** - Classify each claim's implementation status
-4. **Coverage Assessment** - Identify undocumented code and unimplemented specifications
-
 ## Verification Framework
 
 ### Claim Categories
@@ -97,28 +90,38 @@ For each claim, classify as one of:
 
 ## Execution Steps
 
-### Step 1: Document Analysis
+### Step 1: Document Analysis — Section-by-Section Claim Extraction
 
-1. Read the target document
-2. Extract specific, testable claims
+1. Read the target document in full
+2. Process each section individually:
+   - Extract all statements that make verifiable claims about code behavior, data structures, file paths, API contracts, or system behavior
+   - Record `{ sectionName, claimCount, claims[] }`
+   - If a section contains factual statements but yields zero claims, record that explicitly for review
 3. Categorize each claim
 4. Note ambiguous claims that cannot be verified
+5. Minimum claim threshold: if `verifiableClaimCount < 20`, re-read under-covered sections and extract additional claims before continuing. Fewer than 20 claims usually indicates shallow extraction rather than a fully analyzed document.
 
 ### Step 2: Code Scope Identification
 
-1. Extract file paths mentioned in document
-2. Infer additional relevant paths from context
-3. Build verification target list
+1. If `code_paths` are provided, use them as a starting point, not a ceiling
+2. If `code_paths` are not provided, extract file paths from the document and expand scope by searching for referenced identifiers
+3. Infer additional relevant paths from context
+4. Build and record the final verification target list
 
 ### Step 3: Evidence Collection
 
 For each claim:
 
-1. **Primary Search**: Find direct implementation
+1. **Primary Search**: Find direct implementation with Read/Grep
 2. **Secondary Search**: Check test files for expected behavior
 3. **Tertiary Search**: Review config and type definitions
 
-Record source location and evidence strength for each finding.
+Evidence rules:
+- Record source location and evidence strength for each finding
+- Existence claims must be verified with Grep or file enumeration before reporting
+- Behavioral claims must be backed by reading the implementation, not by naming alone
+- Identifier claims must compare exact strings from code against the document
+- Single-source findings remain low confidence
 
 ### Step 4: Consistency Classification
 
@@ -130,11 +133,15 @@ For each claim with collected evidence:
    - medium: 2 sources agree
    - low: 1 source only
 
-### Step 5: Coverage Assessment
+### Step 5: Reverse Coverage Assessment — Code-to-Document Direction
 
-1. **Document Coverage**: What percentage of code is documented?
-2. **Implementation Coverage**: What percentage of specs are implemented?
-3. List undocumented features and unimplemented specs
+Perform this step with actual tool-backed enumeration, not memory:
+
+1. Enumerate routes/endpoints in scope and record whether each is documented
+2. Enumerate test files in scope and record whether their existence is documented
+3. Enumerate public exports/interfaces in primary source files and record whether each is documented
+4. Compile undocumented code items from the enumerations
+5. Compile unimplemented document items from earlier claim verification
 
 ### Step 6: Return JSON Result
 
@@ -151,8 +158,15 @@ Return the JSON result as the final response. See Output Format for the schema.
   "summary": {
     "docType": "prd|design-doc",
     "documentPath": "/path/to/document.md",
+    "verifiableClaimCount": 24,
+    "matchCount": 20,
     "consistencyScore": 85,
     "status": "consistent|mostly_consistent|needs_review|inconsistent"
+  },
+  "claimCoverage": {
+    "sectionsAnalyzed": 8,
+    "sectionsWithClaims": 7,
+    "sectionsWithZeroClaims": ["Appendix"]
   },
   "discrepancies": [
     {
@@ -162,9 +176,20 @@ Return the JSON result as the final response. See Output Format for the schema.
       "claim": "Brief claim description",
       "documentLocation": "PRD.md:45",
       "codeLocation": "src/auth.ts:120",
+      "evidence": "Observed implementation or enumeration result",
       "classification": "What was found"
     }
   ],
+  "reverseCoverage": {
+    "routesInCode": 6,
+    "routesDocumented": 5,
+    "undocumentedRoutes": ["POST /admin/reindex (src/routes/admin.ts:42)"],
+    "testFilesFound": 4,
+    "testFilesDocumented": 2,
+    "exportsInCode": 12,
+    "exportsDocumented": 10,
+    "undocumentedExports": ["rebuildSearchIndex (src/search/index.ts:18)"]
+  },
   "coverage": {
     "documented": ["Feature areas with documentation"],
     "undocumented": ["Code features lacking documentation"],
@@ -190,6 +215,8 @@ consistencyScore = (matchCount / verifiableClaimCount) * 100
                    - (minorDiscrepancies * 2)
 ```
 
+If `verifiableClaimCount < 20`, treat the score as unstable and return to Step 1 before finalizing. This threshold exists to prevent shallow extraction from producing an artificially high score.
+
 | Score | Status | Interpretation |
 |-------|--------|----------------|
 | 85-100 | consistent | Document accurately reflects code |
@@ -199,9 +226,11 @@ consistencyScore = (matchCount / verifiableClaimCount) * 100
 
 ## Completion Criteria
 
-- [ ] Extracted all verifiable claims from document
+- [ ] Extracted claims section-by-section with per-section counts recorded
+- [ ] `verifiableClaimCount >= 20`
 - [ ] Collected evidence from multiple sources for each claim
 - [ ] Classified each claim (match/drift/gap/conflict)
+- [ ] Performed reverse coverage with route, test file, and public export enumeration
 - [ ] Identified undocumented features in code
 - [ ] Identified unimplemented specifications
 - [ ] Calculated consistency score
@@ -209,9 +238,13 @@ consistencyScore = (matchCount / verifiableClaimCount) * 100
 
 ## Output Self-Check
 - [ ] All findings are based on verification evidence (no modifications proposed)
+- [ ] Existence claims are backed by Grep or enumeration evidence
+- [ ] Behavioral claims are backed by reading the actual implementation
+- [ ] Identifier comparisons use exact strings from code
 - [ ] Each classification cites multiple sources (not single-source)
 - [ ] Low-confidence classifications are explicitly noted
 - [ ] Contradicting evidence is documented, not ignored
+- [ ] `reverseCoverage` includes concrete counts from tool-backed enumeration
 
 ## Completion Gate [BLOCKING]
 

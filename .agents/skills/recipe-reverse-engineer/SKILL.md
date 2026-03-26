@@ -69,6 +69,7 @@ Spawn scope-discoverer agent: "Discover functional scope targets in the codebase
 - No units discovered -> ask user for hints
 - `$STEP_1_OUTPUT.prdUnits` exists
 - All `sourceUnits` across `prdUnits` (flattened, deduplicated) match the set of `discoveredUnits` IDs — no unit missing, no unit duplicated
+- Each discovered unit's `unitInventory` has at least one non-empty category. If all categories are empty, re-run discovery with focus on that unit
 
 **[STOP — BLOCKING]** If human review enabled: Present `$STEP_1_OUTPUT.prdUnits` with their source unit mapping to user for confirmation.
 **CANNOT proceed until user explicitly confirms.**
@@ -79,7 +80,7 @@ Spawn scope-discoverer agent: "Discover functional scope targets in the codebase
 
 #### Step 2: PRD Generation
 
-Spawn prd-creator agent: "Create reverse-engineered PRD for the following feature. Operation Mode: reverse-engineer. External Scope Provided: true. Feature: $PRD_UNIT_NAME. Description: $PRD_UNIT_DESCRIPTION. Related Files: $PRD_UNIT_COMBINED_RELATED_FILES. Entry Points: $PRD_UNIT_COMBINED_ENTRY_POINTS. Source Units: $PRD_UNIT_SOURCE_UNITS. Skip independent scope discovery. Use provided scope data. Create final version PRD based on code investigation within specified scope."
+Spawn prd-creator agent: "Create reverse-engineered PRD for the following feature. Operation Mode: reverse-engineer. External Scope Provided: true. Feature: $PRD_UNIT_NAME. Description: $PRD_UNIT_DESCRIPTION. Related Files: $PRD_UNIT_COMBINED_RELATED_FILES. Entry Points: $PRD_UNIT_COMBINED_ENTRY_POINTS. Source Units: $PRD_UNIT_SOURCE_UNITS. Use provided scope as an investigation starting point. If tracing entry points reveals directly connected files outside this scope, include them. Create final version PRD based on thorough code investigation."
 
 **Store output as**: `$STEP_2_OUTPUT` (PRD path)
 
@@ -87,12 +88,13 @@ Spawn prd-creator agent: "Create reverse-engineered PRD for the following featur
 
 **Prerequisite**: $STEP_2_OUTPUT (PRD path from Step 2)
 
-Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. code_paths: $PRD_UNIT_COMBINED_RELATED_FILES. verbose: false."
+Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. verbose: false."
 
 **Store output as**: `$STEP_3_OUTPUT`
 
 **Quality Gate**:
-- consistencyScore >= 70 -> proceed to review
+- consistencyScore >= 70 and verifiableClaimCount >= 20 -> proceed to review (guards against shallow verification passes with too few extracted claims)
+- consistencyScore >= 70 and verifiableClaimCount < 20 -> re-run verifier because investigation depth is insufficient
 - consistencyScore < 70 -> flag for detailed review
 
 #### Step 4: Review
@@ -151,6 +153,7 @@ Map PRD units to Design Doc generation targets by resolving each PRD unit's `sou
 - `technicalProfile.publicInterfaces` -> Public Interfaces
 - `dependencies` -> Dependencies
 - `relatedFiles` -> Scope boundary
+- `unitInventory` -> Unit Inventory
 
 **Store output as**: `$STEP_6_OUTPUT`
 
@@ -168,6 +171,11 @@ Map PRD units to Design Doc generation targets by resolving each PRD unit's `sou
     "publicInterfaces": ["AuthService.login()", "AuthController.handleLogin()"],
     "dependencies": ["UNIT-003"],
     "scopeBoundary": ["src/auth/*"],
+    "unitInventory": {
+      "routes": [],
+      "testFiles": [],
+      "publicExports": []
+    },
     "mappingRationale": "Default 1:1 mapping from PRD unit because technical scope is cohesive"
   }
 ]
@@ -186,13 +194,13 @@ Map PRD units to Design Doc generation targets by resolving each PRD unit's `sou
 
 **Scope**: Document current architecture as-is. This is a documentation task, not a design improvement task.
 
-Spawn technical-designer agent: "Create Design Doc for the following feature based on existing code. Operation Mode: create. Feature: $UNIT_NAME. Description: $UNIT_DESCRIPTION. Primary Files: $UNIT_PRIMARY_MODULES. Public Interfaces: $UNIT_PUBLIC_INTERFACES. Dependencies: $UNIT_DEPENDENCIES. Parent PRD: $APPROVED_PRD_PATH. Document current architecture as-is."
+Spawn technical-designer agent: "Create Design Doc for the following feature based on existing code. Operation Mode: reverse-engineer. Feature: $UNIT_NAME. Description: $UNIT_DESCRIPTION. Primary Files: $UNIT_PRIMARY_MODULES. Public Interfaces: $UNIT_PUBLIC_INTERFACES. Dependencies: $UNIT_DEPENDENCIES. Unit Inventory: $UNIT_INVENTORY. Parent PRD: $APPROVED_PRD_PATH. Document current architecture as-is. Use Unit Inventory as the completeness baseline."
 
 **Store output as**: `$STEP_7_OUTPUT`
 
 #### Step 8: Code Verification
 
-Spawn code-verifier agent: "Verify consistency between Design Doc and code implementation. doc_type: design-doc. document_path: $STEP_7_OUTPUT. code_paths: $UNIT_PRIMARY_MODULES. verbose: false."
+Spawn code-verifier agent: "Verify consistency between Design Doc and code implementation. doc_type: design-doc. document_path: $STEP_7_OUTPUT. verbose: false."
 
 **Store output as**: `$STEP_8_OUTPUT`
 

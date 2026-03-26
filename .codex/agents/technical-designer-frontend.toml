@@ -89,28 +89,24 @@ Must be performed before Design Doc creation:
    - Clearly document similar component search results (found components or "none")
    - Record adopted decision (use existing/improvement proposal/new implementation) and rationale
 
-### Integration Point Analysis【Important】
-Clarify integration points with existing components when adding new features or modifying existing ones:
+### Integration Points【Important】
+Document all integration points with existing components in a "## Integration Point Map" section.
 
-1. **Identify and Document Integration Points**
-   ```yaml
-   ## Integration Point Map
-   Integration Point 1:
-     Existing Component: [Component Name/Hook Name]
-     Integration Method: [Props passing/Context sharing/Custom Hook usage/etc]
-     Impact Level: High (Data Flow Change) / Medium (Props Usage) / Low (Read-Only)
-     Required Test Coverage: [Continuity Verification of Existing Components]
-   ```
+For each integration point, record:
+- Existing component or hook
+- Integration method
+- Impact level
+- Required test coverage
 
-2. **Classification by Impact Level**
-   - **High**: Modifying or extending existing data flow or state management
-   - **Medium**: Using or updating existing component state/context
-   - **Low**: Read-only operations, rendering additions, etc.
+Impact level criteria:
+- High: modifies or extends existing state flow or interaction flow
+- Medium: reuses or updates existing props, context, or API contracts
+- Low: read-only rendering, observation, or non-invasive composition
 
-3. **Reflection in Design Doc**
-   - Create "## Integration Point Map" section
-   - Clarify responsibilities and boundaries at each integration point
-   - Define error behavior and loading states at design phase
+For each integration boundary, define:
+- Input props or consumed context
+- Output events or effects
+- On Error behavior
 
 ### Agreement Checklist【Most Important】
 Must be performed at the beginning of Design Doc creation:
@@ -173,32 +169,13 @@ Perform before Design Doc creation:
 
 Common ADR needed when: Technical decisions common to multiple components
 
-### Integration Point Specification
-Document integration points with existing components (location, old Props, new Props, switching method).
-
 ### Data Contracts
 Define Props types and state management contracts between components (types, preconditions, guarantees, error behavior).
 
 ### State Transitions (When Applicable)
 Document state definitions and transitions for stateful components (loading, error, success states).
 
-### Integration Boundary Contracts【Required】
-Define Props types, event handlers, and error handling at component boundaries.
-
-```yaml
-Boundary Name: [Component Integration Point]
-  Input (Props): [Props type definition]
-  Output (Events): [Event handler signatures]
-  On Error: [How to handle errors (Error Boundary, error state, etc.)]
-```
-
-**Integration Boundaries:**
-- React → DOM: Component rendering to browser DOM
-- Build Tool → Browser: Build output to static files served by browser
-- API → Frontend: External API responses handled by frontend
-- Context → Component: Context values consumed by components
-
-Confirm and document conflicts with existing components (naming conventions, Props patterns, etc.) to prevent integration inconsistencies.
+Confirm and document conflicts with existing components at each integration point to prevent inconsistencies.
 
 ## UI Spec Integration
 
@@ -215,6 +192,7 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
 - **Operation Mode**:
   - `create`: New creation (default)
   - `update`: Update existing document
+  - `reverse-engineer`: Document existing frontend architecture as-is
 
 - **Requirements Analysis Results**: Requirements analysis results (scale determination, technical requirements, etc.)
 - **PRD**: PRD document (if exists)
@@ -234,41 +212,15 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
   - Reason for changes
   - Sections needing updates
 
+- **Reverse-Engineer Context** (reverse-engineer mode only):
+  - Primary Files
+  - Public Interfaces
+  - Dependencies
+  - Unit Inventory (routes, test files, public exports)
+
 ## Document Output Format
 
-### ADR Creation (Multiple Option Comparison Mode)
-
-**Basic Structure**:
-```markdown
-# ADR-XXXX: [Title]
-Status: Proposed
-
-## Background
-[Frontend technical challenges and constraints in 1-2 sentences]
-
-## Options
-### Option A: [Approach Name]
-- Overview: [Explain in one sentence]
-- Benefits: [2-3 items]
-- Drawbacks: [2-3 items]
-- Effort: X days
-
-### Option B/C: [Document similarly]
-
-## Comparison
-| Evaluation Axis | Option A | Option B | Option C |
-|-----------------|----------|----------|----------|
-| Implementation Effort | 3 days | 5 days | 2 days |
-| Maintainability | High | Medium | Low |
-| Performance Impact | Low | High | Medium |
-
-## Decision
-Option [X] selected. Reason: [2-3 sentences including trade-offs]
-```
-
-See ADR template in documentation-criteria skill for details.
-
-### Normal Document Creation
+### Document Creation
 - **ADR**: `docs/adr/ADR-[4-digit number]-[title].md` (e.g., ADR-0001)
 - **Design Doc**: `docs/design/[feature-name]-design.md`
 - Follow respective templates (see documentation-criteria skill: design-template.md, adr-template.md, ui-spec-template.md)
@@ -376,20 +328,29 @@ function useUserData(userId: string) {
 - [ ] Comparison matrix completeness (including performance impact)
 
 ### Design Doc Checklist
+**All modes**:
+- [ ] **Code inspection evidence recorded** (required)
+- [ ] **Integration points enumerated with contracts** (required)
+- [ ] **Props and state contracts clarified** (required)
+- [ ] Component hierarchy and data flow clearly expressed in diagrams
+
+**Create/update mode only**:
 - [ ] **Agreement checklist completed** (most important)
 - [ ] **Prerequisite common ADRs referenced** (required)
 - [ ] **Change impact map created** (required)
-- [ ] **Integration boundary contracts defined** (required)
-- [ ] **Integration points completely enumerated** (required)
-- [ ] **Props type contracts clarified** (required)
 - [ ] **Component verification procedures for each phase** (required)
 - [ ] Response to requirements and design validity
 - [ ] Test strategy (React Testing Library) and error handling (Error Boundary)
-- [ ] Component hierarchy and data flow clearly expressed in diagrams
 - [ ] Props change matrix completeness
 - [ ] Implementation approach selection rationale (vertical/horizontal/hybrid)
 - [ ] Latest React best practices researched and references cited
 - [ ] **Complexity assessment**: complexity_level set; if medium/high, complexity_rationale specifies (1) requirements/ACs, (2) constraints/risks
+
+**Reverse-engineer mode only**:
+- [ ] Every architectural claim cites file:line evidence
+- [ ] Identifiers are transcribed exactly from code
+- [ ] Test existence is confirmed by enumeration
+- [ ] All provided Unit Inventory items are accounted for
 
 ## Acceptance Criteria Creation Guidelines
 
@@ -419,48 +380,40 @@ function useUserData(userId: string) {
 
 **Principle**: AC = User-observable behavior in browser verifiable in isolated CI environment
 
-## Latest Information Research Guidelines
+## Latest Information Research
 
-### Research Timing
-1. **Mandatory Research**:
-   - When considering new React library/UI framework introduction
-   - When designing performance optimization (code splitting, lazy loading)
-   - When designing accessibility implementation (WCAG compliance)
-   - When React major version upgrades (e.g., React 18 → 19)
+Use current-year queries and cite sources in a `## References` section for create/update mode.
 
-2. **Recommended Research**:
-   - Before implementing complex custom hooks
-   - When considering improvements to existing component patterns
-
-### Research Method
-
-**Required Research Timing**: New library introduction, performance optimization, accessibility design, React version upgrades
-
-**Specific Search Pattern Examples**:
-- `React new features best practices 2025` (new feature research)
-- `Zustand vs Redux Toolkit comparison 2025` (state management selection)
-- `React Server Components patterns` (design patterns)
-- `React breaking changes migration guide` (version upgrade)
-- `Tailwind CSS accessibility best practices` (accessibility research)
-- `[library name] official documentation` (official information)
-
-**Citation**: Add "## References" section at end of ADR/Design Doc with URLs and descriptions
-
-### Citation Format
-
-Add at the end of ADR/Design Doc in the following format:
-
-```markdown
-## References
-
-- [Title](URL) - Brief description of referenced content
-- [React Official Documentation](URL) - Related design principles and features
-- [Frontend Blog Article](URL) - Implementation patterns and best practices
-```
+Reverse-engineer mode skips latest-information research because it documents the existing frontend.
 
 ## Update Mode Operation
 - **ADR**: Update existing file for minor changes, create new file for major changes
 - **Design Doc**: Add revision section and record change history
+
+## Reverse-Engineer Mode (As-Is Documentation)
+
+Use this mode when documenting existing frontend architecture rather than proposing changes.
+
+What to skip:
+- ADR creation
+- Option comparison
+- Change Impact Map
+- Implementation Approach Decision
+- Latest Information Research
+
+Execution steps:
+1. Enumerate public components, hooks, routes, and other entry points from Primary Files and Unit Inventory. Record each with file:line evidence
+2. Trace actual props flow, state flow, context usage, and API interaction paths through directly connected code. Record observed behavior with file:line evidence
+3. Record contracts exactly as implemented:
+   - props and consumed context
+   - emitted events and side effects
+   - rendered states, loading states, and error states
+4. Read types, defaults, variants, constants, and enums referenced by the traced flow. Record names and values exactly as written in code
+5. Enumerate tests for the unit and map each test file to the components, hooks, or flows it covers. Record uncovered Unit Inventory items explicitly
+
+Completion rule for reverse-engineer mode:
+- Every Unit Inventory route or public export is accounted for in the Design Doc
+- Every claim about component structure, props flow, state flow, API interaction, or error handling cites file:line evidence
 
 ## Completion Gate [BLOCKING]
 

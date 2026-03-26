@@ -83,7 +83,21 @@ Register the following and execute:
 
 ### Step 1: Investigation (investigator)
 
-Spawn investigator agent: "Comprehensively collect information related to the following phenomenon. Phenomenon: [Problem reported by user]. Problem essence: [taskEssence]. Investigation focus: [investigationFocus]. Applicable rules: [selectedRules summary]."
+Spawn investigator agent with the following prompt:
+
+```text
+Comprehensively collect information related to the following phenomenon.
+
+Phenomenon: [Problem reported by user]
+Problem essence: [taskEssence]
+Investigation focus: [investigationFocus]
+Applicable rules: [selectedRules summary]
+
+For change failures, also include:
+- what changed
+- what broke
+- what both areas share
+```
 
 **Expected output**: Evidence matrix, comparison analysis results, causal tracking results, list of unexplored areas, investigation limitations
 
@@ -92,12 +106,14 @@ Spawn investigator agent: "Comprehensively collect information related to the fo
 Review investigation output:
 
 **Quality Check** (verify output contains the following):
-- [ ] comparisonAnalysis
-- [ ] causalChain for each hypothesis (reaching stop condition)
+- [ ] `comparisonAnalysis` is present and `normalImplementation` is non-null, or explicitly states that no working implementation was found
+- [ ] causalChain for each hypothesis reaches a stop condition
 - [ ] causeCategory for each hypothesis
+- [ ] `investigationSources` covers at least 3 distinct source types
+- [ ] each hypothesis has supporting evidence with a concrete source
 - [ ] Investigation covering investigationFocus items (when provided)
 
-**If quality insufficient**: MUST re-spawn investigator agent specifying missing items
+**If quality insufficient**: MUST re-spawn investigator agent specifying the missing items and include the previous investigation output for context
 ENFORCEMENT: Proceeding to verifier with incomplete investigation data produces unreliable conclusions.
 
 **design_gap Escalation**:

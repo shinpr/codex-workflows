@@ -106,7 +106,7 @@ Output in the following structured format:
 ### For Final Version
 Storage location and naming convention follow the principles in documentation-criteria skill.
 
-**Handling Undetermined Items**: When information is insufficient, do not speculate. Instead, list questions in an "Undetermined Items" section.
+**Handling Undetermined Items**: When a claim cannot be confirmed directly from code, tests, or configuration, list the unresolved question in an "Undetermined Items" section.
 
 ## Output Policy
 Execute file output immediately. Final approval is managed by the orchestrator recipe.
@@ -116,10 +116,9 @@ Execute file output immediately. Final approval is managed by the orchestrator r
 - Understand and describe intent of each section
 - Limit questions to 3-5 in interactive mode
 
-## PRD Boundaries: Do Not Include Implementation Phases
+## PRD Boundaries
 
 **ENFORCEMENT**: PRDs MUST focus solely on "what to build" — implementation phases and task decomposition are out of scope.
-These are outside the scope of this document. PRDs MUST focus solely on "what to build."
 
 ## PRD Creation Best Practices
 
@@ -183,20 +182,18 @@ Mode for extracting specifications from existing implementation to create PRD. U
 ### External Scope Handling
 
 When `External Scope Provided: true` is specified:
-- Skip independent scope discovery (Step 1)
-- Use provided scope data: Feature, Description, Related Files, Entry Points
-- Focus investigation within the provided scope boundaries
+- Use provided scope data as an investigation starting point: Feature, Description, Related Files, Entry Points
+- If entry point tracing reveals directly connected files or routes outside the provided scope, include them and report that expansion
 
 When external scope is NOT provided:
 - Execute full scope discovery independently
 
 ### Reverse PRD Execution Policy
 **Create high-quality PRD through thorough investigation**
-- Investigate until code implementation is fully understood
-- Comprehensively confirm related files, tests, and configurations
-- Write specifications with confidence (minimize speculation and assumptions)
 
 **Language Standard**: Code is the single source of truth. Describe observable behavior in definitive form. When uncertain about a behavior, investigate the code further to confirm — move the claim to "Undetermined Items" only when the behavior genuinely cannot be determined from code alone (e.g., business intent behind a design choice).
+
+**Literal Transcription Rule**: Identifiers, URLs, parameter names, field names, component names, and string literals MUST be copied exactly as written in code. If code contains a typo, document the actual identifier and note the typo separately when needed.
 
 ### Confidence Gating
 
@@ -204,37 +201,55 @@ Before documenting any claim, assess confidence level:
 
 | Confidence | Evidence | Output Format |
 |------------|----------|---------------|
-| Verified | Direct code observation, test confirmation | State as fact |
+| Verified | Direct code observation via Read/Grep, test confirmation | State as fact |
 | Inferred | Indirect evidence, pattern matching | Mark with context |
 | Unverified | No direct evidence, speculation | Add to "Undetermined Items" section |
 
 **Rules**:
-- Never document Unverified claims as facts
+- Unverified claims go to "Undetermined Items" only
 - Inferred claims require explicit rationale
 - Prioritize Verified claims in core requirements
 - Before classifying as Inferred, attempt to verify by reading the relevant code — classify as Inferred only after confirming the code is inaccessible or ambiguous
 
-### Reverse PRD Process
-1. **Investigation Phase** (skip if External Scope Provided)
-   - Analyze all files of target feature
-   - Understand expected behavior from test cases
-   - Collect related documentation and comments
-   - Fully grasp data flow and processing logic
+### Reverse PRD Investigation Protocol
+1. **Route and Entry Point Enumeration**
+   - Enumerate routes, endpoints, commands, or other entry points in the feature area
+   - Record each with exact method/path/name and handler as written in code
 
-2. **Specification Documentation**
-   - Apply Confidence Gating to each claim
-   - Accurately document specifications extracted from current implementation
-   - Only describe specifications clearly readable from code
+2. **Entry Point Tracing**
+   - Read each handler or entry point implementation
+   - Trace invoked services, helpers, and downstream calls by reading their implementations
+   - Record actual behavior, parameters, and key branching
 
-3. **Minimal Confirmation Items**
-   - Only ask about truly undecidable important matters (maximum 3)
-   - Only parts related to business decisions, not implementation details
+3. **Data Model Investigation**
+   - Read schemas, types, migrations, or constants referenced by the traced flow
+   - Record field names, types, nullability, validation rules, and enum values exactly as written
+
+4. **Test File Discovery**
+   - Enumerate test files matching the feature area
+   - Read each discovered test and record tested behaviors
+   - If no tests are found for a traced handler or service, record that explicitly
+
+5. **Role and Permission Discovery**
+   - Search for middleware, guards, and role checks tied to the feature
+   - Record all observed roles and permissions
+
+6. **Specification Documentation**
+   - Apply Confidence Gating to every claim
+   - Describe only behavior readable from code and tests
+   - Base core sections on the entry point list, traced flow, data model, and discovered tests
+
+7. **Minimal Confirmation Items**
+   - Ask only truly undecidable business questions
+   - Limit to 3 items maximum
 
 ### Quality Standards
 - Verified content: 80%+ of core requirements
 - Inferred content: 15% maximum with rationale
 - Unverified content: Listed in "Undetermined Items" only
 - Specification document with implementable specificity
+- All discovered entry points are accounted for in the PRD
+- Data model details match the code-level source of truth
 
 ## Completion Gate [BLOCKING]
 

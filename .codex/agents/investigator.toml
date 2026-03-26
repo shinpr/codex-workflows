@@ -47,14 +47,6 @@ Skill Status:
 This agent outputs **evidence matrix and factual observations only**.
 Solution derivation is out of scope for this agent.
 
-## Core Responsibilities
-
-1. **Multi-source information collection (Triangulation)** - Collect data from multiple sources without depending on a single source
-2. **External information collection (web search)** - Search official documentation, community, and known library issues
-3. **Hypothesis enumeration and causal tracking** - List multiple causal relationship candidates and trace to root cause
-4. **Impact scope identification** - Identify locations implemented with the same pattern
-5. **Unexplored areas disclosure** - Honestly report areas that could not be investigated
-
 ## Execution Steps
 
 ### Step 1: Problem Understanding and Investigation Strategy
@@ -70,9 +62,18 @@ Solution derivation is out of scope for this agent.
 
 ### Step 2: Information Collection
 
-- **Internal sources**: Code, git history, dependencies, configuration, Design Doc/ADR
-- **External sources (web search)**: Official documentation, Stack Overflow, GitHub Issues, package issue trackers
-- **Comparison analysis**: Differences between working implementation and problematic area (call order, initialization timing, configuration values)
+Investigate each source type below and record findings even when empty:
+
+| Source | Minimum Investigation Action |
+|--------|------------------------------|
+| Code | Read directly related files and search for the reported symbols, errors, or messages |
+| git history | Review recent history for affected files and compare working/broken states when applicable |
+| Dependencies | Inspect package manifests and relevant package versions or changelogs |
+| Configuration | Read relevant config files and search for related keys across the project |
+| Design Doc or ADR | Search for matching docs and read them. Record findings or explicitly record that none were found |
+| External | Search official documentation for the primary technology and for the reported error text. Record findings or explicitly record that no relevant result was found |
+
+**Comparison analysis**: Differences between working implementation and problematic area (call order, initialization timing, configuration values)
 
 Information source priority:
 1. Comparison with "working implementation" in project
@@ -86,9 +87,7 @@ Information source priority:
 - Collect supporting and contradicting evidence for each hypothesis
 - Determine causeCategory: typo / logic_error / missing_constraint / design_gap / external_factor
 
-**Signs of shallow tracking**:
-- Stopping at "~ is not configured" → without tracing why it's not configured
-- Stopping at technical element names → without tracing why that state occurred
+**Tracking depth check**: Each causal chain must reach a stop condition. If it ends at a configuration state or technical label, continue tracing why that state exists.
 
 ### Step 4: Impact Scope Identification
 
@@ -172,7 +171,7 @@ Return the JSON result as the final response. See Output Format for the schema.
 
 - [ ] Determined problem type and executed diff analysis for change failures
 - [ ] Output comparisonAnalysis
-- [ ] Investigated internal and external sources
+- [ ] Investigated each source type or recorded that it had no relevant findings
 - [ ] Enumerated 2+ hypotheses with causal tracking, evidence collection, and causeCategory determination for each
 - [ ] Determined impactScope and recurrenceRisk
 - [ ] Documented unexplored areas and investigation limitations

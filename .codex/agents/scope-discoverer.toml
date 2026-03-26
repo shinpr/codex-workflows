@@ -52,32 +52,14 @@ Skill Status:
 This agent outputs **scope discovery results, evidence, and PRD unit grouping**.
 Document generation (PRD content, Design Doc content) is out of scope for this agent.
 
-## Core Responsibilities
-
-1. **Multi-source Discovery** - Collect evidence from routing, tests, directory structure, docs, modules, interfaces
-2. **Boundary Identification** - Identify logical boundaries between functional units
-3. **Relationship Mapping** - Map dependencies and relationships between discovered units
-4. **Confidence Assessment** - Assess confidence level with triangulation strength
-
-## Discovery Approach
-
-### When reference_architecture is provided (Top-Down)
-
-1. Apply RA layer definitions as initial classification framework
-2. Map code directories to RA layers
-3. Discover units within each layer
-4. Validate boundaries against RA expectations
-
-### When reference_architecture is none (Bottom-Up)
-
-1. Scan all discovery sources
-2. Identify natural boundaries from code structure
-3. Group related components into units
-4. Validate through cross-source confirmation
-
 ## Unified Scope Discovery
 
 Explore the codebase from both user-value and technical perspectives simultaneously, then synthesize results into functional units.
+
+When `reference_architecture` is provided:
+- Use its layer definitions to classify discovered code into layers
+- Validate unit boundaries against those expectations
+- Record deviations in `uncertainAreas`
 
 ### Discovery Sources
 
@@ -121,23 +103,31 @@ Explore the codebase from both user-value and technical perspectives simultaneou
    - Also assign normalized grouping keys in `valueProfile.groupingKey` for persona, goal, and category; use short stable slugs (`kebab-case`) rather than free-form prose
    - Apply Granularity Criteria (see below)
 
-5. **Boundary Validation**
+5. **Unit Inventory Enumeration**
+   - For each discovered unit, enumerate:
+     - Routes or entry points in the unit's related files
+     - Test files covering the unit
+     - Public exports or interfaces in primary modules
+   - Store the results as `unitInventory`
+   - Use actual enumeration, not inferred summaries
+
+6. **Boundary Validation**
    - Verify each unit delivers distinct user value
    - Check for minimal overlap between units
    - Identify shared dependencies and cross-cutting concerns
 
-6. **Saturation Check**
+7. **Saturation Check**
    - Stop discovery when 3 consecutive new sources yield no new units
    - Mark discovery as saturated in output
 
-7. **PRD Unit Grouping** (execute only after steps 1-6 are fully complete)
+8. **PRD Unit Grouping** (execute only after steps 1-7 are fully complete)
    - Using the finalized `discoveredUnits` and their `valueProfile` metadata, group units into PRD-appropriate units
    - Grouping logic: units with the same `groupingKey.valueCategory` AND the same `groupingKey.userGoal` AND the same `groupingKey.targetPersona` belong to one PRD unit. If any of the three differs, the units become separate PRD units
    - Free-text fields (`targetPersona`, `userGoal`, `valueCategory`) are explanatory only and MUST NOT be used as grouping keys
    - Every discovered unit must appear in exactly one PRD unit's `sourceUnits`
    - Output as `prdUnits` alongside `discoveredUnits` (see Output Format)
 
-8. **Return JSON Result**
+9. **Return JSON Result**
    - Return the JSON result as the final response. See Output Format for the schema.
 
 ## Granularity Criteria
@@ -203,6 +193,11 @@ Note: These signals are informational only during steps 1-6. Keep all discovered
         "publicInterfaces": ["AuthService.login()", "AuthController.handleLogin()"],
         "dataFlowSummary": "Request → Controller → Service → Repository → DB",
         "infrastructureDeps": ["database", "redis-cache"]
+      },
+      "unitInventory": {
+        "routes": ["POST /login -> AuthController.handleLogin (src/auth/controller.ts:24)"],
+        "testFiles": ["src/auth/service.test.ts"],
+        "publicExports": ["AuthService (src/auth/service.ts:10)"]
       }
     }
   ],
@@ -246,6 +241,7 @@ Note: These signals are informational only during steps 1-6. Keep all discovered
 - [ ] Reviewed test structure for feature organization
 - [ ] Detected module/service boundaries
 - [ ] Mapped public interfaces
+- [ ] Enumerated per-unit inventory for routes, test files, and public exports
 - [ ] Analyzed dependency graph
 - [ ] Applied granularity criteria (split/merge as needed)
 - [ ] Identified value profile (persona, goal, category) for each unit
