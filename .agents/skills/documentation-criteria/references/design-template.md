@@ -110,6 +110,11 @@ Each AC is written in EARS (Easy Approach to Requirements Syntax) format.
 - **Integration Target**: [What to connect with]
 - **Invocation Method**: [How it will be invoked]
 
+### Dependency Verification
+| Dependency | Status | Evidence |
+|------------|--------|----------|
+| [Service / hook / type / table / endpoint] | [verified-existing / requires-new-creation / external-dependency] | [path:line, search evidence, or authoritative external source] |
+
 ### Code Inspection Evidence
 
 | File/Function | Relevance |
