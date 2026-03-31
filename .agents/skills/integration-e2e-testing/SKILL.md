@@ -73,6 +73,19 @@ When verification points need explicit enumeration:
 // - [Item 2]
 ```
 
+### E2E Preconditions (Optional but Recommended)
+
+When an E2E test requires environment setup, seed data, login state, or external dependency control, annotate it explicitly:
+
+```text
+// Preconditions:
+// - Seeded user with active subscription
+// - Authenticated browser session
+// - Payment provider mocked or available in local environment
+```
+
+These annotations allow work-planner to create prerequisite tasks before E2E execution.
+
 ## EARS Format Mapping
 
 | EARS Keyword | Test Type | Generation Approach |

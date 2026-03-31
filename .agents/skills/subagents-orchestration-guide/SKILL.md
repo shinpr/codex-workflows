@@ -175,8 +175,8 @@ All agents MUST use this vocabulary consistently:
 
 Subagents respond in JSON format. The final response from each JSON-returning subagent must be the JSON payload itself, with no trailing prose. Key fields for orchestrator decisions:
 - **requirement-analyzer**: scale, confidence, affectedLayers, adrRequired, scopeDependencies, questions
-- **task-executor**: status (escalation_needed/blocked/completed), testsAdded, requiresTestReview
-- **quality-fixer**: status (approved/blocked)
+- **task-executor**: status (escalation_needed/completed), escalation_type (design_compliance_violation/similar_function_found/similar_component_found/investigation_target_not_found/out_of_scope_file/test_environment_not_ready), testsAdded, requiresTestReview
+- **quality-fixer**: status (approved/blocked). For blocked responses, discriminate by `reason`: specification conflicts use `blockingIssues[]`; execution prerequisites use `missingPrerequisites[]`, and each item provides its own `resolutionSteps`
 - **document-reviewer**: verdict.decision (approved/approved_with_conditions/needs_revision/rejected)
 - **design-sync**: sync_status (CONFLICTS_FOUND/NO_CONFLICTS) — text format with [SUMMARY] block
 - **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes

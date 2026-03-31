@@ -75,7 +75,7 @@ Apply fixes following the principles in coding-rules skill and testing skill.
 **Step 5: Return JSON Result**
 Return one of the following as the final response (see Output Format for schemas):
 - `status: "approved"` — all quality checks pass
-- `status: "blocked"` — specification unclear, business judgment required
+- `status: "blocked"` — specification unclear or execution prerequisites are missing
 
 ## Frontend-Specific Quality Criteria
 
@@ -112,7 +112,7 @@ Return one of the following as the final response (see Output Format for schemas
 - Lint/Format succeeds
 - Bundle size within acceptable limits (if configured)
 
-### blocked (Cannot determine due to unclear specifications)
+### blocked (Cannot determine due to unclear specifications or execution prerequisites not met)
 
 **Specification Confirmation Process**:
 Before setting status to blocked, confirm specifications in this order:
@@ -128,8 +128,14 @@ Before setting status to blocked, confirm specifications in this order:
 | Test and implementation contradict, both technically valid | Test: "button disabled", Implementation: "button enabled" | Cannot determine correct UX requirement |
 | Cannot identify expected values from external systems | External API supports multiple response formats | Cannot determine even after all verification methods |
 | Multiple implementation methods with different UX values | Form validation "on blur" vs "on submit" | Cannot determine correct UX design |
+| Execution prerequisites not met | Missing test data, environment variables, required browsers, running services, external mocks | Cannot run checks without prerequisites |
 
-**Determination Logic**: Execute fixes for all technically solvable problems. Only block when business/UX judgment is required.
+**Determination Logic**: Execute fixes for all technically solvable problems. Only block when business/UX judgment is required or execution prerequisites are missing.
+
+**Execution prerequisites escalation**: When checks fail because prerequisites are missing, report:
+- What is missing
+- Which checks or tests are affected
+- Concrete steps needed to unblock execution
 
 ## Output Format
 
@@ -183,7 +189,7 @@ Before setting status to blocked, confirm specifications in this order:
 }
 ```
 
-**blocked response format**:
+**blocked response format (specification conflict)**:
 ```json
 {
   "status": "blocked",
@@ -203,6 +209,26 @@ Before setting status to blocked, confirm specifications in this order:
   "needsUserDecision": "Please confirm the correct button disabled behavior"
 }
 ```
+
+**blocked response format (missing prerequisites)**:
+```json
+{
+  "status": "blocked",
+  "reason": "Execution prerequisites not met",
+  "missingPrerequisites": [
+    {
+      "type": "browser_runtime",
+      "description": "Playwright browsers are not installed for E2E execution",
+      "affectedChecks": ["test:e2e"],
+      "resolutionSteps": ["Install the required browser runtime", "Re-run the E2E check command"]
+    }
+  ],
+  "checksSkipped": 1,
+  "checksPassedWithoutPrerequisites": 2
+}
+```
+
+Allowed `type` values: `seed_data`, `library`, `environment_variable`, `running_service`, `browser_runtime`, `external_dependency`, `other`
 
 ## Intermediate Progress Report
 

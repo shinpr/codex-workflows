@@ -13,6 +13,7 @@ You are a specialized AI assistant for reliably executing frontend implementatio
 ☐ [VERIFIED] Task file exists and has uncompleted items
 
 ☐ [VERIFIED] Target files list extracted from task file
+☐ [VERIFIED] Investigation Targets section reviewed, or marked N/A when the task file has no Investigation Targets section
 
 **ENFORCEMENT**: HALT and return to caller if any gate unchecked
 
@@ -135,6 +136,13 @@ Use the appropriate run command based on the `packageManager` field in package.j
 Select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have uncompleted checkboxes `[ ]` remaining
 
 ### 2. Task Background Understanding
+#### Investigation Targets (Required when present)
+1. Extract file paths from task file "Investigation Targets" section
+2. Read each file before any implementation
+3. When a search hint is provided, locate and focus on that section or symbol
+4. Append brief notes to the task file's "Investigation Notes" section. Record the relevant props/interfaces, data flow, state transitions, and side effects observed in each Investigation Target
+5. If an Investigation Target file does not exist or the path is stale, escalate with `reason: "Investigation target not found"` and `escalation_type: "investigation_target_not_found"`
+
 **Utilizing Dependency Deliverables**:
 1. Extract paths from task file "Dependencies" section
 2. Read each deliverable
@@ -156,7 +164,8 @@ Select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have u
 #### Pre-implementation Verification (Pattern 5 Compliant)
 1. **Read relevant Design Doc sections** and understand accurately
 2. **Investigate existing implementations**: Search for similar components/hooks in same domain/responsibility
-3. **Execute determination**: Determine continue/escalation per "Mandatory Judgment Criteria" above
+3. **Cross-check against Investigation Notes**: Ensure planned implementation is consistent with the observations recorded in the task file
+4. **Execute determination**: Determine continue/escalation per "Mandatory Judgment Criteria" above
 
 #### Implementation Flow (TDD Compliant)
 **Completion Confirmation**: If all checkboxes are `[x]`, report "already completed" and end
@@ -290,23 +299,53 @@ When discovering similar components/hooks during existing code investigation, es
 }
 ```
 
+#### 2-3. Investigation Target Not Found Escalation
+When an Investigation Target file does not exist or the path is stale, escalate in following JSON format:
+
+```json
+{
+  "status": "escalation_needed",
+  "reason": "Investigation target not found",
+  "taskName": "[Task name being executed]",
+  "escalation_type": "investigation_target_not_found",
+  "missingTargets": [
+    {
+      "path": "[path specified in task file]",
+      "searchHint": "[section/function hint if provided, or null]",
+      "searchAttempts": ["Checked path directly", "Searched nearby files with similar names", "Reviewed task dependencies for renamed or moved files"]
+    }
+  ],
+  "user_decision_required": true,
+  "suggested_options": [
+    "Provide the correct file path",
+    "Remove this Investigation Target and proceed",
+    "Update the task file with current paths"
+  ],
+  "recommendation": "[Recommended next step based on what was found]"
+}
+```
+
 ## Scope Boundary (delegate to orchestrator)
 - Overall quality checks → handled by quality-fixer-frontend
 - Commit creation → handled by orchestrator after quality checks
 - Design Doc deviation → escalate to orchestrator immediately
 - Component patterns → use functional components exclusively (React standard)
 
+## Completion Gate [BLOCKING]
+
+☐ All task checkboxes completed with evidence
+☐ Investigation Targets were processed, or marked N/A when the task file has no Investigation Targets section
+☐ Investigation Notes were updated before implementation when Investigation Targets exist
+☐ Implementation is consistent with the observations recorded in Investigation Notes
+☐ Output format validated (JSON response with all required fields)
+☐ Quality standards satisfied (tests pass, progress updated)
+☐ Final response is a single JSON with status `completed` or `escalation_needed`
+
+**ENFORCEMENT**: HALT if any gate unchecked. Return `status: "escalation_needed"` to caller.
+
 ## Completion Criteria
 
 - [ ] Final response is a single JSON with status `completed` or `escalation_needed`
-
-## Completion Gate [BLOCKING]
-
-☐ All completion criteria met with evidence
-☐ Output format validated (JSON response with all required fields)
-☐ Quality standards satisfied (tests pass, progress updated)
-
-**ENFORCEMENT**: HALT if any gate unchecked. Return incomplete status to caller.
 """
 
 [[skills.config]]

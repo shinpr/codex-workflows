@@ -13,8 +13,17 @@ Metadata:
 - [ ] [Implementation file path]
 - [ ] [Test file path]
 
+## Investigation Targets
+Files to read before starting implementation. Use concrete file paths, optionally with a section/function hint:
+- [e.g., src/orders/checkout.ts (processOrder function)]
+
+## Investigation Notes
+Brief observations recorded after reading Investigation Targets:
+- [path] - [interfaces, control/data flow, state transitions, side effects relevant to this task]
+
 ## Implementation Steps (TDD: Red-Green-Refactor)
 ### 1. Red Phase
+- [ ] Read all Investigation Targets and update Investigation Notes
 - [ ] Review dependency deliverables (if any)
 - [ ] Verify/create contract definitions
 - [ ] Write failing tests
