@@ -32,8 +32,8 @@ ENFORCEMENT: Skipping document-reviewer risks propagating inconsistencies to dow
 Target document -> [Stop: Confirm changes]
                         |
               technical-designer / technical-designer-frontend / prd-creator (update mode)
-                        |
-              document-reviewer -> [Stop: Review approval]
+                        | (Design Doc only)
+              code-verifier -> document-reviewer -> [Stop: Review approval]
                         | (Design Doc only)
               design-sync -> [Stop: Final approval]
 ```
@@ -107,12 +107,22 @@ Spawn [Update Agent from Step 2] agent: "Operation Mode: update. Existing Docume
 
 ### Step 5: Document Review [Stop]
 
-**[STOP — BLOCKING]** Present review results to user for approval.
-**CANNOT proceed until user explicitly confirms.**
+For Design Doc updates, first verify the updated document against code:
 
-Spawn document-reviewer agent: "Review the following updated document. doc_type: [Design Doc / PRD / ADR]. target: [path from Step 1]. mode: standard. Focus on: Consistency of updated sections with rest of document, no contradictions introduced by changes, completeness of change history."
+Spawn code-verifier agent: "Verify the updated Design Doc against current code. doc_type: design-doc. document_path: [path from Step 1]. verbose: false."
+
+**Store output as**: `$CODE_VERIFICATION_OUTPUT`
+
+For Design Doc updates:
+Spawn document-reviewer agent: "Review the following updated document. doc_type: DesignDoc. target: [path from Step 1]. mode: composite. code_verification: $CODE_VERIFICATION_OUTPUT. Focus on: Consistency of updated sections with rest of document, no contradictions introduced by changes, completeness of change history."
+
+For PRD or ADR updates:
+Spawn document-reviewer agent: "Review the following updated document. doc_type: [PRD or ADR]. target: [path from Step 1]. mode: composite. Focus on: Consistency of updated sections with rest of document, no contradictions introduced by changes, completeness of change history."
 
 **Store output as**: `$STEP_5_OUTPUT`
+
+**[STOP — BLOCKING]** Present review results to user for approval.
+**CANNOT proceed until user explicitly confirms.**
 
 **On review result**:
 - Approved -> Proceed to Step 6
@@ -151,6 +161,7 @@ For Design Doc, spawn design-sync agent: "Verify consistency of the updated Desi
 - [ ] Identified target document
 - [ ] Clarified change content with user
 - [ ] Updated document via appropriate agent (update mode)
+- [ ] Ran code-verifier before document-reviewer for Design Doc updates
 - [ ] Spawned document-reviewer and addressed feedback
 - [ ] Spawned design-sync for consistency verification (Design Doc only)
 - [ ] Obtained user approval for updated document

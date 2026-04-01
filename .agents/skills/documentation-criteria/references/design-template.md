@@ -197,6 +197,22 @@ Invariants:
   - [Conditions that remain unchanged before and after processing]
 ```
 
+### Test Boundaries
+
+#### Mock Boundary Decisions
+
+| Dependency / Boundary | Test Level | Use Real Dependency | Isolation Method | Rationale |
+|-----------------------|------------|---------------------|------------------|-----------|
+| [Repository / API / queue / hook] | [integration / e2e] | [Yes / No] | [mock / fake / local test env / browser harness] | [Why this boundary should behave this way in tests] |
+
+#### Data Layer Verification Strategy
+
+- Data storage involved: [Yes / No]
+- Schema or model references: [table / collection / model names or N/A]
+- Real verification approach: [container DB / dedicated test DB / in-memory adapter / browser fixture / N/A]
+- Query and repository coverage: [How repository, ORM, or query paths will be verified]
+- Migration compatibility check: [How schema drift will be detected or why N/A]
+
 ### Field Propagation Map (When Fields Cross Boundaries)
 
 | Field | Boundary | Status | Detail |

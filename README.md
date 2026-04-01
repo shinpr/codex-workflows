@@ -48,10 +48,11 @@ The framework runs a structured workflow — requirements → design → task de
 A single request becomes a structured development process:
 
 1. **Understand** the problem (scale, constraints, affected files)
-2. **Design** the solution (ADR, Design Doc with acceptance criteria)
-3. **Break it into tasks** (atomic, 1 commit each)
-4. **Implement with tests** (TDD per task)
-5. **Run quality checks** (lint, test, build — no failing checks)
+2. **Analyze the existing codebase** (dependencies, data layer, risk areas)
+3. **Design** the solution (ADR, Design Doc with acceptance criteria)
+4. **Break it into tasks** (atomic, 1 commit each)
+5. **Implement with tests** (TDD per task)
+6. **Run quality checks** (lint, test, build — no failing checks)
 
 Each step is handled by a specialized subagent in its own context, preventing context pollution and reducing error accumulation in long-running tasks:
 
@@ -62,9 +63,13 @@ requirement-analyzer  →  Scale determination (Small / Medium / Large)
     ↓
 prd-creator           →  Product requirements (Large scale)
     ↓
+codebase-analyzer     →  Existing codebase facts + focus areas
+    ↓
 technical-designer    →  ADR + Design Doc with acceptance criteria
     ↓
-document-reviewer     →  Quality gate
+code-verifier         →  Design Doc vs existing code verification
+    ↓
+document-reviewer     →  Quality gate with verification evidence
     ↓
 acceptance-test-gen   →  Test skeletons from ACs
     ↓
@@ -222,6 +227,7 @@ Codex spawns these as needed during recipe execution. Each agent runs in its own
 | `technical-designer` | ADR and Design Doc creation (backend) |
 | `technical-designer-frontend` | Frontend ADR and Design Doc creation (React) |
 | `ui-spec-designer` | UI Specification from PRD and optional prototype code |
+| `codebase-analyzer` | Existing codebase analysis before Design Doc creation |
 | `work-planner` | Work plan creation from Design Docs |
 | `document-reviewer` | Document consistency and approval |
 | `design-sync` | Cross-document consistency verification |

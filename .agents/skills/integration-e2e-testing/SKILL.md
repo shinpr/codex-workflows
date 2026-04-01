@@ -60,9 +60,12 @@ Each test MUST include the following annotations:
 // Behavior: [Trigger] -> [Process] -> [Observable Result]
 // @category: core-functionality | integration | edge-case | e2e
 // @dependency: none | [component names] | full-system
+// @real-dependency: [component names] (optional)
 // @complexity: low | medium | high
 // ROI: [score]
 ```
+
+Adapt comment syntax to the project's language when generating or reviewing test skeletons.
 
 ### Verification Items (Optional)
 
@@ -110,7 +113,7 @@ The test runner or framework in the project determines the appropriate file exte
 |-------|-------------------|
 | Behavior Verification | No assertion for "observable result" in skeleton |
 | Verification Item Coverage | Listed items not all covered by assertions |
-| Mock Boundary | Internal components mocked in integration test |
+| Mock Boundary | Real dependencies from `@real-dependency` are isolated away or internal components are mocked without rationale |
 
 ### Implementation Quality
 

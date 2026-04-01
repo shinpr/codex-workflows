@@ -101,7 +101,7 @@ Spawn code-verifier agent: "Verify consistency between PRD and code implementati
 
 **Required Input**: $STEP_3_OUTPUT (verification data from Step 3)
 
-Spawn document-reviewer agent: "Review the following PRD considering code verification findings. doc_type: PRD. target: $STEP_2_OUTPUT. mode: composite. Code Verification Results: $STEP_3_OUTPUT. Additional Review Focus: Alignment between PRD claims and verification evidence, resolution recommendations for each discrepancy, completeness of undocumented feature coverage."
+Spawn document-reviewer agent: "Review the following PRD considering code verification findings. doc_type: PRD. target: $STEP_2_OUTPUT. mode: composite. code_verification: $STEP_3_OUTPUT. Additional Review Focus: Alignment between PRD claims and verification evidence, resolution recommendations for each discrepancy, completeness of undocumented feature coverage."
 
 **Store output as**: `$STEP_4_OUTPUT`
 
@@ -208,7 +208,7 @@ Spawn code-verifier agent: "Verify consistency between Design Doc and code imple
 
 **Required Input**: $STEP_8_OUTPUT (verification data from Step 8)
 
-Spawn document-reviewer agent: "Review the following Design Doc considering code verification findings. doc_type: DesignDoc. target: $STEP_7_OUTPUT. mode: composite. Code Verification Results: $STEP_8_OUTPUT. Parent PRD: $APPROVED_PRD_PATH. Additional Review Focus: Technical accuracy of documented interfaces, consistency with parent PRD scope, completeness of unit boundary definitions."
+Spawn document-reviewer agent: "Review the following Design Doc considering code verification findings. doc_type: DesignDoc. target: $STEP_7_OUTPUT. mode: composite. code_verification: $STEP_8_OUTPUT. Parent PRD: $APPROVED_PRD_PATH. Additional Review Focus: Technical accuracy of documented interfaces, consistency with parent PRD scope, completeness of unit boundary definitions."
 
 **Store output as**: `$STEP_9_OUTPUT`
 

@@ -128,6 +128,8 @@ After acceptance-test-generator execution, when spawning work-planner, communica
 - [ ] Requirement analysis completed and user-confirmed
 - [ ] Layer routing determined (backend / frontend / fullstack)
 - [ ] Correct workflow followed per layer routing
+- [ ] codebase-analyzer included before Design Doc creation for Medium/Large flows
+- [ ] code-verifier included before document-reviewer for Design Doc review
 - [ ] All stopping points honored with user confirmation obtained
 - [ ] Quality-fixer spawned before every commit
 - [ ] All tasks committed or escalation completed

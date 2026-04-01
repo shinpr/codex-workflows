@@ -140,8 +140,10 @@ Perform this step with actual tool-backed enumeration, not memory:
 1. Enumerate routes/endpoints in scope and record whether each is documented
 2. Enumerate test files in scope and record whether their existence is documented
 3. Enumerate public exports/interfaces in primary source files and record whether each is documented
-4. Compile undocumented code items from the enumerations
-5. Compile unimplemented document items from earlier claim verification
+4. Enumerate data operations in scope and record whether the associated schema, repository, model, or data contract appears in the document
+5. Record whether a Design Doc contains a `Test Boundaries` section when persistence or data operations are part of scope
+6. Compile undocumented code items from the enumerations
+7. Compile unimplemented document items from earlier claim verification
 
 ### Step 6: Return JSON Result
 
@@ -188,7 +190,11 @@ Return the JSON result as the final response. See Output Format for the schema.
     "testFilesDocumented": 2,
     "exportsInCode": 12,
     "exportsDocumented": 10,
-    "undocumentedExports": ["rebuildSearchIndex (src/search/index.ts:18)"]
+    "undocumentedExports": ["rebuildSearchIndex (src/search/index.ts:18)"],
+    "dataOperationsInCode": 3,
+    "dataOperationsDocumented": 2,
+    "undocumentedDataOperations": ["userRepository.saveUser (src/user/repository.ts:41)"],
+    "testBoundariesSectionPresent": true
   },
   "coverage": {
     "documented": ["Feature areas with documentation"],
@@ -230,7 +236,7 @@ If `verifiableClaimCount < 20`, treat the score as unstable and return to Step 1
 - [ ] `verifiableClaimCount >= 20`
 - [ ] Collected evidence from multiple sources for each claim
 - [ ] Classified each claim (match/drift/gap/conflict)
-- [ ] Performed reverse coverage with route, test file, and public export enumeration
+- [ ] Performed reverse coverage with route, test file, public export, and data operation enumeration
 - [ ] Identified undocumented features in code
 - [ ] Identified unimplemented specifications
 - [ ] Calculated consistency score
@@ -245,6 +251,7 @@ If `verifiableClaimCount < 20`, treat the score as unstable and return to Step 1
 - [ ] Low-confidence classifications are explicitly noted
 - [ ] Contradicting evidence is documented, not ignored
 - [ ] `reverseCoverage` includes concrete counts from tool-backed enumeration
+- [ ] Data operation coverage is recorded when persistence-related code is in scope
 
 ## Completion Gate [BLOCKING]
 

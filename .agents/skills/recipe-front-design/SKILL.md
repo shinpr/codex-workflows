@@ -17,8 +17,10 @@ description: "Execute from requirement analysis to frontend design document crea
 
 **Execution Method**:
 - Requirement analysis -> performed by requirement-analyzer
+- Codebase analysis -> performed by codebase-analyzer
 - UI Specification creation -> performed by ui-spec-designer
 - Design document creation -> performed by technical-designer-frontend
+- Design verification -> performed by code-verifier
 - Document review -> performed by document-reviewer
 
 Orchestrator spawns agents and passes structured data between them.
@@ -68,8 +70,10 @@ Then create the UI Specification:
 ### Step 3: Design Document Creation Phase
 Create appropriate design documents according to scale determination:
 - For ADR: Spawn technical-designer-frontend agent: "Create ADR for [technical decision]"
-- For Design Doc: Spawn technical-designer-frontend agent: "Create Design Doc based on requirements. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec."
-- Spawn document-reviewer agent: "Review [document path] for consistency and completeness"
+- For Design Doc: Spawn codebase-analyzer agent first: "Analyze the existing codebase to provide evidence for frontend Design Doc creation. Focus on existing implementations, state paths, API integrations, and constraints the design should respect. requirement_analysis: [JSON from requirement-analyzer]. requirements: [original user requirements]. layer: frontend. target_paths: [frontend affected files and directories from requirement-analyzer]. focus_areas: component hierarchy, state management, UI interactions, data fetching."
+- For Design Doc: Spawn technical-designer-frontend agent: "Create Design Doc based on requirements. Codebase Analysis: [JSON from codebase-analyzer]. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec."
+- Spawn code-verifier agent: "Verify Design Doc against code. doc_type: design-doc. document_path: [document path]. verbose: false."
+- Spawn document-reviewer agent: "Review the Design Doc for consistency and completeness. doc_type: DesignDoc. target: [document path]. mode: composite. code_verification: [JSON from code-verifier]"
 
 **[STOP -- BLOCKING]** Present design alternatives and trade-offs, obtain user approval.
 **CANNOT proceed until user explicitly approves the design document.**
@@ -80,6 +84,7 @@ ENFORCEMENT: Every stop point MUST be respected. Skipping user approval invalida
 
 - [ ] Requirement analysis completed and approved
 - [ ] UI Specification created and approved
+- [ ] Codebase analysis completed before frontend Design Doc creation
 - [ ] Design document created and approved
 - [ ] All document reviews passed
 

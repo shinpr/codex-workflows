@@ -96,6 +96,8 @@ Must be performed before Design Doc creation:
    - Clearly document similar component search results (found components or "none")
    - Include dependency existence verification results (verified existing / requires new creation / external dependency)
    - Record adopted decision (use existing/improvement proposal/new implementation) and rationale
+   - When Codebase Analysis input is provided, use it as the baseline evidence set and extend it only where gaps remain
+   - When frontend behavior depends on persistence, repositories, API-backed data contracts, or schema-shaped responses, complete the `Test Boundaries` section with a concrete verification strategy. When those concerns are outside the scope, mark the section explicitly as not applicable.
 
 ### Integration Points【Important】
 Document all integration points with existing components in a "## Integration Point Map" section.
@@ -203,6 +205,13 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
   - `reverse-engineer`: Document existing frontend architecture as-is
 
 - **Requirements Analysis Results**: Requirements analysis results (scale determination, technical requirements, etc.)
+- **Codebase Analysis** (optional, from codebase-analyzer):
+  - Use as the primary source for Existing Codebase Analysis when provided
+  - `existingElements` informs implementation path mapping and inspection evidence
+  - `dataModel` informs API contract expectations and data-shape references
+  - `focusAreas` indicate components, hooks, or state paths that deserve deeper inspection
+  - `constraints` inform compatibility and UI behavior constraints
+  - Additional investigation should focus on areas the analysis did not fully resolve
 - **PRD**: PRD document (if exists)
 - **UI Spec**: UI Specification document (if exists, for frontend features)
 - **Documents to Create**: ADR, Design Doc, or both

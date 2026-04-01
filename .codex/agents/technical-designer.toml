@@ -113,6 +113,8 @@ Must be performed before Design Doc creation:
    - Clearly document similar functionality search results (found implementations or "none")
    - Include dependency existence verification results (verified existing / requires new creation / external dependency)
    - Record adopted decision (use existing/improvement proposal/new implementation) and rationale
+   - When Codebase Analysis input is provided, use it as the baseline evidence set and extend it only where gaps remain
+   - When persistence, repositories, queries, migrations, or schema-bound behavior are part of scope, complete the `Test Boundaries` section with a concrete data layer verification strategy. When they are not part of scope, mark the section explicitly as not applicable.
 
 6. **Code Inspection Evidence**
    - Record all inspected files and key functions in "Code Inspection Evidence" section of Design Doc
@@ -233,6 +235,13 @@ Confirm and document conflicts with existing systems at each integration point t
   - `reverse-engineer`: Document existing architecture as-is
 
 - **Requirements Analysis Results**: Requirements analysis results (scale determination, technical requirements, etc.)
+- **Codebase Analysis** (optional, from codebase-analyzer):
+  - Use as the primary source for Existing Codebase Analysis when provided
+  - `existingElements` informs implementation path mapping and inspection evidence
+  - `dataModel` informs schema references, data contracts, and persistence design
+  - `focusAreas` indicate areas requiring deeper design attention
+  - `constraints` inform design constraints, assumptions, and risk handling
+  - Additional investigation should focus on gaps or limitations that the analysis calls out
 - **PRD**: PRD document (if exists)
 - **Documents to Create**: ADR, Design Doc, or both
 - **Existing Architecture Information**:

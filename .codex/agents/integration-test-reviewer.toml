@@ -57,18 +57,19 @@ Key checks:
 ## Verification Process
 
 ### 1. Skeleton Comment Extraction
-Extract the following comment patterns from test file:
-- `// AC:` → Original acceptance criteria
-- `// Behavior:` → Trigger → Process → Observable Result
-- `// @category:` → Test classification
-- `// @dependency:` → Dependencies
-- `// Verification items:` → Expected verification items (if present)
+Extract the following annotation patterns from the test file using the project's comment syntax:
+- `AC:` → Original acceptance criteria
+- `Behavior:` → Trigger → Process → Observable Result
+- `@category:` → Test classification
+- `@dependency:` → Dependencies
+- `@real-dependency:` → Dependencies expected to stay real in integration coverage
+- `Verification items:` → Expected verification items (if present)
 
 ### 2. Implementation Verification
 For each test case:
 1. Check if "observable result" from Behavior is asserted
 2. Check if all items in Verification items are covered by assertions
-3. Verify mock boundaries match @dependency
+3. Verify mock boundaries match `@dependency` and `@real-dependency`
 
 ### 3. Quality Assessment
 Evaluate each test for:

@@ -51,6 +51,7 @@ Skill Status:
 
 - **doc_type**: Document type (`PRD`/`ADR`/`UISpec`/`DesignDoc`)
 - **target**: Document path to review
+- **code_verification**: Code-verifier results JSON (optional)
 
 ## Review Modes
 
@@ -78,6 +79,7 @@ Skill Status:
 - Specialized verification based on doc_type
 - For DesignDoc: Verify "Applicable Standards" section exists with explicit/implicit classification
   - Missing or incomplete → `critical` issue; implicit standards without confirmation → `important` issue
+  - When `code_verification` is provided, use its discrepancies and reverse coverage as pre-verified evidence during review
 
 ### Step 2: Target Document Collection
 - Load document specified by target
@@ -94,6 +96,7 @@ For DesignDoc, additionally verify:
 - [ ] Applicable standards listed with explicit/implicit classification
 - [ ] Dependencies described as existing have verification results or authoritative external source
 - [ ] Field propagation map present (when fields cross boundaries)
+- [ ] Data-oriented designs contain concrete data design or Test Boundaries content, or an explicit N/A rationale
 
 #### Gate 1: Quality Assessment (only after Gate 0 passes)
 
@@ -109,6 +112,8 @@ For DesignDoc, additionally verify:
 - Code inspection evidence review: Verify inspected files are relevant to design scope; flag if key related files are missing
 - Dependency realizability check: For each dependency the Design Doc's Existing Codebase Analysis section describes as "existing", verify its definition exists in the codebase using file pattern search and content search. Not found in codebase and no authoritative external source documented → `critical` issue (category: `feasibility`). Found but the definition signature or named contract materially diverges from the Design Doc description → `important` issue (category: `consistency`)
 - **As-is implementation document review**: When code verification results are provided and the document describes existing implementation (not future requirements), verify that code-observable behaviors are stated as facts; speculative language about deterministic behavior → `important` issue
+- **Data design completeness check**: When the document references persistence, storage, database, repository, query, ORM, migration, table, schema, or column concepts, verify that the Design Doc includes concrete data design content or an explicit N/A rationale. Useful evidence includes schema references, data model notes, or Test Boundaries with data layer strategy
+- **Code-verifier evidence integration**: When `code_verification` is provided, reconcile major or critical discrepancies and undocumented data operations as part of Gate 1 completeness and consistency review
 - **Undetermined items review** [MANDATORY]: Every TBD, unknown, or open item MUST include: (1) **owner** — who resolves it, (2) **due** — when it gets resolved (which phase or milestone), (3) **next-phase handling** — how the next phase treats this gap. Missing any of these three → `important` issue
 
 **Perspective-specific Mode**:

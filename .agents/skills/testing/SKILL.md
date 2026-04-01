@@ -189,6 +189,37 @@ Test names should clearly describe:
 - **Fake**: Simplified working implementation
 - **Dummy**: Passed but never used
 
+## Data Layer Testing
+
+### Mock Limitations for Data Access
+
+Mocks validate call patterns but do not validate schema correctness, query correctness, or storage constraints.
+Examples of issues that mocks can miss:
+- schema drift
+- column or field mismatches
+- incorrect joins, filters, or aggregations
+- migration incompatibility
+
+### When Real Data Layer Verification Adds Value
+
+Use real or production-like data access verification when testing:
+- repository or DAO implementations
+- ORM mappings
+- query builders or raw SQL
+- persistence behavior that depends on constraints or schema shape
+
+### Environment Options
+
+Choose the most practical option for the project environment:
+- containerized database
+- dedicated test database
+- in-memory database with documented limitations
+- adapter-backed local test harness
+
+### Design Alignment
+
+When a Design Doc includes `Test Boundaries`, follow it as the baseline for deciding which dependencies stay real and which boundaries are isolated.
+
 ## Test Quality Practices [MANDATORY]
 
 ### Keep Tests Active
