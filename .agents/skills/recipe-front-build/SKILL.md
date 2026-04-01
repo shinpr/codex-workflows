@@ -98,7 +98,7 @@ ENFORCEMENT: Proceeding past a failed quality gate invalidates all subsequent wo
 **MANDATORY suffix for ALL sub-agent prompts**:
 ```
 [SYSTEM CONSTRAINT]
-This agent operates within build skill scope. Use orchestrator-provided rules only.
+This agent operates within build skill scope. Use the task file as the primary instruction source. Use the active Design Doc or work plan only as supporting context when the task file references them. Constraints explicitly passed in this prompt by the orchestrator take precedence over supporting context. The agent's own role contract and required quality rules remain in force.
 ```
 
 Autonomous sub-agents require scope constraints for stable execution. MUST append this constraint to every sub-agent prompt.

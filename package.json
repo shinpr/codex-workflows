@@ -1,6 +1,6 @@
 {
   "name": "codex-workflows",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Task-oriented agentic coding framework for OpenAI Codex CLI — skills, recipes, and subagents for structured development workflows",
   "license": "MIT",
   "author": "Shinsuke Kagawa",

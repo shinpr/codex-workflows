@@ -17,8 +17,9 @@ description: "Execute from requirement analysis to design document creation."
 
 **Execution Protocol**:
 1. **Spawn agents for all work** -- your role is to invoke sub-agents, pass data between them, and report results
-2. **Follow subagents-orchestration-guide skill design flow exactly**:
-   - Execute: requirement-analyzer -> technical-designer -> document-reviewer -> design-sync
+2. **Follow the design flow defined in subagents-orchestration-guide**:
+   - Apply the scale-specific and layer-specific branches defined there, including PRD, ADR, and UI Spec steps when required
+   - Use `requirement-analyzer -> codebase-analyzer -> technical-designer -> code-verifier -> document-reviewer -> design-sync` as the core design-document path after prerequisite branches are resolved
    - **[STOP — BLOCKING]** At every `[Stop: ...]` marker -> Present status to user for confirmation. **CANNOT proceed until user explicitly confirms.**
 3. **Scope**: Complete when design documents receive approval
 
@@ -27,10 +28,14 @@ ENFORCEMENT: Skipping any quality gate invalidates the design output.
 
 ## Workflow Overview
 
+Core design-document path after prerequisite branches such as PRD, ADR, or UI Spec are resolved:
+
 ```
 Requirements -> requirement-analyzer -> [Stop: Scale determination]
                                              |
-                                     technical-designer -> document-reviewer
+                                     codebase-analyzer
+                                             |
+                                     technical-designer -> code-verifier -> document-reviewer
                                              |
                                         design-sync -> [Stop: Design approval]
 ```
@@ -48,12 +53,7 @@ Requirements -> requirement-analyzer -> [Stop: Scale determination]
 
 Requirements: $ARGUMENTS
 
-Considering the deep impact on design, first engage in dialogue to understand the background and purpose of requirements:
-- What problems do you want to solve?
-- Expected outcomes and success criteria
-- Relationship with existing systems
-
-Once requirements are moderately clarified, analyze with requirement-analyzer and create appropriate design documents according to scale.
+Pass the user requirements directly to requirement-analyzer as the first action. If clarification is needed, handle it at the requirement-analysis stop point before proceeding.
 
 MUST clearly present design alternatives and trade-offs.
 
@@ -64,13 +64,19 @@ Execute the process below within design scope.
 ### Step 1: Requirement Analysis
 Spawn requirement-analyzer agent: "Analyze the following requirements and determine scale: $ARGUMENTS"
 
-### Step 2: Design Document Creation
-Spawn technical-designer agent: "Create design document based on requirement analysis output. Include architecture decisions, component design, and acceptance criteria."
+### Step 2: Codebase Analysis
+Spawn codebase-analyzer agent: "Analyze the existing codebase to provide evidence for Design Doc creation. requirement_analysis: [output from Step 1]. requirements: $ARGUMENTS"
 
-### Step 3: Document Review
-Spawn document-reviewer agent: "Review the design document created in the previous step. Verify completeness, consistency, and quality."
+### Step 3: Design Document Creation
+Spawn technical-designer agent: "Create design document based on requirement analysis output and codebase analysis output. Include architecture decisions, component design, and acceptance criteria."
 
-### Step 4: Consistency Verification
+### Step 4: Code Verification
+Spawn code-verifier agent: "Verify the design document against the current codebase. document_path: [output from Step 3]. doc_type: design-doc."
+
+### Step 5: Document Review
+Spawn document-reviewer agent: "Review the design document created in the previous step. Verify completeness, consistency, and quality. code_verification: [output from Step 4]"
+
+### Step 6: Consistency Verification
 Spawn design-sync agent: "Verify consistency of the design document with other existing design documents and project constraints."
 
 **Note**: design-sync returns `sync_status: "SKIPPED"` when only 1 Design Doc exists. This is distinct from `NO_CONFLICTS` and MUST be reported as such to the user.
@@ -78,7 +84,9 @@ Spawn design-sync agent: "Verify consistency of the design document with other e
 ## Completion Criteria
 
 - [ ] Spawned requirement-analyzer and determined scale
+- [ ] Spawned codebase-analyzer and passed its findings into design creation
 - [ ] Created appropriate design document (ADR or Design Doc) via technical-designer
+- [ ] Spawned code-verifier and passed its findings into document review
 - [ ] Spawned document-reviewer and addressed feedback
 - [ ] Spawned design-sync for consistency verification
 - [ ] Obtained user approval for design document

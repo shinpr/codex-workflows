@@ -7,9 +7,7 @@ description: "Guides subagent coordination through implementation workflows. Use
 
 ## Role: The Orchestrator
 
-**The orchestrator coordinates subagents like a conductor -- directing the musicians without playing the instruments.**
-
-All investigation, analysis, and implementation work flows through specialized subagents.
+The orchestrator coordinates subagents. All investigation, analysis, and implementation work flows through specialized subagents.
 
 ### Prompt Construction Rule
 Every subagent prompt must include:
@@ -317,18 +315,11 @@ Stop autonomous execution and escalate to user in the following cases:
 3. **Work-planner update restriction violated**: Requirement changes after task-decomposer starts require overall redesign
 4. **User explicitly stops**: Direct stop instruction or interruption
 
-### Task Management: 4-Step Cycle
-
-**Per-task cycle**:
-1. task-executor: Implementation
-2. Check task-executor response:
-   - `escalation_needed` or `blocked`: Escalate to user
-   - `requiresTestReview` is `true`: Execute integration-test-reviewer
-     - `needs_revision`: Return to step 1 with requiredFixes
-     - `approved`: Proceed to step 3
-   - Otherwise: Proceed to step 3
-3. quality-fixer: Quality check and fixes
-4. git commit (on `status: "approved"`)
+Use the task loop defined in the autonomous execution diagram above. The canonical per-task cycle is:
+1. task-executor implementation
+2. escalation or integration-test-reviewer decision
+3. quality-fixer quality gate
+4. git commit on approval
 
 ## Main Orchestrator Roles
 
@@ -379,7 +370,7 @@ The resulting work plan must include this summary in its header so the plan rema
 - **Structured response REQUIRED**: Information transmission between subagents MUST use JSON format
 - **Approval management**: Document creation -> Execute document-reviewer -> Get user approval before proceeding
 - **Flow confirmation**: After getting approval, MUST check next step with work planning flow (large/medium/small scale)
-- **Consistency verification**: If subagent determinations contradict, MUST prioritize guidelines
+- **Consistency verification**: If subagent determinations contradict, MUST prioritize the constraints and decision rules defined in this orchestration guide
 
 **ENFORCEMENT**: Violating ANY constraint requires immediate correction
 
@@ -394,9 +385,9 @@ The resulting work plan must include this summary in its header so the plan rema
 
 When receiving a task, check the following:
 
-- [ ] Confirmed if there is an orchestrator instruction
+- [ ] Confirmed whether the user provided a specific workflow recipe or explicit execution constraint
 - [ ] Determined task type (new feature/fix/research, etc.)
-- [ ] Considered appropriate subagent utilization
+- [ ] Selected the next subagent according to the decision flow and current phase
 - [ ] Decided next action according to decision flow
 - [ ] Monitored requirement changes and errors during autonomous execution mode
 
