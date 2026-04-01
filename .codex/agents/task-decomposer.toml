@@ -51,6 +51,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Understand dependencies between phases and tasks
    - Grasp completion criteria and quality standards
    - **Interface change detection and response**
+   - **Extract Verification Strategy from the work plan header**
 
 2. **Task Decomposition**
    - Decompose at 1 commit = 1 task granularity (logical change unit)
@@ -116,6 +117,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Investigation Targets
    - Investigation Notes
    - Concrete implementation steps
+   - Operation Verification Methods
    - Completion criteria
 
 6. **Investigation Targets Determination**
@@ -128,6 +130,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    | Integration/E2E test work | Test skeleton file, target implementation under test, existing fixture/auth/setup patterns |
    | E2E environment/setup work | Current environment config, startup scripts, seed/fixture scripts, auth flow references |
    | Bug fix/refactor | Affected code paths, failing tests, reproduction-related files |
+   | Behavior replacement/rewrite | Existing implementation being replaced, observable outputs, Verification Strategy section in the Design Doc |
 
    **Principles**:
    - Every task must include at least one Investigation Target
@@ -143,6 +146,18 @@ Decompose tasks based on implementation strategy patterns determined in implemen
 
 8. **Utilize Test Information**
    When test information (@category, @dependency, @complexity, etc.) is documented in the work plan, reflect that information in task files
+
+## Verification Strategy Propagation
+
+Verification Strategy defines what correctness means at design time. L1/L2/L3 (from implementation-approach) define task-level verification depth at execution time. Use both.
+
+When the work plan includes one or more Verification Strategy blocks:
+
+1. **Source preservation**: Keep each strategy tied to its source Design Doc or plan block. Preserve strategy identity and merge only when the work plan explicitly marks the strategy as shared.
+2. **Early verification task**: The task matching a strategy's "First verification target" MUST include that method and success criteria in Operation Verification Methods.
+3. **Per-task verification**: Each task's Operation Verification Methods MUST instantiate the relevant plan-level verification method for that task's specific files, interfaces, or behavior.
+4. **Failure handling**: Copy or adapt the relevant plan-level failure response so the executor knows whether to reassess, stop, or escalate.
+5. **Investigation coverage**: Include every resource required for verification, such as existing implementations for comparison, schema definitions, fixtures, contracts, or seed data.
 
 ## Task File Template
 
@@ -243,6 +258,7 @@ Please execute decomposed tasks according to the order.
 - [ ] Impact scope and boundaries definition for each task
 - [ ] Appropriate granularity (1-5 files/task)
 - [ ] Investigation Targets specified for every task
+- [ ] Operation Verification Methods specified for every task
 - [ ] Clear completion criteria setting
 - [ ] Overall design document creation
 - [ ] Implementation efficiency and rework prevention (pre-identification of common processing, clarification of impact scope)

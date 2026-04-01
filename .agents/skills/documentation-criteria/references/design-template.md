@@ -219,6 +219,28 @@ Invariants:
 |-------|----------|--------|--------|
 | [field name] | [Component A to B] | preserved / transformed / dropped | [logic or reason] |
 
+## Verification Strategy
+
+Verification Strategy defines what correctness means and how to prove it at design time. L1/L2/L3 (from implementation-approach) define task-level verification depth at execution time.
+Use the minimal form only when the change is low-risk or the verification path is self-evident. Otherwise fill all fields concretely.
+Low-risk: changes affecting 1-2 files with no external contract, integration, or data-flow changes.
+Self-evident: internal-only refactoring with identical observable inputs and outputs.
+
+### Correctness Proof Method
+
+- **Correctness definition**: [What "correct" means for this change]
+- **Target comparison**: [What is being compared or validated against what]
+- **Verification method**: [How correctness will be verified]
+- **Observable success indicator**: [What observable result proves the verification succeeded]
+- **Verification timing**: [`phase_1` | `per_phase` | `integration_phase` | `final_phase`]
+- **Timing note**: [Optional free-text clarification when the enum alone is insufficient]
+
+### Early Verification Point
+
+- **First verification target**: [The smallest unit that proves the approach works]
+- **Success criteria**: [Observable outcome that proves correctness]
+- **Failure response**: [What to do if early verification fails]
+
 ### State Transitions and Invariants (When Applicable)
 
 ```yaml

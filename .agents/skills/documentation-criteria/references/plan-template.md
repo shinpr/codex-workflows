@@ -13,6 +13,25 @@ Related Issue/PR: #XXX (if any)
 - ADR: [docs/adr/ADR-XXXX.md] (if any)
 - PRD: [docs/prd/XXX.md] (if any)
 
+## Verification Strategies (from Design Docs)
+
+Repeat this block for each Design Doc when multiple Design Docs exist. Preserve each strategy's identity and source document path. Merge strategies only when the Design Docs explicitly define a shared one.
+
+### Verification Strategy: [docs/design/XXX.md]
+
+#### Correctness Proof Method
+- **Correctness definition**: [extracted from Design Doc]
+- **Target comparison**: [extracted from Design Doc]
+- **Verification method**: [extracted from Design Doc]
+- **Observable success indicator**: [extracted from Design Doc]
+- **Verification timing**: [`phase_1` | `per_phase` | `integration_phase` | `final_phase`]
+- **Timing note**: [optional clarification]
+
+#### Early Verification Point
+- **First verification target**: [extracted from Design Doc]
+- **Success criteria**: [extracted from Design Doc]
+- **Failure response**: [extracted from Design Doc]
+
 ## Objective
 [Why this change is necessary, what problem it solves]
 
@@ -33,10 +52,46 @@ Related Issue/PR: #XXX (if any)
 
 ## Implementation Phases
 
-(Note: Phase structure is determined based on Design Doc technical dependencies and implementation approach)
+Select one phase structure based on the implementation approach from the Design Doc.
+Delete every unused option before finalizing the work plan. The final document must contain only the selected phase structure.
 
-### Phase 1: [Phase Name] (Estimated commits: X)
-**Purpose**: [What this phase aims to achieve]
+### Option A: Vertical Slice Phase Structure
+
+Use when implementation approach is Vertical Slice. Each phase represents one value unit and includes its own verification.
+
+### Phase 1: [Value Unit 1] (Estimated commits: X)
+**Purpose**: [First slice that proves the approach works]
+**Verification**: [Use the early verification point when applicable]
+
+#### Tasks
+- [ ] Task 1: Specific work content
+- [ ] Task 2: Verification for this value unit
+- [ ] Quality check: Implement staged quality checks (refer to ai-development-guide skill)
+
+#### Phase Completion Criteria
+- [ ] Early verification point passed
+- [ ] [Functional completion criteria]
+- [ ] [Quality completion criteria]
+
+### Phase 2: [Value Unit 2] (Estimated commits: X)
+**Purpose**: [Subsequent slice]
+**Verification**: [Verification for this value unit]
+
+#### Tasks
+- [ ] Task 1: Specific work content
+- [ ] Task 2: Verification for this value unit
+- [ ] Quality check
+
+#### Phase Completion Criteria
+- [ ] [Functional completion criteria]
+- [ ] [Quality completion criteria]
+
+### Option B: Horizontal Slice Phase Structure
+
+Use when implementation approach is Horizontal Slice. Phases follow Foundation -> Core -> Integration -> QA.
+
+### Phase 1: [Foundation] (Estimated commits: X)
+**Purpose**: Contract definitions, interfaces, test preparation
 
 #### Tasks
 - [ ] Task 1: Specific work content
@@ -48,26 +103,26 @@ Related Issue/PR: #XXX (if any)
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
 
-### Phase 2: [Phase Name] (Estimated commits: X)
-**Purpose**: [What this phase aims to achieve]
+### Phase 2: [Core Feature] (Estimated commits: X)
+**Purpose**: Business logic, unit tests
 
 #### Tasks
 - [ ] Task 1: Specific work content
 - [ ] Task 2: Specific work content
-- [ ] Quality check: Implement staged quality checks (refer to ai-development-guide skill)
+- [ ] Quality check
 - [ ] Integration tests: Verify overall feature functionality
 
 #### Phase Completion Criteria
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
 
-### Phase 3: [Phase Name] (Estimated commits: X)
-**Purpose**: [What this phase aims to achieve]
+### Phase 3: [Integration] (Estimated commits: X)
+**Purpose**: External connections, presentation layer
 
 #### Tasks
 - [ ] Task 1: Specific work content
 - [ ] Task 2: Specific work content
-- [ ] Quality check: Implement staged quality checks (refer to ai-development-guide skill)
+- [ ] Quality check
 - [ ] Integration tests: Verify component coordination
 
 #### Phase Completion Criteria
@@ -75,7 +130,9 @@ Related Issue/PR: #XXX (if any)
 - [ ] [Quality completion criteria]
 
 ### Final Phase: Quality Assurance (Required) (Estimated commits: 1)
-**Purpose**: Overall quality assurance and Design Doc consistency verification
+This phase is required for all implementation approaches.
+
+**Purpose**: Cross-cutting quality assurance and Design Doc consistency verification
 
 #### Tasks
 - [ ] Verify all Design Doc acceptance criteria achieved

@@ -61,6 +61,7 @@ Read the Design Doc(s), UI Spec, PRD, and ADR (if provided). Extract:
 - Acceptance criteria and implementation approach
 - Technical dependencies and implementation order
 - Integration points and their contracts
+- Verification Strategy from each Design Doc: correctness definition, target comparison, verification method, observable success indicator, normalized verification timing, and early verification point
 
 ### 2. Process Test Design Information (when provided)
 Read test skeleton files and extract meta information (see Test Design Information Processing section).
@@ -69,11 +70,21 @@ Read test skeleton files and extract meta information (see Test Design Informati
 Choose Strategy A (TDD) if test skeletons are provided, Strategy B (implementation-first) otherwise. See Implementation Strategy Selection section.
 
 ### 4. Compose Phases
-Structure phases based on technical dependencies from Design Doc:
-- Place tasks with lowest dependencies in earlier phases
+
+**Common rules (all approaches)**:
+- Preserve Verification Strategies per Design Doc in the work plan header and keep each source document path. Merge strategies only when the Design Docs explicitly define a shared one
+- Include Verification Strategy summaries in the work plan header so the plan is self-sufficient for downstream task generation
+- Place tasks with the lowest dependencies in earlier phases
+- Map normalized verification timing to phases as follows: `phase_1` -> earliest implementation phase, `per_phase` -> each relevant phase, `integration_phase` -> integration phase, `final_phase` -> final Quality Assurance phase
+- Include verification tasks in the phase corresponding to the Verification Strategy timing
 - When test skeletons are provided, place integration test implementation based on `@dependency` metadata from test skeletons (see Test Design Information Processing > Step 2) and place E2E test execution in the final phase
 - When test skeletons are not provided, include test implementation tasks based on Design Doc acceptance criteria
-- Include quality assurance in final phase
+- Final phase is always Quality Assurance
+
+**Phase structure**:
+- Select the phase structure that matches the implementation approach from the Design Doc
+- Use the plan template's vertical or horizontal option accordingly
+- Remove every unused phase-structure option from the final work plan output
 
 ### 5. Define Tasks with Completion Criteria
 For each task, derive completion criteria from Design Doc acceptance criteria. Apply the 3-element completion definition (Implementation Complete, Quality Complete, Integration Complete).
@@ -236,7 +247,10 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 ## Quality Checklist
 
 - [ ] Design Doc(s) consistency verification
-- [ ] Phase composition based on technical dependencies
+- [ ] Verification Strategies extracted from each Design Doc and included in the plan header without unintended merging
+- [ ] Phase structure matches the implementation approach
+- [ ] Early verification point placed in the earliest applicable phase
+- [ ] Normalized verification timing mapped consistently to phases
 - [ ] All requirements converted to tasks
 - [ ] Quality assurance exists in final phase
 - [ ] Test skeleton file paths listed in corresponding phases (when provided)

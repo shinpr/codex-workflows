@@ -146,6 +146,17 @@ Must be performed when creating Design Doc:
    - Which task first makes the entire UI operational
    - Verification level for each task (L1/L2/L3 defined in implementation-approach skill)
 
+3. **Verification Strategy Definition**
+   - Define what correctness means for this UI change and how it will be proven
+   - Use the Design Doc template fields directly
+   - Include at minimum: correctness definition, target comparison, verification method, observable success indicator, verification timing, and early verification point
+   - Use normalized verification timing values: `phase_1`, `per_phase`, `integration_phase`, or `final_phase`
+   - For low-risk or self-evident changes, a minimal form or explicit `N/A` with rationale is acceptable
+   - For new UI features, specify acceptance-criteria verification beyond unit tests
+   - For extensions, specify regression verification that proves existing behavior and UX expectations are preserved
+   - For refactors or rewrites, specify behavioral equivalence verification against the current UI behavior when applicable
+   - Define an early verification point: the first screen, state transition, or interaction that proves the approach works
+
 ### Change Impact Map【Required】
 Must be included when creating Design Doc:
 
@@ -264,6 +275,14 @@ Execute file output immediately. Final approval is managed by the orchestrator r
    - MUST research latest React best practices, libraries, and approaches with web search before design
    - Cite information sources in "References" section with URLs
    - Especially confirm multiple reliable sources when introducing new technologies
+
+## Design Doc Completion Checklist
+
+- [ ] Agreement Checklist completed and reflected in design
+- [ ] Implementation approach selected with rationale
+- [ ] Verification Strategy defined with correctness definition, target comparison, method, observable success indicator, timing, and early verification point
+- [ ] Change Impact Map included
+- [ ] Interface Change Impact Analysis included
 
 ## Implementation Sample Standards Compliance
 

@@ -359,6 +359,20 @@ Stop autonomous execution and escalate to user in the following cases:
 
 **On error**: Escalate to user if files are not generated
 
+### Design Doc to Work Plan Verification Handoff
+
+When a Design Doc contains a Verification Strategy section, the orchestrator must carry forward:
+- Design Doc path
+- Verification Strategy details:
+  - Correctness definition
+  - Target comparison
+  - Verification method
+  - Observable success indicator
+  - Verification timing
+  - Early verification point (first target, success criteria, failure response)
+
+The resulting work plan must include this summary in its header so the plan remains self-sufficient for downstream task generation and execution planning.
+
 ## Important Constraints [MANDATORY]
 
 - **Quality check is REQUIRED**: quality-fixer approval MUST be obtained before commit

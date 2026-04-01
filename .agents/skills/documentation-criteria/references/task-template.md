@@ -37,9 +37,16 @@ Brief observations recorded after reading Investigation Targets:
 - [ ] Improve code (maintain passing tests)
 - [ ] Confirm added tests still pass
 
+## Operation Verification Methods
+(Derived from Verification Strategy in the work plan)
+- **Verification method**: [What to verify and how]
+- **Success criteria**: [Observable outcome that proves correctness]
+- **Failure response**: [What to do if verification fails]
+- **Verification level**: [L1/L2/L3, per implementation-approach skill]
+
 ## Completion Criteria
 - [ ] All added tests pass
-- [ ] Operation verified (select L1/L2/L3, per implementation-approach skill)
+- [ ] Operation verified per Operation Verification Methods above
 - [ ] Deliverables created (for research/design tasks)
 
 ## Notes

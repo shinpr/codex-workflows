@@ -180,6 +180,17 @@ Must be performed when creating Design Doc:
    - Which task first makes the whole system operational
    - Verification level for each task (L1/L2/L3 defined in implementation-approach skill)
 
+3. **Verification Strategy Definition**
+   - Define what correctness means for this change and how it will be proven
+   - Use the Design Doc template fields directly
+   - Include at minimum: correctness definition, target comparison, verification method, observable success indicator, verification timing, and early verification point
+   - Use normalized verification timing values: `phase_1`, `per_phase`, `integration_phase`, or `final_phase`
+   - For low-risk or self-evident changes, a minimal form or explicit `N/A` with rationale is acceptable
+   - For new features, specify acceptance-criteria verification beyond unit tests
+   - For extensions, specify regression verification that proves existing behavior is preserved
+   - For refactors or rewrites, specify behavioral equivalence verification against the current implementation when applicable
+   - Define an early verification point: the first target to validate before scaling the approach
+
 ### Change Impact Map【Required】
 Must be included when creating Design Doc:
 
@@ -340,6 +351,7 @@ Implementation sample creation checklist:
 - [ ] **Complexity assessment**: complexity_level set; if medium/high, complexity_rationale specifies (1) requirements/ACs, (2) constraints/risks
 - [ ] **Data representation decision documented** (when new structures introduced)
 - [ ] **Field propagation map included** (when fields cross boundaries)
+- [ ] **Verification Strategy defined** (correctness definition, target comparison, verification method, observable success indicator, timing, early verification point)
 
 **Reverse-engineer mode only**:
 - [ ] Every architectural claim cites file:line evidence
