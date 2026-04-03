@@ -4,9 +4,9 @@
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Spec%20Compliant-blue)](https://developers.openai.com/codex/skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**End-to-end AI coding workflows for [Codex CLI](https://developers.openai.com/codex/cli)** — specialized subagents handle requirements, design, implementation, and quality checks so you get code with explicit design docs, test coverage, and commit-level traceability — not just raw generations.
+**Structured agentic coding workflows for [OpenAI Codex CLI](https://developers.openai.com/codex/cli)** — specialized AI coding agents plan, implement, test, and review changes with traceable docs, task-level commits, and quality gates.
 
-Built on the [Agent Skills specification](https://developers.openai.com/codex/skills/) and [Codex subagents](https://developers.openai.com/codex/subagents). Works with the latest GPT models.
+Built on the [Agent Skills specification](https://developers.openai.com/codex/skills/) and [Codex subagents](https://developers.openai.com/codex/subagents). Designed for long-running tasks, large refactors, and reviewable changes.
 
 ---
 
@@ -25,36 +25,45 @@ $recipe-implement Add user authentication with JWT
 
 `$` is Codex CLI's syntax for invoking a skill explicitly. Type `$recipe-` to see all available recipes via tab completion.
 
-The framework runs a structured workflow — requirements → design → task decomposition → TDD implementation → quality gates — all through specialized subagents.
+Small changes stay lightweight. Larger tasks get structure: requirements → design → task decomposition → TDD implementation → quality gates.
+
+codex-workflows is the Codex-native counterpart of [Claude Code Workflows](https://github.com/shinpr/claude-code-workflows): same document-driven development style, adapted for Codex CLI, subagents, and GPT models.
 
 ---
 
 ## Why codex-workflows?
 
-**Without codex-workflows:**
-- Code generation is inconsistent across large tasks
-- Requirements and design decisions are implicit — lost after the session
-- Refactoring and debugging become harder as context grows
+Codex is already strong at one-shot implementation. The problem starts when a change spans multiple files, needs design decisions to stay visible, or has to survive review, testing, and follow-up edits.
 
-**With codex-workflows:**
-- Every change is traceable: PRD → Design Doc → Task → Commit
-- Built-in TDD and quality gates catch regressions before commit
-- Large tasks stay structured and reviewable through agent context separation
+For larger tasks, explicit planning changes the job from raw generation into verification against a design, a task breakdown, and acceptance criteria. That matters because review loops are more reliable than first-shot generation once scope and ambiguity grow.
+
+codex-workflows adds the missing structure around those jobs:
+- Traceable artifacts: PRD → Design Doc → Task → Commit
+- Built-in TDD and quality gates before code is ready to commit
+- Agent context separation for large refactors, migrations, and PR-sized changes
+- Diagnosis and reverse-engineering flows for bugs and legacy code
+
+## Not Designed For
+
+- One-shot toy scripts or vibe-coding sessions where speed matters more than traceability
+- Repositories that do not use tests, lint, builds, or reviewable commits
+- Teams that do not want design docs, task breakdowns, or explicit quality gates
 
 ---
 
 ## What It Does
 
-A single request becomes a structured development process:
+A single request becomes a structured development process. The framework chooses the level of ceremony based on scope:
 
-1. **Understand** the problem (scale, constraints, affected files)
-2. **Analyze the existing codebase** (dependencies, data layer, risk areas)
-3. **Design** the solution (ADR, Design Doc with acceptance criteria)
-4. **Break it into tasks** (atomic, 1 commit each)
-5. **Implement with tests** (TDD per task)
-6. **Run quality checks** (lint, test, build — no failing checks)
+| Scale | File Count | What Happens |
+|-------|------------|-------------|
+| Small | 1-2 | Simplified plan → direct implementation |
+| Medium | 3-5 | Design Doc → work plan → task execution |
+| Large | 6+ | PRD → ADR → Design Doc → test skeletons → work plan → autonomous execution |
 
-Each step is handled by a specialized subagent in its own context, preventing context pollution and reducing error accumulation in long-running tasks:
+For larger work, the path usually looks like this: understand the problem, analyze the codebase, design the change, break it into atomic tasks, implement with tests, and run quality checks before commit.
+
+Each step is handled by a specialized subagent in its own context, using context engineering to prevent context pollution and reduce error accumulation in long-running tasks:
 
 ```
 User Request
@@ -95,6 +104,8 @@ Problem → investigator → verifier (ACH + Devil's Advocate) → solver → Ac
 ```
 Existing code → scope-discoverer (discoveredUnits + prdUnits) → prd-creator → code-verifier → document-reviewer → Design Docs
 ```
+
+This works best when repository knowledge is explicit and local. Short `AGENTS.md` files can act as entry points, while design docs, plans, and task files hold the deeper instructions that agents need to execute reliably.
 
 ---
 
@@ -266,16 +277,6 @@ Codex spawns these as needed during recipe execution. Each agent runs in its own
 
 ## How It Works
 
-### Scale-Based Workflow Selection
-
-The framework automatically determines the right level of ceremony:
-
-| Scale | File Count | What Happens |
-|-------|------------|-------------|
-| Small | 1-2 | Simplified plan → direct implementation |
-| Medium | 3-5 | Design Doc → work plan → task execution |
-| Large | 6+ | PRD → ADR → Design Doc → test skeletons → work plan → autonomous execution |
-
 ### Autonomous Execution Mode
 
 After work plan approval, the framework enters guided autonomous execution with escalation points:
@@ -287,7 +288,8 @@ After work plan approval, the framework enters guided autonomous execution with 
 
 ### Context Separation
 
-Each subagent runs in a fresh context. This matters because:
+Each subagent runs in a fresh context. This context-engineering pattern keeps long-running agentic coding tasks legible and reviewable:
+- generation and verification happen in separate contexts, reducing author bias and carry-over assumptions
 - **document-reviewer** reviews without the author's bias
 - **investigator** collects evidence without confirmation bias
 - **code-reviewer** validates compliance without implementation context
@@ -349,10 +351,6 @@ A: Yes. Edit the TOML files in `.codex/agents/` — change model, sandbox_mode, 
 
 A: `$recipe-implement` is the universal entry point. It runs requirement-analyzer first, detects affected layers from the codebase, and automatically routes to backend, frontend, or fullstack flow. `$recipe-fullstack-implement` skips the detection and goes straight into the fullstack flow (separate Design Docs per layer, design-sync, layer-aware task execution). Use `$recipe-implement` when you're not sure; use `$recipe-fullstack-implement` when you know upfront that the feature spans both layers.
 
-**Q: How does this relate to Claude Code Workflows?**
-
-A: codex-workflows is the Codex-native counterpart of [Claude Code Workflows](https://github.com/shinpr/claude-code-workflows). Same development philosophy, adapted for Codex CLI's subagent architecture and GPT model family.
-
 **Q: Does this work with MCP servers?**
 
 A: Yes. Codex skills and subagents work alongside [MCP](https://developers.openai.com/codex/mcp) — skills operate at the instruction layer while MCP operates at the tool transport layer. You can add MCP servers to any agent's TOML configuration.
@@ -360,6 +358,19 @@ A: Yes. Codex skills and subagents work alongside [MCP](https://developers.opena
 **Q: What if a subagent gets stuck?**
 
 A: Subagents escalate to the user when they encounter design deviations, ambiguous requirements, or specification conflicts. The framework stops autonomous execution and presents the issue with options.
+
+---
+
+## Design Rationale
+
+<details>
+<summary>Background reading behind the workflow design</summary>
+
+- [Planning Is the Real Superpower of Agentic Coding](https://www.norsica.jp/blog/planning-superpower-agentic-coding) — why explicit planning turns large-task execution from raw generation into verification against a design and task breakdown
+- [Why LLMs Are Bad at 'First Try' and Great at Verification](https://www.norsica.jp/blog/llm-verification-over-generation) — why review loops and session separation are more reliable than first-shot generation on complex work
+- [Stop Putting Everything in AGENTS.md](https://www.norsica.jp/blog/stop-putting-everything-in-agents-md) — why `AGENTS.md` should stay lean while rules, docs, and task instructions live near the point of use
+
+</details>
 
 ---
 
