@@ -22,9 +22,12 @@
     "agent-skills",
     "agentic-coding",
     "ai-coding",
+    "ai-coding-agent",
     "subagents",
     "multi-agent",
+    "harness-engineering",
     "context-engineering",
+    "ai-development-workflow",
     "tdd",
     "code-generation"
   ],
