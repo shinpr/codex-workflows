@@ -103,7 +103,7 @@ Existing code → scope-discoverer (discoveredUnits + prdUnits) → prd-creator 
 ### Requirements
 
 - [Codex CLI](https://developers.openai.com/codex/cli) (latest)
-- Node.js >= 20
+- Node.js >= 22
 
 ### Install
 
