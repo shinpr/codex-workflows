@@ -97,7 +97,7 @@ Must be performed before Design Doc creation:
    - Search existing code for keywords related to planned functionality
    - Look for implementations with same domain, responsibilities, or configuration patterns
    - Decision and action:
-     - Similar functionality found → Use that implementation (do not create new implementation)
+     - Similar functionality found → Reuse or extend that implementation path and document the reuse decision
      - Similar functionality is technical debt → Create ADR improvement proposal before implementation
      - No similar functionality → Proceed with new implementation
 

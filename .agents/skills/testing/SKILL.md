@@ -64,7 +64,7 @@ All tests MUST be:
 
 - **Independent**: No dependencies between tests
 - **Reproducible**: Same input always produces same output
-- **Fast**: Complete test suite runs in reasonable time
+- **Fast**: Complete the full test suite within the project's accepted feedback window and flag suites that materially slow local iteration or CI
 - **Self-checking**: Clear pass/fail without manual verification
 - **Timely**: Written close to the code they test
 
@@ -162,7 +162,7 @@ Test names should clearly describe:
 
 - Use setup hooks to prepare test environment
 - Use teardown hooks to clean up resources
-- Keep setup minimal and focused
+- Keep setup scoped to the data, dependencies, and fixtures required for the behavior under test
 - Ensure teardown runs even if test fails
 
 ## Mocking and Test Doubles
@@ -177,7 +177,7 @@ Test names should clearly describe:
 ### Mocking Principles [MANDATORY]
 
 - Mock at boundaries, not internally — use real implementations for internal utilities
-- Keep mocks simple and focused
+- Keep each mock limited to the behavior the test needs to control or observe
 - Verify mock expectations when relevant
 - Use adapters for external libraries/frameworks you do not control
 
@@ -345,7 +345,7 @@ Eliminate tests that fail intermittently:
 - Add test for every bug fix
 - Maintain comprehensive test suite
 - Run full suite regularly
-- Don't delete tests without good reason
+- Delete a test only when the covered behavior no longer exists or the same behavior is covered by a stronger test at the correct level
 
 ### Legacy Code
 

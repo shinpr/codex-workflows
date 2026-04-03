@@ -80,7 +80,7 @@ Must be performed before Design Doc creation:
    - Search existing code for keywords related to planned component
    - Look for components with same domain, responsibilities, or UI patterns
    - Decision and action:
-     - Similar component found → Use that component (do not create new component)
+     - Similar component found → Reuse, compose, or extend that component path and document the reuse decision
      - Similar component is technical debt → Create ADR improvement proposal before implementation
      - No similar component → Proceed with new implementation
 
