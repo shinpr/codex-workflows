@@ -49,12 +49,14 @@ Sources: OWASP Top 10:2025, DryRun Agentic Coding Security Report (2026-03)
 - Endpoints or route handlers defined without authentication middleware
 - Resource access operations (read, update, delete) without authorization verification
 - Administrative or destructive operations accessible without elevated permissions
-- Recent research indicates this pattern appears at elevated rates in AI-generated code — treat as high-priority review target
+- AI-generated code frequently omits authentication middleware and authorization checks; treat every route handler and resource access operation as an explicit verification target during review
+- Detection approach: search for route or endpoint handlers without authentication middleware, and resource operations (read, update, delete) without authorization checks in the call chain
 
 ### Mishandling of Exceptional Conditions (OWASP A10:2025)
 - Error handlers that expose internal system details (stack traces, database errors, file paths) in responses
-- Error handlers that fail open (grant access or skip validation on error)
+- Error handlers that grant access, skip authentication, or bypass authorization when an exception occurs
 - Missing error handling on security-critical operations (authentication, authorization, cryptographic operations)
+- Detection approach: search for catch or error-handler blocks that return stack traces, database errors, or file paths in responses, and for handlers that continue with success-path behavior without re-validating security state
 
 ### Software Supply Chain Patterns (OWASP A03:2025)
 - Dependencies imported without version pinning

@@ -7,13 +7,13 @@
 
 ## Comment Writing Rules
 - **Function Description Focus**: Describe what the code "does"
-- **No Historical Information**: Do not record development history
+- **History in Version Control**: Record development history in commits and PRs instead of code comments
 - **Timeless**: Write only content that remains valid whenever read
 - **Conciseness**: Keep explanations to necessary minimum
 
 ## Type Safety
 
-**Absolute Rule**: any type is completely prohibited. It disables type checking and becomes a source of runtime errors.
+**Absolute Rule**: Use `unknown`, generics, unions, intersections, or validated assertions instead of `any`. `any` disables type checking and becomes a source of runtime errors.
 
 **any Type Alternatives (Priority Order)**
 1. **unknown Type + Type Guards**: Use for validating external input (API responses, localStorage, URL parameters)
@@ -91,7 +91,7 @@ setUsers(users)
 
 **Props Design (Props-driven Approach)**
 - Props are the interface: Define all necessary information as props
-- Avoid implicit dependencies: Do not depend on global state or context without necessity
+- Declare dependencies explicitly through props, hooks, or injected modules instead of relying on ambient global state
 - Type-safe: Always define Props type explicitly
 
 **Environment Variables**
@@ -146,7 +146,7 @@ const response = await fetch('/api/data') // Backend handles API key authenticat
 
 ## Error Handling
 
-**Absolute Rule**: Error suppression prohibited. All errors must have log output and appropriate handling.
+**Absolute Rule**: Handle every error explicitly with log output, recovery logic, or escalation appropriate to the failure mode.
 
 **Fail-Fast Principle**: Fail quickly on errors to prevent continued processing in invalid states
 ```typescript

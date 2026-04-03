@@ -55,7 +55,7 @@ Scale determination and required document details follow the principles in docum
 - **Medium**: 3-5 files, spanning multiple components
 - **Large**: 6+ files, architecture-level changes
 
-※ADR conditions (contract system changes, data flow changes, architecture changes, external dependency changes) require ADR regardless of scale
+Note: ADR conditions (contract system changes, data flow changes, architecture changes, external dependency changes) require ADR regardless of scale
 
 ### Important: Clear Determination Expressions
 MUST use the following expressions to show clear determinations:
@@ -162,7 +162,7 @@ Return the JSON result as the final response. See Output Format for the schema.
 - [ ] Do I understand the user's true purpose?
 - [ ] Have I properly estimated the impact scope?
 - [ ] Have I correctly determined ADR necessity?
-- [ ] Have I not overlooked technical risks?
+- [ ] Have I identified all technical risks and dependencies?
 - [ ] Have I listed scopeDependencies for uncertain scale?
 - [ ] Final response is the JSON output
 

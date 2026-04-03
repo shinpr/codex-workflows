@@ -2,7 +2,7 @@
 
 ## Status
 
-[Proposed | Accepted | Deprecated | Superseded]
+[Proposed | Accepted | Deprecated | Superseded | Rejected]
 
 ## Context
 
@@ -53,6 +53,10 @@
 ### Neutral Consequences
 
 - [List changes that are neither good nor bad]
+
+## Architecture Impact
+
+[Describe how this decision affects existing architecture: components changed, dependencies introduced or removed, and new architectural constraints]
 
 ## Implementation Guidance
 
