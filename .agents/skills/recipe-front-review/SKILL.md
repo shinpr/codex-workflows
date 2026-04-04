@@ -33,7 +33,7 @@ Identify the Design Doc in docs/design/ and check implementation files changed f
 **CANNOT proceed without both a Design Doc and implementation files.**
 
 ### 2. Execute code-reviewer
-Spawn code-reviewer agent: "Validate Design Doc compliance for [design-doc-path]. Implementation files: [git diff file list]. Review mode: full. Return structured JSON report with complianceRate, verdict, acceptanceCriteria, and qualityIssues."
+Spawn code-reviewer agent: "Validate Design Doc compliance for [design-doc-path]. Implementation files: [git diff file list]. Review mode: full. Return structured JSON report per your Output Format specification."
 
 **Store output as**: `$STEP_2_OUTPUT`
 
@@ -59,10 +59,16 @@ Spawn security-reviewer agent: "Design Doc: [path]. Implementation files: [file 
 ```
 Code Compliance: [complianceRate from code-reviewer]
   Verdict: [verdict from code-reviewer]
+  Identifier Match Rate: [identifierMatchRate from code-reviewer]
   Acceptance Criteria:
-  - [fulfilled] [item]
+  - [fulfilled] [item] (confidence: [high/medium/low])
   - [partially_fulfilled] [item]: [gap] — [suggestion]
   - [unfulfilled] [item]: [gap] — [suggestion]
+  Identifier Mismatches (show only mismatches; write `None` if all identifiers match):
+  - None
+  - [identifier]: DD=[designDocValue] Code=[codeValue] at [location] (confidence: [high/medium/low])
+  Quality Findings:
+  - [category] [location]: [description] — [rationale]
 
 Security Review: [status from security-reviewer]
   Findings by category:
