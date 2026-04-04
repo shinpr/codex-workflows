@@ -108,14 +108,24 @@ After user grants "batch approval for entire implementation phase", enter autono
 3. Spawn quality-fixer (or quality-fixer-frontend) agent: "Quality check and fixes"
 4. git commit -> Execute on `status: "approved"`
 
-### Security Review (After All Tasks Complete)
+### Post-Implementation Verification (After All Tasks Complete)
 
-After all task cycles finish, collect all `filesModified` from every executor response (task-executor and task-executor-frontend, deduplicated), then invoke security-reviewer before the completion report:
-1. Spawn security-reviewer agent: "Design Doc: [path]. Implementation files: [collected filesModified list]. Review security compliance."
-2. Check response:
-   - `approved` or `approved_with_notes` -> Proceed to completion report (include notes if present)
-   - `needs_revision` -> Spawn layer-appropriate executor (task-executor or task-executor-frontend per task filename routing) with `requiredFixes`, then layer-appropriate quality-fixer, then re-invoke security-reviewer
-   - `blocked` -> Escalate to user
+After all task cycles finish, collect all `filesModified` from every executor response (task-executor and task-executor-frontend, deduplicated), then run both verification agents before the completion report:
+1. Spawn code-verifier agent: "Verify implementation consistency against the Design Doc. `doc_type: design-doc`. `document_path`: [path]. `code_paths`: [collected filesModified list]."
+2. Spawn security-reviewer agent: "Design Doc: [path]. Implementation files: [collected filesModified list]. Review security compliance."
+3. Consolidate results:
+   - code-verifier passes when `summary.status` is `consistent` or `mostly_consistent`
+   - code-verifier fails when `summary.status` is `needs_review` or `inconsistent`
+   - security-reviewer passes when `status` is `approved` or `approved_with_notes`
+   - security-reviewer fails when `status` is `needs_revision`
+   - security-reviewer `blocked` -> Escalate to user
+4. If either verifier fails:
+   - Create a single fix task covering verifier discrepancies and security requiredFixes
+   - Spawn the layer-appropriate executor
+   - Spawn the layer-appropriate quality-fixer
+   - Re-run only the verifier(s) that failed
+   - Maximum retry count is 1 verification fix cycle; if any failed verifier still fails after re-run, escalate to the user
+5. If both verifiers pass -> Proceed to completion report
 
 ### Test Information Communication
 After acceptance-test-generator execution, when spawning work-planner, communicate:

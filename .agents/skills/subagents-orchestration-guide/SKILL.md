@@ -69,7 +69,7 @@ The following subagents are available:
 10. **technical-designer**: ADR/Design Doc creation
 11. **work-planner**: Work plan creation from Design Doc and test skeletons
 12. **document-reviewer**: Single document quality and rule compliance check
-13. **code-verifier**: Document-code consistency verification for review inputs
+13. **code-verifier**: Document-code consistency verification for review inputs and post-implementation verification
 14. **design-sync**: Design Doc consistency verification across multiple documents
 15. **acceptance-test-generator**: Generate integration and E2E test skeletons from Design Doc ACs
 
@@ -182,7 +182,7 @@ Subagents respond in JSON format. The final response from each JSON-returning su
 - **task-executor**: status (escalation_needed/completed), escalation_type (design_compliance_violation/similar_function_found/similar_component_found/investigation_target_not_found/out_of_scope_file/test_environment_not_ready), testsAdded, requiresTestReview
 - **quality-fixer**: status (approved/blocked). For blocked responses, discriminate by `reason`: specification conflicts use `blockingIssues[]`; execution prerequisites use `missingPrerequisites[]`, and each item provides its own `resolutionSteps`
 - **document-reviewer**: verdict.decision (approved/approved_with_conditions/needs_revision/rejected)
-- **code-verifier**: summary, discrepancies, reverseCoverage
+- **code-verifier**: summary.status, summary.consistencyScore, discrepancies, reverseCoverage
 - **design-sync**: sync_status (CONFLICTS_FOUND/NO_CONFLICTS) — text format with [SUMMARY] block
 - **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
 - **security-reviewer**: status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes
@@ -300,9 +300,9 @@ Batch approval -> Start autonomous execution mode
       -> Orchestrator: Execute git commit
       -> Check remaining tasks:
           - Yes -> next task
-          - No -> security-reviewer: Security review
-              - approved/approved_with_notes -> Completion report
-              - needs_revision -> layer-appropriate task-executor: Security fixes -> quality-fixer -> security-reviewer
+          - No -> code-verifier + security-reviewer: Post-implementation verification
+              - all pass -> Completion report
+              - any fail -> layer-appropriate task-executor: Verification fixes -> quality-fixer -> re-run failed verifiers
               - blocked -> Escalate to user
 ```
 
@@ -320,6 +320,16 @@ Use the task loop defined in the autonomous execution diagram above. The canonic
 2. escalation or integration-test-reviewer decision
 3. quality-fixer quality gate
 4. git commit on approval
+
+### Post-Implementation Verification Pass/Fail Criteria
+
+| Verifier | Pass | Fail | Blocked |
+|----------|------|------|---------|
+| code-verifier | `summary.status` is `consistent` or `mostly_consistent` | `summary.status` is `needs_review` or `inconsistent` | — |
+| security-reviewer | `status` is `approved` or `approved_with_notes` | `status` is `needs_revision` | `status` is `blocked` |
+
+Re-run only verifiers that failed on the previous verification cycle.
+Maximum retry count is 1 verification fix cycle. If any failed verifier still fails after the re-run, escalate to the user.
 
 ## Main Orchestrator Roles
 

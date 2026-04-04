@@ -116,14 +116,24 @@ ENFORCEMENT: Sub-agent prompts missing the constraint suffix MUST be re-issued w
 
 VERIFY approval status before proceeding. Once confirmed, INITIATE autonomous execution mode.
 
-## Security Review (After All Tasks Complete)
+## Post-Implementation Verification (After All Tasks Complete)
 
-After all task cycles finish, collect all `filesModified` from every task-executor/task-executor-frontend response (deduplicated), then invoke security-reviewer before the completion report:
-1. Spawn security-reviewer agent: "Design Doc: [path(s)]. Implementation files: [collected filesModified list]. Review security compliance."
-2. Check response:
-   - `approved` or `approved_with_notes` -> Proceed to completion report (include notes if present)
-   - `needs_revision` -> Spawn layer-appropriate task-executor with `requiredFixes`, then quality-fixer, then re-invoke security-reviewer
-   - `blocked` -> Escalate to user
+After all task cycles finish, collect all `filesModified` from every task-executor/task-executor-frontend response (deduplicated), then run both verification agents before the completion report:
+1. Spawn code-verifier once per Design Doc: "Verify implementation consistency against the Design Doc. `doc_type: design-doc`. `document_path`: [single design doc path]. `code_paths`: [collected filesModified list]."
+2. Spawn security-reviewer agent: "Design Doc: [path(s)]. Implementation files: [collected filesModified list]. Review security compliance."
+3. Consolidate results:
+   - each code-verifier run passes when `summary.status` is `consistent` or `mostly_consistent`
+   - a code-verifier run fails when `summary.status` is `needs_review` or `inconsistent`
+   - security-reviewer passes when `status` is `approved` or `approved_with_notes`
+   - security-reviewer fails when `status` is `needs_revision`
+   - security-reviewer `blocked` -> Escalate to user
+4. If any verifier fails:
+   - Create a single fix task covering verifier discrepancies and security requiredFixes
+   - Spawn the layer-appropriate task-executor
+   - Spawn the layer-appropriate quality-fixer
+   - Re-run only the verifier(s) that failed
+   - Maximum retry count is 1 verification fix cycle; if any failed verifier still fails after re-run, escalate to the user
+5. If all verifiers pass -> Proceed to completion report
 
 **[STOP -- BLOCKING]** Upon detecting ANY requirement changes, halt execution immediately.
 **CANNOT proceed until user explicitly confirms the change scope.**
