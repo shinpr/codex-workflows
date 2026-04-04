@@ -337,6 +337,14 @@ your-project/
 
 ---
 
+## Works With
+
+If your requirements already live in Linear or an existing PRD, [linear-prism](https://github.com/shinpr/linear-prism) can decompose them into implementation-ready tasks by reading the codebase, making dependencies explicit, and preserving Design Doc boundaries.
+
+Those tasks can then be passed into `$recipe-design` to enter the design phase with clearer scope and better task visibility.
+
+---
+
 ## FAQ
 
 **Q: What models does this work with?**
