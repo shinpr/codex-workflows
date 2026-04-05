@@ -241,6 +241,15 @@ Self-evident: internal-only refactoring with identical observable inputs and out
 - **Success criteria**: [Observable outcome that proves correctness]
 - **Failure response**: [What to do if early verification fails]
 
+### Output Comparison (When Changing Existing Observable Behavior, an External Contract, or a Persisted Data Shape)
+
+- **Comparison input**: [Identical input used for both the current and new implementation]
+- **Expected output fields**: [Specific fields, columns, or output format to compare]
+- **Diff method**: [How the outputs are compared, such as field-by-field diff, file diff, or snapshot comparison]
+- **Transformation pipeline coverage**: [Map each listed step from codebase analysis `dataTransformationPipelines` to the comparison that verifies its output. If a step passes data through unchanged, mark it excluded with rationale]
+
+Mark as `N/A` with a brief rationale only when the change does not alter existing observable behavior, an external contract, or a persisted data shape.
+
 ### State Transitions and Invariants (When Applicable)
 
 ```yaml

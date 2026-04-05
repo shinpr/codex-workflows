@@ -70,14 +70,29 @@ Identify what exists, what appears missing, and what deserves close attention in
 ### Step 2: Existing Code Element Discovery
 
 For each affected file or inferred target file in the selected scope:
-1. Read the file and record public interfaces, key functions, classes, types, constants, and configuration use
-2. Trace one level of direct dependencies through imports or equivalent declarations
-3. Search for patterns related to:
+1. Read the file in full and record:
+   - public and private/internal interfaces, key functions, methods, classes, types, constants, and configuration use
+   - exact names, visibility, and signatures where directly observable
+2. Trace call chains with these scope rules:
+   - same module or file: follow internal function and method calls recursively until the chain terminates, delegates externally, or reaches a leaf
+   - external dependencies through imports or equivalent declarations: record them as integration points with public interface or contract details only
+3. Enumerate all entry points discovered in the traced scope that receive input from outside the module or file
+4. Mark each entry point as `change-relevant` or `non-relevant` based on requirement scope, affected files, and user-visible behavior
+5. For each `change-relevant` entry point, trace the data transformation pipeline step by step:
+   - record how the input changes at each step
+   - record intermediate representations or formats when they differ from the final output
+   - record external lookups that modify values, including configuration, constants, mapping tables, and reference data
+6. For each `non-relevant` entry point, record at minimum:
+   - entry point name and file:line
+   - input shape
+   - output shape
+7. If additional entry points share the same output path or transformation logic as a `change-relevant` entry point, reclassify them as `change-relevant` and trace them step by step
+8. Search for patterns related to:
    - data access: repository usage, ORM calls, query builders, raw SQL, migration references
    - external service calls: HTTP clients, SDK clients, queue producers or consumers, webhook handlers
    - validation logic: validator functions, schema parsers, assertions, guard clauses, constraint checks
    - user-visible state handling: state stores, reducers, hooks, loading or error states, view-model shaping
-4. Record each discovered element with exact file path and line number
+9. Record each discovered element with exact file path and line number
 
 ### Step 3: Data Model Discovery
 
@@ -149,6 +164,31 @@ Return the JSON result as the final response.
     ],
     "migrationFiles": ["path/to/migration"]
   },
+  "dataTransformationPipelines": [
+    {
+      "entryPoint": "functionOrMethodName (path/to/file:line)",
+      "steps": [
+        {
+          "order": 1,
+          "method": "functionOrMethodName (path/to/file:line)",
+          "input": "Input data or format at this step",
+          "output": "Output data or format at this step",
+          "externalLookups": ["Config.KEY lookup", "Reference table mapping"],
+          "transformation": "What changed and why it matters"
+        }
+      ],
+      "intermediateFormats": ["Intermediate representation if applicable"],
+      "finalOutput": "Final output shape or observable value"
+    }
+  ],
+  "entryPointInventory": [
+    {
+      "entryPoint": "functionOrMethodName (path/to/file:line)",
+      "classification": "change-relevant|non-relevant",
+      "inputShape": "Input type or shape",
+      "outputShape": "Output type or shape"
+    }
+  ],
   "constraints": [
     {
       "type": "validation|business_rule|configuration|assumption",
@@ -176,11 +216,18 @@ Return the JSON result as the final response.
 ## Completion Criteria
 
 - [ ] Parsed requirement context and identified analysis categories
-- [ ] Read affected files and traced direct dependencies
-- [ ] Recorded key interfaces and implementation elements with file:line evidence
+- [ ] Read affected files in full and recorded public and private implementation elements with file:line evidence, or documented scope limits in `limitations`
+- [ ] Traced call chains according to the scope rules, or documented incomplete traces in `limitations`
+- [ ] Enumerated all entry points in the traced scope and marked each as `change-relevant` or `non-relevant`
+- [ ] Traced data transformation pipelines step by step for all `change-relevant` entry points that transform incoming data
+- [ ] Recorded at minimum entry point name, input shape, and output shape for all `non-relevant` entry points
+- [ ] Reclassified and traced entry points that share the same output path or transformation logic as a `change-relevant` entry point
+- [ ] Recorded external lookups that modify output values, including configuration, constants, and mapping data
 - [ ] Performed data model discovery when data access patterns were present
 - [ ] Extracted constraints and focus areas with concrete risks
 - [ ] Checked existing tests for coverage signals
+- [ ] Populated `dataTransformationPipelines` for all traced pipelines
+- [ ] Populated `entryPointInventory` for all discovered entry points in the traced scope
 - [ ] Returned valid JSON
 """
 
