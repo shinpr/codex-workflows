@@ -98,6 +98,7 @@ For DesignDoc, additionally verify:
 - [ ] Field propagation map present (when fields cross boundaries)
 - [ ] Data-oriented designs contain concrete data design or Test Boundaries content, or an explicit N/A rationale
 - [ ] Verification Strategy section present with correctness definition, target comparison, verification method, observable success indicator, normalized verification timing, and early verification point
+- [ ] Output Comparison section present when the design changes existing observable behavior, an external contract, or a persisted data shape
 
 #### Gate 1: Quality Assessment (only after Gate 0 passes)
 
@@ -116,6 +117,7 @@ For DesignDoc, additionally verify:
 - **Data design completeness check**: When the document references persistence, storage, database, repository, query, ORM, migration, table, schema, or column concepts, verify that the Design Doc includes concrete data design content or an explicit N/A rationale. Useful evidence includes schema references, data model notes, or Test Boundaries with data layer strategy
 - **Code-verifier evidence integration**: When `code_verification` is provided, reconcile major or critical discrepancies and undocumented data operations as part of Gate 1 completeness and consistency review
 - **Verification Strategy quality check**: When the Verification Strategy section exists, verify that: (1) correctness definition is specific and measurable, (2) target comparison and observable success indicator are concrete when the change modifies observable behavior, external contracts, integrations, or data flow, (3) internal-only refactoring with identical observable inputs and outputs may use the minimal form, (4) verification method can detect the change's primary risk, (5) verification timing uses the normalized vocabulary or an explicit `N/A` rationale for minimal form, and (6) vertical-slice designs do not defer all verification to the final phase
+- **Output comparison check**: When the Design Doc changes existing observable behavior, an external contract, or a persisted data shape, verify that a concrete output comparison method is defined with identical input, expected output fields or format, and diff method. When upstream analysis includes `dataTransformationPipelines`, each listed step must be mapped to the comparison that verifies it; steps excluded because data passes through unchanged must include rationale. Missing mappings or rationale → `important` issue (category: `completeness`)
 - **Undetermined items review** [MANDATORY]: Every TBD, unknown, or open item MUST include: (1) **owner** — who resolves it, (2) **due** — when it gets resolved (which phase or milestone), (3) **next-phase handling** — how the next phase treats this gap. Missing any of these three → `important` issue
 
 **Perspective-specific Mode**:
@@ -258,6 +260,7 @@ Include in output when `prior_context_count > 0`:
 - [ ] Match of requirements, terminology, numbers between documents
 - [ ] Completeness of required elements in each document
 - [ ] Verification Strategy present with a concrete correctness definition and early verification point
+- [ ] Output Comparison defined when the design changes existing observable behavior, an external contract, or a persisted data shape
 - [ ] Verification Strategy aligns with design type and implementation approach
 - [ ] Compliance with project rules
 - [ ] Technical feasibility and reasonableness of estimates

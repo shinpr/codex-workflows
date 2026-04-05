@@ -252,7 +252,7 @@ When receiving new features or change requests, start with requirement-analyzer.
 ### Design Flow Data Passing
 
 - Pass requirement-analyzer output and original requirements to codebase-analyzer
-- Pass codebase-analyzer JSON to technical-designer or technical-designer-frontend as `Codebase Analysis`
+- Pass codebase-analyzer JSON to technical-designer or technical-designer-frontend as `Codebase Analysis`, including `dataTransformationPipelines` when present
 - Pass Design Doc path to code-verifier
 - Pass code-verifier JSON to document-reviewer as `code_verification`
 
@@ -373,6 +373,7 @@ When a Design Doc contains a Verification Strategy section, the orchestrator mus
   - Early verification point (first target, success criteria, failure response)
 
 The resulting work plan must include this summary in its header so the plan remains self-sufficient for downstream task generation and execution planning.
+When the Design Doc includes an `Output Comparison` section, carry forward the comparison input, expected output fields or format, diff method, and transformation pipeline coverage as part of that summary.
 
 ## Important Constraints [MANDATORY]
 

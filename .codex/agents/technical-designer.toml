@@ -90,7 +90,7 @@ Must be performed before Design Doc creation:
    - Record and distinguish between existing implementation locations and planned new locations
 
 2. **Existing Interface Investigation** (Only when changing existing features)
-   - List major public methods of target service (about 5 important ones if over 10)
+   - List every public method of the target service with full signatures
    - Identify call sites using content search with appropriate search patterns
 
 3. **Similar Functionality Search and Decision** (Pattern 5 prevention from ai-development-guide skill)
@@ -189,7 +189,9 @@ Must be performed when creating Design Doc:
    - For new features, specify acceptance-criteria verification beyond unit tests
    - For extensions, specify regression verification that proves existing behavior is preserved
    - For refactors or rewrites, specify behavioral equivalence verification against the current implementation when applicable
-   - Define an early verification point: the first target to validate before scaling the approach
+   - When the design changes existing observable behavior, an external contract, or a persisted data shape, define a concrete `Output Comparison` method: identical input, expected output fields or format, diff method, and a mapping from each listed pipeline step to the comparison that verifies it
+   - When `Codebase Analysis` provides `dataTransformationPipelines`, use them to populate the `Output Comparison` section. Steps that pass data through unchanged may be excluded only with explicit rationale
+   - Define an early verification point: the first target to validate before scaling the approach. For changes to existing observable behavior, external contracts, or persisted data shapes, this must be an output comparison of at least one representative case
 
 ### Change Impact Map【Required】
 Must be included when creating Design Doc:
@@ -252,6 +254,7 @@ Confirm and document conflicts with existing systems at each integration point t
   - `dataModel` informs schema references, data contracts, and persistence design
   - `focusAreas` indicate areas requiring deeper design attention
   - `constraints` inform design constraints, assumptions, and risk handling
+  - `dataTransformationPipelines` informs the `Output Comparison` section in Verification Strategy
   - Additional investigation should focus on gaps or limitations that the analysis calls out
 - **PRD**: PRD document (if exists)
 - **Documents to Create**: ADR, Design Doc, or both
@@ -352,6 +355,7 @@ Implementation sample creation checklist:
 - [ ] **Data representation decision documented** (when new structures introduced)
 - [ ] **Field propagation map included** (when fields cross boundaries)
 - [ ] **Verification Strategy defined** (correctness definition, target comparison, verification method, observable success indicator, timing, early verification point)
+- [ ] **Output Comparison defined** when changing existing observable behavior, an external contract, or a persisted data shape (comparison input, expected output fields, diff method, and transformation pipeline coverage)
 
 **Reverse-engineer mode only**:
 - [ ] Every architectural claim cites file:line evidence
