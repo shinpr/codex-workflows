@@ -32,6 +32,31 @@ Repeat this block for each Design Doc when multiple Design Docs exist. Preserve 
 - **Success criteria**: [extracted from Design Doc]
 - **Failure response**: [extracted from Design Doc]
 
+## Design-to-Plan Traceability
+
+Map each Design Doc technical requirement to the task or phase that covers it. Use one row per extracted requirement item. Every row must have at least one covering task, or an explicit justified gap.
+
+| Source Design Doc | DD Section | DD Item | Category | Covered By Task(s) | Gap Status | Notes |
+|-------------------|------------|---------|----------|--------------------|------------|-------|
+| [docs/design/xxx-design.md] | [Section name] | [Specific implementation-relevant item] | impl-target / connection-switching / contract-change / verification / prerequisite / scope-boundary | [P1-T1, P1-T2] | covered | |
+
+**Category values**: `impl-target` (implementation target), `connection-switching` (connection, switching, registration, dependency wiring), `contract-change` (interface change and propagation across boundaries), `verification` (verification method, test boundary, comparison point), `prerequisite` (migration, setup, security, environment preparation), `scope-boundary` (explicit non-target or no-ripple boundary that must remain unchanged)
+
+**Gap Status values**: `covered` (mapped to one or more tasks), `gap` (no task exists yet; include justification in Notes and require user confirmation before plan approval)
+
+**Task ID format**:
+- Implementation tasks: `P<phase-number>-T<task-number>` such as `P1-T1`, `P2-T3`
+- Phase completion tasks: `P<phase-number>-COMPLETE` such as `P1-COMPLETE`
+- Final quality task: `FINAL-QA`
+- Multiple covering tasks: comma-separated IDs in display order, for example `P1-T1, P1-T2`
+
+**DD Item normalization rules**:
+- One row = one independently plannable obligation that can be covered, deferred, or verified without relying on a hidden sub-obligation
+- Split compound obligations joined by `and`, `or`, or separate boundary crossings when they can be implemented or verified independently
+- Normalize same-boundary field propagation into one row when the fields must move together through the same boundary for the same reason
+- Merge duplicate restatements of the same obligation from multiple DD sections into one row and cite the primary section in `DD Section`
+- Keep `scope-boundary` rows concrete: name the protected file group, component boundary, contract, or workflow that must remain unchanged
+
 ## Objective
 [Why this change is necessary, what problem it solves]
 
@@ -64,27 +89,29 @@ Use when implementation approach is Vertical Slice. Each phase represents one va
 **Verification**: [Use the early verification point when applicable]
 
 #### Tasks
-- [ ] Task 1: Specific work content
-- [ ] Task 2: Verification for this value unit
+- [ ] [P1-T1] Specific work content
+- [ ] [P1-T2] Verification for this value unit
 - [ ] Quality check: Implement staged quality checks (refer to ai-development-guide skill)
 
 #### Phase Completion Criteria
 - [ ] Early verification point passed
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
+- [ ] [P1-COMPLETE] Phase completion verification recorded
 
 ### Phase 2: [Value Unit 2] (Estimated commits: X)
 **Purpose**: [Subsequent slice]
 **Verification**: [Verification for this value unit]
 
 #### Tasks
-- [ ] Task 1: Specific work content
-- [ ] Task 2: Verification for this value unit
+- [ ] [P2-T1] Specific work content
+- [ ] [P2-T2] Verification for this value unit
 - [ ] Quality check
 
 #### Phase Completion Criteria
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
+- [ ] [P2-COMPLETE] Phase completion verification recorded
 
 ### Option B: Horizontal Slice Phase Structure
 
@@ -94,40 +121,43 @@ Use when implementation approach is Horizontal Slice. Phases follow Foundation -
 **Purpose**: Contract definitions, interfaces, test preparation
 
 #### Tasks
-- [ ] Task 1: Specific work content
-- [ ] Task 2: Specific work content
+- [ ] [P1-T1] Specific work content
+- [ ] [P1-T2] Specific work content
 - [ ] Quality check: Implement staged quality checks (refer to ai-development-guide skill)
 - [ ] Unit tests: All related tests pass
 
 #### Phase Completion Criteria
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
+- [ ] [P1-COMPLETE] Phase completion verification recorded
 
 ### Phase 2: [Core Feature] (Estimated commits: X)
 **Purpose**: Business logic, unit tests
 
 #### Tasks
-- [ ] Task 1: Specific work content
-- [ ] Task 2: Specific work content
+- [ ] [P2-T1] Specific work content
+- [ ] [P2-T2] Specific work content
 - [ ] Quality check
 - [ ] Integration tests: Verify overall feature functionality
 
 #### Phase Completion Criteria
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
+- [ ] [P2-COMPLETE] Phase completion verification recorded
 
 ### Phase 3: [Integration] (Estimated commits: X)
 **Purpose**: External connections, presentation layer
 
 #### Tasks
-- [ ] Task 1: Specific work content
-- [ ] Task 2: Specific work content
+- [ ] [P3-T1] Specific work content
+- [ ] [P3-T2] Specific work content
 - [ ] Quality check
 - [ ] Integration tests: Verify component coordination
 
 #### Phase Completion Criteria
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
+- [ ] [P3-COMPLETE] Phase completion verification recorded
 
 ### Final Phase: Quality Assurance (Required) (Estimated commits: 1)
 This phase is required for all implementation approaches.
@@ -135,7 +165,7 @@ This phase is required for all implementation approaches.
 **Purpose**: Cross-cutting quality assurance and Design Doc consistency verification
 
 #### Tasks
-- [ ] Verify all Design Doc acceptance criteria achieved
+- [ ] [FINAL-QA] Verify all Design Doc acceptance criteria achieved
 - [ ] Security review: Verify security considerations from Design Doc are implemented
 - [ ] Quality checks (types, lint, format)
 - [ ] Execute all tests (including integration/E2E from test skeletons, when provided)

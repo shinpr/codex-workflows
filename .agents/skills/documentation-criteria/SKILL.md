@@ -81,7 +81,7 @@ description: "Documentation creation criteria for PRD, ADR, Design Doc, UI Spec,
 
 ### Work Plan
 **Purpose**: Implementation task management and progress tracking
-**Scope**: Task breakdown, dependencies, schedule estimates, test skeleton file paths, Verification Strategy summaries from each Design Doc, final Quality Assurance phase, and progress tracking only. Technical rationale belongs in ADR and design details belong in Design Doc.
+**Scope**: Task breakdown, dependencies, schedule estimates, test skeleton file paths, Verification Strategy summaries from each Design Doc, Design-to-Plan Traceability mapping for implementation-relevant technical requirements, final Quality Assurance phase, and progress tracking only. Technical rationale belongs in ADR and design details belong in Design Doc.
 
 **Phase Division Criteria**:
 
