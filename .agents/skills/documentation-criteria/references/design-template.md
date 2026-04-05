@@ -137,6 +137,14 @@ No Ripple Effect:
   - [Explicitly specify unaffected features]
 ```
 
+### Interface Change Impact Analysis
+
+Use this table for interface or contract compatibility decisions. Record what changes at the boundary and how compatibility is preserved.
+
+| Existing Interface | New Interface | Conversion Required | Adapter / Wrapper Required | Compatibility Method |
+|-------------------|---------------|---------------------|----------------------------|----------------------|
+| [Function / method / props / contract] | [Function / method / props / contract] | [Yes / No] | [Required / Not Required] | [Adapter, wrapper, migration path, deprecation policy, or `-`] |
+
 ### Architecture Overview
 
 [How this feature is positioned within the overall system]
@@ -149,9 +157,11 @@ No Ripple Effect:
 
 ### Integration Points List
 
-| Integration Point | Location | Old Implementation | New Implementation | Switching Method |
-|-------------------|----------|-------------------|-------------------|------------------|
-| Integration Point 1 | [Class/Function] | [Existing Process] | [New Process] | [DI/Factory etc.] |
+Use this table for runtime wiring, switching, or registration points. Record how the integration is connected and how the switching behavior is verified.
+
+| Integration Point | Location | Old Implementation | New Implementation | Switching Method | Verification Method |
+|-------------------|----------|-------------------|-------------------|------------------|---------------------|
+| Integration Point 1 | [Class/Function] | [Existing Process] | [New Process] | [DI/Factory etc.] | [How this switching or integration will be verified] |
 
 ### Main Components
 

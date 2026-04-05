@@ -375,6 +375,10 @@ When a Design Doc contains a Verification Strategy section, the orchestrator mus
 The resulting work plan must include this summary in its header so the plan remains self-sufficient for downstream task generation and execution planning.
 When the Design Doc includes an `Output Comparison` section, carry forward the comparison input, expected output fields or format, diff method, and transformation pipeline coverage as part of that summary.
 
+In addition, the orchestrator must preserve implementation-relevant technical requirements from each Design Doc so work-planner can create a Design-to-Plan Traceability table. Use the category values and normalization rules defined in the plan template, including protected no-change boundaries from sections such as `No Ripple Effect`.
+
+Work-planner maps each extracted item to a covering task or phase. If no covering task exists, the row is marked `gap` with justification. Justified gaps require user confirmation before plan approval.
+
 ## Important Constraints [MANDATORY]
 
 - **Quality check is REQUIRED**: quality-fixer approval MUST be obtained before commit

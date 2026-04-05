@@ -42,7 +42,8 @@ Skill Status:
 4. Define completion criteria for each task (derived from Design Doc acceptance criteria)
 5. Place test implementation and execution appropriately for each phase
 6. Concretize risks and countermeasures
-7. Document in progress-trackable format
+7. Create explicit Design-to-Plan Traceability so Design Doc technical requirements are covered without silent omission
+8. Document in progress-trackable format
 
 ## Input Parameters
 
@@ -62,6 +63,10 @@ Read the Design Doc(s), UI Spec, PRD, and ADR (if provided). Extract:
 - Technical dependencies and implementation order
 - Integration points and their contracts
 - Verification Strategy from each Design Doc: correctness definition, target comparison, verification method, observable success indicator, normalized verification timing, and early verification point
+- Implementation-relevant technical requirements from each Design Doc section using the category values defined in the plan template's `Design-to-Plan Traceability` section
+
+Focus on implementation-relevant items only: items that directly inform task creation, dependency ordering, verification design, or protected no-change boundaries.
+Extract `scope-boundary` rows from explicit non-target statements such as `No Ripple Effect`, compatibility constraints, or protected boundaries that must remain unchanged.
 
 ### 2. Process Test Design Information (when provided)
 Read test skeleton files and extract meta information (see Test Design Information Processing section).
@@ -86,10 +91,30 @@ Choose Strategy A (TDD) if test skeletons are provided, Strategy B (implementati
 - Use the plan template's vertical or horizontal option accordingly
 - Remove every unused phase-structure option from the final work plan output
 
-### 5. Define Tasks with Completion Criteria
+### 5. Build Design-to-Plan Traceability
+Create a Design-to-Plan Traceability table before finalizing tasks.
+
+For each extracted technical requirement item:
+- Record source Design Doc path and section name
+- Normalize the item according to the plan template's DD Item normalization rules
+- Map the item to one or more covering task IDs or phase completion task IDs using the plan template's Task ID format
+- Mark `covered` when a concrete task covers the item
+- Mark `gap` only when no concrete task covers the item yet
+- Add justification in Notes for every `gap`
+
+Traceability rules:
+- A broader implementation task may cover multiple DD items when the mapping remains explicit
+- Acceptance criteria alone are insufficient coverage when the DD also specifies interface changes, dependency wiring, verification boundaries, or prerequisite work
+- Verification Strategy items may map to dedicated verification tasks or phase completion tasks, but the mapping must be explicit
+- Interface change and field propagation items must map to the task that updates every affected boundary or compatibility layer
+- Scope boundaries must map to the task IDs or phase completion task IDs that verify the protected boundary remains unchanged
+- Any `gap` without justification is an error
+- Any justified `gap` must be flagged for user confirmation before plan approval
+
+### 6. Define Tasks with Completion Criteria
 For each task, derive completion criteria from Design Doc acceptance criteria. Apply the 3-element completion definition (Implementation Complete, Quality Complete, Integration Complete).
 
-### 6. Produce Work Plan Document
+### 7. Produce Work Plan Document
 Write the work plan following the plan template from documentation-criteria skill. Include Phase Structure Diagram and Task Dependency Diagram (mermaid).
 
 ## Work Plan Output Format
@@ -248,10 +273,17 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 
 - [ ] Design Doc(s) consistency verification
 - [ ] Verification Strategies extracted from each Design Doc and included in the plan header without unintended merging
+- [ ] Design-to-Plan Traceability table completed for all extracted implementation-relevant DD items
+  - [ ] Every row mapped to covering task(s) or justified `gap`
+  - [ ] Interface change and propagation items mapped explicitly
+  - [ ] Connection, switching, and prerequisite items mapped explicitly
+  - [ ] Scope-boundary items mapped explicitly when the Design Doc defines protected no-change areas
+  - [ ] Covered By Task(s) uses only normalized task IDs
+  - [ ] No unjustified `gap` entries remain
 - [ ] Phase structure matches the implementation approach
 - [ ] Early verification point placed in the earliest applicable phase
 - [ ] Normalized verification timing mapped consistently to phases
-- [ ] All requirements converted to tasks
+- [ ] Acceptance criteria and extracted technical requirements converted to tasks or justified gaps
 - [ ] Quality assurance exists in final phase
 - [ ] Test skeleton file paths listed in corresponding phases (when provided)
 - [ ] E2E environment prerequisites addressed when E2E skeletons are provided

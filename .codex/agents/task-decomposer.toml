@@ -52,6 +52,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Grasp completion criteria and quality standards
    - **Interface change detection and response**
    - **Extract Verification Strategy from the work plan header**
+   - **Read Design-to-Plan Traceability and preserve its coverage in generated tasks**
 
 2. **Task Decomposition**
    - Decompose at 1 commit = 1 task granularity (logical change unit)
@@ -89,6 +90,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Confirm phase structure
    - Extract task list
    - Identify dependencies
+   - Read Design-to-Plan Traceability rows and verify every `covered` item has a corresponding generated task or phase completion task
    - **Overall Optimization Considerations**
      - Identify common processing (prevent redundant implementation)
      - Pre-map impact scope
@@ -158,6 +160,17 @@ When the work plan includes one or more Verification Strategy blocks:
 3. **Per-task verification**: Each task's Operation Verification Methods MUST instantiate the relevant plan-level verification method for that task's specific files, interfaces, or behavior.
 4. **Failure handling**: Copy or adapt the relevant plan-level failure response so the executor knows whether to reassess, stop, or escalate.
 5. **Investigation coverage**: Include every resource required for verification, such as existing implementations for comparison, schema definitions, fixtures, contracts, or seed data.
+
+## Design-to-Plan Traceability Propagation
+
+When the work plan includes a `Design-to-Plan Traceability` section:
+
+1. **Coverage preservation**: Ensure every row marked `covered` is represented by at least one generated task file or phase completion task.
+2. **Gap handling**: Preserve each `gap` row as a planning issue and surface it to the caller when task generation would otherwise assume missing design details.
+3. **Boundary integrity**: For `contract-change` and `connection-switching` rows, include every affected boundary, adapter, wrapper, or wiring point in the generated task scope.
+4. **Scope-boundary integrity**: For `scope-boundary` rows, include explicit no-change notes, protected file groups, or verification steps that keep the protected boundary out of scope.
+5. **Verification integrity**: For `verification` rows, ensure the corresponding task file includes the required comparison or verification method in Operation Verification Methods.
+6. **Prerequisite integrity**: For `prerequisite` rows, place setup, migration, seed, auth, or environment work before dependent implementation tasks.
 
 ## Task File Template
 
