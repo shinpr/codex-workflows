@@ -28,7 +28,7 @@ Map PRD acceptance criteria to prototype references. Skip this section if no pro
 
 | AC ID | AC Summary | Screen / State | Prototype Reference (element ID / path) | Adoption Decision |
 |-------|-----------|----------------|----------------------------------------|-------------------|
-| AC-01 | [EARS AC summary] | [Screen / state name] | [element or file reference] | Adopted / Not adopted / On hold |
+| AC-001 | [EARS AC summary] | [Screen / state name] | [element or file reference] | Adopted / Not adopted / On hold |
 
 ## Screen List and Transitions
 
@@ -61,15 +61,19 @@ Map PRD acceptance criteria to prototype references. Skip this section if no pro
 
 #### State x Display Matrix
 
-| State | Default | Loading | Empty | Error | Partial |
-|-------|---------|---------|-------|-------|---------|
-| Display | [Normal display] | [Skeleton / spinner] | [Empty state + CTA] | [Error message + recovery action] | [Cached / partial display] |
+List only states that actually exist for this component. Remove unused rows. Include fallback or degraded states only when explicitly required by the PRD or existing behavior.
+
+| State | Trigger / Condition | Display | Recovery / Notes |
+|-------|---------------------|---------|------------------|
+| Default | [Initial or ready condition] | [Normal display] | [Notes if needed] |
+| Loading | [Data or action in progress] | [e.g., skeleton matching final layout] | [Cancellation, timeout, or transition notes if relevant] |
+| Error | [Failure condition] | [e.g., inline `Alert` + "Retry"] | [Recovery action required by product behavior] |
 
 #### Interaction Definition
 
 | AC ID | EARS Condition | User Action | System Response | State Transition | Error Handling |
 |-------|---------------|-------------|-----------------|-----------------|----------------|
-| AC-01 | When [trigger] | [Click / input / etc.] | [Expected behavior] | [From state -> To state] | [Retry / Reset / Fallback] |
+| AC-001 | When [trigger] | [Click / input / etc.] | [Expected behavior] | [From state -> To state] | [Retry / Reset / Explicitly defined degraded behavior if any] |
 
 ### Component: [ComponentName2]
 
@@ -79,8 +83,15 @@ Map PRD acceptance criteria to prototype references. Skip this section if no pro
 
 ### Environment Constraints
 - Target browsers: [e.g., Chrome 120+, Safari 17+]
-- Responsive breakpoints: [e.g., 768px, 1024px, 1280px]
 - Theme support: [e.g., light/dark, system preference]
+
+#### Responsive Behavior
+
+| Breakpoint | Width | Key Changes |
+|-----------|-------|-------------|
+| Mobile | [e.g., < 768px] | [e.g., single-column layout, compact navigation, reduced non-critical detail] |
+| Tablet | [e.g., 768px - 1023px] | [e.g., two-column layout, condensed sidebar, larger touch targets] |
+| Desktop | [e.g., >= 1024px] | [e.g., full layout, persistent navigation, expanded comparison views] |
 
 ### Existing Component Reuse Map
 
@@ -90,12 +101,42 @@ Map PRD acceptance criteria to prototype references. Skip this section if no pro
 | [DataTable] | Extend | [components/ui/Table] | [Add sorting support] |
 | [FeatureCard] | New | - | [No similar component exists] |
 
-### Design Tokens
+### Design Tokens (include only when existing tokens must be referenced or a new visual system must be defined)
+
+Prefer existing design-system tokens, theme variables, or component-library primitives. If the project does not define tokens at this level, replace this section with a short note such as `N/A - existing component library styles are used without new token definitions`. If the entire Design Tokens section is `N/A`, skip all subsections below.
+
+#### Color Roles
+
+Remove unused subsections and rows. Do not invent token names or values that are not supported by the codebase, design system, or approved design direction.
+
+| Role | Token | Value | Usage |
+|------|-------|-------|-------|
+| Background Surface | [existing token] | [actual value if defined] | [Page or container background] |
+| Brand / Accent | [existing token] | [actual value if defined] | [Primary actions and emphasis] |
+
+#### Typography Hierarchy
+
+| Role | Font | Size | Weight | Line Height | Letter Spacing |
+|------|------|------|--------|-------------|----------------|
+| Body | [existing token or family] | [actual size if defined] | [actual weight if defined] | [actual line height if defined] | [actual letter spacing if defined] |
+
+#### Spacing Scale
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| [color-primary] | [value] | [Primary actions] |
-| [spacing-md] | [value] | [Component spacing] |
+| [existing token] | [actual value if defined] | [Relevant spacing usage] |
+
+#### Elevation
+
+| Level | Treatment | Usage |
+|-------|-----------|-------|
+| [Relevant level] | [actual token or shadow treatment if defined] | [Where it is used] |
+
+#### Border Radius Scale
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| [existing token] | [actual value if defined] | [Relevant usage] |
 
 ## Visual Acceptance
 

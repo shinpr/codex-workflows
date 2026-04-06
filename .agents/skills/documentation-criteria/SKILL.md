@@ -53,7 +53,7 @@ description: "Documentation creation criteria for PRD, ADR, Design Doc, UI Spec,
 
 ### PRD (Product Requirements Document)
 **Purpose**: Define business requirements and user value
-**Scope**: Business requirements, user value, success metrics, user stories, MoSCoW prioritization, MVP/Future phase separation, user journey diagram, and scope boundary diagram only. Technical implementation details belong in Design Doc, technical decision rationale in ADR, and implementation phases or task breakdown belong in Work Plan.
+**Scope**: Business requirements, user value, success metrics, user stories, MoSCoW prioritization, MVP/Future phase separation, user journey diagram, scope boundary diagram, and acceptance criteria with sequential IDs (for example `AC-001`, `AC-002`, continuing across all requirements in the document) only. Technical implementation details belong in Design Doc, technical decision rationale in ADR, and implementation phases or task breakdown belong in Work Plan.
 
 ### ADR (Architecture Decision Record)
 **Purpose**: Record technical decision rationale and background

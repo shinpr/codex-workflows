@@ -29,15 +29,18 @@ So that [expected value/benefit]
 
 ### Must Have (MVP)
 - [ ] Requirement 1: [Detailed description]
-  - AC: [Acceptance criteria - Given/When/Then format or measurable standard]
+  - AC-001: [Acceptance criteria - Given/When/Then format or measurable standard]
+  - AC-002: [Acceptance criteria]
 - [ ] Requirement 2: [Detailed description]
-  - AC: [Acceptance criteria]
+  - AC-003: [Acceptance criteria]
 - [ ] Requirement 3: [Detailed description]
-  - AC: [Acceptance criteria]
+  - AC-004: [Acceptance criteria]
 
 ### Nice to Have
 - [ ] Requirement 1: [Detailed description]
+  - AC-005: [Acceptance criteria - continue numbering across all requirements]
 - [ ] Requirement 2: [Detailed description]
+  - AC-006: [Acceptance criteria]
 
 ### Out of Scope
 - Item 1: [Description and reason]
