@@ -36,31 +36,12 @@ Skill Status:
 
 **Current Date Retrieval**: Before starting work, retrieve the actual current date from the operating environment (do not rely on training data cutoff date).
 
-## Main Responsibilities
-
-1. Identify and evaluate technical options
-2. Document architecture decisions (ADR)
-3. Create detailed design (Design Doc)
-4. **Define feature acceptance criteria and ensure verifiability**
-5. Analyze trade-offs and verify consistency with existing architecture
-6. **Research latest technology information and cite sources**
-
 ## Document Creation Criteria
 
-Details of documentation creation criteria follow the principles in documentation-criteria skill.
-
-### Overview
-- ADR: Contract system changes, data flow changes, architecture changes, external dependency changes
-- Design Doc: Required for 3+ file changes
-- Also required regardless of scale for:
-  - Complex implementation logic
-    - Criteria: Managing 3+ states, or coordinating 5+ asynchronous processes
-    - Example: Complex state management, coordinating multiple asynchronous operations
-  - Introduction of new algorithms or patterns
-    - Example: New caching strategies, custom routing implementation
-
-### Important: Assessment Consistency
-- If assessments conflict, include and report the discrepancy in output
+Follow documentation-criteria skill. If scale or document-type assessments conflict, report the discrepancy in output.
+Representative triggers:
+- ADR: contract, architecture, data-flow, or external dependency changes
+- Design Doc: 3+ file changes, complex implementation logic, or new algorithms/patterns
 
 ## Mandatory Process Before Design Doc Creation
 
@@ -293,21 +274,6 @@ Exclude from ADR: Schedules, implementation procedures, specific code
 
 Implementation guidelines MUST only include principles (e.g., "Use dependency injection" is correct, "Implement in Phase 1" is not)
 
-## Output Policy
-Execute file output immediately. Final approval is managed by the orchestrator recipe.
-
-## Important Design Principles
-
-1. **Consistency First Priority**: Follow existing patterns, document clear reasons when introducing new patterns
-2. **Appropriate Abstraction**: Design optimal for current requirements, thoroughly apply YAGNI principle (follow project rules)
-3. **Testability**: Parameterized dependencies (dependency injection, function parameters) and mockable design
-4. **Test Derivation from Feature Acceptance Criteria**: Clear test cases that satisfy each feature acceptance criterion
-5. **Explicit Trade-offs**: Quantitatively evaluate benefits and drawbacks of each option
-6. **Active Use of Latest Information**:
-   - MUST research latest best practices, libraries, and approaches with web search before design
-   - Cite information sources in "References" section with URLs
-   - Especially confirm multiple reliable sources when introducing new technologies
-
 ## Implementation Sample Standards Compliance
 
 **MANDATORY**: All implementation samples in ADR and Design Docs MUST strictly comply with project coding standards.
@@ -366,14 +332,9 @@ Implementation sample creation checklist:
 
 ## Acceptance Criteria Creation Guidelines
 
-**Principle**: Set specific, verifiable conditions. Avoid ambiguous expressions, document in format convertible to test cases.
+**Principle**: Set specific, verifiable conditions. Avoid ambiguous expressions and make each criterion convertible to tests.
 **Example**: "Login works" → "After authentication with correct credentials, navigates to dashboard screen"
-**Comprehensiveness**: Cover happy path, unhappy path, and edge cases. Define non-functional requirements in separate section.
-   - Expected behavior (happy path)
-   - Error handling (unhappy path)
-   - Edge cases
-
-4. **Priority**: Place important acceptance criteria at the top
+Cover happy path, unhappy path, and edge cases. Place important criteria first.
 
 ### AC Scoping for Autonomous Implementation
 
@@ -388,10 +349,6 @@ Implementation sample creation checklist:
 - Performance metrics → Non-deterministic in CI, defer to load testing
 - Implementation details (technology choice, algorithms, internal structure) → Focus on observable behavior
 - UI presentation method (layout, styling) → Focus on information availability
-
-**Example**:
-- Implementation detail: "Data is stored using specific technology X" (avoid)
-- Observable behavior: "Saved data can be retrieved after system restart" (preferred)
 
 **Principle**: AC = User-observable behavior verifiable in isolated CI environment
 
@@ -432,6 +389,14 @@ Execution steps:
 Completion rule for reverse-engineer mode:
 - Every Unit Inventory route or public export is accounted for in the Design Doc
 - Every claim about architecture, data flow, public contracts, integrations, or error handling cites file:line evidence
+
+## Completion Criteria
+
+- Output file paths and document types are determined correctly
+- Required sections for the selected mode are completed
+- Quality checklist items are satisfied
+- Create/update mode includes acceptance criteria and verification strategy
+- Reverse-engineer mode satisfies the reverse-engineer completion rule
 
 ## Completion Gate [BLOCKING]
 

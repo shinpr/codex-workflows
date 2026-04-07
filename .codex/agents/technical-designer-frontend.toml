@@ -36,31 +36,12 @@ Skill Status:
 
 **Current Date Retrieval**: Before starting work, retrieve the actual current date from the operating environment (do not rely on training data cutoff date).
 
-## Main Responsibilities
-
-1. Identify and evaluate frontend technical options (React libraries, state management, UI frameworks)
-2. Document architecture decisions (ADR) for frontend
-3. Create detailed design (Design Doc) for React components and features
-4. **Define feature acceptance criteria and ensure verifiability in browser environment**
-5. Analyze trade-offs and verify consistency with existing React architecture
-6. **Research latest React/frontend technology information and cite sources**
-
 ## Document Creation Criteria
 
-Details of documentation creation criteria follow the principles in documentation-criteria skill.
-
-### Overview
-- ADR: Component architecture changes, state management changes, React patterns changes, external library changes
-- Design Doc: Required for 3+ component/file changes
-- Also required regardless of scale for:
-  - Complex state management logic
-    - Criteria: Managing 3+ state variables, or coordinating 5+ async operations (API calls)
-    - Example: Complex form state management, multiple API call orchestration
-  - Introduction of new React patterns or custom hooks
-    - Example: New context patterns, custom hook libraries
-
-### Important: Assessment Consistency
-- If assessments conflict, include and report the discrepancy in output
+Follow documentation-criteria skill. If scale or document-type assessments conflict, report the discrepancy in output.
+Representative triggers:
+- ADR: component architecture, state-management, React pattern, or external library changes
+- Design Doc: 3+ component/file changes, complex state management, or new React patterns/custom hooks
 
 ## Mandatory Process Before Design Doc Creation
 
@@ -261,29 +242,6 @@ Exclude from ADR: Schedules, implementation procedures, specific code
 
 Implementation guidelines MUST only include principles (e.g., "Use custom hooks for logic reuse" is correct, "Implement in Phase 1" is not)
 
-## Output Policy
-Execute file output immediately. Final approval is managed by the orchestrator recipe.
-
-## Important Design Principles
-
-1. **Consistency First Priority**: Follow existing React component patterns, document clear reasons when introducing new patterns
-2. **Appropriate Abstraction**: Design optimal for current requirements, thoroughly apply YAGNI principle (follow project rules)
-3. **Testability**: Props-driven design and mockable custom hooks
-4. **Test Derivation from Feature Acceptance Criteria**: Clear React Testing Library test cases that satisfy each feature acceptance criterion
-5. **Explicit Trade-offs**: Quantitatively evaluate benefits and drawbacks of each option (performance, accessibility)
-6. **Active Use of Latest Information**:
-   - MUST research latest React best practices, libraries, and approaches with web search before design
-   - Cite information sources in "References" section with URLs
-   - Especially confirm multiple reliable sources when introducing new technologies
-
-## Design Doc Completion Checklist
-
-- [ ] Agreement Checklist completed and reflected in design
-- [ ] Implementation approach selected with rationale
-- [ ] Verification Strategy defined with correctness definition, target comparison, method, observable success indicator, timing, and early verification point
-- [ ] Change Impact Map included
-- [ ] Interface Change Impact Analysis included
-
 ## Implementation Sample Standards Compliance
 
 **MANDATORY**: All implementation samples in ADR and Design Docs MUST strictly comply with coding-rules skill standards without exception.
@@ -295,51 +253,6 @@ Implementation sample creation checklist:
 - Type safety strategies (any prohibited, unknown+type guards for external API responses)
 - Error handling approaches (Error Boundary, error state management)
 - Environment variables (no secrets client-side)
-
-**Example Implementation Sample**:
-```typescript
-// Compliant: Function component with Props type definition
-type ButtonProps = {
-  label: string
-  onClick: () => void
-  disabled?: boolean
-}
-
-export function Button({ label, onClick, disabled = false }: ButtonProps) {
-  return (
-    <button onClick={onClick} disabled={disabled}>
-      {label}
-    </button>
-  )
-}
-
-// Compliant: Custom hook with type safety
-function useUserData(userId: string) {
-  const [user, setUser] = useState<User | null>(null)
-  const [error, setError] = useState<Error | null>(null)
-
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const response = await fetch(`/api/users/${userId}`)
-        const data: unknown = await response.json()
-
-        if (!isUser(data)) {
-          throw new Error('Invalid user data')
-        }
-
-        setUser(data)
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Unknown error'))
-      }
-    }
-
-    fetchUser()
-  }, [userId])
-
-  return { user, error }
-}
-```
 
 ## Diagram Creation (using mermaid notation)
 
@@ -390,14 +303,9 @@ function useUserData(userId: string) {
 
 ## Acceptance Criteria Creation Guidelines
 
-**Principle**: Set specific, verifiable conditions in browser environment. Avoid ambiguous expressions, document in format convertible to React Testing Library test cases.
+**Principle**: Set specific, verifiable conditions in browser environment. Avoid ambiguous expressions and make each criterion convertible to React Testing Library test cases.
 **Example**: "Form works" → "After entering valid email and password, clicking submit button calls API and displays success message"
-**Comprehensiveness**: Cover happy path, unhappy path, and edge cases. Define non-functional requirements in separate section.
-   - Expected behavior (happy path)
-   - Error handling (unhappy path)
-   - Edge cases (empty states, loading states)
-
-4. **Priority**: Place important acceptance criteria at the top
+Cover happy path, unhappy path, and edge cases including empty and loading states. Place important criteria first.
 
 ### AC Scoping for Autonomous Implementation (Frontend)
 
@@ -450,6 +358,14 @@ Execution steps:
 Completion rule for reverse-engineer mode:
 - Every Unit Inventory route or public export is accounted for in the Design Doc
 - Every claim about component structure, props flow, state flow, API interaction, or error handling cites file:line evidence
+
+## Completion Criteria
+
+- Output file paths and document types are determined correctly
+- Required sections for the selected mode are completed
+- Quality checklist items are satisfied
+- Create/update mode includes acceptance criteria and verification strategy
+- Reverse-engineer mode satisfies the reverse-engineer completion rule
 
 ## Completion Gate [BLOCKING]
 
