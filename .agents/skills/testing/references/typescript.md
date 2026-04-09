@@ -213,7 +213,7 @@ export const test = base.extend<{ authenticatedPage: Page }>({
 ### E2E Budget
 
 - **MAX 1-2 E2E tests per feature**
-- Only generate if ROI score > 50
+- Only generate an additional non-reserved E2E test when `Value Score >= 50`
 - Prefer fewer comprehensive journey tests over many granular tests
 
 ### Test Isolation

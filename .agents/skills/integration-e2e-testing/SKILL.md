@@ -1,6 +1,6 @@
 ---
 name: integration-e2e-testing
-description: "Integration and E2E test design principles, ROI calculation, test skeleton specification, and review criteria. Use when: designing integration tests, E2E tests, generating test skeletons, or reviewing test quality."
+description: "Integration and E2E test design principles, value-based selection, test skeleton specification, and review criteria. Use when: designing integration tests, E2E tests, generating test skeletons, or reviewing test quality."
 ---
 
 # Integration and E2E Testing Principles
@@ -20,13 +20,13 @@ description: "Integration and E2E test design principles, ROI calculation, test 
 
 ## Behavior-First Principle [MANDATORY]
 
-### MUST Include (High ROI)
+### MUST Include (High Value)
 - Business logic correctness (calculations, state transitions, data transformations)
 - Data integrity and persistence behavior
 - User-visible functionality completeness
 - Error handling behavior (what user sees/experiences)
 
-### MUST Exclude (Low ROI in CI/CD)
+### MUST Exclude (Low Value in CI/CD)
 - External service real connections — use contract/interface verification instead
 - Performance metrics — non-deterministic, defer to load testing
 - Implementation details — test observable behavior only
@@ -34,20 +34,52 @@ description: "Integration and E2E test design principles, ROI calculation, test 
 
 **ENFORCEMENT**: Test = User-observable behavior verifiable in isolated CI environment
 
-## ROI Calculation
+## Value and Selection Model
 
 ```
-ROI Score = (Business Value x User Frequency + Legal Requirement x 10 + Defect Detection)
-            / (Creation Cost + Execution Cost + Maintenance Cost)
+Value Score = (Business Value x User Frequency) + (Legal Requirement x 10) + Defect Detection
 ```
 
-### Cost Table
+Use `Value Score` for ranking candidates of the same test type. Handle E2E cost through budget limits and reserved-slot rules instead of cost-division scoring.
 
-| Test Type | Create | Execute | Maintain | Total |
-|-----------|--------|---------|----------|-------|
-| Unit | 1 | 1 | 1 | 3 |
-| Integration | 3 | 5 | 3 | 11 |
-| E2E | 10 | 20 | 8 | 38 |
+### E2E Threshold
+
+- `E2E threshold = Value Score >= 50`
+- Use this threshold for non-reserved E2E selection only
+- Reserved-slot eligibility overrides the threshold when the candidate is the highest-value user-facing multi-step journey
+
+### Selection Rules
+
+| Test Type | Ranking Basis | Selection Rule |
+|-----------|---------------|----------------|
+| Integration | Highest `Value Score` among integration candidates | Select up to budget |
+| E2E | Highest `Value Score` among E2E candidates | Select when `reservedSlotEligible = true`, or when `Value Score >= 50` |
+
+### E2E Candidate Rules
+
+- Treat integration and E2E as complementary coverage layers
+- Retain an E2E candidate when it validates a user-facing multi-step journey, even if integration tests partially cover the behavior
+- Preserve E2E candidates for user-facing multi-step journeys that validate cross-screen or cross-boundary continuity
+- Distinguish user-facing journeys from service-internal chains; reserved E2E coverage applies only to user-facing journeys
+
+### Reserved E2E Slot
+
+Reserve 1 E2E slot for the highest-value user-facing multi-step journey when such a journey exists, even if it does not satisfy `Value Score >= 50`.
+
+### E2E Absence Contract
+
+When no E2E test is generated, downstream artifacts must treat that as an explicit decision, not an error. Carry:
+- `generatedFiles.e2e: null`
+- `e2eAbsenceReason`: one of `no_user_facing_multi_step_journey`, `all_e2e_candidates_below_threshold`, `covered_by_existing_e2e`, `budget_not_justified`
+
+### E2E Selection Decision Table
+
+| Condition | Result |
+|-----------|--------|
+| At least one user-facing multi-step journey exists | Reserve 1 E2E slot for the highest-value such journey |
+| Remaining E2E candidate has `Value Score >= 50` | Eligible for non-reserved E2E selection |
+| Remaining E2E candidate has `Value Score < 50` | Exclude and use `all_e2e_candidates_below_threshold` if no E2E remains |
+| Existing E2E already covers the same journey | Exclude and use `covered_by_existing_e2e` if no E2E remains |
 
 ## Test Skeleton Specification [MANDATORY]
 
@@ -62,7 +94,7 @@ Each test MUST include the following annotations:
 // @dependency: none | [component names] | full-system
 // @real-dependency: [component names] (optional)
 // @complexity: low | medium | high
-// ROI: [score]
+// Value Score: [score]
 ```
 
 Adapt comment syntax to the project's language when generating or reviewing test skeletons.

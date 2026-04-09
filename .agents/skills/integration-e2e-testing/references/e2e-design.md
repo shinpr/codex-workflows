@@ -2,7 +2,9 @@
 
 ## When to Create E2E Tests
 
-E2E tests target **critical user journeys** that span multiple pages or require real browser interaction. Apply the same ROI framework from the parent skill -- only create E2E tests when ROI > 50.
+E2E tests target **critical user journeys** that span multiple pages or require real browser interaction. Apply the parent skill rules exactly:
+- Reserve 1 E2E slot for the highest-value user-facing multi-step journey
+- Use `Value Score >= 50` for any additional non-reserved E2E candidate
 
 ### Candidate Sources
 
@@ -15,7 +17,7 @@ E2E tests target **critical user journeys** that span multiple pages or require 
 
 ### Selection Criteria
 
-**Include** (high E2E ROI):
+**Include** (high-value E2E coverage):
 - Multi-page user journeys (login -> dashboard -> action -> confirmation)
 - Flows requiring real browser APIs (navigation, cookies, localStorage)
 - Accessibility verification requiring actual DOM rendering
@@ -44,7 +46,7 @@ User Journey: [Description of what the user accomplishes]
 Preconditions: [Auth state, data state]
 Verification Points:
   - [What to assert at each step]
-E2E ROI Score: [calculated score]
+E2E Value Score: [calculated score]
 ```
 
 ## Playwright Test Architecture
@@ -82,5 +84,6 @@ When UI Spec defines responsive behavior, test critical breakpoints:
 
 Hard limits per feature (same as parent skill):
 - **E2E Tests**: MAX 1-2 tests
-- Only generate if ROI score > 50
+- Generate the reserved user-journey E2E when eligible
+- Generate any additional E2E only when `Value Score >= 50`
 - Prefer fewer, comprehensive journey tests over many granular tests

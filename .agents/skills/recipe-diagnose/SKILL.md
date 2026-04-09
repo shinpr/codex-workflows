@@ -8,7 +8,7 @@ description: "Investigate problem, verify findings, and derive solutions through
 1. [LOAD IF NOT ACTIVE] `ai-development-guide` — AI development patterns
 2. [LOAD IF NOT ACTIVE] `coding-rules` — coding standards
 
-**Context**: Diagnosis flow to identify root cause and present solutions
+**Context**: Diagnosis flow to identify concrete failure points and present solutions
 
 Target problem: $ARGUMENTS
 
@@ -69,10 +69,10 @@ Confirm from rule-advisor output:
 ```
 Problem -> investigator -> verifier -> solver --+
                  ^                              |
-                 +-- confidence < high ---------+
+                 +-- coverage insufficient -----+
                       (max 2 iterations)
 
-confidence=high reached -> Report
+coverage sufficient -> Report
 ```
 
 **Context Separation**: Pass only structured output to each step. Each step starts fresh with the data only.
@@ -99,7 +99,7 @@ For change failures, also include:
 - what both areas share
 ```
 
-**Expected output**: Evidence matrix, comparison analysis results, causal tracking results, list of unexplored areas, investigation limitations
+**Expected output**: Evidence matrix, path map, failure points, comparison analysis results, list of unexplored areas, investigation limitations
 
 ### Step 2: Investigation Quality Check
 
@@ -107,10 +107,11 @@ Review investigation output:
 
 **Quality Check** (verify output contains the following):
 - [ ] `comparisonAnalysis` is present and `normalImplementation` is non-null, or explicitly states that no working implementation was found
-- [ ] causalChain for each hypothesis reaches a stop condition
-- [ ] causeCategory for each hypothesis
+- [ ] `pathMap` is present with ordered nodes or explicit unknown segments
+- [ ] causalChain for each failure point reaches a stop condition
+- [ ] causeCategory for each failure point
 - [ ] `investigationSources` covers at least 3 distinct source types
-- [ ] each hypothesis has supporting evidence with a concrete source
+- [ ] each failure point has supporting evidence with a concrete source
 - [ ] Investigation covering investigationFocus items (when provided)
 
 **If quality insufficient**: MUST re-spawn investigator agent specifying the missing items and include the previous investigation output for context
@@ -132,45 +133,45 @@ Proceed to verifier once quality is satisfied.
 
 Spawn verifier agent: "Verify the following investigation results. Investigation results: [Investigation output]"
 
-**Expected output**: Alternative hypotheses (at least 3), Devil's Advocate evaluation, final conclusion, confidence
+**Expected output**: Path coverage findings, independent failure-point evaluation, final conclusion, coverageAssessment/finalStatus
 
-**Confidence Criteria**:
-- **high**: No uncertainty affecting solution selection or implementation
-- **medium**: Uncertainty exists but resolvable with additional investigation
-- **low**: Fundamental information gap exists
+**Coverage Criteria**:
+- **sufficient**: No major uncovered boundary affects solution selection or implementation
+- **partial**: Some uncertainty exists but a bounded next investigation is possible
+- **insufficient**: Fundamental information gap exists on the relevant path
 
 ### Step 4: Solution Derivation (solver)
 
-Spawn solver agent: "Derive solutions based on the following verified conclusion. Causes: [verifier's conclusion.causes]. Causes relationship: [causesRelationship: independent/dependent/exclusive]. Confidence: [high/medium/low]."
+Spawn solver agent: "Derive solutions based on the following verified conclusion. Failure points: [verifier's conclusion.confirmedFailurePoints]. Failure-point relationships: [verifier's conclusion.failurePointRelationships]. Coverage assessment: [verifier's conclusion.coverageAssessment]. Final status: [verifier's conclusion.finalStatus]. Impact analysis: [investigator output impactAnalysis]."
 
 **Expected output**: Multiple solutions (at least 3), tradeoff analysis, recommendation and implementation steps, residual risks
 
-**Completion condition**: confidence=high
+**Completion condition**: `coverageAssessment=sufficient` and `finalStatus=ready_for_solution`
 
 **When not reached**:
 1. Return to Step 1 with uncertainties identified by solver as investigation targets
 2. Maximum 2 additional investigation iterations
-3. After 2 iterations without reaching high, present user with options:
+3. After 2 iterations without reaching sufficient coverage, present user with options:
    - Continue additional investigation
-   - Execute solution at current confidence level
+   - Execute solution at current coverage level
 
 ### Step 5: Final Report Creation
 
-**Prerequisite**: confidence=high achieved
+**Prerequisite**: sufficient coverage achieved
 
 After diagnosis completion, report to user in the following format:
 
 ```
 ## Diagnosis Result Summary
 
-### Identified Causes
-[Cause list from verification results]
-- Causes relationship: [independent/dependent/exclusive]
+### Identified Failure Points
+[Failure point list from verification results]
+- Failure-point relationships: [independent/upstream_of/downstream_of/amplifies/same_boundary]
 
 ### Verification Process
 - Investigation scope: [Scope confirmed in investigation]
 - Additional investigation iterations: [0/1/2]
-- Alternative hypotheses count: [Number generated in verification]
+- Coverage assessment: [sufficient/partial/insufficient]
 
 ### Recommended Solution
 [Solution derivation recommendation]
@@ -197,7 +198,7 @@ Rationale: [Selection rationale]
 
 - [ ] Spawned investigator and obtained evidence matrix, comparison analysis, and causal tracking
 - [ ] Performed investigation quality check and re-ran if insufficient
-- [ ] Spawned verifier and obtained confidence level
+- [ ] Spawned verifier and obtained coverage assessment
 - [ ] Spawned solver
-- [ ] Achieved confidence=high (or obtained user approval after 2 additional iterations)
+- [ ] Achieved sufficient coverage (or obtained user approval after 2 additional iterations)
 - [ ] Presented final report to user

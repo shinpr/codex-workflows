@@ -45,7 +45,32 @@ Skill Status:
 
 ### Environment-Aware Quality Assurance
 
-**Step 1: Detect Quality Check Commands**
+**Step 1: Incomplete Implementation Check**
+Before any quality checks, inspect only the current task scope for incomplete implementation.
+
+Task scope for this check:
+- primary scope: `filesModified` or the current task's write set when the orchestrator provides it
+- fallback scope: the current uncommitted diff only when no task-scoped file list is available
+
+Evaluate changed code in this order:
+1. Explicit unfinished markers:
+   - `TODO`, `FIXME`, `placeholder`, `stub`, `temporary`, `not implemented`
+2. Missing required implementation body:
+   - empty method/function body where the task requires concrete logic
+   - empty event/handler branch where the task requires behavior
+3. Placeholder behavior with no task-level justification:
+   - constant sentinel return used instead of required business logic
+   - pass-through mock or fallback path used in production code instead of the required behavior
+
+Treat the following as allowed patterns:
+- intentional test doubles, fixtures, and test-only helpers
+- framework-required scaffolding when the task explicitly requests scaffolding
+- `null`, `[]`, `{}`, or fallback values when the Design Doc, task file, or existing behavior explicitly requires them
+- comments about future work outside the current task scope when the requested behavior is already complete
+
+If incomplete implementation is detected, stop immediately and return `status: "stub_detected"` with the affected files and reasons. Proceed to lint, build, and tests only after this check passes.
+
+**Step 2: Detect Quality Check Commands**
 ```bash
 # Auto-detect from project manifest files
 # Identify project structure and extract quality commands:
@@ -54,27 +79,33 @@ Skill Status:
 # - Build configuration → extract build/check commands
 ```
 
-**Step 2: Execute Quality Checks**
+**Step 3: Execute Quality Checks**
 Follow the principles in ai-development-guide skill "Quality Check Workflow" section:
 - Basic checks (lint, format, build)
 - Tests (unit, integration)
 - Final gate (all must pass)
 
-**Step 3: Fix Errors**
+**Step 4: Fix Errors**
 Apply fixes following the principles in coding-rules skill and testing skill.
 
-**Step 4: Repeat Until Approved**
+**Step 5: Repeat Until Approved**
 - Address all errors in each phase before proceeding to next phase
 - Error found → Fix immediately → Re-run checks
-- All pass → proceed to Step 5
-- Cannot determine spec → proceed to Step 5 with `blocked` status
+- All pass → proceed to Step 6
+- Cannot determine spec → proceed to Step 6 with `blocked` status
 
-**Step 5: Return JSON Result**
+**Step 6: Return JSON Result**
 Return one of the following as the final response (see Output Format for schemas):
+- `status: "stub_detected"` — incomplete implementation found in changed code
 - `status: "approved"` — all quality checks pass
 - `status: "blocked"` — specification unclear or execution prerequisites are missing
 
 ## Status Determination Criteria (Binary Determination)
+
+### stub_detected (Incomplete implementation found)
+- Changed code contains placeholder logic, deferred required work, or stub return values that indicate implementation is not complete
+- The issue is detected before lint/build/test execution
+- The next action is to route the task back to task-executor for completion
 
 ### approved (All quality checks pass)
 - All tests pass
@@ -105,6 +136,22 @@ Return one of the following as the final response (see Output Format for schemas
 **Important**: JSON response is received by the caller and conveyed to user in an understandable format.
 
 ### Internal Structured Response
+
+**When incomplete implementation is detected**:
+```json
+{
+  "status": "stub_detected",
+  "summary": "Incomplete implementation detected in changed code before quality checks.",
+  "stubFindings": [
+    {
+      "file": "src/example.ts",
+      "indicator": "TODO marker",
+      "details": "TODO comment defers required business logic in the task scope"
+    }
+  ],
+  "nextActions": "Return to task-executor and complete the implementation before re-running quality-fixer."
+}
+```
 
 **When quality check succeeds**:
 ```json
@@ -224,7 +271,7 @@ This is intermediate output only. The final response must be the JSON result (St
 
 ## Completion Criteria
 
-- [ ] Final response is a single JSON with status `approved` or `blocked`
+- [ ] Final response is a single JSON with status `stub_detected`, `approved`, or `blocked`
 
 ## Important Principles
 

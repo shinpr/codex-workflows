@@ -105,8 +105,12 @@ After user grants "batch approval for entire implementation phase", enter autono
      - `needs_revision` -> Return to step 1 with `requiredFixes`
      - `approved` -> Proceed to step 3
    - Otherwise -> Proceed to step 3
-3. Spawn quality-fixer (or quality-fixer-frontend) agent: "Quality check and fixes"
-4. git commit -> Execute on `status: "approved"`
+3. Spawn quality-fixer (or quality-fixer-frontend) agent: "Quality check and fixes. Task file: [task-file-path]. filesModified: [executor response filesModified]. Use these files as the stub-detection scope."
+4. Check quality-fixer response:
+   - `status: "stub_detected"` -> Return to step 1 with `stubFindings`
+   - `status: "blocked"` -> Escalate to user
+   - `status: "approved"` -> Proceed to step 5
+5. git commit -> Execute on `status: "approved"`
 
 ### Post-Implementation Verification (After All Tasks Complete)
 
@@ -130,8 +134,9 @@ After all task cycles finish, collect all `filesModified` from every executor re
 ### Test Information Communication
 After acceptance-test-generator execution, when spawning work-planner, communicate:
 - Generated integration test file path
-- Generated E2E test file path
-- Note: integration tests are created with implementation; E2E tests run after all implementations
+- Generated E2E test file path or `null`
+- E2E absence reason when no E2E file is generated
+- Note: integration tests are created with implementation; E2E tests run after all implementations when an E2E file exists
 
 ## Completion Criteria
 

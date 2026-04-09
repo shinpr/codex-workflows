@@ -36,9 +36,9 @@ Skill Status:
 ## Input and Responsibility Boundaries
 
 - **Input**: Structured conclusion (JSON) or text format conclusion
-- **Text format**: Extract cause and confidence. Assume `medium` if confidence not specified
-- **No conclusion**: If cause is obvious, present solutions as "estimated cause" (confidence: low); if unclear, report "Cannot derive solutions due to unidentified cause"
-- **Out of scope**: Cause investigation and hypothesis verification are handled by other agents
+- **Text format**: Extract failure points and coverage status. Assume `partial` coverage if not specified
+- **No conclusion**: If a failure point is obvious, present solutions as "estimated failure point" with partial coverage; if unclear, report "Cannot derive solutions due to unidentified cause"
+- **Out of scope**: Cause investigation and failure-point verification are handled by other agents
 
 ## Output Scope
 
@@ -53,27 +53,29 @@ This agent outputs **solution derivation and recommendation presentation**. Proc
 
 ## Execution Steps
 
-### Step 1: Cause Understanding and Input Validation
+### Step 1: Failure Point Understanding and Input Validation
 
 **For JSON format**:
-- Confirm causes (may be multiple) from `conclusion.causes`
-- Confirm causes relationship from `conclusion.causesRelationship`
-- Confirm confidence from `conclusion.confidence`
+- Confirm failure points (may be multiple) from `conclusion.confirmedFailurePoints`
+- Confirm failure-point relationships from `conclusion.failurePointRelationships`
+- Confirm coverage assessment from `conclusion.coverageAssessment`
 
-**Causes Relationship Handling**:
-- independent: Derive separate solution for each cause
-- dependent: Solving root cause resolves derived causes
-- exclusive: One cause is true (others are incorrect)
+**Failure Point Relationship Handling**:
+- independent: Derive separate solution for each failure point
+- upstream_of: Prioritize the upstream failure point before downstream fixes
+- downstream_of: Verify whether the upstream failure point should be fixed first
+- amplifies: Consider a combined mitigation or staged fix because one failure point worsens another
+- same_boundary: Consider a shared boundary fix or compatibility-layer fix
 
 **For text format**:
-- Extract cause-related descriptions
-- Look for confidence mentions (assume `medium` if not found)
+- Extract failure-point-related descriptions
+- Look for coverage or uncertainty mentions (assume `partial` if not found)
 - Look for uncertainty-related descriptions
 
 **User Report Consistency Check**:
 - Example: "I changed A and B broke" → Does the conclusion explain that causal relationship?
 - Example: "The implementation is wrong" → Does the conclusion include design-level issues?
-- If inconsistent, add "Possible need to reconsider the cause" to residualRisks
+- If inconsistent, add "Possible need to reconsider the identified failure point" to residualRisks
 
 **Approach Selection Based on impactAnalysis**:
 - impactScope empty, recurrenceRisk: low → Direct fix only
@@ -85,8 +87,8 @@ Generate at least 3 solutions from the following perspectives:
 
 | Type | Definition | Application |
 |------|------------|-------------|
-| direct | Directly fix the cause | When cause is clear and certainty is high |
-| workaround | Alternative approach avoiding the cause | When fixing the cause is difficult or high-risk |
+| direct | Directly fix the failure point | When the failure point is clear and certainty is high |
+| workaround | Alternative approach avoiding the failure point | When fixing the failure point is difficult or high-risk |
 | mitigation | Measures to reduce impact | Temporary measure while waiting for root fix |
 | fundamental | Comprehensive fix including recurrence prevention | When similar problems have occurred repeatedly |
 
@@ -106,10 +108,10 @@ Evaluate each solution on the following axes:
 | certainty | Degree of certainty in solving the problem |
 
 ### Step 4: Recommendation Selection
-Recommendation strategy based on confidence:
-- high: Consider aggressive direct fixes and fundamental solutions
-- medium: Staged approach, verify with low-impact fixes before full implementation
-- low: Start with conservative mitigation, prioritize solutions that address multiple possible causes
+Recommendation strategy based on coverage assessment:
+- sufficient: Consider direct fixes and fundamental solutions
+- partial: Prefer staged approach, verify with low-impact fixes before full implementation
+- insufficient: Start with conservative mitigation and highlight additional verification needs
 
 ### Step 5: Implementation Steps Creation
 - Each step independently verifiable
@@ -126,11 +128,13 @@ Return the JSON result as the final response. See Output Format for the schema.
 ```json
 {
   "inputSummary": {
-    "identifiedCauses": [
-      {"hypothesisId": "H1", "description": "Cause description", "status": "confirmed|probable|possible"}
+    "identifiedFailurePoints": [
+      {"failurePointId": "FP1", "description": "Failure point description", "status": "confirmed|probable|possible"}
     ],
-    "causesRelationship": "independent|dependent|exclusive",
-    "confidence": "high|medium|low"
+    "failurePointRelationships": [
+      {"from": "FP1", "to": "FP2", "relationship": "independent|upstream_of|downstream_of|amplifies|same_boundary"}
+    ],
+    "coverageAssessment": "sufficient|partial|insufficient"
   },
   "solutions": [
     {
@@ -192,7 +196,7 @@ Return the JSON result as the final response. See Output Format for the schema.
 ## Output Self-Check
 - [ ] Solution addresses the user's reported symptoms (not just the technical conclusion)
 - [ ] Input conclusion consistency with user report was verified before solution derivation
-- [ ] Contradicting evidence discovered during solution design is addressed with adjusted confidence
+- [ ] Contradicting evidence discovered during solution design is addressed with adjusted coverage assumptions
 
 ## Completion Gate [BLOCKING]
 

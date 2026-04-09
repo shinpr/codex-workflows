@@ -48,7 +48,31 @@ Use the appropriate run command based on the `packageManager` field in package.j
 
 ### Environment-Aware Quality Assurance
 
-**Step 1: Detect Quality Check Commands**
+**Step 1: Incomplete Implementation Check**
+Before any frontend quality checks, inspect only the current task scope for incomplete implementation.
+
+Task scope for this check:
+- primary scope: `filesModified` or the current task's write set when the orchestrator provides it
+- fallback scope: the current uncommitted diff only when no task-scoped file list is available
+
+Evaluate changed frontend code in this order:
+1. Explicit unfinished markers:
+   - `TODO`, `FIXME`, `placeholder`, `stub`, `temporary`, `not implemented`
+2. Missing required UI behavior:
+   - empty event handler, effect, reducer branch, or render branch where the task requires concrete behavior
+3. Placeholder UI/data behavior with no task-level justification:
+   - hard-coded fallback state used instead of the required interaction flow
+   - placeholder loading/error/success branch used instead of the required UI behavior
+
+Treat the following as allowed patterns:
+- intentional fixtures, mocks, and story/demo scaffolding
+- framework-required placeholder shells when the task explicitly requests scaffolding
+- fallback UI states that the Design Doc, task file, or existing behavior explicitly requires
+- comments about future enhancements outside the current task scope when the requested UI behavior is already complete
+
+If incomplete implementation is detected, stop immediately and return `status: "stub_detected"` with the affected files and reasons. Proceed to lint, type-check, build, and tests only after this check passes.
+
+**Step 2: Detect Quality Check Commands**
 ```bash
 # Auto-detect from project manifest files
 # Identify project structure and extract quality commands:
@@ -57,23 +81,24 @@ Use the appropriate run command based on the `packageManager` field in package.j
 # - Build configuration → extract build/check commands
 ```
 
-**Step 2: Execute Quality Checks**
+**Step 3: Execute Quality Checks**
 Follow the principles in ai-development-guide skill "Quality Check Workflow" section:
 - Basic checks (lint, format, build)
 - Tests (unit, integration, React Testing Library)
 - Final gate (all must pass)
 
-**Step 3: Fix Errors**
+**Step 4: Fix Errors**
 Apply fixes following the principles in coding-rules skill and testing skill.
 
-**Step 4: Repeat Until Approved**
+**Step 5: Repeat Until Approved**
 - Address all errors in each phase before proceeding to next phase
 - Error found → Fix immediately → Re-run checks
-- All pass → proceed to Step 5
-- Cannot determine spec → proceed to Step 5 with `blocked` status
+- All pass → proceed to Step 6
+- Cannot determine spec → proceed to Step 6 with `blocked` status
 
-**Step 5: Return JSON Result**
+**Step 6: Return JSON Result**
 Return one of the following as the final response (see Output Format for schemas):
+- `status: "stub_detected"` — incomplete implementation found in changed code
 - `status: "approved"` — all quality checks pass
 - `status: "blocked"` — specification unclear or execution prerequisites are missing
 
@@ -104,6 +129,11 @@ Return one of the following as the final response (see Output Format for schemas
 - **Circular Dependencies**: Resolve circular dependency issues
 
 ## Status Determination Criteria (Binary Determination)
+
+### stub_detected (Incomplete implementation found)
+- Changed frontend code contains placeholder logic, deferred required interactions, or stub UI/data behavior
+- The issue is detected before lint/build/test execution
+- The next action is to route the task back to task-executor-frontend for completion
 
 ### approved (All quality checks pass)
 - All tests pass (React Testing Library)
@@ -142,6 +172,22 @@ Before setting status to blocked, confirm specifications in this order:
 **Important**: JSON response is received by main AI (caller) and conveyed to user in an understandable format.
 
 ### Internal Structured Response (for Main AI)
+
+**When incomplete implementation is detected**:
+```json
+{
+  "status": "stub_detected",
+  "summary": "Incomplete frontend implementation detected in changed code before quality checks.",
+  "stubFindings": [
+    {
+      "file": "src/components/CheckoutButton.tsx",
+      "indicator": "placeholder handler",
+      "details": "onClick handler still contains placeholder logic for required submission flow"
+    }
+  ],
+  "nextActions": "Return to task-executor-frontend and complete the implementation before re-running quality-fixer-frontend."
+}
+```
 
 **When quality check succeeds**:
 ```json
@@ -254,7 +300,7 @@ This is intermediate output only. The final response must be the JSON result (St
 
 ## Completion Criteria
 
-- [ ] Final response is a single JSON with status `approved` or `blocked`
+- [ ] Final response is a single JSON with status `stub_detected`, `approved`, or `blocked`
 
 ## Important Principles
 

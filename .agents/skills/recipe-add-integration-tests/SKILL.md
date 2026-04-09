@@ -147,13 +147,16 @@ Check Step 5 result:
 Spawn quality-fixer routed by task filename pattern:
 - `*-backend-task-*` -> Spawn `quality-fixer`
 - `*-frontend-task-*` -> Spawn `quality-fixer-frontend`
-- Prompt: "Final quality assurance for test files added in this workflow. Run all tests and verify coverage."
+- Prompt: "Final quality assurance for test files added in this workflow. Task file: [current task file]. filesModified: [Step 4 testsAdded]. Use these files as the stub-detection scope. Run all tests and verify coverage."
 
-**Expected output**: `status` (`approved`/`blocked`)
+**Expected output**: `status` (`stub_detected`/`approved`/`blocked`)
 
 ### Step 8: Commit
 
-On `status: "approved"` from quality-fixer:
+On quality-fixer result:
+- `status: "stub_detected"` -> Return to Step 4 with `stubFindings`
+- `status: "blocked"` -> Escalate to user
+- `status: "approved"` -> Commit test files
 - MUST commit test files with appropriate message
 ENFORCEMENT: Commits without quality-fixer approval are invalid.
 

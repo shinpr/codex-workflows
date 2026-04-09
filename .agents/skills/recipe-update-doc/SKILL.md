@@ -109,7 +109,7 @@ Spawn [Update Agent from Step 2] agent: "Operation Mode: update. Existing Docume
 
 For Design Doc updates, first verify the updated document against code:
 
-Spawn code-verifier agent: "Verify the updated Design Doc against current code. doc_type: design-doc. document_path: [path from Step 1]. verbose: false."
+Spawn code-verifier agent: "Verify the updated Design Doc against current code. doc_type: design-doc. document_path: [path from Step 1]. verbose: false. Focus especially on literal identifier referential integrity for concrete paths, endpoints, type names, config keys, and other exact identifiers changed in this update."
 
 **Store output as**: `$CODE_VERIFICATION_OUTPUT`
 
