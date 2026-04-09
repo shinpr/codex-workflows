@@ -96,7 +96,7 @@ Ready to commit
 ### The Diagnosis Pipeline
 
 ```
-Problem → investigator → verifier (ACH + Devil's Advocate) → solver → Actionable solutions
+Problem → investigator (path map + failure points) → verifier (path coverage + independent failure-point evaluation) → solver → Actionable solutions
 ```
 
 ### Reverse Engineering
@@ -158,10 +158,10 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 | `$recipe-implement` | Full lifecycle with layer routing (backend/frontend/fullstack) | New features — universal entry point |
 | `$recipe-task` | Single task with rule selection | Bug fixes, small changes |
 | `$recipe-design` | Requirements → ADR/Design Doc | Architecture planning |
-| `$recipe-plan` | Design Doc → test skeletons → work plan | Planning phase |
+| `$recipe-plan` | Design Doc → test skeletons → work plan | Planning phase, including nullable E2E skeleton handling |
 | `$recipe-build` | Execute backend tasks autonomously | Resume backend implementation |
 | `$recipe-review` | Design Doc compliance and security validation with auto-fixes | Post-implementation check |
-| `$recipe-diagnose` | Problem investigation → verification → solution | Bug investigation |
+| `$recipe-diagnose` | Problem investigation → failure-point verification → solution | Bug investigation |
 | `$recipe-reverse-engineer` | Generate PRD + Design Docs from existing code | Legacy system documentation |
 | `$recipe-add-integration-tests` | Add integration/E2E tests from Design Doc | Test coverage for existing code |
 | `$recipe-update-doc` | Update existing Design Doc / PRD / ADR with review | Spec changes, document maintenance |
@@ -217,7 +217,7 @@ These load automatically when the conversation context matches — no explicit i
 | `ai-development-guide` | Anti-patterns, debugging (5 Whys), quality check workflow |
 | `documentation-criteria` | Document creation rules and templates (PRD, ADR, Design Doc, Work Plan) |
 | `implementation-approach` | Strategy selection: vertical / horizontal / hybrid slicing |
-| `integration-e2e-testing` | Integration/E2E test design, ROI calculation, review criteria |
+| `integration-e2e-testing` | Integration/E2E test design, value-based selection, review criteria |
 | `task-analyzer` | Task analysis, scale estimation, skill selection |
 | `subagents-orchestration-guide` | Multi-agent coordination, workflow flows, autonomous execution |
 
@@ -269,8 +269,8 @@ Codex spawns these as needed during recipe execution. Each agent runs in its own
 
 | Agent | Role |
 |-------|------|
-| `investigator` | Evidence collection and hypothesis enumeration |
-| `verifier` | Hypothesis validation (ACH + Devil's Advocate) |
+| `investigator` | Evidence collection, path mapping, and failure-point discovery |
+| `verifier` | Path coverage validation and independent failure-point evaluation |
 | `solver` | Solution derivation with tradeoff analysis |
 
 ---
@@ -282,7 +282,7 @@ Codex spawns these as needed during recipe execution. Each agent runs in its own
 After work plan approval, the framework enters guided autonomous execution with escalation points:
 
 1. **task-executor** implements each task with TDD
-2. **quality-fixer** runs all checks (lint, tests, build) before every commit
+2. **quality-fixer** first rejects incomplete task-scoped implementations, then runs lint, tests, and build before every commit
 3. Escalation pauses execution when design deviation or ambiguity is detected
 4. Each task produces one commit — rollback-friendly granularity
 
