@@ -118,7 +118,7 @@ skills:
   integration-e2e-testing:
     skill: "integration-e2e-testing"
     tags: [testing, integration-testing, e2e-testing, test-design, behavior-first, roi, test-skeleton, ears-format]
-    typical-use: "Integration and E2E test design principles, ROI-based test selection, behavior-first approach, test skeleton specification"
+    typical-use: "Integration and E2E test design principles, value-based test selection, behavior-first approach, test skeleton specification"
     size: medium
     key-references:
       - "Test Pyramid - Mike Cohn"
@@ -127,7 +127,7 @@ skills:
       - "References"
       - "Test Type Definition and Limits [MANDATORY]"
       - "Behavior-First Principle [MANDATORY]"
-      - "ROI Calculation"
+      - "Value and Selection Model"
       - "Test Skeleton Specification [MANDATORY]"
       - "EARS Format Mapping"
       - "Test File Naming Convention"

@@ -46,7 +46,7 @@ Check for existence of design documents in docs/design/.
 Spawn acceptance-test-generator agent: "Generate test skeletons from Design Doc at [path]. [UI Spec at [ui-spec path] if exists.]"
 
 ### Step 3: Work Plan Creation
-Spawn work-planner agent: "Create work plan from Design Doc at [path]. Integration test file: [path from step 2]. E2E test file: [path from step 2]. Integration tests are created simultaneously with each phase implementation, E2E tests are executed only in final phase."
+Spawn work-planner agent: "Create work plan from Design Doc at [path]. Integration test file: [path from step 2]. E2E test file: [path from step 2 or null]. E2E absence reason: [value from step 2 when E2E file is null]. Integration tests are created simultaneously with each phase implementation, E2E tests are executed only in final phase when an E2E file exists."
 
 **[STOP -- BLOCKING]** Interact with user to complete plan and obtain approval for plan content. Clarify specific implementation steps and risks.
 **CANNOT proceed until user explicitly approves the work plan.**

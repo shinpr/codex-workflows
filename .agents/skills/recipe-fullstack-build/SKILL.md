@@ -97,8 +97,12 @@ For EACH task, YOU MUST:
      - `needs_revision` -> Return to step 2 with `requiredFixes`
      - `approved` -> Proceed to step 4
    - `readyForQualityCheck: true` -> Proceed to step 4
-4. **Spawn quality-fixer agent** (layer-appropriate per routing table): "Execute all quality checks and fixes"
-5. **COMMIT on approval**: After `status: "approved"` from quality-fixer -> Execute git commit
+4. **Spawn quality-fixer agent** (layer-appropriate per routing table): "Execute all quality checks and fixes. Task file: [task-file-path]. filesModified: [executor response filesModified]. Use these files as the stub-detection scope."
+5. **CHECK quality-fixer response**:
+   - `status: "stub_detected"` -> Return to step 2 with `stubFindings`
+   - `status: "blocked"` -> STOP and escalate to user
+   - `status: "approved"` -> Proceed to step 6
+6. **COMMIT on approval**: After `status: "approved"` from quality-fixer -> Execute git commit
 
 **CRITICAL**: MUST monitor ALL structured responses WITHOUT EXCEPTION and ENSURE every quality gate is passed.
 ENFORCEMENT: Proceeding past a failed quality gate invalidates all subsequent work.

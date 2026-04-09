@@ -220,6 +220,13 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
   - Path to existing document
   - Reason for changes
   - Sections needing updates
+  - Before editing changed sections, build a Dependency Inventory for identifiers referenced by the update
+  - Dependency Inventory output format:
+    - `identifier`: exact literal identifier
+    - `source`: codebase | accepted_adr | external
+    - `status`: verified_existing | requires_new_creation | external_dependency
+    - `action`: keep | update_document | create_dependency | confirm_external_reference
+  - In update mode, cross-check prerequisite ADR references against Accepted ADRs only. Cross-Design-Doc consistency is handled by design-sync after the update
 
 - **Reverse-Engineer Context** (reverse-engineer mode only):
   - Primary Files
@@ -309,14 +316,14 @@ Cover happy path, unhappy path, and edge cases including empty and loading state
 
 ### AC Scoping for Autonomous Implementation (Frontend)
 
-**Include** (High automation ROI):
+**Include** (High automation value):
 - User interaction behavior (button clicks, form submissions, navigation)
 - Rendering correctness (component displays correct data)
 - State management behavior (state updates correctly on user actions)
 - Error handling behavior (error messages displayed to user)
 - Accessibility (keyboard navigation, screen reader support)
 
-**Exclude** (Low ROI in LLM/CI/CD environment):
+**Exclude** (Low automation value in LLM/CI/CD environment):
 - External API real connections → Use MSW for API mocking instead
 - Performance metrics → Non-deterministic in CI environment
 - Implementation details → Focus on user-observable behavior

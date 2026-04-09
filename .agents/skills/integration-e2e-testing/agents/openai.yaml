@@ -1,6 +1,6 @@
 interface:
   display_name: "Integration & E2E Testing"
-  short_description: "Test design and ROI calculation"
+  short_description: "Test design and value-based selection"
   default_prompt: "Use $integration-e2e-testing to design integration tests."
 
 policy:

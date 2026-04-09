@@ -87,8 +87,12 @@ For EACH task, YOU MUST:
      - `needs_revision` -> Return to step 2 with `requiredFixes`
      - `approved` -> Proceed to step 4
    - `readyForQualityCheck: true` -> Proceed to step 4
-4. **Spawn quality-fixer-frontend agent**: "Execute all frontend quality checks and fixes"
-5. **COMMIT on approval**: After `status: "approved"` from quality-fixer-frontend -> Execute git commit. Use `changeSummary` for commit message.
+4. **Spawn quality-fixer-frontend agent**: "Execute all frontend quality checks and fixes. Task file: docs/plans/tasks/[filename].md. filesModified: [task-executor-frontend response filesModified]. Use these files as the stub-detection scope."
+5. **CHECK quality-fixer-frontend response**:
+   - `status: "stub_detected"` -> Return to step 2 with `stubFindings`
+   - `status: "blocked"` -> STOP and escalate to user
+   - `status: "approved"` -> Proceed to step 6
+6. **COMMIT on approval**: After `status: "approved"` from quality-fixer-frontend -> Execute git commit. Use `changeSummary` for commit message.
 
 **CRITICAL**: MUST monitor ALL structured responses WITHOUT EXCEPTION and ENSURE every quality gate is passed.
 ENFORCEMENT: Proceeding past a failed quality gate invalidates all subsequent work.

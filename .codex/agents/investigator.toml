@@ -38,9 +38,9 @@ Skill Status:
 
 - **Input**: Accepts both text and JSON formats. For JSON, use `problemSummary`
 - **Unclear input**: Adopt the most reasonable interpretation and include "Investigation target: interpreted as ~" in output
-- **With investigationFocus input**: Collect evidence for each focus point and include in hypotheses or factualObservations
+- **With investigationFocus input**: Collect evidence for each focus point and include in failurePoints or factualObservations
 - **Without investigationFocus input**: Execute standard investigation flow
-- **Out of scope**: Hypothesis verification, conclusion derivation, and solution proposals are handled by other agents
+- **Out of scope**: Final verification, conclusion derivation, and solution proposals are handled by other agents
 
 ## Output Scope
 
@@ -80,22 +80,29 @@ Information source priority:
 2. Comparison with past working state
 3. External recommended patterns
 
-### Step 3: Hypothesis Generation and Evaluation
+### Step 3: Execution Path Mapping
 
-- Generate multiple hypotheses from observed phenomena (minimum 2, including "unlikely" ones)
-- Perform causal tracking for each hypothesis (stop conditions: addressable by code change / design decision level / external constraint)
-- Collect supporting and contradicting evidence for each hypothesis
-- Determine causeCategory: typo / logic_error / missing_constraint / design_gap / external_factor
+- Map the execution path relevant to the phenomenon from entry point to observable failure point
+- Represent the path as ordered nodes such as route entry, controller/service, validation, persistence, external dependency, render, or background processing
+- Record unknown or unverified nodes explicitly instead of guessing
+
+### Step 4: Failure Point Identification
+
+- Evaluate each mapped node independently for concrete failure points
+- A failure point is a specific fault or missing constraint on the execution path, not a competing theory
+- For each failure point, determine causeCategory: typo / logic_error / missing_constraint / design_gap / external_factor
+- Record a `causalChain` from observed symptom to that failure point
+- Preserve multiple independent failure points when evidence supports them
 
 **Tracking depth check**: Each causal chain must reach a stop condition. If it ends at a configuration state or technical label, continue tracing why that state exists.
 
-### Step 4: Impact Scope Identification
+### Step 5: Impact Scope Identification
 
 - Search for locations implemented with the same pattern (impactScope)
 - Determine recurrenceRisk: low (isolated) / medium (2 or fewer locations) / high (3+ locations or design_gap)
 - Disclose unexplored areas and investigation limitations
 
-### Step 5: Return JSON Result
+### Step 6: Return JSON Result
 
 Return the JSON result as the final response. See Output Format for the schema.
 
@@ -133,17 +140,30 @@ Return the JSON result as the final response. See Output Format for the schema.
       "relevance": "Relevance to this problem"
     }
   ],
-  "hypotheses": [
+  "pathMap": {
+    "entryPoint": "First relevant execution entry",
+    "nodes": [
+      {
+        "id": "N1",
+        "stage": "route_entry|service_entry|validation|persistence_read|persistence_write|external_call|render|other",
+        "component": "Component or file path",
+        "description": "Role on the execution path",
+        "status": "observed|inferred|unverified"
+      }
+    ]
+  },
+  "failurePoints": [
     {
-      "id": "H1",
-      "description": "Hypothesis description",
+      "id": "FP1",
+      "nodeId": "N1",
+      "description": "Specific failure point description",
       "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor",
       "causalChain": ["Phenomenon", "→ Direct cause", "→ Root cause"],
       "supportingEvidence": [
         {"evidence": "Evidence", "source": "Source", "strength": "direct|indirect|circumstantial"}
       ],
       "contradictingEvidence": [
-        {"evidence": "Counter-evidence", "source": "Source", "impact": "Impact on hypothesis"}
+        {"evidence": "Counter-evidence", "source": "Source", "impact": "Impact on this failure point"}
       ],
       "unexploredAspects": ["Unverified aspects"]
     }
@@ -162,7 +182,14 @@ Return the JSON result as the final response. See Output Format for the schema.
   "unexploredAreas": [
     {"area": "Unexplored area", "reason": "Reason could not investigate", "potentialRelevance": "Relevance"}
   ],
-  "factualObservations": ["Objective facts observed regardless of hypotheses"],
+  "failurePointRelationships": [
+    {
+      "from": "FP1",
+      "to": "FP2",
+      "relationship": "independent|upstream_of|downstream_of|amplifies|same_boundary"
+    }
+  ],
+  "factualObservations": ["Objective facts observed regardless of failure-point classification"],
   "investigationLimitations": ["Limitations and constraints of this investigation"]
 }
 ```
@@ -172,15 +199,16 @@ Return the JSON result as the final response. See Output Format for the schema.
 - [ ] Determined problem type and executed diff analysis for change failures
 - [ ] Output comparisonAnalysis
 - [ ] Investigated each source type or recorded that it had no relevant findings
-- [ ] Enumerated 2+ hypotheses with causal tracking, evidence collection, and causeCategory determination for each
+- [ ] Mapped the relevant execution path
+- [ ] Enumerated concrete failure points with causal tracking, evidence collection, and causeCategory determination for each
 - [ ] Determined impactScope and recurrenceRisk
 - [ ] Documented unexplored areas and investigation limitations
 - [ ] Final response is the JSON output
 
 ## Output Self-Check
-- [ ] Multiple hypotheses were evaluated (not just the first plausible one)
-- [ ] User's causal relationship hints are reflected in the hypothesis set
-- [ ] All contradicting evidence is addressed with adjusted confidence levels
+- [ ] Multiple plausible failure points were preserved when evidence supported them
+- [ ] User's causal relationship hints are reflected in the path map or failure points
+- [ ] All contradicting evidence is addressed with adjusted evidence strength or scope notes
 
 ## Completion Gate [BLOCKING]
 

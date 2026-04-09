@@ -124,8 +124,9 @@ ENFORCEMENT: Sub-agent prompts missing the constraint suffix MUST be re-issued w
 **Rules**:
 1. Execute ONE task completely before starting next (each task goes through the full 4-step cycle individually, using the correct executor per filename pattern)
 2. Check executor status before quality-fixer (escalation check)
-3. Quality-fixer MUST run after each executor (no skipping)
-4. Commit MUST execute when quality-fixer returns `status: "approved"` (do not defer to end)
+3. Quality-fixer MUST run after each executor (no skipping) and MUST receive the executor `filesModified` list as stub-detection scope
+4. If quality-fixer returns `status: "stub_detected"`, route the task back to the same executor with `stubFindings`
+5. Commit MUST execute only when quality-fixer returns `status: "approved"` (do not defer to end)
 
 ### Post-Implementation Verification (After All Tasks Complete)
 
@@ -149,8 +150,9 @@ After all task cycles finish, collect all `filesModified` from every task-execut
 ### Test Information Communication
 After acceptance-test-generator execution, when calling work-planner, communicate:
 - Generated integration test file path
-- Generated E2E test file path
-- Explicit note that integration tests are created simultaneously with implementation, E2E tests are executed after all implementations
+- Generated E2E test file path or `null`
+- E2E absence reason when no E2E file is generated
+- Explicit note that integration tests are created simultaneously with implementation, E2E tests are executed after all implementations only when an E2E file exists
 
 **[STOP -- BLOCKING]** Upon detecting ANY requirement changes, halt execution immediately.
 **CANNOT proceed until user explicitly confirms the change scope.**

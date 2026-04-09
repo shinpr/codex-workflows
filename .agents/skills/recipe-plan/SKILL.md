@@ -47,9 +47,10 @@ Present options if multiple exist (can be specified with $ARGUMENTS).
 - Confirm with user whether to generate E2E test skeleton first
 - If user wants generation: Spawn acceptance-test-generator agent: "Generate test skeletons from Design Doc at [design-doc-path]"
 - Pass generation results to next process according to subagents-orchestration-guide skill coordination specification
+- If no E2E file is generated, carry the explicit `e2eAbsenceReason` forward as a valid planning input
 
 ### Step 3: Work Plan Creation
-- Spawn work-planner agent: "Create work plan from design document at [design-doc-path]. Include deliverables from previous process according to subagents-orchestration-guide skill coordination specification."
+- Spawn work-planner agent: "Create work plan from design document at [design-doc-path]. Include deliverables from previous process according to subagents-orchestration-guide skill coordination specification. If `generatedFiles.e2e` is null, use `e2eAbsenceReason` and accept the null E2E file as a valid planning input."
 - Interact with user to complete plan and obtain approval for plan content
 - Clarify specific implementation steps and risks
 

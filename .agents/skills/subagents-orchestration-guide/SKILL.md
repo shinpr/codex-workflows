@@ -180,13 +180,13 @@ Subagents respond in JSON format. The final response from each JSON-returning su
 - **requirement-analyzer**: scale, confidence, affectedLayers, adrRequired, scopeDependencies, questions
 - **codebase-analyzer**: analysisScope, existingElements, dataModel, focusAreas, limitations
 - **task-executor**: status (escalation_needed/completed), escalation_type (design_compliance_violation/similar_function_found/similar_component_found/investigation_target_not_found/out_of_scope_file/test_environment_not_ready), testsAdded, requiresTestReview
-- **quality-fixer**: status (approved/blocked). For blocked responses, discriminate by `reason`: specification conflicts use `blockingIssues[]`; execution prerequisites use `missingPrerequisites[]`, and each item provides its own `resolutionSteps`
+- **quality-fixer**: status (`stub_detected`/approved/blocked). `stub_detected` returns `stubFindings[]` and routes back to the task executor. For blocked responses, discriminate by `reason`: specification conflicts use `blockingIssues[]`; execution prerequisites use `missingPrerequisites[]`, and each item provides its own `resolutionSteps`
 - **document-reviewer**: verdict.decision (approved/approved_with_conditions/needs_revision/rejected)
 - **code-verifier**: summary.status, summary.consistencyScore, discrepancies, reverseCoverage
 - **design-sync**: sync_status (CONFLICTS_FOUND/NO_CONFLICTS) — text format with [SUMMARY] block
 - **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
 - **security-reviewer**: status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes
-- **acceptance-test-generator**: status, generatedFiles
+- **acceptance-test-generator**: status, generatedFiles, `e2eAbsenceReason`
 
 ## Handling Requirement Changes
 
@@ -296,7 +296,8 @@ Batch approval -> Start autonomous execution mode
               - needs_revision -> back to task-executor
               - approved -> quality-fixer
           - No issues -> quality-fixer
-      -> quality-fixer: Quality check and fixes
+      -> quality-fixer: Quality check and fixes using the executor `filesModified` set as the stub-detection scope
+          - stub_detected -> task-executor/task-executor-frontend: complete implementation -> re-run quality-fixer
       -> Orchestrator: Execute git commit
       -> Check remaining tasks:
           - Yes -> next task
@@ -352,13 +353,15 @@ Maximum retry count is 1 verification fix cycle. If any failed verifier still fa
 
 **Orchestrator verification items**:
 - Verify integration test file path retrieval and existence
-- Verify E2E test file path retrieval and existence
+- Verify E2E test file path retrieval and existence when `generatedFiles.e2e` is not null
+- Verify `e2eAbsenceReason` is present when `generatedFiles.e2e` is null
 
 **Pass to work-planner**:
 - Integration test file: [path] (create and execute simultaneously with each phase implementation)
-- E2E test file: [path] (execute only in final phase)
+- E2E test file: [path] or `null` (execute only in final phase when present)
+- E2E absence reason: [value when E2E test file is null]
 
-**On error**: Escalate to user if files are not generated
+**On error**: Escalate to user only when required outputs are missing without a valid absence reason
 
 ### Design Doc to Work Plan Verification Handoff
 

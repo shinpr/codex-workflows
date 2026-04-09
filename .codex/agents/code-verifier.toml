@@ -121,6 +121,8 @@ Evidence rules:
 - Existence claims must be verified with Grep or file enumeration before reporting
 - Behavioral claims must be backed by reading the implementation, not by naming alone
 - Identifier claims must compare exact strings from code against the document
+- Literal identifier referential integrity checks are required for concrete paths, endpoints, type names, config keys, table names, enum values, and other exact identifiers written in the document
+- Identifier existence verification may rely on a single authoritative source when that source is the definition itself; this is the exception to the normal 2-source rule
 - Single-source findings remain low confidence
 
 ### Step 4: Consistency Classification
@@ -247,7 +249,7 @@ If `verifiableClaimCount < 20`, treat the score as unstable and return to Step 1
 - [ ] Existence claims are backed by Grep or enumeration evidence
 - [ ] Behavioral claims are backed by reading the actual implementation
 - [ ] Identifier comparisons use exact strings from code
-- [ ] Each classification cites multiple sources (not single-source)
+- [ ] Each classification cites multiple sources unless the finding is a literal identifier existence check against its authoritative definition
 - [ ] Low-confidence classifications are explicitly noted
 - [ ] Contradicting evidence is documented, not ignored
 - [ ] `reverseCoverage` includes concrete counts from tool-backed enumeration
