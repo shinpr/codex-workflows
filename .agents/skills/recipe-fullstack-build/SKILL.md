@@ -97,7 +97,7 @@ For EACH task, YOU MUST:
      - `needs_revision` -> Return to step 2 with `requiredFixes`
      - `approved` -> Proceed to step 4
    - `readyForQualityCheck: true` -> Proceed to step 4
-4. **Spawn quality-fixer agent** (layer-appropriate per routing table): "Execute all quality checks and fixes. Task file: [task-file-path]. filesModified: [executor response filesModified]. Use these files as the stub-detection scope."
+4. **Spawn quality-fixer agent** (layer-appropriate per routing table): "Execute all quality checks and fixes. Task file: [task-file-path]. The task file path above is also the `task_file` input. Read its `Quality Assurance Mechanisms` section as supplementary quality-check hints. filesModified: [executor response filesModified]. Use these files as the stub-detection scope."
 5. **CHECK quality-fixer response**:
    - `status: "stub_detected"` -> Return to step 2 with `stubFindings`
    - `status: "blocked"` -> STOP and escalate to user

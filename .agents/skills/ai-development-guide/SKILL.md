@@ -131,13 +131,14 @@ How to handle duplicate code based on Martin Fowler's "Refactoring":
 - For low certainty cases, create minimal verification code first
 
 ### Pattern 5: Insufficient Existing Code Investigation
-**Symptom**: Duplicate implementations, architecture inconsistency, integration failures
-**Cause**: Insufficient understanding of existing code before implementation
+**Symptom**: Duplicate implementations, architecture inconsistency, integration failures, adopting outdated patterns
+**Cause**: Insufficient understanding of existing code before implementation; referencing only nearby files without checking representativeness
 **Avoidance**:
 - Before implementation, always search for similar functionality
 - Similar functionality found: Use that implementation (do not create new)
 - Similar functionality is technical debt: Create ADR improvement proposal
 - No similar functionality: Implement following existing design philosophy
+- When adopting a pattern or dependency from nearby code, verify it is representative across the repository before adopting it
 
 ## Debugging Techniques
 
@@ -174,6 +175,15 @@ Pattern: Structured logging with context
   timestamp: current_time_ISO8601
 }
 ```
+
+## Quality Assurance Mechanism Awareness
+
+Before executing quality checks, discover applicable quality tools and constraints by inspecting the affected files' types, project manifests, CI pipelines, and configuration:
+- Primary detection: inspect affected file types, manifests, configuration, and CI pipelines to identify applicable quality tools
+- Check for domain-specific linters or validators such as schema validators, API spec validators, or configuration-file checkers
+- Check for domain-specific constraints in project configuration such as naming rules, length limits, or format requirements
+- When a task file lists `Quality Assurance Mechanisms`, use that section as supplementary guidance for what to verify
+- Include discovered domain-specific checks alongside the standard quality phases below
 
 ## Quality Check Workflow [MANDATORY]
 

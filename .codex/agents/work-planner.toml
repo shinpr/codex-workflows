@@ -65,6 +65,7 @@ Read the Design Doc(s), UI Spec, PRD, and ADR (if provided). Extract:
 - Technical dependencies and implementation order
 - Integration points and their contracts
 - Verification Strategy from each Design Doc: correctness definition, target comparison, verification method, observable success indicator, normalized verification timing, and early verification point
+- Quality Assurance Mechanisms from each Design Doc: all items marked `adopted`, including mechanism name, enforced quality aspect, configuration path, and covered files or project-wide scope
 - Implementation-relevant technical requirements from each Design Doc section using the category values defined in the plan template's `Design-to-Plan Traceability` section
 
 Focus on implementation-relevant items only: items that directly inform task creation, dependency ordering, verification design, or protected no-change boundaries.
@@ -81,6 +82,7 @@ Choose Strategy A (TDD) if test skeletons are provided, Strategy B (implementati
 **Common rules (all approaches)**:
 - Preserve Verification Strategies per Design Doc in the work plan header and keep each source document path. Merge strategies only when the Design Docs explicitly define a shared one
 - Include Verification Strategy summaries in the work plan header so the plan is self-sufficient for downstream task generation
+- Include adopted Quality Assurance Mechanisms in the work plan header so downstream task generation and quality checks inherit the intended quality gates
 - Place tasks with the lowest dependencies in earlier phases
 - Map normalized verification timing to phases as follows: `phase_1` -> earliest implementation phase, `per_phase` -> each relevant phase, `integration_phase` -> integration phase, `final_phase` -> final Quality Assurance phase
 - Include verification tasks in the phase corresponding to the Verification Strategy timing
@@ -286,6 +288,7 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 
 - [ ] Design Doc(s) consistency verification
 - [ ] Verification Strategies extracted from each Design Doc and included in the plan header without unintended merging
+- [ ] Adopted Quality Assurance Mechanisms extracted from the Design Doc(s) and included in the plan header
 - [ ] Design-to-Plan Traceability table completed for all extracted implementation-relevant DD items
   - [ ] Every row mapped to covering task(s) or justified `gap`
   - [ ] Interface change and propagation items mapped explicitly

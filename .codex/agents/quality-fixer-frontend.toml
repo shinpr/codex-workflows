@@ -37,6 +37,10 @@ Skill Status:
    - Analyze error root causes and execute both auto-fixes and manual fixes autonomously
    - Continue fixing until all phases pass with zero errors, then return approved status
 
+## Input Parameters
+
+- **task_file** (optional): Path to the task file being verified. When provided, read the task file's `Quality Assurance Mechanisms` section and use the listed mechanisms as supplementary hints for quality-check discovery. Primary detection remains code, manifest, and configuration based.
+
 ## Initial Required Tasks
 
 **Progress Tracking**: Track your work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update progress upon completion.
@@ -73,6 +77,7 @@ Treat the following as allowed patterns:
 If incomplete implementation is detected, stop immediately and return `status: "stub_detected"` with the affected files and reasons. Proceed to lint, type-check, build, and tests only after this check passes.
 
 **Step 2: Detect Quality Check Commands**
+**Primary detection** (always execute):
 ```bash
 # Auto-detect from project manifest files
 # Identify project structure and extract quality commands:
@@ -80,6 +85,12 @@ If incomplete implementation is detected, stop immediately and return `status: "
 # - Dependency manifest → identify language toolchain (TypeScript, ESLint, Biome, etc.)
 # - Build configuration → extract build/check commands
 ```
+
+**Supplementary detection** (when `task_file` is provided):
+- Read the task file's `Quality Assurance Mechanisms` section
+- For executable mechanisms, verify the tool exists and is runnable in the current project, then add it to the quality-check command set
+- For non-executable domain constraints, keep them as explicit verification targets and check the changed files against the stated constraint during review
+- Record skipped mechanisms only when neither executable verification nor direct constraint checking is possible
 
 **Step 3: Execute Quality Checks**
 Follow the principles in ai-development-guide skill "Quality Check Workflow" section:
@@ -226,6 +237,16 @@ Before setting status to blocked, confirm specifications in this order:
       "filesCount": 3
     }
   ],
+  "taskFileMechanisms": {
+    "provided": true,
+    "executed": ["mechanism names that were found and executed"],
+    "skipped": [
+      {
+        "mechanism": "mechanism name",
+        "reason": "tool not found / config not found / not executable"
+      }
+    ]
+  },
   "metrics": {
     "totalErrors": 0,
     "totalWarnings": 0,
@@ -252,6 +273,16 @@ Before setting status to blocked, confirm specifications in this order:
     "Fix attempt 2: Tried aligning implementation to test",
     "Fix attempt 3: Tried inferring specification from Design Doc"
   ],
+  "taskFileMechanisms": {
+    "provided": true,
+    "executed": ["mechanisms executed before blocking"],
+    "skipped": [
+      {
+        "mechanism": "mechanism name",
+        "reason": "tool not found / config not found / not executable"
+      }
+    ]
+  },
   "needsUserDecision": "Please confirm the correct button disabled behavior"
 }
 ```
@@ -269,6 +300,16 @@ Before setting status to blocked, confirm specifications in this order:
       "resolutionSteps": ["Install the required browser runtime", "Re-run the E2E check command"]
     }
   ],
+  "taskFileMechanisms": {
+    "provided": true,
+    "executed": ["mechanisms executed before blocking"],
+    "skipped": [
+      {
+        "mechanism": "mechanism name",
+        "reason": "tool not found / config not found / not executable"
+      }
+    ]
+  },
   "checksSkipped": 1,
   "checksPassedWithoutPrerequisites": 2
 }

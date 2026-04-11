@@ -52,6 +52,12 @@ unknowns:
 - [ ] [Standard/convention] `[explicit]` - Source: [config / rule file / documentation path]
 - [ ] [Observed pattern] `[implicit]` - Evidence: [file paths] - Confirmed: [Yes/No]
 
+#### Quality Assurance Mechanisms
+How quality is enforced in the change area. Each item is either adopted for this change or noted with a reason.
+
+- [ ] [Tool/check name] — Enforces: [what] — Config: [path] — Covers: [file paths/patterns or "project-wide"] — Status: `adopted` / `noted (reason)`
+- [ ] [Domain-specific constraint] — Enforces: [what] — Source: [path] — Covers: [file paths/patterns or "project-wide"] — Status: `adopted` / `noted (reason)`
+
 ### Problem to Solve
 
 [Specific problems or challenges this feature aims to address]

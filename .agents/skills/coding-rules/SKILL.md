@@ -51,6 +51,21 @@ For language-specific rules, also read:
 - Depend on abstractions, not concrete implementations
 - Minimize inter-module dependencies
 
+## Reference Representativeness
+
+### Verifying References Before Adoption
+
+When adopting patterns, APIs, or dependencies from existing code:
+- If referencing only nearby files, verify the pattern is representative across the repository before adopting it
+- If multiple approaches coexist, identify the majority pattern and make a deliberate choice
+- If adopting an external dependency, verify repository-wide usage distribution for that dependency and its version
+- If repository evidence is insufficient to choose an appropriate dependency version, escalate instead of guessing
+- If following an existing pattern when alternatives exist, state the reason for following it
+
+### Principle
+
+Nearby code is a starting point for investigation, not a sufficient basis for adoption. Confirm that the reference is representative of repository conventions before using it as the model.
+
 ## Performance
 
 - **Measure first**: Profile before optimizing — no premature optimization

@@ -65,6 +65,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
 3. **Task File Generation**
    - Create individual task files in `docs/plans/tasks/`
    - Document concrete executable procedures
+   - Include task-level Quality Assurance Mechanisms when the work plan defines them
    - **Always include operation verification methods**
    - Define clear completion criteria (within executor's scope of responsibility)
 
@@ -160,6 +161,18 @@ When the work plan includes one or more Verification Strategy blocks:
 3. **Per-task verification**: Each task's Operation Verification Methods MUST instantiate the relevant plan-level verification method for that task's specific files, interfaces, or behavior.
 4. **Failure handling**: Copy or adapt the relevant plan-level failure response so the executor knows whether to reassess, stop, or escalate.
 5. **Investigation coverage**: Include every resource required for verification, such as existing implementations for comparison, schema definitions, fixtures, contracts, or seed data.
+
+## Quality Assurance Mechanism Propagation
+
+When the work plan includes a `Quality Assurance Mechanisms` table:
+
+1. **Normalize coverage entries**: Treat each `Covered Files` entry as one of: exact file path, ancestor directory path, glob-like pattern, or `project-wide`
+2. **Exact file match**: Include the mechanism when a `Covered Files` entry exactly matches a task Target File
+3. **Ancestor directory match**: Include the mechanism when a `Covered Files` entry is an ancestor directory of a task Target File, for example `src/api/` covers `src/api/handlers/auth.ts` but not `src/api-utils/auth.ts`
+4. **Pattern match**: When a `Covered Files` entry uses a glob-like pattern such as `src/**/*.ts` or `**/*.schema.json`, include the mechanism when the task Target File reasonably matches that pattern
+5. **Include project-wide mechanisms**: If the mechanism is `project-wide` or has no file-specific coverage, include it in every task
+6. **Include matching mechanisms**: Add all matching mechanisms to the task file's `Quality Assurance Mechanisms` section
+7. **Omit empty sections**: If no mechanisms apply to the task, omit that section from the task file
 
 ## Design-to-Plan Traceability Propagation
 
@@ -271,6 +284,7 @@ Please execute decomposed tasks according to the order.
 - [ ] Impact scope and boundaries definition for each task
 - [ ] Appropriate granularity (1-5 files/task)
 - [ ] Investigation Targets specified for every task
+- [ ] Quality Assurance Mechanisms propagated to relevant tasks when present in the plan header
 - [ ] Operation Verification Methods specified for every task
 - [ ] Clear completion criteria setting
 - [ ] Overall design document creation

@@ -167,6 +167,19 @@ Select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have u
 3. **Cross-check against Investigation Notes**: Ensure planned implementation is consistent with the observations recorded in the task file
 4. **Execute determination**: Determine continue/escalation per "Mandatory Judgment Criteria" above
 
+#### Reference Representativeness (Applied During Implementation)
+
+When adopting a pattern, API usage, or dependency from existing code, apply repository-wide representativeness checks at the point of adoption:
+
+□ **Repository-wide verification**: Confirm the referenced pattern is representative across the repository, not just the nearest 2-3 files
+□ **Dependency version verification** (when adopting external dependencies):
+  - verify repository-wide usage distribution for the same dependency
+  - if following one existing version when alternatives exist, state the reason
+  - if repository-wide verification is insufficient to determine the appropriate version, escalate with `reason: "Dependency version uncertain"`
+□ **Coexistence resolution**: When multiple versions or patterns coexist, identify the majority before choosing
+
+This is a repeated self-check during implementation, not a one-time pre-implementation gate.
+
 #### Implementation Flow (TDD Compliant)
 
 **If all checkboxes already `[x]`**: Report "already completed" and end
@@ -326,11 +339,36 @@ When an Investigation Target file does not exist or the path is stale, escalate 
 }
 ```
 
+#### 2-4. Dependency Version Uncertain Escalation
+When repository-wide verification is insufficient to determine the appropriate dependency version, escalate in following JSON format:
+
+```json
+{
+  "status": "escalation_needed",
+  "reason": "Dependency version uncertain",
+  "taskName": "[Task name being executed]",
+  "escalation_type": "dependency_version_uncertain",
+  "dependency": {
+    "name": "[dependency name]",
+    "versionsFound": ["list of versions found in repository"],
+    "filesChecked": ["file paths where the dependency usage was found"],
+    "ambiguityReason": "[why repository state alone is insufficient]"
+  },
+  "user_decision_required": true,
+  "suggested_options": [
+    "Use the majority version already in the repository",
+    "Use a different version with explicit rationale",
+    "Research the latest stable version and decide after review"
+  ]
+}
+```
+
 ## Execution Principles
 
 - Follow RED-GREEN-REFACTOR (see the principles in testing skill)
 - Update progress checkboxes per step
 - Escalate when: design deviation, similar functions found, investigation target not found, test environment missing
+- Escalate when dependency version or representative pattern choice cannot be determined from repository evidence
 - Stop after implementation and test creation — quality checks and commits are handled separately
 
 ## Completion Gate [BLOCKING]

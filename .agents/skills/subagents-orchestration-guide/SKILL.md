@@ -178,9 +178,9 @@ All agents MUST use this vocabulary consistently:
 
 Subagents respond in JSON format. The final response from each JSON-returning subagent must be the JSON payload itself, with no trailing prose. Key fields for orchestrator decisions:
 - **requirement-analyzer**: scale, confidence, affectedLayers, adrRequired, scopeDependencies, questions
-- **codebase-analyzer**: analysisScope, existingElements, dataModel, focusAreas, limitations
-- **task-executor**: status (escalation_needed/completed), escalation_type (design_compliance_violation/similar_function_found/similar_component_found/investigation_target_not_found/out_of_scope_file/test_environment_not_ready), testsAdded, requiresTestReview
-- **quality-fixer**: status (`stub_detected`/approved/blocked). `stub_detected` returns `stubFindings[]` and routes back to the task executor. For blocked responses, discriminate by `reason`: specification conflicts use `blockingIssues[]`; execution prerequisites use `missingPrerequisites[]`, and each item provides its own `resolutionSteps`
+- **codebase-analyzer**: analysisScope, existingElements, dataModel, qualityAssurance, focusAreas, limitations
+- **task-executor**: status (escalation_needed/completed), escalation_type (design_compliance_violation/similar_function_found/similar_component_found/investigation_target_not_found/out_of_scope_file/test_environment_not_ready/dependency_version_uncertain), testsAdded, requiresTestReview
+- **quality-fixer**: Input: `task_file` (always pass the current task file path in orchestrated flows). Status (`stub_detected`/approved/blocked). `stub_detected` returns `stubFindings[]` and routes back to the task executor. For blocked responses, discriminate by `reason`: specification conflicts use `blockingIssues[]`; execution prerequisites use `missingPrerequisites[]`, and each item provides its own `resolutionSteps`
 - **document-reviewer**: verdict.decision (approved/approved_with_conditions/needs_revision/rejected)
 - **code-verifier**: summary.status, summary.consistencyScore, discrepancies, reverseCoverage
 - **design-sync**: sync_status (CONFLICTS_FOUND/NO_CONFLICTS) — text format with [SUMMARY] block
@@ -252,7 +252,7 @@ When receiving new features or change requests, start with requirement-analyzer.
 ### Design Flow Data Passing
 
 - Pass requirement-analyzer output and original requirements to codebase-analyzer
-- Pass codebase-analyzer JSON to technical-designer or technical-designer-frontend as `Codebase Analysis`, including `dataTransformationPipelines` when present
+- Pass codebase-analyzer JSON to technical-designer or technical-designer-frontend as `Codebase Analysis`, including `dataTransformationPipelines` and `qualityAssurance` when present
 - Pass Design Doc path to code-verifier
 - Pass code-verifier JSON to document-reviewer as `code_verification`
 
