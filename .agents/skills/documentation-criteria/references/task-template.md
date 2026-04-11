@@ -37,6 +37,10 @@ Brief observations recorded after reading Investigation Targets:
 - [ ] Improve code (maintain passing tests)
 - [ ] Confirm added tests still pass
 
+## Quality Assurance Mechanisms
+(From the work plan header — include only mechanisms relevant to this task's target files)
+- [Tool/check name] — Enforces: [what] — Config: [path]
+
 ## Operation Verification Methods
 (Derived from Verification Strategy in the work plan)
 - **Verification method**: [What to verify and how]

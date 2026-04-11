@@ -105,7 +105,7 @@ After user grants "batch approval for entire implementation phase", enter autono
      - `needs_revision` -> Return to step 1 with `requiredFixes`
      - `approved` -> Proceed to step 3
    - Otherwise -> Proceed to step 3
-3. Spawn quality-fixer (or quality-fixer-frontend) agent: "Quality check and fixes. Task file: [task-file-path]. filesModified: [executor response filesModified]. Use these files as the stub-detection scope."
+3. Spawn quality-fixer (or quality-fixer-frontend) agent: "Quality check and fixes. Task file: [task-file-path]. The task file path above is also the `task_file` input. Read its `Quality Assurance Mechanisms` section as supplementary quality-check hints. filesModified: [executor response filesModified]. Use these files as the stub-detection scope."
 4. Check quality-fixer response:
    - `status: "stub_detected"` -> Return to step 1 with `stubFindings`
    - `status: "blocked"` -> Escalate to user

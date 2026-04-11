@@ -32,6 +32,15 @@ Repeat this block for each Design Doc when multiple Design Docs exist. Preserve 
 - **Success criteria**: [extracted from Design Doc]
 - **Failure response**: [extracted from Design Doc]
 
+## Quality Assurance Mechanisms (from Design Docs)
+
+Adopted quality gates for the change area. Each task in this plan must satisfy the applicable mechanisms.
+
+| Mechanism | Enforces | Config Location | Covered Files |
+|-----------|----------|-----------------|---------------|
+| [Tool/check name] | [What quality aspect it enforces] | [path/to/config] | [file paths or patterns covered, or "project-wide"] |
+| [Domain constraint] | [What it enforces] | [path/to/source] | [file paths or patterns covered, or "project-wide"] |
+
 ## Design-to-Plan Traceability
 
 Map each Design Doc technical requirement to the task or phase that covers it. Use one row per extracted requirement item. Every row must have at least one covering task, or an explicit justified gap.

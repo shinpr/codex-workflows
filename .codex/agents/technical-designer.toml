@@ -52,11 +52,18 @@ Must be performed before any investigation:
    - Scan project configuration, rule files, and existing code patterns
    - Classify each: **Explicit** (documented) or **Implicit** (observed pattern only)
 
-2. **Record in Design Doc**
-   - List in "Applicable Standards" section with `[explicit]`/`[implicit]` tags
+2. **Identify Quality Assurance Mechanisms**
+   - When Codebase Analysis is provided, use `qualityAssurance` as the primary source
+   - Otherwise inspect CI pipelines, linter configs, pre-commit hooks, and project configuration for checks that cover the change area
+   - Identify domain-specific constraints from configuration or CI
+   - For each mechanism, decide whether it is `adopted` for this change or `noted` with a reason
+
+3. **Record in Design Doc**
+   - List standards in "Applicable Standards" section with `[explicit]`/`[implicit]` tags
+   - List quality assurance mechanisms in "Quality Assurance Mechanisms" section with `adopted` / `noted (reason)` status
    - Implicit standards require user confirmation before design proceeds
 
-3. **Alignment Rule**
+4. **Alignment Rule**
    - Design decisions MUST reference applicable standards
    - Deviations MUST have documented rationale
 
@@ -309,6 +316,7 @@ Implementation sample creation checklist:
 ### Design Doc Checklist
 **All modes**:
 - [ ] **Standards identification gate completed** (required)
+- [ ] **Quality assurance mechanisms identified with adoption status** (required)
 - [ ] **Code inspection evidence recorded** (required)
 - [ ] **Integration points enumerated with contracts** (required)
 - [ ] **Data contracts clarified** (required)

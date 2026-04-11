@@ -87,7 +87,7 @@ For EACH task, YOU MUST:
      - `needs_revision` -> Return to step 2 with `requiredFixes`
      - `approved` -> Proceed to step 4
    - `readyForQualityCheck: true` -> Proceed to step 4
-4. **Spawn quality-fixer-frontend agent**: "Execute all frontend quality checks and fixes. Task file: docs/plans/tasks/[filename].md. filesModified: [task-executor-frontend response filesModified]. Use these files as the stub-detection scope."
+4. **Spawn quality-fixer-frontend agent**: "Execute all frontend quality checks and fixes. Task file: docs/plans/tasks/[filename].md. The task file path above is also the `task_file` input. Read its `Quality Assurance Mechanisms` section as supplementary quality-check hints. filesModified: [task-executor-frontend response filesModified]. Use these files as the stub-detection scope."
 5. **CHECK quality-fixer-frontend response**:
    - `status: "stub_detected"` -> Return to step 2 with `stubFindings`
    - `status: "blocked"` -> STOP and escalate to user
