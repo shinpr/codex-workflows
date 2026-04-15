@@ -73,6 +73,23 @@ The following subagents are available:
 14. **design-sync**: Design Doc consistency verification across multiple documents
 15. **acceptance-test-generator**: Generate integration and E2E test skeletons from Design Doc ACs
 
+## Execution Profile Assessment [MANDATORY]
+
+Review of the current agent definitions in `.codex/agents/*.toml` shows that every shipped subagent performs substantive multi-step work. Many of them routinely search the codebase, compare multiple artifacts, verify evidence, or run quality checks before returning. The orchestrator should therefore base waiting decisions on assigned responsibility and observed state, not on a default expectation of quick completion.
+
+| Agent family | Agents reviewed | Why long runtimes are normal |
+|--------------|-----------------|------------------------------|
+| Requirements and planning | `requirement-analyzer`, `codebase-analyzer`, `prd-creator`, `work-planner`, `task-decomposer`, `acceptance-test-generator`, `scope-discoverer` | These agents search the codebase, synthesize structured outputs, and often verify surrounding context before returning |
+| Design and documentation | `ui-spec-designer`, `technical-designer`, `technical-designer-frontend`, `document-reviewer`, `design-sync` | These agents read multiple documents, compare sections, check templates, and generate or review large artifacts |
+| Verification and diagnosis | `code-reviewer`, `code-verifier`, `investigator`, `verifier`, `solver`, `security-reviewer`, `rule-advisor` | These agents correlate multiple evidence sources; several also require external research or broad repository searches |
+| Implementation and quality | `task-executor`, `task-executor-frontend`, `quality-fixer`, `quality-fixer-frontend`, `integration-test-reviewer` | These agents implement code, inspect surrounding patterns, run quality checks, or validate generated tests |
+
+**Operational conclusion**:
+- Subagent duration expectations should come from assigned scope and observed state, not from a generic "quick" vs "slow" label
+- Evaluate failure from terminal outputs or explicit contradictory evidence, not from elapsed time alone
+- Treat missing intermediate output as a normal execution state while the subagent remains `running`
+- The orchestrator's job is to preserve completion responsibility until the subagent returns a terminal result or the user explicitly redirects the workflow
+
 ## Orchestration Principles
 
 ### Task Assignment with Responsibility Separation [MANDATORY]
@@ -95,6 +112,41 @@ Assign work based on each subagent's responsibilities:
 Subagents CANNOT directly call other subagents — all coordination MUST flow through the orchestrator.
 
 **ENFORCEMENT**: Direct subagent-to-subagent communication is PROHIBITED
+
+### Subagent Completion Discipline [MANDATORY]
+
+The orchestrator is fully responsible for carrying subagent work to completion. Preserve that ownership until the subagent returns a terminal result, the user explicitly redirects the workflow, or the orchestrator confirms that it launched the wrong task.
+
+**Waiting rules**:
+- Use `wait_agent` as a completion-wait mechanism for required subagent outputs
+- Preserve the current task assignment across repeated waits until the subagent returns a terminal result
+- Continue waiting when the subagent is still `running` unless the user explicitly interrupts or redirects the workflow
+- Treat long-running execution as a normal possibility whenever the assigned agent is performing multi-step search, review, verification, generation, implementation, or quality work
+
+**Completion-preserving behavior**:
+- Keep the subagent active while it is still the correct worker for the assigned task
+- Interpret "no result yet" as ongoing execution unless explicit contradictory evidence appears
+- Hold final artifact production until all required subagent outputs are available
+- Execute every required workflow step even when a corresponding subagent takes longer than expected
+
+**Completion-preserving diagnostics after repeated empty waits**:
+- Keep the running subagent assigned to the task while performing diagnostics
+- Re-check the original prompt, required inputs, and expected deliverable for completeness
+- Confirm that the chosen subagent still matches the task's responsibility boundary
+- When the task may benefit from a focused nudge, send a follow-up that restates the pending deliverable or missing context
+- Resume waiting after diagnostics unless the user redirects the workflow or the orchestrator confirms a launch mistake
+
+**Explicit contradictory evidence**:
+- The subagent returns a terminal status such as `approved`, `needs_revision`, `blocked`, `skipped`, `completed`, or `escalation_needed`
+- The orchestrator verifies that it launched the wrong subagent or sent materially incorrect inputs
+- A newer explicit user instruction changes the task or cancels the work
+
+**Allowed close conditions**:
+- The user explicitly instructs the workflow to stop, cancel, or change direction
+- The orchestrator launched the wrong subagent or wrong input and must correct that mistake
+- A newer explicit user instruction supersedes the still-running task
+
+**ENFORCEMENT**: Preserve subagent execution until completion, user redirection, or explicit correction of an orchestrator launch mistake. Speed-based early termination is a CRITICAL VIOLATION.
 
 ## How to Spawn Agents
 
@@ -315,6 +367,13 @@ Stop autonomous execution and escalate to user in the following cases:
 2. **Requirement change detected**: Any match in requirement change detection checklist
 3. **Work-planner update restriction violated**: Requirement changes after task-decomposer starts require overall redesign
 4. **User explicitly stops**: Direct stop instruction or interruption
+
+Continue autonomous execution in the following situations:
+- A subagent takes longer than expected
+- `wait_agent` returns without a completion payload while the subagent remains `running`
+- The orchestrator has partial context but is still waiting on a required subagent output
+
+During those situations, run completion-preserving diagnostics when repeated waits produce the same non-terminal state. Use those diagnostics to refine the prompt, confirm agent selection, or validate inputs while keeping ownership of the pending deliverable.
 
 Use the task loop defined in the autonomous execution diagram above. The canonical per-task cycle is:
 1. task-executor implementation

@@ -363,9 +363,9 @@ A: `$recipe-implement` is the universal entry point. It runs requirement-analyze
 
 A: Yes. Codex skills and subagents work alongside [MCP](https://developers.openai.com/codex/mcp) — skills operate at the instruction layer while MCP operates at the tool transport layer. You can add MCP servers to any agent's TOML configuration.
 
-**Q: What if a subagent gets stuck?**
+**Q: What if a subagent seems stuck?**
 
-A: Subagents escalate to the user when they encounter design deviations, ambiguous requirements, or specification conflicts. The framework stops autonomous execution and presents the issue with options.
+A: Treat the subagent as still responsible for its assigned work unless the user explicitly interrupts or redirects the workflow. Many agents in this framework perform substantial multi-step work, so long waits can be normal. The orchestrator should keep ownership of the pending deliverable, use non-destructive diagnostics if repeated waits return the same running state, and continue waiting unless the user redirects the workflow or the orchestrator confirms it launched the wrong task.
 
 ---
 
