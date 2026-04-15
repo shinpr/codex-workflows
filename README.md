@@ -365,7 +365,7 @@ A: Yes. Codex skills and subagents work alongside [MCP](https://developers.opena
 
 **Q: What if a subagent seems stuck?**
 
-A: Treat the subagent as still responsible for its assigned work unless the user explicitly interrupts or redirects the workflow. Many agents in this framework perform substantial multi-step work, so long waits can be normal. The orchestrator should keep ownership of the pending deliverable, use non-destructive diagnostics if repeated waits return the same running state, and continue waiting unless the user redirects the workflow or the orchestrator confirms it launched the wrong task.
+A: Long waits can be normal in this workflow because many subagents perform substantial multi-step work. The orchestrator keeps ownership of the pending deliverable, continues waiting for the required output, and uses diagnostics only to confirm missing inputs or restate the pending deliverable. User direction remains the boundary for interrupting that work.
 
 ---
 

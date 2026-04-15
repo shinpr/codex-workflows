@@ -73,23 +73,6 @@ The following subagents are available:
 14. **design-sync**: Design Doc consistency verification across multiple documents
 15. **acceptance-test-generator**: Generate integration and E2E test skeletons from Design Doc ACs
 
-## Execution Profile Assessment [MANDATORY]
-
-Review of the current agent definitions in `.codex/agents/*.toml` shows that every shipped subagent performs substantive multi-step work. Many of them routinely search the codebase, compare multiple artifacts, verify evidence, or run quality checks before returning. The orchestrator should therefore base waiting decisions on assigned responsibility and observed state, not on a default expectation of quick completion.
-
-| Agent family | Agents reviewed | Why long runtimes are normal |
-|--------------|-----------------|------------------------------|
-| Requirements and planning | `requirement-analyzer`, `codebase-analyzer`, `prd-creator`, `work-planner`, `task-decomposer`, `acceptance-test-generator`, `scope-discoverer` | These agents search the codebase, synthesize structured outputs, and often verify surrounding context before returning |
-| Design and documentation | `ui-spec-designer`, `technical-designer`, `technical-designer-frontend`, `document-reviewer`, `design-sync` | These agents read multiple documents, compare sections, check templates, and generate or review large artifacts |
-| Verification and diagnosis | `code-reviewer`, `code-verifier`, `investigator`, `verifier`, `solver`, `security-reviewer`, `rule-advisor` | These agents correlate multiple evidence sources; several also require external research or broad repository searches |
-| Implementation and quality | `task-executor`, `task-executor-frontend`, `quality-fixer`, `quality-fixer-frontend`, `integration-test-reviewer` | These agents implement code, inspect surrounding patterns, run quality checks, or validate generated tests |
-
-**Operational conclusion**:
-- Subagent duration expectations should come from assigned scope and observed state, not from a generic "quick" vs "slow" label
-- Evaluate failure from terminal outputs or explicit contradictory evidence, not from elapsed time alone
-- Treat missing intermediate output as a normal execution state while the subagent remains `running`
-- The orchestrator's job is to preserve completion responsibility until the subagent returns a terminal result or the user explicitly redirects the workflow
-
 ## Orchestration Principles
 
 ### Task Assignment with Responsibility Separation [MANDATORY]
@@ -115,36 +98,22 @@ Subagents CANNOT directly call other subagents — all coordination MUST flow th
 
 ### Subagent Completion Discipline [MANDATORY]
 
-The orchestrator is fully responsible for carrying subagent work to completion. Preserve that ownership until the subagent returns a terminal result, the user explicitly redirects the workflow, or the orchestrator confirms that it launched the wrong task.
+The orchestrator owns subagent completion. Base waiting decisions on assigned responsibility and observed state, not on an expectation of quick completion. Multi-step search, review, verification, generation, implementation, and quality work can run for extended periods.
 
-**Waiting rules**:
-- Use `wait_agent` as a completion-wait mechanism for required subagent outputs
-- Preserve the current task assignment across repeated waits until the subagent returns a terminal result
-- Continue waiting when the subagent is still `running` unless the user explicitly interrupts or redirects the workflow
-- Treat long-running execution as a normal possibility whenever the assigned agent is performing multi-step search, review, verification, generation, implementation, or quality work
-
-**Completion-preserving behavior**:
-- Keep the subagent active while it is still the correct worker for the assigned task
-- Interpret "no result yet" as ongoing execution unless explicit contradictory evidence appears
-- Hold final artifact production until all required subagent outputs are available
-- Execute every required workflow step even when a corresponding subagent takes longer than expected
-
-**Completion-preserving diagnostics after repeated empty waits**:
-- Keep the running subagent assigned to the task while performing diagnostics
-- Re-check the original prompt, required inputs, and expected deliverable for completeness
-- Confirm that the chosen subagent still matches the task's responsibility boundary
-- When the task may benefit from a focused nudge, send a follow-up that restates the pending deliverable or missing context
+Use this contract:
+- Wait for required subagent outputs with `wait_agent`
+- Keep the current task assignment while the subagent remains `running`
+- Treat missing intermediate output as a normal execution state while the subagent remains `running`
+- Hold final artifact production until every required subagent output is available
+- After repeated empty waits, run non-destructive diagnostics: re-check prompt, inputs, expected deliverable, and agent-task fit; send a focused follow-up when it would clarify the pending deliverable
 - Resume waiting after diagnostics unless the user redirects the workflow or the orchestrator confirms a launch mistake
 
-**Explicit contradictory evidence**:
+Treat the following as explicit contradictory evidence:
 - The subagent returns a terminal status such as `approved`, `needs_revision`, `blocked`, `skipped`, `completed`, or `escalation_needed`
 - The orchestrator verifies that it launched the wrong subagent or sent materially incorrect inputs
-- A newer explicit user instruction changes the task or cancels the work
+- A newer explicit user instruction changes or cancels the task
 
-**Allowed close conditions**:
-- The user explicitly instructs the workflow to stop, cancel, or change direction
-- The orchestrator launched the wrong subagent or wrong input and must correct that mistake
-- A newer explicit user instruction supersedes the still-running task
+Close a running subagent only when the user redirects the workflow, the orchestrator corrects a launch mistake, or a newer user instruction supersedes the pending task.
 
 **ENFORCEMENT**: Preserve subagent execution until completion, user redirection, or explicit correction of an orchestrator launch mistake. Speed-based early termination is a CRITICAL VIOLATION.
 
@@ -201,16 +170,9 @@ All agents MUST use this vocabulary consistently:
 | `blocked` | security-reviewer | Committed secrets or high-confidence exploitable risk | Halt workflow immediately, escalate to user (requires human intervention) |
 | `skipped` | All agents | Preconditions not met for this step | Report reason, proceed |
 
-**approved_with_conditions handling** (document agents):
-- Conditions MUST be listed explicitly in the agent's output
-- Orchestrator MUST append conditions to the document's "Undetermined Items" or "Open Items" section before proceeding
-- Orchestrator MUST pass conditions to the next phase's agent as context
-- Conditions do not block progression but MUST be resolved before implementation phase
-
-**approved_with_notes handling** (security-reviewer):
-- Notes are informational — they do NOT require resolution before proceeding
-- Orchestrator MUST include notes in the completion report for awareness
-- Do not apply approved_with_conditions handling (no resolution tracking)
+Handling rules:
+- `approved_with_conditions`: append the listed conditions to the document's open-items section, carry them into the next phase, and resolve them before implementation
+- `approved_with_notes`: include the notes in the completion report for awareness
 
 **ENFORCEMENT**: Using any status value outside this vocabulary is a VIOLATION.
 
@@ -228,17 +190,20 @@ All agents MUST use this vocabulary consistently:
 
 ## Structured Response Specification
 
-Subagents respond in JSON format. The final response from each JSON-returning subagent must be the JSON payload itself, with no trailing prose. Key fields for orchestrator decisions:
-- **requirement-analyzer**: scale, confidence, affectedLayers, adrRequired, scopeDependencies, questions
-- **codebase-analyzer**: analysisScope, existingElements, dataModel, qualityAssurance, focusAreas, limitations
-- **task-executor**: status (escalation_needed/completed), escalation_type (design_compliance_violation/similar_function_found/similar_component_found/investigation_target_not_found/out_of_scope_file/test_environment_not_ready/dependency_version_uncertain), testsAdded, requiresTestReview
-- **quality-fixer**: Input: `task_file` (always pass the current task file path in orchestrated flows). Status (`stub_detected`/approved/blocked). `stub_detected` returns `stubFindings[]` and routes back to the task executor. For blocked responses, discriminate by `reason`: specification conflicts use `blockingIssues[]`; execution prerequisites use `missingPrerequisites[]`, and each item provides its own `resolutionSteps`
-- **document-reviewer**: verdict.decision (approved/approved_with_conditions/needs_revision/rejected)
-- **code-verifier**: summary.status, summary.consistencyScore, discrepancies, reverseCoverage
-- **design-sync**: sync_status (CONFLICTS_FOUND/NO_CONFLICTS) — text format with [SUMMARY] block
-- **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
-- **security-reviewer**: status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes
-- **acceptance-test-generator**: status, generatedFiles, `e2eAbsenceReason`
+Subagents respond in JSON format. The final response from each JSON-returning subagent must be the JSON payload itself, with no trailing prose. Agent TOML files define the full schemas; the orchestrator only relies on these routing keys:
+
+| Agent | Routing fields the orchestrator uses |
+|-------|--------------------------------------|
+| `requirement-analyzer` | `scale`, `confidence`, `affectedLayers`, `adrRequired`, `scopeDependencies`, `questions` |
+| `codebase-analyzer` | `focusAreas`, `dataModel`, `qualityAssurance`, `dataTransformationPipelines`, `limitations` |
+| `task-executor*` | `status`, `escalation_type`, `filesModified`, `requiresTestReview` |
+| `quality-fixer*` | `status`, `reason`, `stubFindings`, `blockingIssues`, `missingPrerequisites` |
+| `document-reviewer` | `verdict.decision`, `verdict.conditions` |
+| `code-verifier` | `summary.status`, `discrepancies`, `reverseCoverage` |
+| `design-sync` | `sync_status` |
+| `integration-test-reviewer` | `status`, `requiredFixes` |
+| `security-reviewer` | `status`, `findings`, `notes`, `requiredFixes` |
+| `acceptance-test-generator` | `status`, `generatedFiles`, `e2eAbsenceReason` |
 
 ## Handling Requirement Changes
 
@@ -267,51 +232,21 @@ Document generation agents (work-planner, technical-designer, prd-creator) can u
 
 ## Basic Flow for Work Planning
 
-When receiving new features or change requests, start with requirement-analyzer.
+Always start with `requirement-analyzer`, then follow the minimum flow required by scale and affected layers.
 
-### Large Scale (6+ Files) - 13 Steps (backend) / 15 Steps (frontend/fullstack)
+| Scale | Required flow |
+|-------|---------------|
+| Large | `requirement-analyzer` **[Stop]** -> `prd-creator` -> `document-reviewer` **[Stop]** -> optional `ui-spec-designer` + `document-reviewer` **[Stop]** -> optional ADR + `document-reviewer` **[Stop]** -> `codebase-analyzer` -> `technical-designer*` -> `code-verifier` -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` **[Stop]** -> `task-decomposer` |
+| Medium | `requirement-analyzer` **[Stop]** -> `codebase-analyzer` -> optional `ui-spec-designer` + `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` **[Stop]** -> `task-decomposer` |
+| Small | `requirement-analyzer` **[Stop]** -> simplified plan **[Stop: Batch approval]** -> direct implementation |
 
-1. requirement-analyzer: Requirement analysis + Check existing PRD **[Stop]**
-2. prd-creator: PRD creation
-3. document-reviewer: PRD review **[Stop: PRD Approval]**
-4. **(frontend/fullstack only)** Ask user for prototype code; ui-spec-designer: UI Spec creation
-5. **(frontend/fullstack only)** document-reviewer: UI Spec review **[Stop: UI Spec Approval]**
-6. technical-designer: ADR creation (if architecture/technology/data flow changes)
-7. document-reviewer: ADR review (if ADR created) **[Stop: ADR Approval]**
-8. codebase-analyzer: Codebase analysis (pass requirement-analyzer output and PRD path when available)
-9. technical-designer: Design Doc creation
-10. code-verifier: Design Doc verification against code
-11. document-reviewer: Design Doc review with code verification evidence
-12. design-sync: Consistency verification **[Stop: Design Doc Approval]**
-13. acceptance-test-generator: Test skeleton generation, pass to work-planner
-14. work-planner: Work plan creation **[Stop: Batch approval]**
-15. task-decomposer: Autonomous execution to Completion report
-
-### Medium Scale (3-5 Files) - 9 Steps (backend) / 11 Steps (frontend/fullstack)
-
-1. requirement-analyzer: Requirement analysis **[Stop]**
-2. codebase-analyzer: Codebase analysis
-3. **(frontend/fullstack only)** Ask user for prototype code; ui-spec-designer: UI Spec creation
-4. **(frontend/fullstack only)** document-reviewer: UI Spec review **[Stop: UI Spec Approval]**
-5. technical-designer: Design Doc creation
-6. code-verifier: Design Doc verification against code
-7. document-reviewer: Design Doc review with code verification evidence
-8. design-sync: Consistency verification **[Stop: Design Doc Approval]**
-9. acceptance-test-generator: Test skeleton generation, pass to work-planner
-10. work-planner: Work plan creation **[Stop: Batch approval]**
-11. task-decomposer: Autonomous execution to Completion report
-
-### Design Flow Data Passing
-
-- Pass requirement-analyzer output and original requirements to codebase-analyzer
-- Pass codebase-analyzer JSON to technical-designer or technical-designer-frontend as `Codebase Analysis`, including `dataTransformationPipelines` and `qualityAssurance` when present
-- Pass Design Doc path to code-verifier
-- Pass code-verifier JSON to document-reviewer as `code_verification`
-
-### Small Scale (1-2 Files) - 2 Steps
-
-1. Create simplified plan **[Stop: Batch approval]**
-2. Direct implementation to Completion report
+Flow rules:
+- Frontend and fullstack flows add UI Spec before Design Doc creation
+- Create ADR only when architecture, technology, or data-flow changes require it
+- Pass requirement-analyzer output and original requirements to `codebase-analyzer`
+- Pass `codebase-analyzer` output to the designer as `Codebase Analysis`
+- Pass Design Doc path to `code-verifier`, then pass `code_verification` to `document-reviewer`
+- Fullstack layer sequencing is defined in `references/monorepo-flow.md`
 
 ## Autonomous Execution Mode
 
@@ -373,7 +308,7 @@ Continue autonomous execution in the following situations:
 - `wait_agent` returns without a completion payload while the subagent remains `running`
 - The orchestrator has partial context but is still waiting on a required subagent output
 
-During those situations, run completion-preserving diagnostics when repeated waits produce the same non-terminal state. Use those diagnostics to refine the prompt, confirm agent selection, or validate inputs while keeping ownership of the pending deliverable.
+If repeated waits return the same `running` state, apply the completion-diagnostics contract above.
 
 Use the task loop defined in the autonomous execution diagram above. The canonical per-task cycle is:
 1. task-executor implementation
@@ -397,49 +332,27 @@ Maximum retry count is 1 verification fix cycle. If any failed verifier still fa
 2. **Information Bridging**: Data conversion and transmission between subagents
    - Convert each subagent's output to next subagent's input format
    - **Always pass deliverables from previous process to next agent**
-   - Extract necessary information from structured responses
-   - Compose commit messages from changeSummary
+   - Extract the routing fields listed above
    - Explicitly integrate initial and additional requirements when requirements change
 3. **Quality Assurance and Commit Execution**: Execute git commit per the 4-step task cycle
 4. **Autonomous Execution Mode Management**: Start/stop autonomous execution after approval, escalation decisions
 5. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
 
-### acceptance-test-generator to work-planner Bridge
+### Required Handoffs
 
-**Pass to acceptance-test-generator**:
-- Design Doc: [path]
-- UI Spec: [path] (if exists)
+| From | To | Required pass-through |
+|------|----|-----------------------|
+| `requirement-analyzer` | `codebase-analyzer` | requirement analysis JSON, original requirements, PRD path when available |
+| `codebase-analyzer` | `technical-designer*` | `Codebase Analysis`, including `focusAreas`, `dataModel`, `qualityAssurance`, `dataTransformationPipelines`, `limitations` |
+| `technical-designer*` | `code-verifier` | Design Doc path |
+| `code-verifier` | `document-reviewer` | `code_verification` JSON |
+| `acceptance-test-generator` | `work-planner` | integration test path, E2E path or `null`, `e2eAbsenceReason` when E2E is absent |
+| Design Doc | `work-planner` | Verification Strategy summary, Output Comparison details, implementation-relevant technical requirements, protected no-change boundaries |
 
-**Orchestrator verification items**:
-- Verify integration test file path retrieval and existence
-- Verify E2E test file path retrieval and existence when `generatedFiles.e2e` is not null
-- Verify `e2eAbsenceReason` is present when `generatedFiles.e2e` is null
-
-**Pass to work-planner**:
-- Integration test file: [path] (create and execute simultaneously with each phase implementation)
-- E2E test file: [path] or `null` (execute only in final phase when present)
-- E2E absence reason: [value when E2E test file is null]
-
-**On error**: Escalate to user only when required outputs are missing without a valid absence reason
-
-### Design Doc to Work Plan Verification Handoff
-
-When a Design Doc contains a Verification Strategy section, the orchestrator must carry forward:
-- Design Doc path
-- Verification Strategy details:
-  - Correctness definition
-  - Target comparison
-  - Verification method
-  - Observable success indicator
-  - Verification timing
-  - Early verification point (first target, success criteria, failure response)
-
-The resulting work plan must include this summary in its header so the plan remains self-sufficient for downstream task generation and execution planning.
-When the Design Doc includes an `Output Comparison` section, carry forward the comparison input, expected output fields or format, diff method, and transformation pipeline coverage as part of that summary.
-
-In addition, the orchestrator must preserve implementation-relevant technical requirements from each Design Doc so work-planner can create a Design-to-Plan Traceability table. Use the category values and normalization rules defined in the plan template, including protected no-change boundaries from sections such as `No Ripple Effect`.
-
-Work-planner maps each extracted item to a covering task or phase. If no covering task exists, the row is marked `gap` with justification. Justified gaps require user confirmation before plan approval.
+Handoff rules:
+- Verify generated integration and E2E file paths exist before passing them onward
+- Escalate only when required outputs are missing without a valid absence reason
+- Require work-planner to map every carried-forward technical requirement to a covering task or a justified `gap`
 
 ## Important Constraints [MANDATORY]
 
