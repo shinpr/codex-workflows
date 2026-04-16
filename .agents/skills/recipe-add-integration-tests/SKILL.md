@@ -9,6 +9,8 @@ description: "Add integration/E2E tests to existing codebase using Design Docs."
 2. [LOAD IF NOT ACTIVE] `integration-e2e-testing` — integration and E2E test patterns
 3. [LOAD IF NOT ACTIVE] `documentation-criteria` — document creation rules and templates
 
+**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+
 **Context**: Test addition workflow for existing implementations
 
 ## Orchestrator Definition

@@ -9,6 +9,8 @@ description: "Generate PRD and Design Docs from existing codebase through discov
 2. [LOAD IF NOT ACTIVE] `ai-development-guide` — AI development patterns
 3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and workflow flows
 
+**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+
 **Context**: Reverse engineering workflow to create documentation from existing code
 
 Target: $ARGUMENTS

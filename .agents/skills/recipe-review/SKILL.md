@@ -9,6 +9,8 @@ description: "Design Doc compliance and security validation with optional auto-f
 2. [LOAD IF NOT ACTIVE] `testing` — test strategy and quality gates
 3. [LOAD IF NOT ACTIVE] `ai-development-guide` — AI development patterns
 
+**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+
 **Context**: Post-implementation quality assurance
 
 ## Orchestrator Definition

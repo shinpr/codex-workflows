@@ -11,6 +11,8 @@ description: "Create frontend work plan from design document with test skeleton 
 2. [LOAD IF NOT ACTIVE] `implementation-approach` -- implementation methodology
 3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and workflow flows
 
+**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+
 ## Orchestrator Definition
 
 **Core Identity**: "I am not a worker. I am an orchestrator."

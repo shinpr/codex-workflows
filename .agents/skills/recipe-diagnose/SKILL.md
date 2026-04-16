@@ -8,6 +8,8 @@ description: "Investigate problem, verify findings, and derive solutions through
 1. [LOAD IF NOT ACTIVE] `ai-development-guide` — AI development patterns
 2. [LOAD IF NOT ACTIVE] `coding-rules` — coding standards
 
+**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+
 **Context**: Diagnosis flow to identify concrete failure points and present solutions
 
 Target problem: $ARGUMENTS
