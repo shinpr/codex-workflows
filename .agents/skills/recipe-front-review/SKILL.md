@@ -11,6 +11,8 @@ description: "Frontend Design Doc compliance and security validation with option
 2. [LOAD IF NOT ACTIVE] `testing` -- test strategy and quality gates
 3. [LOAD IF NOT ACTIVE] `ai-development-guide` -- AI development patterns
 
+**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+
 ## Execution Method
 
 - Compliance validation -> performed by code-reviewer

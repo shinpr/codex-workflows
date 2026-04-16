@@ -10,6 +10,8 @@ description: "Execute decomposed fullstack tasks with layer-aware agent routing 
 3. [LOAD IF NOT ACTIVE] `ai-development-guide` -- AI development patterns
 4. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and workflow flows
 
+**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+
 ## Orchestrator Definition
 
 **Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)

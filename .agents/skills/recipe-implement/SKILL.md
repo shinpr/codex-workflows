@@ -8,6 +8,8 @@ description: "Orchestrate the complete implementation lifecycle from requirement
 1. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and workflow flows
 2. [LOAD IF NOT ACTIVE] `documentation-criteria` — document creation rules and templates
 
+**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+
 # Full-Cycle Implementation
 
 $ARGUMENTS

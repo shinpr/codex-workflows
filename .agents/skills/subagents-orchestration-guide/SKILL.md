@@ -5,6 +5,8 @@ description: "Guides subagent coordination through implementation workflows. Use
 
 # Subagents Orchestration Guide
 
+**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+
 ## Role: The Orchestrator
 
 The orchestrator coordinates subagents. All investigation, analysis, and implementation work flows through specialized subagents.
@@ -119,26 +121,28 @@ Close a running subagent only when the user redirects the workflow, the orchestr
 
 ## How to Spawn Agents
 
-Spawn agents using natural language prompts. Provide clear context about what the agent should accomplish.
+Spawn agents using natural language prompts. Provide clear context about what the agent should accomplish. Every `spawn_agent` call MUST include `fork_turns="none"` or `fork_context=false` (see Spawn rule at top of this skill).
 
 ### Spawn Examples
 
-**requirement-analyzer**:
+Each example below is a spawn with `fork_turns="none"` or `fork_context=false` plus the quoted prompt.
+
+**requirement-analyzer** (`fork_turns="none"` or `fork_context=false`):
 > "Analyze the following requirements and determine the work scale: [user requirements]. Perform requirement analysis and scale determination."
 
-**codebase-analyzer**:
+**codebase-analyzer** (`fork_turns="none"` or `fork_context=false`):
 > "Analyze the existing codebase to provide evidence for Design Doc creation. Focus on existing implementations, data model elements, and constraints the design should respect. requirement_analysis: [JSON]. prd_path: [path if available]. requirements: [original user requirements]. layer: [target layer if applicable]. target_paths: [paths if narrowed]. Return codebase facts and focus areas."
 
-**task-executor**:
+**task-executor** (`fork_turns="none"` or `fork_context=false`):
 > "Execute the implementation task defined in docs/plans/tasks/[filename].md. Complete the implementation following TDD Red-Green-Refactor."
 
-**quality-fixer**:
+**quality-fixer** (`fork_turns="none"` or `fork_context=false`):
 > "Run quality checks on the codebase: static analysis, style check, all test execution. Fix any issues found and report when all checks pass."
 
-**document-reviewer**:
+**document-reviewer** (`fork_turns="none"` or `fork_context=false`):
 > "Review the document at [path] for quality and rule compliance. Check against documentation-criteria standards."
 
-**design-sync**:
+**design-sync** (`fork_turns="none"` or `fork_context=false`):
 > "Verify consistency between Design Docs in docs/design/. Use [path] as the source document for comparison."
 
 ## Explicit Stop Points [MANDATORY]

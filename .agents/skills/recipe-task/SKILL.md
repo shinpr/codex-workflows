@@ -7,6 +7,8 @@ description: "Execute tasks with metacognitive analysis and appropriate rule sel
 
 1. [LOAD IF NOT ACTIVE] `task-analyzer` — task analysis and skill selection (rule-advisor handles remaining skill selection)
 
+**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+
 # Task Execution with Metacognitive Analysis
 
 Task: $ARGUMENTS

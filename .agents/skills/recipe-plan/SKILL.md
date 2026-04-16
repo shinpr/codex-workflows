@@ -9,6 +9,8 @@ description: "Create work plan from design document with optional test skeleton 
 2. [LOAD IF NOT ACTIVE] `implementation-approach` — implementation strategy
 3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and workflow flows
 
+**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+
 **Context**: Dedicated to the planning phase.
 
 ## Orchestrator Definition
