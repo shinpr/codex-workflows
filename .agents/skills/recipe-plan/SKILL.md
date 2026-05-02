@@ -45,14 +45,14 @@ Follow the planning process below:
 Check for existence of design documents in docs/design/, notify user if none exist.
 Present options if multiple exist (can be specified with $ARGUMENTS).
 
-### Step 2: E2E Test Skeleton Generation Confirmation
-- Confirm with user whether to generate E2E test skeleton first
+### Step 2: Integration/E2E Test Skeleton Generation Confirmation
+- Confirm with user whether to generate integration and E2E test skeletons first
 - If user wants generation: Spawn acceptance-test-generator agent: "Generate test skeletons from Design Doc at [design-doc-path]"
 - Pass generation results to next process according to subagents-orchestration-guide skill coordination specification
-- If no E2E file is generated, carry the explicit `e2eAbsenceReason` forward as a valid planning input
+- If no E2E file is generated for a lane, carry the explicit lane-specific `e2eAbsenceReason` forward as a valid planning input
 
 ### Step 3: Work Plan Creation
-- Spawn work-planner agent: "Create work plan from design document at [design-doc-path]. Include deliverables from previous process according to subagents-orchestration-guide skill coordination specification. If `generatedFiles.e2e` is null, use `e2eAbsenceReason` and accept the null E2E file as a valid planning input."
+- Spawn work-planner agent: "Create work plan from design document at [design-doc-path]. Include deliverables from previous process according to subagents-orchestration-guide skill coordination specification. If `generatedFiles.fixtureE2e` or `generatedFiles.serviceE2e` is null, use the corresponding `e2eAbsenceReason` and accept the null E2E lane as a valid planning input. Include `Implementation Readiness: pending` in the work plan header."
 - Interact with user to complete plan and obtain approval for plan content
 - Clarify specific implementation steps and risks
 
@@ -61,7 +61,7 @@ Present options if multiple exist (can be specified with $ARGUMENTS).
 ## Completion Criteria
 
 - [ ] Design document identified and selected
-- [ ] E2E test skeleton generation confirmed with user (generated if requested)
+- [ ] Integration/E2E test skeleton generation confirmed with user (generated if requested)
 - [ ] Work plan created via work-planner
 - [ ] Plan content approved by user
 - [ ] All stopping points honored with user confirmation

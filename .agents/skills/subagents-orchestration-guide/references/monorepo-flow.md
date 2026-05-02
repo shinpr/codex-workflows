@@ -100,7 +100,7 @@ Spawn acceptance-test-generator with all Design Docs and UI Spec:
 
 Spawn work-planner with all Design Docs:
 
-> "Create a work plan from the following documents: PRD: [path] (Large Scale only), Design Doc (backend): [path], Design Doc (frontend): [path]. Compose phases as vertical feature slices where possible -- each phase should contain both backend and frontend work for the same feature area, enabling early integration verification per phase."
+> "Create a work plan from the following documents: PRD: [path] (Large Scale only), Design Doc (backend): [path], Design Doc (frontend): [path], UI Spec: [path] (if exists). Test skeletons from acceptance-test-generator: integration: [path or null], fixtureE2e: [path or null], serviceE2e: [path or null], e2eAbsenceReason: { fixtureE2e: [value or null], serviceE2e: [value or null] }. Compose phases as vertical feature slices where possible -- each phase should contain both backend and frontend work for the same feature area, enabling early integration verification per phase. Include `Implementation Readiness: pending` in the work plan header."
 
 work-planner's existing Integration Complete criteria naturally covers cross-layer verification when given multiple Design Docs.
 

@@ -1,10 +1,12 @@
-# E2E Test Design with Playwright
+# E2E Test Design
 
 ## When to Create E2E Tests
 
-E2E tests target **critical user journeys** that span multiple pages or require real browser interaction. Apply the parent skill rules exactly:
-- Reserve 1 E2E slot for the highest-value user-facing multi-step journey
-- Use `Value Score >= 50` for any additional non-reserved E2E candidate
+E2E tests target critical user journeys that span multiple interaction boundaries or require browser-level verification. Apply the parent skill rules exactly:
+- Reserve 1 fixture-e2e slot for the highest-value user-facing multi-step journey
+- Use `Value Score >= 20` for additional fixture-e2e candidates
+- Use service-integration-e2e only when correctness depends on real cross-service behavior
+- Use `Value Score > 50` for additional service-integration-e2e candidates
 
 ### Candidate Sources
 
@@ -22,6 +24,7 @@ E2E tests target **critical user journeys** that span multiple pages or require 
 - Flows requiring real browser APIs (navigation, cookies, localStorage)
 - Accessibility verification requiring actual DOM rendering
 - Responsive behavior across viewports
+- Live-stack verification where DB persistence, queue/event delivery, transaction consistency, or external service payloads are the behavior under test
 
 **Exclude** (use integration tests instead):
 - Single-component state changes (use RTL)
@@ -47,20 +50,22 @@ Preconditions: [Auth state, data state]
 Verification Points:
   - [What to assert at each step]
 E2E Value Score: [calculated score]
+Lane: fixture-e2e | service-integration-e2e
 ```
 
-## Playwright Test Architecture
+## Browser Test Architecture
 
 ### Page Object Pattern
 
-Organize browser interactions through page objects for maintainability:
+Organize browser interactions through page objects or the project's equivalent harness pattern for maintainability:
 
 ```
 tests/
 ├── e2e/
 │   ├── pages/           # Page objects
 │   ├── fixtures/        # Test fixtures and helpers
-│   └── *.e2e.test.ts    # Test files
+│   ├── *.fixture.e2e.test.ts
+│   └── *.service.e2e.test.ts
 ```
 
 ### Test Isolation
@@ -83,7 +88,8 @@ When UI Spec defines responsive behavior, test critical breakpoints:
 ## Budget Enforcement
 
 Hard limits per feature (same as parent skill):
-- **E2E Tests**: MAX 1-2 tests
-- Generate the reserved user-journey E2E when eligible
-- Generate any additional E2E only when `Value Score >= 50`
+- **fixture-e2e**: MAX 3 tests
+- **service-integration-e2e**: MAX 1-2 tests
+- Generate the reserved fixture-e2e user journey when eligible
+- Generate service-integration-e2e only when live cross-service behavior must be verified
 - Prefer fewer, comprehensive journey tests over many granular tests

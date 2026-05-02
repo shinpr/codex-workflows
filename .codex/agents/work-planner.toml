@@ -43,7 +43,8 @@ Skill Status:
 5. Place test implementation and execution appropriately for each phase
 6. Concretize risks and countermeasures
 7. Create explicit Design-to-Plan Traceability so Design Doc technical requirements are covered without silent omission
-8. Document in progress-trackable format
+8. Propagate UI Spec component and runtime boundary context into the plan so task decomposition can pass it to executors
+9. Document in progress-trackable format
 
 ## Input Parameters
 
@@ -53,8 +54,8 @@ Skill Status:
 - **prd** (optional): Path to PRD document
 - **adr** (optional): Path to ADR document
 - **testSkeletons** (optional): Paths to integration/E2E test skeleton files from acceptance-test-generator
-  - `generatedFiles.e2e` may be `null` when no E2E skeleton is intentionally generated
-  - When provided, carry `e2eAbsenceReason` into the work plan and treat it as an explicit planning input
+  - `generatedFiles.fixtureE2e` and `generatedFiles.serviceE2e` may be `null` when a lane is intentionally not generated
+  - When provided, carry lane-specific `e2eAbsenceReason` into the work plan and treat it as an explicit planning input
 - **updateContext** (update mode only): Path to existing plan, reason for changes
 
 ## Workflow
@@ -86,7 +87,9 @@ Choose Strategy A (TDD) if test skeletons are provided, Strategy B (implementati
 - Place tasks with the lowest dependencies in earlier phases
 - Map normalized verification timing to phases as follows: `phase_1` -> earliest implementation phase, `per_phase` -> each relevant phase, `integration_phase` -> integration phase, `final_phase` -> final Quality Assurance phase
 - Include verification tasks in the phase corresponding to the Verification Strategy timing
-- When test skeletons are provided, place integration test implementation based on `@dependency` metadata from test skeletons (see Test Design Information Processing > Step 2) and place E2E test execution in the final phase
+- When test skeletons are provided, place integration test implementation based on `@dependency` metadata from test skeletons (see Test Design Information Processing > Step 2)
+- When fixture-e2e skeletons are provided, place creation/execution alongside the relevant UI implementation phase
+- When service-integration-e2e skeletons are provided, place execution-only tasks in the final phase
 - When test skeletons are not provided, include test implementation tasks based on Design Doc acceptance criteria
 - Final phase is always Quality Assurance
 
@@ -115,11 +118,36 @@ Traceability rules:
 - Any `gap` without justification is an error
 - Any justified `gap` must be flagged for user confirmation before plan approval
 
+### 5a. Map UI Spec Components to Tasks
+
+When a UI Spec is provided, map each documented component to the task(s) that implement it or test it.
+
+Rules:
+- Use the UI Spec component section heading exactly as written.
+- Identify required states such as default, loading, empty, error, and partial.
+- Record the mapping in the `UI Spec Component -> Task Mapping` table from the plan template.
+- Mark components with no covering task as `gap` with justification and user confirmation before approval.
+
+### 5b. Map Runtime Boundaries to Tasks
+
+When implementation crosses runtime, process, deployment, or service boundaries, create a `Connection Map`.
+
+A boundary qualifies only when all of the following hold:
+- The two sides run in separate processes, services, runtimes, or deployed artifacts.
+- A serialized contract crosses the boundary, such as HTTP, RPC, event payload, queue message, or webhook payload.
+- A failure on one side creates an observable signal on the other side, such as a status code, timeout, missing field, dropped message, or persisted row.
+
+Map only boundaries satisfying all three qualifications above: separate runtime, serialized contract, and observable cross-side signal.
+
+For each boundary, record the caller/producer, callee/consumer, expected signal, and covering tasks in the `Connection Map` table.
+
 ### 6. Define Tasks with Completion Criteria
 For each task, derive completion criteria from Design Doc acceptance criteria. Apply the 3-element completion definition (Implementation Complete, Quality Complete, Integration Complete).
 
 ### 7. Produce Work Plan Document
 Write the work plan following the plan template from documentation-criteria skill. Include Phase Structure Diagram and Task Dependency Diagram (mermaid).
+
+The plan header MUST include `Implementation Readiness: pending`. This marker is promoted by the implementation-readiness orchestration before build execution.
 
 ## Work Plan Output Format
 
@@ -161,7 +189,8 @@ Create Red state tests based on unit test definitions provided from previous pro
 **Test Implementation Timing and Placement**:
 - Unit tests: Phase 0 Red → Green during implementation
 - Integration tests: Create and execute at completion of relevant feature implementation (include in phase tasks like "[Feature name] implementation with integration test creation")
-- E2E tests: Execute only in final phase (execution only, no separate implementation needed)
+- fixture-e2e tests: Create and execute alongside the relevant UI feature implementation
+- service-integration-e2e tests: Execute only in final phase
 
 #### Meta Information Utilization
 Analyze meta information (@category, @dependency, @complexity, etc.) included in test definitions,
@@ -181,6 +210,7 @@ Read available test skeleton files (integration tests, and E2E tests only when p
 
 **Comment patterns to extract**:
 - `// @category:` → Test classification (core-functionality, edge-case, e2e, etc.)
+- `// @lane:` → Test lane (integration, fixture-e2e, service-integration-e2e)
 - `// @dependency:` → Dependent components (material for phase placement decisions)
 - `// @complexity:` → Complexity (high/medium/low, material for effort estimation)
 - `// Value Score:` → Priority judgment
@@ -190,6 +220,7 @@ Read available test skeleton files (integration tests, and E2E tests only when p
 1. **Dependency-based Phase Placement**
    - `// @dependency: none` → Place in earlier phases
    - `// @dependency: [component name]` → Place in phase after dependent component implementation
+   - `// @dependency: full-ui (mocked backend)` → Place alongside UI implementation
    - `// @dependency: full-system` → Place in final phase
 
 2. **Complexity-based Effort Estimation**
@@ -198,32 +229,36 @@ Read available test skeleton files (integration tests, and E2E tests only when p
 
 #### Step 3: Extract Environment Prerequisites from E2E Skeletons
 
-When E2E test skeletons are provided, first identify the E2E skeleton subset using file naming conventions such as `*.e2e.test.*` and then scan only those files for environment prerequisites in two stages:
+When E2E test skeletons are provided, first identify the E2E skeleton subset using file naming conventions such as `*.fixture.e2e.test.*`, `*.service.e2e.test.*`, or `*.e2e.test.*`, then scan only those files for environment prerequisites in two stages:
 
 **Stage 1: Detect precondition patterns**
 - `Preconditions:` annotations mentioning seed data, test users, subscriptions, or required DB state
+- `@lane: fixture-e2e` or `@dependency: full-ui (mocked backend)` combined with fixture loaders or API mock handlers
 - `@dependency: full-system` combined with auth/login setup
 - Environment variable references such as `E2E_*` or `TEST_*`
 - External service dependencies that require mock/intercept or a running local dependency
 
 **Stage 2: Generate Phase 0 setup tasks**
-- Seed data → Add a Phase 0 task for fixture or seed preparation
-- Auth fixture/login state → Add a Phase 0 task for auth setup
-- External service mocks → Add a Phase 0 task for mock/intercept setup
-- Environment configuration → Add a Phase 0 task for env var or local service configuration
+- fixture-e2e fixture data → Add a Phase 0 task for fixture state files
+- fixture-e2e mocked backend → Add a Phase 0 task for the project's API mock layer
+- fixture-e2e browser harness → Add a Phase 0 task for Playwright or the project's browser harness
+- service-integration-e2e seed data → Add a Phase 0 task for seed preparation
+- service-integration-e2e auth fixture/login state → Add a Phase 0 task for auth setup
+- service-integration-e2e external service stubs → Add a Phase 0 task for stubs or intercepts
+- service-integration-e2e environment configuration → Add a Phase 0 task for env vars and local service startup
 - Other prerequisites → Add a matching setup task with clear traceability to the E2E skeleton
 
-Place these setup tasks before implementation and annotate them as E2E setup work.
+Place these setup tasks before implementation and annotate them as E2E setup work with the relevant lane.
 
 #### Step 3a: E2E Absence Handling
 
-When `generatedFiles.e2e` is `null`:
-- Require `e2eAbsenceReason` from the generator output
+When an E2E lane generated file is `null`:
+- Require the corresponding lane-specific `e2eAbsenceReason` from the generator output
 - Record the absence reason in the work plan header
-- Skip E2E prerequisite extraction and E2E execution task creation
-- Accept the null E2E file as a valid planning input when a concrete `e2eAbsenceReason` is present
+- Skip prerequisite extraction and execution task creation for that lane
+- Accept the null E2E lane as a valid planning input when a concrete absence reason is present
 
-When `generatedFiles.e2e` is `null` and `e2eAbsenceReason` is missing:
+When an E2E lane generated file is `null` and its `e2eAbsenceReason` is missing:
 - Flag a planning gap for user confirmation before plan approval
 
 #### Step 4: Classify and Place Tests
@@ -232,7 +267,9 @@ When `generatedFiles.e2e` is `null` and `e2eAbsenceReason` is missing:
 - Setup items (Mock preparation, measurement tools, Helpers, etc.) → Prioritize in Phase 1
 - Unit tests (individual functions) → Start from Phase 0 with Red-Green-Refactor
 - Integration tests → Place as create/execute tasks when relevant feature implementation is complete
-- E2E tests → Place as execute-only tasks in final phase when an E2E skeleton exists
+- fixture-e2e tests → Place as create/execute tasks alongside relevant UI implementation
+- service-integration-e2e tests → Place as execute-only tasks in final phase when a skeleton exists
+- legacy E2E tests without a lane → Treat as service-integration-e2e unless the skeleton clearly uses mocked backend fixtures
 - Non-functional requirement tests (performance, UX, etc.) → Place in quality assurance phase
 - Risk levels ("high risk", "required", etc.) → Move to earlier phases
 

@@ -58,7 +58,8 @@ Test type definitions, budgets, and value-based selection rules are specified in
 
 Key points:
 - **Integration Tests**: MAX 3 per feature, created alongside implementation
-- **E2E Tests**: MAX 1-2 per feature, executed in final phase only
+- **fixture-e2e**: MAX 3 per feature, created alongside UI implementation, mocked backend / fixture-driven state
+- **service-integration-e2e**: MAX 1-2 per feature, executed in final phase only, live local stack
 
 ## 4-Phase Generation Process
 
@@ -123,7 +124,7 @@ For each valid AC from Phase 1:
 
 **Output**: Candidate pool with value metadata
 
-### Phase 3: Value-Based Selection (Two-Pass #2)
+### Phase 3: Value-Based Selection and Lane Assignment (Two-Pass #2)
 
 Value score and E2E selection rules are defined in **integration-e2e-testing skill**.
 
@@ -138,14 +139,15 @@ Value score and E2E selection rules are defined in **integration-e2e-testing ski
 3. **Push-Down Analysis**:
    ```
    Can this be unit-tested? → Remove from integration/E2E pool
-   Already integration-tested? → Keep E2E candidate when it validates a user-facing multi-step journey
+   Already integration-tested AND verifiable in-process? → Remove from E2E pool
    ```
-4. **Journey Classification**:
+4. **Lane Assignment**:
    ```
-   User-facing multi-step journey? → Mark as reserved-slot eligible
-   Service-internal chain only? → Not reserved-slot eligible
+   UI journey verifiable with mocked backend / fixture-driven state → fixture-e2e
+   Journey correctness depends on real cross-service behavior → service-integration-e2e
+   Service-internal chain only → Not reserved-slot eligible
    ```
-5. **Sort by Value Score** (descending order)
+5. **Sort by Value Score within each lane** (descending order)
 
 **Output**: Ranked, deduplicated candidate list
 
@@ -153,16 +155,19 @@ Value score and E2E selection rules are defined in **integration-e2e-testing ski
 
 **Hard Limits per Feature**:
 - **Integration Tests**: MAX 3 tests
-- **E2E Tests**: MAX 1-2 tests
+- **fixture-e2e**: MAX 3 tests
+- **service-integration-e2e**: MAX 1-2 tests
 
 **Selection Algorithm**:
 
 ```
 1. Sort integration candidates by Value Score (descending)
 2. Select up to 3 integration candidates
-3. Reserve 1 E2E slot for the highest-value user-facing multi-step journey, if one exists
-4. Fill any remaining E2E budget with the next highest-value E2E candidates that satisfy `Value Score >= 50`
-5. If no E2E is selected, return `generatedFiles.e2e: null` with a concrete `e2eAbsenceReason`
+3. Reserve 1 fixture-e2e slot for the highest-value user-facing multi-step journey, if one exists
+4. Reserve 1 service-integration-e2e slot only when the journey needs real cross-service verification
+5. Fill remaining fixture-e2e budget with candidates that satisfy `Value Score >= 20`
+6. Fill remaining service-integration-e2e budget with candidates that satisfy `Value Score > 50`
+7. If a lane emits no tests, return its generated file as `null` with a concrete lane-specific absence reason
 ```
 
 **Output**: Final test set
@@ -198,24 +203,46 @@ Adapt comment syntax to the project's language when generating annotations.
   [Test: 'AC1: Failed payment displays error without creating order']
 ```
 
-### E2E Test File
+### fixture-e2e Test File
 
 ```
-// [Feature Name] E2E Test - Design Doc: [filename]
-// Generated: [date] | Budget Used: 1/2 E2E
-// Test Type: End-to-End Test
-// Implementation Timing: After all feature implementations complete
+// [Feature Name] fixture-e2e Test - Design Doc: [filename]
+// Generated: [date] | Budget Used: 1/3 fixture-e2e
+// Test Type: Browser UI with mocked backend / fixture-driven state
+// Implementation Timing: Alongside UI implementation
 
 [Import statement using detected test framework]
 
 [Test suite using detected framework syntax]
-  // User Journey: Complete purchase flow (browse → add to cart → checkout → payment → confirmation)
-  // Value Score: 120 | Business Value: 10 (business-critical) | Frequency: 10 (core flow) | Legal: true (PCI compliance)
-  // Verification: End-to-end user experience from product selection to order confirmation
-  // @category: e2e
+  // User Journey: Dismiss card -> Undo banner appears -> Undo restores card
+  // Value Score: 60 | Business Value: 6 | Frequency: 7 | Defect Detection: 8
+  // Verification: Browser-visible state transitions with mocked backend state
+  // @category: fixture-e2e
+  // @lane: fixture-e2e
+  // @dependency: full-ui (mocked backend)
+  // @complexity: medium
+  [Test: 'User Journey: Dismiss and undo restores the card']
+```
+
+### service-integration-e2e Test File
+
+```
+// [Feature Name] service-integration-e2e Test - Design Doc: [filename]
+// Generated: [date] | Budget Used: 1/2 service-integration-e2e
+// Test Type: End-to-end against running local stack
+// Implementation Timing: Final phase only
+
+[Import statement using detected test framework]
+
+[Test suite using detected framework syntax]
+  // User Journey: Complete purchase flow (browse -> checkout -> payment -> confirmation persisted)
+  // Value Score: 120 | Business Value: 10 (business-critical) | Frequency: 10 (core flow) | Legal: true
+  // Verification: Order persists in DB and confirmation event is emitted
+  // @category: service-integration-e2e
+  // @lane: service-integration-e2e
   // @dependency: full-system
   // @complexity: high
-  [Test: 'User Journey: Complete product purchase from browse to confirmation email']
+  [Test: 'User Journey: Complete product purchase persists order and emits confirmation']
 ```
 
 ### Generation Report
@@ -226,13 +253,18 @@ Adapt comment syntax to the project's language when generating annotations.
   "feature": "[feature name]",
   "generatedFiles": {
     "integration": "[path]/[feature].int.test.[ext]",
-    "e2e": null
+    "fixtureE2e": null,
+    "serviceE2e": null
   },
   "budgetUsage": {
     "integration": "2/3",
-    "e2e": "0/2"
+    "fixtureE2e": "0/3",
+    "serviceE2e": "0/2"
   },
-  "e2eAbsenceReason": "all_e2e_candidates_below_threshold"
+  "e2eAbsenceReason": {
+    "fixtureE2e": "all_e2e_candidates_below_threshold",
+    "serviceE2e": "no_real_service_dependency"
+  }
 }
 ```
 
@@ -242,13 +274,18 @@ Adapt comment syntax to the project's language when generating annotations.
   "feature": "[feature name]",
   "generatedFiles": {
     "integration": "[path]/[feature].int.test.[ext]",
-    "e2e": "[path]/[feature].e2e.test.[ext]"
+    "fixtureE2e": "[path]/[feature].fixture.e2e.test.[ext]",
+    "serviceE2e": "[path]/[feature].service.e2e.test.[ext]"
   },
   "budgetUsage": {
     "integration": "2/3",
-    "e2e": "1/2"
+    "fixtureE2e": "1/3",
+    "serviceE2e": "1/2"
   },
-  "e2eAbsenceReason": null
+  "e2eAbsenceReason": {
+    "fixtureE2e": null,
+    "serviceE2e": null
+  }
 }
 ```
 
@@ -256,8 +293,9 @@ Adapt comment syntax to the project's language when generating annotations.
 
 Each test case MUST have the following standard annotations for test implementation planning:
 
-- **@category**: core-functionality | integration | edge-case | ux
-- **@dependency**: none | [component names] | full-system
+- **@category**: core-functionality | integration | edge-case | ux | fixture-e2e | service-integration-e2e
+- **@lane**: integration | fixture-e2e | service-integration-e2e
+- **@dependency**: none | [component names] | full-ui (mocked backend) | full-system
 - **@complexity**: low | medium | high
 
 These annotations are used when planning and prioritizing test implementation.
@@ -282,7 +320,7 @@ These annotations are used when planning and prioritizing test implementation.
 
 ### Auto-processable
 - **Directory Absent**: Auto-create appropriate directory following detected test structure
-- **No E2E Selected**: Valid outcome when accompanied by `e2eAbsenceReason`
+- **No E2E Selected**: Valid outcome when accompanied by lane-specific `e2eAbsenceReason`
 - **Budget Exceeded by Critical Test**: Report to user
 
 ### Escalation Required
@@ -316,7 +354,7 @@ These annotations are used when planning and prioritizing test implementation.
 - **Post-execution**:
   - Completeness of selected tests
   - Dependency validity verified
-  - Integration tests and E2E tests generated in separate files
+  - Integration tests, fixture-e2e tests, and service-integration-e2e tests generated in separate files when selected
   - Generation report completeness
 
 ## Completion Gate [BLOCKING]

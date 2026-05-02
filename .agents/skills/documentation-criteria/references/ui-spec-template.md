@@ -59,6 +59,8 @@ Map PRD acceptance criteria to prototype references. Skip this section if no pro
 
 ### Component: [ComponentName]
 
+> Component heading uniqueness: every `Component: [ComponentName]` heading must be unique within this UI Spec. Work plans and task decomposition reference components by exact heading text.
+
 #### State x Display Matrix
 
 List only states that actually exist for this component. Remove unused rows. Include fallback or degraded states only when explicitly required by the PRD or existing behavior.

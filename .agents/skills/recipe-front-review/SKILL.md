@@ -18,7 +18,8 @@ description: "Frontend Design Doc compliance and security validation with option
 - Compliance validation -> performed by code-reviewer
 - Security validation -> performed by security-reviewer
 - Rule analysis -> performed by rule-advisor
-- Fix implementation -> performed by task-executor-frontend
+- Code-side fix path -> performed by task-executor-frontend
+- Design-side update path -> performed by technical-designer-frontend in update mode, then document-reviewer, then design-sync when multiple Design Docs exist
 - Quality checks -> performed by quality-fixer-frontend
 - Re-validation -> performed by code-reviewer / security-reviewer
 
@@ -80,28 +81,45 @@ Security Review: [status from security-reviewer]
   - [policy] [location]: [description] — [rationale]
   Notes: [notes from security-reviewer, if present]
 
-Execute fixes? (y/n):
+Resolve discrepancies by route:
+  c) Code-side fix
+  d) Design-side update
+  s) Skip
+
+Default: accept all recommended routes.
+
+Accepted response formats:
+- empty input -- accept every recommended route
+- `all-recommended` -- accept every recommended route
+- `all:c`, `all:d`, or `all:s` -- apply one route to every finding
+- Per-finding routes, e.g. `F1:c, F2:d, F3:s`
 ```
 
-**[STOP -- BLOCKING]** Wait for user response on whether to execute fixes.
-**CANNOT proceed with auto-fixes without user approval.**
+Before presenting results, recommend a route for each finding:
+- Use `d` when implementation intent matches the requirement but the Design Doc is stale or too narrow.
+- Use `c` when code drifted from a still-correct Design Doc, or when the finding is reliability, security, or maintainability related.
+- Use `s` only when the user explicitly accepts the current state without changes.
 
-If both pass and user selects `n`: Skip fix steps, proceed to Final Report.
+**[STOP -- BLOCKING]** Wait for user response on routes.
+**CANNOT proceed with fixes or document updates without user approval.**
 
-If user selects `y`:
+If all findings are skipped: Skip fix steps, proceed to Final Report.
 
 ## Pre-fix Metacognition
 
 1. **Spawn rule-advisor agent**: "Analyze fixes needed. Code issues: $STEP_2_OUTPUT. Security findings: $STEP_3_OUTPUT. Determine root solutions vs symptomatic treatments."
-2. **Register tasks**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Create task file -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`. Include both code compliance issues and security requiredFixes.
-3. **Spawn task-executor-frontend agent**: "Execute staged auto-fixes for [task-file-path]. Stop at 5 files."
-4. **Spawn quality-fixer-frontend agent**: "Execute all frontend quality checks and confirm quality gate passage"
-5. **Re-validate code-reviewer**: Spawn code-reviewer agent: "Re-validate compliance for [design-doc-path]. Prior issues: $STEP_2_OUTPUT. Measure improvement."
-6. **Re-validate security-reviewer** (only if security fixes were applied): Spawn security-reviewer agent: "Re-validate security after fixes. Prior findings: $STEP_3_OUTPUT. Design Doc: [path]. Implementation files: [union of $STEP_1_FILES and task-executor-frontend filesModified from step 3, deduplicated]."
+2. **Design-side update**: If any finding is routed to `d`, spawn technical-designer-frontend in update mode, then document-reviewer, then design-sync when multiple Design Docs exist. If both `d` and `c` routes exist, re-evaluate `c` findings against the updated Design Doc and drop any now satisfied.
+3. **Register tasks**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Create task file -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`. Include only code compliance issues and security requiredFixes routed to `c`.
+4. **Spawn task-executor-frontend agent**: "Execute staged auto-fixes for [task-file-path]. Stop at 5 files."
+5. **Spawn quality-fixer-frontend agent**: "Execute all frontend quality checks and confirm quality gate passage"
+6. **Re-validate code-reviewer**: Spawn code-reviewer agent: "Re-validate compliance for [design-doc-path]. Prior issues: $STEP_2_OUTPUT. Measure improvement."
+7. **Re-validate security-reviewer** (only if security fixes were applied): Spawn security-reviewer agent: "Re-validate security after fixes. Prior findings: $STEP_3_OUTPUT. Design Doc: [path]. Implementation files: [union of $STEP_1_FILES and task-executor-frontend filesModified from step 4, deduplicated]."
 
 ENFORCEMENT: Auto-fixes MUST go through quality-fixer-frontend before re-validation. Skipping quality checks invalidates fixes.
 
 ### Final Report
+Delete the review-fix task file this recipe created, if present. Its work is committed; `docs/plans/` is ephemeral working state.
+
 ```
 Code Compliance:
   Initial: [X]%

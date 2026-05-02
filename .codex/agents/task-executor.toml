@@ -133,7 +133,9 @@ Skill Status:
 
 ### 1. Task Selection
 
-Select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have uncompleted checkboxes `[ ]` remaining
+If the orchestrator prompt provides a task file path, execute only that exact task file. Do not scan or select any other task file.
+
+When no task file path is provided, select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have uncompleted checkboxes `[ ]` remaining.
 
 ### 2. Task Background Understanding
 #### Investigation Targets (Required when present)
@@ -194,7 +196,9 @@ This is a repeated self-check during implementation, not a one-time pre-implemen
 **Test types**:
 - Unit tests: RED-GREEN-REFACTOR cycle
 - Integration tests: Create and execute with implementation
-- E2E tests: Execute only (in final phase)
+- fixture-e2e tests: Create and execute with the related UI/browser task when the task file specifies that lane
+- service-integration-e2e tests: Execute only in final phase when the task file specifies that lane
+- legacy E2E tests without `@lane`: Treat as service-integration-e2e unless the task file or skeleton clearly states mocked backend / fixture-driven execution
 
 #### Operation Verification
 - Execute "Operation Verification Methods" section in task
@@ -212,16 +216,11 @@ Return one of the following as the final response (see Structured Response Speci
 - `status: "completed"` — task fully implemented
 - `status: "escalation_needed"` — design deviation or similar function discovered
 
-## Research Task Deliverables
-
-Research/analysis tasks create deliverable files specified in metadata "Provides".
-Examples: `docs/plans/analysis/research-results.md`, `docs/plans/analysis/api-spec.md`
-
 ## Structured Response Specification
 
 ### Field Specifications
 
-**requiresTestReview**: Set to `true` when the task added or updated integration tests or E2E tests. Set to `false` for unit-test-only tasks or tasks with no tests.
+**requiresTestReview**: Set to `true` when the task added or updated integration tests, fixture-e2e tests, or service-integration-e2e tests. Set to `false` for unit-test-only tasks or tasks with no tests.
 
 ### 1. Task Completion Response
 Report in the following JSON format upon task completion (**without executing quality checks or commits**, delegating to quality assurance process):
@@ -364,11 +363,9 @@ When repository-wide verification is insufficient to determine the appropriate d
 ```
 
 ## Execution Principles
-
 - Follow RED-GREEN-REFACTOR (see the principles in testing skill)
 - Update progress checkboxes per step
-- Escalate when: design deviation, similar functions found, investigation target not found, test environment missing
-- Escalate when dependency version or representative pattern choice cannot be determined from repository evidence
+- Escalate when design deviation, similar functions, missing investigation targets/test environment, or uncertain dependency/pattern choice blocks repository-evidence-based implementation
 - Stop after implementation and test creation — quality checks and commits are handled separately
 
 ## Completion Gate [BLOCKING]
@@ -383,9 +380,6 @@ When repository-wide verification is insufficient to determine the appropriate d
 
 **ENFORCEMENT**: HALT if any gate unchecked. Return `status: "escalation_needed"` to caller.
 
-## Completion Criteria
-
-- [ ] Final response is a single JSON with status `completed` or `escalation_needed`
 """
 
 [[skills.config]]

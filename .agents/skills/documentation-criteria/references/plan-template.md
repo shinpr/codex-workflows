@@ -5,6 +5,7 @@ Type: feature|fix|refactor
 Estimated Duration: X days
 Estimated Impact: X files
 Related Issue/PR: #XXX (if any)
+Implementation Readiness: pending
 
 ## Related Documents
 - Design Doc(s):
@@ -65,6 +66,24 @@ Map each Design Doc technical requirement to the task or phase that covers it. U
 - Normalize same-boundary field propagation into one row when the fields must move together through the same boundary for the same reason
 - Merge duplicate restatements of the same obligation from multiple DD sections into one row and cite the primary section in `DD Section`
 - Keep `scope-boundary` rows concrete: name the protected file group, component boundary, contract, or workflow that must remain unchanged
+
+## UI Spec Component -> Task Mapping
+
+Include this section when a UI Spec is among the inputs. Map each UI component section to the task(s) that implement it so task-decomposer can pass the exact UI Spec context to executor tasks. Omit this section when no UI Spec exists.
+
+| UI Spec Component (section heading) | States to Cover | Covered By Task(s) | Gap Status | Notes |
+|-------------------------------------|-----------------|--------------------|------------|-------|
+| [Use the UI Spec heading exactly as written, e.g. "Component: AlertCard"] | [default / loading / empty / error / partial] | [P1-T1, P2-T1] | covered | |
+
+**Reference key rule**: The component identifier is the UI Spec section heading verbatim. Component headings must be unique within a UI Spec.
+
+## Connection Map
+
+Include this section when implementation crosses runtime, process, deployment, or service boundaries. Omit it when the change stays inside one runtime or only uses in-process package imports.
+
+| Boundary | Caller / Producer | Callee / Consumer | Expected Signal | Covered By Task(s) |
+|----------|-------------------|-------------------|-----------------|--------------------|
+| [e.g. "web client -> API"] | [module/package initiating request or message] | [module/package receiving request or message] | [Observable evidence, e.g. HTTP 200 matching schema X] | [P1-T1, P1-T2] |
 
 ## Objective
 [Why this change is necessary, what problem it solves]

@@ -23,7 +23,8 @@ description: "Design Doc compliance and security validation with optional auto-f
 
 - Compliance validation -> Spawn code-reviewer agent
 - Security validation -> Spawn security-reviewer agent
-- Fix implementation -> Spawn task-executor agent
+- Code-side fix path -> Spawn task-executor agent
+- Design-side update path -> Spawn technical-designer in update mode, then document-reviewer, then design-sync when multiple Design Docs exist
 - Quality checks -> Spawn quality-fixer agent
 - Re-validation -> Spawn code-reviewer / security-reviewer agents
 
@@ -82,22 +83,47 @@ Security Review: [status from security-reviewer]
   - [policy] [location]: [description] — [rationale]
   Notes: [notes from security-reviewer, if present]
 
-Execute fixes? (y/n):
+Resolve discrepancies by route:
+  c) Code-side fix
+  d) Design-side update
+  s) Skip
+
+Default: accept all recommended routes.
+
+Accepted response formats:
+- empty input -- accept every recommended route
+- `all-recommended` -- accept every recommended route
+- `all:c`, `all:d`, or `all:s` -- apply one route to every finding
+- Per-finding routes, e.g. `F1:c, F2:d, F3:s`
 ```
 
-**[STOP — BLOCKING]** Present results to user for confirmation.
-**CANNOT proceed until user explicitly confirms.**
+Before presenting results, recommend a route for each finding:
+- Use `d` when implementation intent matches the requirement but the Design Doc is stale or too narrow.
+- Use `c` when code drifted from a still-correct Design Doc, or when the finding is reliability, security, or maintainability related.
+- Use `s` only when the user explicitly accepts the current state without changes.
 
-If both pass and user selects `n`: Skip Steps 5-10, proceed to Step 11.
+**[STOP — BLOCKING]** Present results and recommended routes to user for confirmation.
+**CANNOT proceed until user explicitly confirms routes.**
+
+If all findings are skipped: Skip Steps 5-10, proceed to Step 11.
 
 ### Step 5: Prepare Fix Context
 
 Reference documentation-criteria skill for task file template.
 
+### Step 5d: Design-Side Update
+
+Run this step only when the user routes at least one finding to `d`.
+
+1. Spawn technical-designer agent in update mode: "Update Design Doc at [path]. The implementation is being accepted as correct for these findings: [d-routed findings with code locations and current Design Doc values]. Update the relevant sections and add change history."
+2. Spawn document-reviewer agent: "Review updated Design Doc at [path] for consistency and completeness."
+3. If multiple Design Docs exist in `docs/design/`, spawn design-sync agent: "Check cross-Design Doc consistency after updating [path]."
+4. If the user selected both `d` and `c` routes, re-evaluate the `c` findings against the updated Design Doc and drop any that are now satisfied.
+
 ### Step 6: Create Task File
 
 Create task file at `docs/plans/tasks/review-fixes-YYYYMMDD.md`
-Include both code compliance issues and security requiredFixes.
+Include only code-side compliance issues and security requiredFixes routed to `c`.
 
 ### Step 7: Execute Fixes
 
@@ -116,6 +142,8 @@ Spawn code-reviewer agent: "Re-validate Design Doc compliance after fixes. Prior
 Spawn security-reviewer agent: "Re-validate security after fixes. Prior findings: $STEP_3_OUTPUT. Design Doc: [path]. Implementation files: [union of $STEP_1_FILES and task-executor filesModified from Step 7, deduplicated]."
 
 ### Step 11: Final Report
+
+Delete the review-fix task file this recipe created, if present. Its work is committed; `docs/plans/` is ephemeral working state.
 
 ```
 Code Compliance:

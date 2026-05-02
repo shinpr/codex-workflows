@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-prepare-implementation"
+  short_description: "Preflight work plan readiness before implementation"
+  default_prompt: "Use $recipe-prepare-implementation to verify: "
+
+policy:
+  allow_implicit_invocation: false

@@ -29,8 +29,24 @@ Work plan: $ARGUMENTS
 
 ## Pre-execution Prerequisites
 
-### Task File Existence Check
-Check for work plans in docs/plans/ and task files in docs/plans/tasks/.
+### Implementation Readiness Check
+
+Before task processing, locate the work plan to gate against.
+
+Resolution rule:
+1. If `$ARGUMENTS` contains a work plan path, use that exact file and derive `{plan-name}` from its basename. This takes precedence over task-file mtimes.
+2. If `$ARGUMENTS` is empty, list task files in `docs/plans/tasks/` matching the single-layer pattern `{plan-name}-task-*.md`.
+3. Exclude `*-task-prep-*.md`, `_overview-*.md`, `*-phase*-completion.md`, `review-fixes-*.md`, and `integration-tests-*-task-*.md`.
+4. If matching task files exist, infer `{plan-name}` from the most recent matching task file and use `docs/plans/{plan-name}.md`.
+5. If no matching task files exist, use the most recent non-template work plan in `docs/plans/`.
+
+Read the work plan header and apply the Implementation Readiness Marker Contract from `subagents-orchestration-guide`.
+
+### Consumed Task Set
+
+Compute the **Consumed Task Set** for this run: task files in `docs/plans/tasks/` matching `{plan-name}-task-*.md`, excluding `*-task-prep-*.md`, `_overview-*.md`, `*-phase*-completion.md`, `review-fixes-*.md`, and `integration-tests-*-task-*.md`.
+
+Every subsequent reference to task files in this recipe uses this set, not an unrestricted `docs/plans/tasks/*.md` scan.
 
 ### Task Generation Decision Flow
 
@@ -38,8 +54,8 @@ Analyze task file existence state and determine the action required:
 
 | State | Criteria | Next Action |
 |-------|----------|-------------|
-| Tasks exist | .md files in tasks/ directory | User's execution instruction serves as batch approval -> Enter autonomous execution immediately |
-| No tasks + plan exists | Plan exists but no task files | Confirm with user -> spawn task-decomposer |
+| Tasks exist | Consumed Task Set is non-empty | User's execution instruction serves as batch approval -> Enter autonomous execution immediately |
+| No tasks + plan exists | Consumed Task Set is empty but plan exists | Confirm with user -> spawn task-decomposer |
 | Neither exists | No plan or task files | Error: Prerequisites not met |
 
 ## Task Decomposition Phase (Conditional)
@@ -58,7 +74,7 @@ Generate tasks from the work plan? (y/n):
 Spawn task-decomposer agent: "Read work plan at docs/plans/[plan-name].md and decompose into atomic tasks. Output: Individual task files in docs/plans/tasks/. Granularity: 1 task = 1 commit = independently executable."
 
 ### 3. Verify Generation
-Verify generated task files exist in docs/plans/tasks/.
+Recompute the Consumed Task Set and verify it is non-empty.
 
 ## Pre-execution Checklist
 
@@ -122,6 +138,17 @@ After all task cycles finish, collect all `filesModified` from every task-execut
    - Re-run only the verifier(s) that failed
    - Maximum retry count is 1 verification fix cycle; if any failed verifier still fails after re-run, escalate to the user
 5. If both verifiers pass -> Proceed to completion report
+
+## Final Cleanup
+
+Before the completion report, delete only these files for the current `{plan-name}`:
+- Every file in the Consumed Task Set
+- `docs/plans/tasks/{plan-name}-phase*-completion.md`
+- `docs/plans/tasks/_overview-{plan-name}.md`
+
+Preserve the work plan itself.
+
+If cleanup fails, report the failed path but do not invalidate completed implementation work.
 
 **[STOP — BLOCKING]** Upon detecting ANY requirement changes, halt execution immediately.
 **CANNOT proceed until user explicitly confirms the change scope.**
