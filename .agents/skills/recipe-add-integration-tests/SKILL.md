@@ -171,3 +171,10 @@ ENFORCEMENT: Commits without quality-fixer approval are invalid.
 - [ ] Tests reviewed via integration-test-reviewer (approved or fixes applied)
 - [ ] Quality check passed via quality-fixer
 - [ ] Test files committed
+- [ ] Task files created by this recipe deleted from `docs/plans/tasks/`
+
+## Final Cleanup
+
+Before the completion report, delete only the integration-test task files this recipe created for the current run. Their work is committed; `docs/plans/` is ephemeral working state.
+
+If cleanup fails, report the failed path but do not invalidate completed test work.

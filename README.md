@@ -27,8 +27,6 @@ $recipe-implement Add user authentication with JWT
 
 Small changes stay lightweight. Larger tasks get structure: requirements → design → task decomposition → TDD implementation → quality gates.
 
-codex-workflows is the Codex-native counterpart of [Claude Code Workflows](https://github.com/shinpr/claude-code-workflows): same document-driven development style, adapted for Codex CLI, subagents, and GPT models.
-
 ---
 
 ## Why codex-workflows?
@@ -159,6 +157,7 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 | `$recipe-task` | Single task with rule selection | Bug fixes, small changes |
 | `$recipe-design` | Requirements → ADR/Design Doc | Architecture planning |
 | `$recipe-plan` | Design Doc → test skeletons → work plan | Planning phase, including nullable E2E skeleton handling |
+| `$recipe-prepare-implementation` | Verify work plan readiness and resolve prep gaps | Pre-build check that the plan is implementable |
 | `$recipe-build` | Execute backend tasks autonomously | Resume backend implementation |
 | `$recipe-review` | Design Doc compliance and security validation with auto-fixes | Post-implementation check |
 | `$recipe-diagnose` | Problem investigation → failure-point verification → solution | Bug investigation |
@@ -181,6 +180,16 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 |--------|-------------|-------------|
 | `$recipe-fullstack-implement` | Full lifecycle with separate Design Docs per layer | Cross-layer features |
 | `$recipe-fullstack-build` | Execute tasks with layer-aware agent routing | Resume cross-layer implementation |
+
+### Working State
+
+Recipes use `docs/plans/` as ephemeral working state for work plans, decomposed task files, prep tasks, review-fix tasks, and intermediate analysis files. Add it to your project's `.gitignore` unless your team intentionally wants to review those transient files:
+
+```gitignore
+docs/plans/
+```
+
+PRDs, ADRs, UI Specs, and Design Docs are durable project documents and are intended to be committed.
 
 ### Examples
 
@@ -315,6 +324,7 @@ your-project/
 │   ├── recipe-design/
 │   ├── recipe-build/
 │   ├── recipe-plan/
+│   ├── recipe-prepare-implementation/
 │   ├── recipe-review/
 │   ├── recipe-diagnose/
 │   ├── recipe-task/

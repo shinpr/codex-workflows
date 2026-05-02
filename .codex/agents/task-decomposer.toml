@@ -130,8 +130,12 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    |---|---|
    | Existing code modification | Files being changed, adjacent tests, relevant Design Doc sections |
    | New feature/component | Adjacent implementations in the same layer/domain, interface-defining Design Doc sections |
-   | Integration/E2E test work | Test skeleton file, target implementation under test, existing fixture/auth/setup patterns |
-   | E2E environment/setup work | Current environment config, startup scripts, seed/fixture scripts, auth flow references |
+   | Frontend component implementation | UI Spec component section cited by the work plan's UI Spec Component -> Task Mapping, interface-defining Design Doc sections, adjacent components |
+   | Frontend integration / fixture-e2e test work | UI Spec component section including state and interaction tables, test skeleton file, target implementation, fixture data, browser harness config |
+   | Integration test work | Test skeleton file, target implementation under test, existing fixture/auth/setup patterns |
+   | fixture-e2e environment/setup work | Existing fixture data, API mock layer, browser harness configuration |
+   | service-integration-e2e environment/setup work | Current environment config, startup scripts, seed scripts, auth flow references, external service stubs |
+   | Cross-boundary implementation | Connection Map rows touching the task target files, both boundary owner modules, expected signal, contract definition |
    | Bug fix/refactor | Affected code paths, failing tests, reproduction-related files |
    | Behavior replacement/rewrite | Existing implementation being replaced, observable outputs, Verification Strategy section in the Design Doc |
 
@@ -140,6 +144,8 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Investigation Targets are file paths to read, not actions to perform
    - Use specific paths with optional hints such as `docs/design/payments.md (§ Retry Flow)` or `src/orders/service.ts (createOrder)`
    - When test skeletons exist, include them explicitly
+   - When the work plan contains a UI Spec Component -> Task Mapping table, propagate matching component sections to every task listed in the row
+   - When the work plan contains a Connection Map, propagate boundary rows touching the task's target files to every task on either side of the boundary
    - When a task matches multiple natures, include Investigation Targets from all matching rows and deduplicate overlaps
 
 7. **Implementation Pattern Consistency**
@@ -184,6 +190,25 @@ When the work plan includes a `Design-to-Plan Traceability` section:
 4. **Scope-boundary integrity**: For `scope-boundary` rows, include explicit no-change notes, protected file groups, or verification steps that keep the protected boundary out of scope.
 5. **Verification integrity**: For `verification` rows, ensure the corresponding task file includes the required comparison or verification method in Operation Verification Methods.
 6. **Prerequisite integrity**: For `prerequisite` rows, place setup, migration, seed, auth, or environment work before dependent implementation tasks.
+
+## UI Spec Propagation
+
+When the work plan includes a `UI Spec Component -> Task Mapping` section:
+
+1. For each row, locate the task IDs listed in `Covered By Task(s)`.
+2. Add the component section heading to those task files' Investigation Targets.
+3. Include the states listed in `States to Cover` in Investigation Notes and Operation Verification Methods.
+4. Preserve `gap` rows as planning issues and surface them to the caller.
+5. If a task implements UI but no component mapping row covers it, add a warning in the decomposition report.
+
+## Connection Map Propagation
+
+When the work plan includes a `Connection Map` section:
+
+1. For each boundary row, locate all tasks listed in `Covered By Task(s)`.
+2. Add both owner modules, the serialized contract, and the expected signal to each listed task's Investigation Targets or Notes.
+3. For tasks on one side of a boundary, include an Operation Verification Method that observes the expected signal from the other side.
+4. Do not infer extra boundaries from in-process imports or shared types unless the work plan explicitly maps them.
 
 ## Task File Template
 

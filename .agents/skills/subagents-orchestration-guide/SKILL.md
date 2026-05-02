@@ -207,7 +207,7 @@ Subagents respond in JSON format. The final response from each JSON-returning su
 | `design-sync` | `sync_status` |
 | `integration-test-reviewer` | `status`, `requiredFixes` |
 | `security-reviewer` | `status`, `findings`, `notes`, `requiredFixes` |
-| `acceptance-test-generator` | `status`, `generatedFiles`, `e2eAbsenceReason` |
+| `acceptance-test-generator` | `status`, `generatedFiles`, lane-specific `e2eAbsenceReason` |
 
 ## Handling Requirement Changes
 
@@ -350,11 +350,11 @@ Maximum retry count is 1 verification fix cycle. If any failed verifier still fa
 | `codebase-analyzer` | `technical-designer*` | `Codebase Analysis`, including `focusAreas`, `dataModel`, `qualityAssurance`, `dataTransformationPipelines`, `limitations` |
 | `technical-designer*` | `code-verifier` | Design Doc path |
 | `code-verifier` | `document-reviewer` | `code_verification` JSON |
-| `acceptance-test-generator` | `work-planner` | integration test path, E2E path or `null`, `e2eAbsenceReason` when E2E is absent |
+| `acceptance-test-generator` | `work-planner` | integration test path, fixture-e2e path or `null`, service-integration-e2e path or `null`, lane-specific `e2eAbsenceReason` when a lane is absent |
 | Design Doc | `work-planner` | Verification Strategy summary, Output Comparison details, implementation-relevant technical requirements, protected no-change boundaries |
 
 Handoff rules:
-- Verify generated integration and E2E file paths exist before passing them onward
+- Verify generated integration, fixture-e2e, and service-integration-e2e file paths exist before passing them onward
 - Escalate only when required outputs are missing without a valid absence reason
 - Require work-planner to map every carried-forward technical requirement to a covering task or a justified `gap`
 

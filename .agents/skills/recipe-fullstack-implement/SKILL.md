@@ -101,6 +101,7 @@ When user responds to questions:
 **Required Flow Compliance**:
 - Run quality-fixer (layer-appropriate) before every commit
 - Obtain user approval before Edit/Write outside autonomous mode
+- Run implementation readiness preflight for the approved work plan before autonomous implementation, or continue without it only after explicit user approval
 
 ENFORCEMENT: Commits without quality-fixer approval are invalid and MUST be reverted.
 
@@ -116,6 +117,16 @@ Autonomous sub-agents require scope constraints for stable execution. MUST appen
 ENFORCEMENT: Sub-agent prompts missing the constraint suffix MUST be re-issued with the constraint appended.
 
 ## Task Execution Quality Cycle (Filename-Pattern-Based)
+
+### Implementation Readiness Gate
+
+Before executing task files, read the associated work plan header:
+
+| Status | Action |
+|--------|--------|
+| `ready` | Proceed |
+| `pending` or absent | Recommend running `$recipe-prepare-implementation [plan-path]`; continue only on explicit user approval |
+| `escalated` | Present the Implementation Readiness Report remaining gaps; continue only on explicit user approval |
 
 **Agent routing by task filename** (see monorepo-flow.md reference):
 ```
@@ -152,9 +163,10 @@ After all task cycles finish, collect all `filesModified` from every task-execut
 ### Test Information Communication
 After acceptance-test-generator execution, when calling work-planner, communicate:
 - Generated integration test file path
-- Generated E2E test file path or `null`
-- E2E absence reason when no E2E file is generated
-- Explicit note that integration tests are created simultaneously with implementation, E2E tests are executed after all implementations only when an E2E file exists
+- Generated fixture-e2e test file path or `null`
+- Generated service-integration-e2e test file path or `null`
+- E2E absence reason per lane when no E2E file is generated
+- Explicit note that integration tests are created simultaneously with implementation, fixture-e2e runs alongside UI implementation, and service-integration-e2e executes after all implementations only when a service E2E file exists
 
 **[STOP -- BLOCKING]** Upon detecting ANY requirement changes, halt execution immediately.
 **CANNOT proceed until user explicitly confirms the change scope.**

@@ -72,7 +72,10 @@ Follow subagents-orchestration-guide skill Large/Medium/Small scale flow exactly
 **STEP 4**: Spawn acceptance-test-generator agent → spawn work-planner agent.
 **[STOP — BLOCKING]** Present Work Plan for user approval. **CANNOT proceed until user explicitly confirms.**
 
-**STEP 5**: Enter guided autonomous execution (see Autonomous Execution Mode below) using task-executor-frontend + quality-fixer-frontend agents.
+**STEP 5**: Run implementation readiness preflight.
+Spawn recipe-prepare-implementation workflow for the approved work plan. If the work plan remains `pending` or becomes `escalated`, present the readiness report and continue only on explicit user approval.
+
+**STEP 6**: Enter guided autonomous execution (see Autonomous Execution Mode below) using task-executor-frontend + quality-fixer-frontend agents.
 
 ---
 
@@ -89,6 +92,16 @@ Follow subagents-orchestration-guide `references/monorepo-flow.md` for the compl
 ## Autonomous Execution Mode
 
 After user grants "batch approval for entire implementation phase", enter autonomous execution.
+
+### Implementation Readiness Gate
+
+Before executing task files, read the associated work plan header:
+
+| Status | Action |
+|--------|--------|
+| `ready` | Proceed |
+| `pending` or absent | Recommend running `$recipe-prepare-implementation [plan-path]`; continue only on explicit user approval |
+| `escalated` | Present the Implementation Readiness Report remaining gaps; continue only on explicit user approval |
 
 ### Task Execution Quality Cycle (4-Step Cycle per Task)
 
@@ -136,9 +149,10 @@ After all task cycles finish, collect all `filesModified` from every executor re
 ### Test Information Communication
 After acceptance-test-generator execution, when spawning work-planner, communicate:
 - Generated integration test file path
-- Generated E2E test file path or `null`
-- E2E absence reason when no E2E file is generated
-- Note: integration tests are created with implementation; E2E tests run after all implementations when an E2E file exists
+- Generated fixture-e2e test file path or `null`
+- Generated service-integration-e2e test file path or `null`
+- E2E absence reason per lane when no E2E file is generated
+- Note: integration tests are created with implementation; fixture-e2e runs alongside UI implementation; service-integration-e2e runs after all implementations when a service E2E file exists
 
 ## Completion Criteria
 

@@ -194,7 +194,8 @@ This is a repeated self-check during implementation, not a one-time pre-implemen
 **Test types**:
 - Unit tests: RED-GREEN-REFACTOR cycle
 - Integration tests: Create and execute with implementation
-- E2E tests: Execute only (in final phase)
+- fixture-e2e tests: Create and execute with the related UI/browser task when the task file specifies that lane
+- service-integration-e2e tests: Execute only in final phase when the task file specifies that lane
 
 #### Operation Verification
 - Execute "Operation Verification Methods" section in task
@@ -221,7 +222,7 @@ Examples: `docs/plans/analysis/research-results.md`, `docs/plans/analysis/api-sp
 
 ### Field Specifications
 
-**requiresTestReview**: Set to `true` when the task added or updated integration tests or E2E tests. Set to `false` for unit-test-only tasks or tasks with no tests.
+**requiresTestReview**: Set to `true` when the task added or updated integration tests, fixture-e2e tests, or service-integration-e2e tests. Set to `false` for unit-test-only tasks or tasks with no tests.
 
 ### 1. Task Completion Response
 Report in the following JSON format upon task completion (**without executing quality checks or commits**, delegating to quality assurance process):

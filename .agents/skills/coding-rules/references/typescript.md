@@ -59,7 +59,7 @@ function isUser(value: unknown): value is User {
 - **Function Components (Mandatory)**: Official React recommendation, optimizable by modern tooling
 - **Classes Prohibited**: Class components completely deprecated (Exception: Error Boundary)
 - **Custom Hooks**: Standard pattern for logic reuse and dependency injection
-- **Component Hierarchy**: Atoms > Molecules > Organisms > Templates > Pages
+- **Component Hierarchy**: Follow the project's existing component architecture. Use Atoms > Molecules > Organisms > Templates > Pages only when the project adopts Atomic Design.
 - **Co-location**: Place tests, styles, and related files alongside components
 
 **State Management Patterns**

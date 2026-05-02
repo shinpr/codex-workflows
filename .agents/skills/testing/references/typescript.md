@@ -13,9 +13,8 @@ import userEvent from '@testing-library/user-event'
 ### Coverage Requirements
 
 - **Overall minimum**: 60%
-- **Atoms (Button, Text)**: 70%+
-- **Molecules (FormField)**: 65%+
-- **Organisms (Header, Footer)**: 60%+
+- **Atomic Design projects**: Atoms 70%+, Molecules 65%+, Organisms 60%+
+- **Other component architectures**: Keep 60% as the baseline and raise foundational or highly reused components to 70%+
 - **Custom Hooks**: 65%+
 - **Utils**: 70%+
 
