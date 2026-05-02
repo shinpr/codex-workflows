@@ -49,6 +49,8 @@ Use `Value Score` for ranking candidates of the same test type. Handle E2E cost 
 - `service-integration-e2e threshold = Value Score > 50` for non-reserved candidates
 - Reserved-slot eligibility overrides the threshold when the candidate is the highest-value user-facing multi-step journey
 
+The fixture-e2e threshold is lower because this lane uses mocked backend or fixture-driven state, avoids live-stack setup, and has a higher per-feature budget. The service-integration-e2e threshold stays higher because live-stack tests are slower, more brittle, and more expensive to maintain.
+
 ### Selection Rules
 
 | Test Type | Ranking Basis | Selection Rule |

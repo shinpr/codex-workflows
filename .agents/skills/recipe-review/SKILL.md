@@ -89,6 +89,12 @@ Resolve discrepancies by route:
   s) Skip
 
 Default: accept all recommended routes.
+
+Accepted response formats:
+- empty input -- accept every recommended route
+- `all-recommended` -- accept every recommended route
+- `all:c`, `all:d`, or `all:s` -- apply one route to every finding
+- Per-finding routes, e.g. `F1:c, F2:d, F3:s`
 ```
 
 Before presenting results, recommend a route for each finding:

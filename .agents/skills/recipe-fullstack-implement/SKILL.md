@@ -120,13 +120,7 @@ ENFORCEMENT: Sub-agent prompts missing the constraint suffix MUST be re-issued w
 
 ### Implementation Readiness Gate
 
-Before executing task files, read the associated work plan header:
-
-| Status | Action |
-|--------|--------|
-| `ready` | Proceed |
-| `pending` or absent | Recommend running `$recipe-prepare-implementation [plan-path]`; continue only on explicit user approval |
-| `escalated` | Present the Implementation Readiness Report remaining gaps; continue only on explicit user approval |
+Before executing task files, execute the Implementation Readiness Preflight Procedure from `subagents-orchestration-guide` for the approved work plan exact path. This means loading the work plan, evaluating R1-R5, resolving approved prep gaps through exact prep task files when needed, persisting the Readiness Report, and setting `Implementation Readiness: ready` or `escalated`. Then apply the Implementation Readiness Marker Contract before entering autonomous execution.
 
 **Agent routing by task filename** (see monorepo-flow.md reference):
 ```

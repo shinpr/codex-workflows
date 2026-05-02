@@ -133,7 +133,9 @@ Use the appropriate run command based on the `packageManager` field in package.j
 
 ### 1. Task Selection
 
-Select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have uncompleted checkboxes `[ ]` remaining
+If the orchestrator prompt provides a task file path, execute only that exact task file. Do not scan or select any other task file.
+
+When no task file path is provided, select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have uncompleted checkboxes `[ ]` remaining.
 
 ### 2. Task Background Understanding
 #### Investigation Targets (Required when present)
@@ -185,7 +187,7 @@ This is a repeated self-check during implementation, not a one-time pre-implemen
 
 **Implementation procedure for each checkbox item**:
 1. **Red**: Create React Testing Library test for that checkbox item (failing state)
-   ※For integration tests and fixture-e2e tests, create and execute with the related UI implementation; service-integration-e2e tests are executed in final phase only
+   ※For integration tests and fixture-e2e tests, create and execute with the related UI implementation; service-integration-e2e tests are executed in final phase only. Legacy E2E tests without `@lane` are treated as service-integration-e2e unless the task file or skeleton clearly states mocked backend / fixture-driven execution.
 2. **Green**: Implement minimum code to pass test (React function component)
 3. **Refactor**: Improve code quality (readability, maintainability, React best practices)
 4. **Progress Update [MANDATORY]**: Execute the following in sequence (cannot be omitted)
@@ -210,11 +212,6 @@ For research tasks, includes creating deliverable files specified in metadata "P
 Return one of the following as the final response (see Structured Response Specification for schemas):
 - `status: "completed"` — task fully implemented
 - `status: "escalation_needed"` — design deviation or similar component discovered
-
-## Research Task Deliverables
-
-Research/analysis tasks create deliverable files specified in metadata "Provides".
-Examples: `docs/plans/analysis/component-research.md`, `docs/plans/analysis/api-integration.md`
 
 ## Structured Response Specification
 
@@ -380,9 +377,6 @@ When repository-wide verification is insufficient to determine the appropriate d
 
 **ENFORCEMENT**: HALT if any gate unchecked. Return `status: "escalation_needed"` to caller.
 
-## Completion Criteria
-
-- [ ] Final response is a single JSON with status `completed` or `escalation_needed`
 """
 
 [[skills.config]]

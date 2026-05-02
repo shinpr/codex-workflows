@@ -123,27 +123,10 @@ Close a running subagent only when the user redirects the workflow, the orchestr
 
 Spawn agents using natural language prompts. Provide clear context about what the agent should accomplish. Every `spawn_agent` call MUST include `fork_turns="none"` or `fork_context=false` (see Spawn rule at top of this skill).
 
-### Spawn Examples
+### Spawn Prompt Requirements
 
-Each example below is a spawn with `fork_turns="none"` or `fork_context=false` plus the quoted prompt.
-
-**requirement-analyzer** (`fork_turns="none"` or `fork_context=false`):
-> "Analyze the following requirements and determine the work scale: [user requirements]. Perform requirement analysis and scale determination."
-
-**codebase-analyzer** (`fork_turns="none"` or `fork_context=false`):
-> "Analyze the existing codebase to provide evidence for Design Doc creation. Focus on existing implementations, data model elements, and constraints the design should respect. requirement_analysis: [JSON]. prd_path: [path if available]. requirements: [original user requirements]. layer: [target layer if applicable]. target_paths: [paths if narrowed]. Return codebase facts and focus areas."
-
-**task-executor** (`fork_turns="none"` or `fork_context=false`):
-> "Execute the implementation task defined in docs/plans/tasks/[filename].md. Complete the implementation following TDD Red-Green-Refactor."
-
-**quality-fixer** (`fork_turns="none"` or `fork_context=false`):
-> "Run quality checks on the codebase: static analysis, style check, all test execution. Fix any issues found and report when all checks pass."
-
-**document-reviewer** (`fork_turns="none"` or `fork_context=false`):
-> "Review the document at [path] for quality and rule compliance. Check against documentation-criteria standards."
-
-**design-sync** (`fork_turns="none"` or `fork_context=false`):
-> "Verify consistency between Design Docs in docs/design/. Use [path] as the source document for comparison."
+- Set `fork_context=false` or `fork_turns="none"` on every spawn for context isolation.
+- Each spawn prompt must name the target deliverable, input paths, and expected result. When invoking `task-executor*`, include the exact task file path, for example: `Execute the implementation task. Task file: docs/plans/tasks/[filename].md.`
 
 ## Explicit Stop Points [MANDATORY]
 
@@ -207,7 +190,34 @@ Subagents respond in JSON format. The final response from each JSON-returning su
 | `design-sync` | `sync_status` |
 | `integration-test-reviewer` | `status`, `requiredFixes` |
 | `security-reviewer` | `status`, `findings`, `notes`, `requiredFixes` |
-| `acceptance-test-generator` | `status`, `generatedFiles`, lane-specific `e2eAbsenceReason` |
+| `acceptance-test-generator` | `status`, `generatedFiles.integration`, `generatedFiles.fixtureE2e`, `generatedFiles.serviceE2e`, `e2eAbsenceReason.fixtureE2e`, `e2eAbsenceReason.serviceE2e` |
+
+## Implementation Readiness Marker Contract
+
+Work plans use the header line `Implementation Readiness: <status>`.
+
+| Status | Meaning | Consumer Action |
+|--------|---------|-----------------|
+| `pending` | Initial state from work-planner; readiness has not been checked | Present the unchecked state, recommend running implementation readiness preflight, and continue only on explicit user approval |
+| `ready` | Readiness scan completed and no applicable failures remain | Proceed with task execution |
+| `escalated` | Readiness scan completed, but one or more failures remain | Read the work plan's Implementation Readiness Report, present remaining gaps, and continue only on explicit user approval |
+| absent | Older work plan without the marker | Treat as `pending` |
+
+## Implementation Readiness Preflight Procedure
+
+Use this procedure after work-plan approval and before autonomous task execution when the flow needs to verify implementation readiness.
+
+1. Load the approved work plan exact path and extract Verification Strategies, Quality Assurance Mechanisms, Design-to-Plan Traceability, UI Spec Component -> Task Mapping, Connection Map, test skeleton references, E2E absence reasons, phase structure, referenced Design Docs, and UI Specs.
+2. Evaluate these criteria with evidence:
+   - R1 Verification Strategy references resolve
+   - R2 E2E prerequisites are addressed
+   - R3 Phase 1 observability exists
+   - R4 UI rendering surface exists when UI work is present
+   - R5 Local service stack or browser harness procedure exists when applicable
+3. If every applicable criterion passes, persist `## Implementation Readiness Report` in the work plan and set `Implementation Readiness: ready`.
+4. If any criterion fails, create the smallest approved prep tasks that close the gaps, execute each exact prep task file through the standard executor -> quality-fixer -> commit cycle, then re-run the scan.
+5. After re-scan, set `Implementation Readiness: ready` when all applicable criteria pass, otherwise `Implementation Readiness: escalated`, and persist remaining gaps in the Readiness Report.
+6. Collapse completed prep task references into the Readiness Report and delete only the prep task files created for the current work plan.
 
 ## Handling Requirement Changes
 
@@ -216,17 +226,7 @@ requirement-analyzer follows the "completely self-contained" principle and proce
 
 #### How to Integrate Requirements
 
-**Important**: To maximize accuracy, integrate requirements as complete sentences, including all contextual information communicated by the user.
-
-```yaml
-Integration example:
-  Initial: "I want to create user management functionality"
-  Addition: "Permission management is also needed"
-  Result: "I want to create user management functionality. Permission management is also needed.
-
-          Initial requirement: I want to create user management functionality
-          Additional requirement: Permission management is also needed"
-```
+Integrate initial requirements and later additions as complete sentences, preserving all contextual information communicated by the user. The updated input must remain self-contained without relying on prior conversation turns.
 
 ### Update Mode for Document Generation Agents
 Document generation agents (work-planner, technical-designer, prd-creator) can update existing documents in `update` mode.
@@ -350,7 +350,7 @@ Maximum retry count is 1 verification fix cycle. If any failed verifier still fa
 | `codebase-analyzer` | `technical-designer*` | `Codebase Analysis`, including `focusAreas`, `dataModel`, `qualityAssurance`, `dataTransformationPipelines`, `limitations` |
 | `technical-designer*` | `code-verifier` | Design Doc path |
 | `code-verifier` | `document-reviewer` | `code_verification` JSON |
-| `acceptance-test-generator` | `work-planner` | integration test path, fixture-e2e path or `null`, service-integration-e2e path or `null`, lane-specific `e2eAbsenceReason` when a lane is absent |
+| `acceptance-test-generator` | `work-planner` | `generatedFiles.integration`, `generatedFiles.fixtureE2e`, `generatedFiles.serviceE2e`, `e2eAbsenceReason: { fixtureE2e, serviceE2e }` |
 | Design Doc | `work-planner` | Verification Strategy summary, Output Comparison details, implementation-relevant technical requirements, protected no-change boundaries |
 
 Handoff rules:

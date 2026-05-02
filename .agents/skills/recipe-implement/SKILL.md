@@ -73,7 +73,7 @@ Follow subagents-orchestration-guide skill Large/Medium/Small scale flow exactly
 **[STOP — BLOCKING]** Present Work Plan for user approval. **CANNOT proceed until user explicitly confirms.**
 
 **STEP 5**: Run implementation readiness preflight.
-Spawn recipe-prepare-implementation workflow for the approved work plan. If the work plan remains `pending` or becomes `escalated`, present the readiness report and continue only on explicit user approval.
+Execute the Implementation Readiness Preflight Procedure from `subagents-orchestration-guide` for the approved work plan exact path. This means loading the work plan, evaluating R1-R5, resolving approved prep gaps through exact prep task files when needed, persisting the Readiness Report, and setting `Implementation Readiness: ready` or `escalated`. Apply the Implementation Readiness Marker Contract before entering autonomous execution.
 
 **STEP 6**: Enter guided autonomous execution (see Autonomous Execution Mode below) using task-executor-frontend + quality-fixer-frontend agents.
 
@@ -95,13 +95,7 @@ After user grants "batch approval for entire implementation phase", enter autono
 
 ### Implementation Readiness Gate
 
-Before executing task files, read the associated work plan header:
-
-| Status | Action |
-|--------|--------|
-| `ready` | Proceed |
-| `pending` or absent | Recommend running `$recipe-prepare-implementation [plan-path]`; continue only on explicit user approval |
-| `escalated` | Present the Implementation Readiness Report remaining gaps; continue only on explicit user approval |
+Before executing task files, read the associated work plan header and apply the Implementation Readiness Marker Contract from `subagents-orchestration-guide`.
 
 ### Task Execution Quality Cycle (4-Step Cycle per Task)
 

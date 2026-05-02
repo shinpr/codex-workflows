@@ -137,9 +137,9 @@ A boundary qualifies only when all of the following hold:
 - A serialized contract crosses the boundary, such as HTTP, RPC, event payload, queue message, or webhook payload.
 - A failure on one side creates an observable signal on the other side, such as a status code, timeout, missing field, dropped message, or persisted row.
 
-Do not include in-process package imports, shared types/constants, or internal layering within the same runtime.
+Map only boundaries satisfying all three qualifications above: separate runtime, serialized contract, and observable cross-side signal.
 
-For each boundary, record owner modules, expected signal, and covering tasks in the `Connection Map` table.
+For each boundary, record the caller/producer, callee/consumer, expected signal, and covering tasks in the `Connection Map` table.
 
 ### 6. Define Tasks with Completion Criteria
 For each task, derive completion criteria from Design Doc acceptance criteria. Apply the 3-element completion definition (Implementation Complete, Quality Complete, Integration Complete).

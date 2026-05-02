@@ -23,15 +23,7 @@ Work plan: $ARGUMENTS
 
 ## Readiness Marker Contract
 
-Work plans use the header line `Implementation Readiness: <status>`.
-
-| Status | Meaning |
-|--------|---------|
-| `pending` | Initial state from work-planner; readiness has not been checked |
-| `ready` | Readiness scan completed and no applicable failures remain |
-| `escalated` | Readiness scan completed, but one or more failures remain |
-
-If the line is absent, treat the work plan as `pending` and insert the line after `Related Issue/PR:` when persisting the report.
+Use the Implementation Readiness Marker Contract defined in `subagents-orchestration-guide`. If the line is absent, treat the work plan as `pending` and insert it after `Related Issue/PR:` when persisting the report.
 
 ## Readiness Criteria
 
@@ -43,9 +35,9 @@ Each criterion produces `pass`, `fail`, or `not_applicable`, with file:line evid
 | R2 | E2E prerequisites are addressed | For each fixture-e2e or service-integration-e2e skeleton, every noted precondition is present in the codebase or covered by a Phase 0 task |
 | R3 | Phase 1 observability exists | The first implementation phase includes at least one operation verification method executable at task completion using existing files, prior Phase 0 deliverables, or the task's own output |
 | R4 | UI rendering surface exists | When the plan implements UI components, a fixture entry, dev route, Storybook story, preview harness, or equivalent render surface exists or is covered by a Phase 0 task |
-| R5 | Local lane procedure exists | The work plan or referenced docs record commands needed to run the relevant local lane, including startup commands, ports, seed steps, and required environment variables |
+| R5 | Local lane procedure exists | The work plan or referenced docs record commands needed to run the relevant local service stack or browser harness, including startup commands, ports, seed steps, and required environment variables |
 
-R4 applies only to UI work. R5 applies when the plan uses a local service stack, browser harness, or manual verification lane.
+R4 applies only to UI work. R5 applies when the plan uses a local service stack or browser harness.
 
 ## Execution Flow
 
@@ -91,7 +83,7 @@ When one or more criteria fail:
    - Backend prep: `{plan-name}-backend-task-prep-{NN}.md`
    - Frontend prep: `{plan-name}-frontend-task-prep-{NN}.md`
    - Single-layer prep: `{plan-name}-task-prep-{NN}.md`
-3. Insert the tasks into the work plan as Phase 0 before Phase 1.
+3. Insert the tasks into the work plan's existing Phase 0 when one exists. If no Phase 0 exists, create `Phase 0: Implementation Readiness Prep` before Phase 1. Keep existing Phase 0 task IDs stable; assign prep task IDs after existing Phase 0 tasks or use a clearly labeled `P0-PREP-N` identifier when the plan's numbering would otherwise require renumbering.
 4. Each prep task must include Investigation Targets, concrete implementation steps, and Operation Verification Methods.
 
 Layer selection:
@@ -103,7 +95,7 @@ Layer selection:
 ### Step 5: Execute Prep Tasks
 
 Run each prep task through the standard 4-step cycle:
-1. Spawn the layer-appropriate task executor.
+1. Spawn the layer-appropriate task executor with the exact prep task path in the prompt: "Execute implementation-readiness prep task. Task file: [exact prep task path]."
 2. Check for `blocked` or `escalation_needed`.
 3. Spawn the layer-appropriate quality fixer with the task file as `task_file`.
 4. Commit only when the quality fixer returns `approved`.
@@ -121,8 +113,13 @@ After prep tasks are complete:
 1. Re-run the readiness scan.
 2. Persist or replace `## Implementation Readiness Report` in the work plan.
 3. Set the header to `Implementation Readiness: ready` when all applicable criteria pass, otherwise `Implementation Readiness: escalated`.
-4. Delete only the prep task files created by this recipe for the current work plan and the Phase 0 completion file if generated.
-5. Report remaining gaps if any.
+4. Collapse completed prep tasks out of active plan execution: remove the Phase 0 readiness prep task entries from the work plan and record their committed evidence under `Resolution Tasks Executed` in the Readiness Report. If Phase 0 becomes empty and was created only by this recipe, remove that Phase 0 section. Preserve any pre-existing Phase 0 content.
+5. Delete only these files for the current `{plan-name}`:
+   - `docs/plans/tasks/{plan-name}-task-prep-*.md`
+   - `docs/plans/tasks/{plan-name}-backend-task-prep-*.md`
+   - `docs/plans/tasks/{plan-name}-frontend-task-prep-*.md`
+   - `docs/plans/tasks/{plan-name}-phase0-completion.md`
+6. Report remaining gaps if any.
 
 ## Readiness Report Format
 
@@ -132,6 +129,7 @@ After prep tasks are complete:
 Work plan: [path]
 Outcome: ready | escalated
 Gaps resolved: [N]
+phase0_created_by_recipe: true | false
 
 ### Readiness Criteria
 
@@ -160,5 +158,5 @@ Gaps resolved: [N]
 - [ ] Re-scan completed after prep tasks
 - [ ] Work plan readiness marker updated to `ready` or `escalated`
 - [ ] Readiness Report persisted in the work plan
+- [ ] Completed prep task references collapsed into the Readiness Report
 - [ ] Prep task files created by this recipe removed from `docs/plans/tasks/`
-

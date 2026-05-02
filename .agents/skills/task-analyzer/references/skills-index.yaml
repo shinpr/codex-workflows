@@ -4,7 +4,7 @@
 skills:
   coding-rules:
     skill: "coding-rules"
-    tags: [implementation, code-quality, refactoring, clean-code, maintainability, function-design, error-handling, parameterized-dependencies, performance, security]
+    tags: [implementation, code-quality, refactoring, clean-code, maintainability, function-design, error-handling, parameterized-dependencies, reference-representativeness, performance, security]
     typical-use: "Language-agnostic code creation, modification, and refactoring principles applicable to all programming languages"
     size: medium
     key-references:
@@ -14,23 +14,25 @@ skills:
       - "Refactoring - Martin Fowler"
       - "Single Responsibility Principle - SOLID"
     sections:
+      - "Language-Specific References"
       - "Core Philosophy [MANDATORY]"
       - "Code Quality [MANDATORY]"
       - "Function Design [MANDATORY]"
       - "Error Handling [MANDATORY]"
       - "Dependency Management"
+      - "Reference Representativeness"
       - "Performance"
       - "Code Organization"
       - "Commenting Principles"
       - "Refactoring [SAFE CHANGE PROTOCOL]"
-      - "Security (Secure Defaults, Input and Output Boundaries, Access Control, Knowledge Cutoff Supplement)"
+      - "Security"
       - "Version Control [MANDATORY]"
     references:
       - "references/typescript.md"
 
   testing:
     skill: "testing"
-    tags: [testing, tdd, quality, unit-testing, integration-testing, e2e-testing, test-design, coverage, mocking, test-independence, ci-cd, test-quality-criteria]
+    tags: [testing, tdd, quality, unit-testing, integration-testing, e2e-testing, data-layer-testing, test-design, coverage, mocking, test-independence, ci-cd, test-quality-criteria]
     typical-use: "Universal testing principles, TDD practice, test quality criteria, test creation and quality assurance for all programming languages"
     size: large
     key-references:
@@ -39,6 +41,7 @@ skills:
       - "AAA Pattern - Arrange-Act-Assert"
       - "Test Pyramid - Mike Cohn"
     sections:
+      - "Language-Specific References"
       - "Core Testing Philosophy"
       - "TDD Process [MANDATORY for all code changes]"
       - "Quality Requirements [MANDATORY]"
@@ -46,6 +49,7 @@ skills:
       - "Test Design Principles"
       - "Test Independence"
       - "Mocking and Test Doubles"
+      - "Data Layer Testing"
       - "Test Quality Practices [MANDATORY]"
       - "What to Test"
       - "Test Quality Criteria [MANDATORY]"
@@ -68,11 +72,13 @@ skills:
       - "DRY Principle - The Pragmatic Programmer"
       - "YAGNI Principle - Extreme Programming"
     sections:
+      - "Language-Specific References"
       - "Technical Anti-patterns (Red Flag Patterns) [MANDATORY]"
       - "Fail-Fast Fallback Design Principles"
       - "Rule of Three - Criteria for Code Duplication"
       - "Common Failure Patterns and Avoidance Methods"
       - "Debugging Techniques"
+      - "Quality Assurance Mechanism Awareness"
       - "Quality Check Workflow [MANDATORY]"
       - "Situations Requiring Technical Decisions"
       - "Implementation Completeness Assurance"
@@ -117,7 +123,7 @@ skills:
 
   integration-e2e-testing:
     skill: "integration-e2e-testing"
-    tags: [testing, integration-testing, e2e-testing, test-design, behavior-first, roi, test-skeleton, ears-format]
+    tags: [testing, integration-testing, e2e-testing, fixture-e2e, service-integration-e2e, e2e-absence-reason, test-design, behavior-first, roi, test-skeleton, ears-format]
     typical-use: "Integration and E2E test design principles, value-based test selection, behavior-first approach, test skeleton specification"
     size: medium
     key-references:
@@ -136,7 +142,7 @@ skills:
 
   subagents-orchestration-guide:
     skill: "subagents-orchestration-guide"
-    tags: [orchestration, workflow, subagents, autonomous-execution, planning, design-flow, implementation-flow]
+    tags: [orchestration, workflow, subagents, context-isolation, autonomous-execution, planning, design-flow, implementation-flow, implementation-readiness, readiness-gate]
     typical-use: "Orchestrating subagents through implementation workflows, scale determination, stop points, autonomous execution mode"
     size: large
     key-references:
@@ -152,6 +158,8 @@ skills:
       - "Explicit Stop Points [MANDATORY]"
       - "Scale Determination and Document Requirements"
       - "Structured Response Specification"
+      - "Implementation Readiness Marker Contract"
+      - "Implementation Readiness Preflight Procedure"
       - "Handling Requirement Changes"
       - "Basic Flow for Work Planning"
       - "Autonomous Execution Mode"

@@ -34,18 +34,13 @@ Work plan: $ARGUMENTS
 Before task processing, locate the work plan to gate against.
 
 Resolution rule:
-1. List task files in `docs/plans/tasks/` matching the single-layer pattern `{plan-name}-task-*.md`.
-2. Exclude `*-task-prep-*.md`, `_overview-*.md`, `*-phase*-completion.md`, `review-fixes-*.md`, and `integration-tests-*-task-*.md`.
-3. If matching task files exist, infer `{plan-name}` from the most recent matching task file and use `docs/plans/{plan-name}.md`.
-4. If no matching task files exist, use the most recent non-template work plan in `docs/plans/`.
+1. If `$ARGUMENTS` contains a work plan path, use that exact file and derive `{plan-name}` from its basename. This takes precedence over task-file mtimes.
+2. If `$ARGUMENTS` is empty, list task files in `docs/plans/tasks/` matching the single-layer pattern `{plan-name}-task-*.md`.
+3. Exclude `*-task-prep-*.md`, `_overview-*.md`, `*-phase*-completion.md`, `review-fixes-*.md`, and `integration-tests-*-task-*.md`.
+4. If matching task files exist, infer `{plan-name}` from the most recent matching task file and use `docs/plans/{plan-name}.md`.
+5. If no matching task files exist, use the most recent non-template work plan in `docs/plans/`.
 
-Read the work plan header and find `Implementation Readiness: <status>`.
-
-| Status | Action |
-|--------|--------|
-| `ready` | Proceed to Consumed Task Set computation |
-| `pending` or absent | Ask the user whether to continue without preflight. Recommended action is to run `$recipe-prepare-implementation [plan-path]` first. Continue only on explicit approval |
-| `escalated` | Read the work plan's Implementation Readiness Report, present remaining gaps, and continue only on explicit approval |
+Read the work plan header and apply the Implementation Readiness Marker Contract from `subagents-orchestration-guide`.
 
 ### Consumed Task Set
 
@@ -146,7 +141,12 @@ After all task cycles finish, collect all `filesModified` from every task-execut
 
 ## Final Cleanup
 
-Before the completion report, delete the implementation task files in the Consumed Task Set, matching phase-completion files for the same plan, and `_overview-{plan-name}.md` if present. Preserve the work plan itself.
+Before the completion report, delete only these files for the current `{plan-name}`:
+- Every file in the Consumed Task Set
+- `docs/plans/tasks/{plan-name}-phase*-completion.md`
+- `docs/plans/tasks/_overview-{plan-name}.md`
+
+Preserve the work plan itself.
 
 If cleanup fails, report the failed path but do not invalidate completed implementation work.
 

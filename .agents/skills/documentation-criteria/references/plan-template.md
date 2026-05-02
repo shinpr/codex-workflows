@@ -81,9 +81,9 @@ Include this section when a UI Spec is among the inputs. Map each UI component s
 
 Include this section when implementation crosses runtime, process, deployment, or service boundaries. Omit it when the change stays inside one runtime or only uses in-process package imports.
 
-| Boundary | Owner (left side) | Owner (right side) | Expected Signal | Covered By Task(s) |
-|----------|-------------------|--------------------|-----------------|--------------------|
-| [e.g. "web client -> API"] | [module/package on request side] | [module/package on response side] | [Observable evidence, e.g. HTTP 200 matching schema X] | [P1-T1, P1-T2] |
+| Boundary | Caller / Producer | Callee / Consumer | Expected Signal | Covered By Task(s) |
+|----------|-------------------|-------------------|-----------------|--------------------|
+| [e.g. "web client -> API"] | [module/package initiating request or message] | [module/package receiving request or message] | [Observable evidence, e.g. HTTP 200 matching schema X] | [P1-T1, P1-T2] |
 
 ## Objective
 [Why this change is necessary, what problem it solves]
