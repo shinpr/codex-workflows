@@ -45,6 +45,15 @@ Representative triggers:
 
 ## Mandatory Process Before Design Doc Creation
 
+### External Resources Integration
+
+When external resources are recorded for the project:
+
+1. Read `docs/project-context/external-resources.md`
+2. Read the target Design Doc's `External Resources Used` section in update mode
+3. Fill the Design Doc `External Resources Used` subsection with project resource labels and feature-specific identifiers for API, backend, data, or infrastructure sources
+4. Keep project-level access methods in the project context file
+
 ### Standards Identification Gate【Required】
 Must be performed before any investigation:
 
@@ -440,4 +449,8 @@ enabled = true
 
 [[skills.config]]
 path = ".agents/skills/implementation-approach/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/external-resource-context/SKILL.md"
 enabled = true

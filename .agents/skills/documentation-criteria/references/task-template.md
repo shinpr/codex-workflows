@@ -46,7 +46,7 @@ Brief observations recorded after reading Investigation Targets:
 - **Verification method**: [What to verify and how]
 - **Success criteria**: [Observable outcome that proves correctness]
 - **Failure response**: [What to do if verification fails]
-- **Verification level**: [L1/L2/L3, per implementation-approach skill]
+- **Verification level**: [L1 unit/local verification, L2 integration verification, or L3 end-to-end verification]
 
 ## Completion Criteria
 - [ ] All added tests pass

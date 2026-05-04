@@ -13,6 +13,14 @@
 |--------|------|---------|
 | Prototype code | [docs/ui-spec/assets/xxx/] | [commit SHA / tag] |
 
+## External Resources Used
+
+| Project Resource Label | Feature Identifier | Purpose |
+|------------------------|--------------------|---------|
+| [frontend-design-origin] | [screen / node / frame / route / story id] | [why this feature uses it] |
+| [frontend-design-system] | [component / token / variant / story id] | [why this feature uses it] |
+| [frontend-visual-verification] | [route / story / viewport / scenario] | [how this feature is verified] |
+
 ## Prototype Management
 
 Prototype code is an **attachment** to this UI Spec. The canonical specification is always this document + the Design Doc.

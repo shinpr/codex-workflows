@@ -41,11 +41,13 @@ Skill Status:
 4. Define component decomposition with state x display matrices
 5. Identify reusable existing components in the codebase
 6. Define accessibility requirements
+7. Carry forward external resource references used for UI decisions
 
 ## Required Information
 
 - **PRD**: PRD document path (required if exists; otherwise requirement-analyzer output is used)
 - **Prototype code path**: Path to prototype code (optional, placed in `docs/ui-spec/assets/{feature-name}/`)
+- **UI analysis**: JSON from ui-analyzer when provided, including externalResources, componentStructure, propsPatterns, cssLayout, stateDisplay, focusAreas, and candidateWriteSet
 - **Existing frontend codebase**: Will be investigated automatically
 
 ## Mandatory Process Before UI Spec Creation
@@ -93,6 +95,13 @@ Skill Status:
    - Search for existing theme/token definitions
    - Note spacing, color, typography conventions in use
 
+### Step 3a: External Resource Integration
+
+1. Read `docs/project-context/external-resources.md` when present
+2. Use `ui_analysis.externalResources` as the fetched summary for design origin, design system, guidelines, and visual verification
+3. Fill `External Resources Used` with project resource labels and feature-specific identifiers
+4. Keep project-level access methods in `docs/project-context/external-resources.md`
+
 ### Step 4: Draft UI Spec
 
 1. **Copy ui-spec-template** from documentation-criteria skill
@@ -103,6 +112,7 @@ Skill Status:
    - Interaction definitions linked to AC IDs with EARS format
    - Existing component reuse map
    - Design tokens (from existing codebase)
+   - External Resources Used
    - Visual acceptance criteria
    - Accessibility requirements (keyboard, screen reader, contrast)
 3. **Output path**: `docs/ui-spec/{feature-name}-ui-spec.md`
@@ -118,6 +128,7 @@ Execute file output immediately. Final approval is managed by the orchestrator r
 - [ ] Interaction definitions use EARS format and reference AC IDs
 - [ ] Screen transitions have trigger and guard conditions defined
 - [ ] Existing component reuse map is complete (reuse/extend/new for each element)
+- [ ] External Resources Used lists project resource labels and feature identifiers when external resources informed the UI Spec
 - [ ] Accessibility requirements cover keyboard navigation and screen reader support
 - [ ] If prototype provided: AC traceability table is complete with adoption decisions
 - [ ] If prototype provided: prototype is placed in `docs/ui-spec/assets/`
@@ -147,4 +158,8 @@ enabled = true
 
 [[skills.config]]
 path = ".agents/skills/coding-rules/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/external-resource-context/SKILL.md"
 enabled = true

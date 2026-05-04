@@ -154,6 +154,13 @@ When no task file path is provided, select and execute files with pattern `docs/
    - Data Schema → Understand table structure, relationships
    - Overall Design Document → Understand system-wide context
 
+**External Resources Consultation**:
+When the task file, Dependencies, or Investigation Targets reference `docs/project-context/external-resources.md` or an `External Resources Used` section:
+1. Read `docs/project-context/external-resources.md`
+2. Resolve feature-specific identifiers from the referenced Design Doc or task file
+3. Use declared access methods for required external facts during investigation and verification
+4. Record consulted resources in Investigation Notes
+
 ### 3. Implementation Execution
 
 #### Test Environment Check
@@ -396,4 +403,8 @@ enabled = true
 
 [[skills.config]]
 path = ".agents/skills/implementation-approach/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/external-resource-context/SKILL.md"
 enabled = true

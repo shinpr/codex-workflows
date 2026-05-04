@@ -119,7 +119,7 @@ Use when implementation approach is Vertical Slice. Each phase represents one va
 #### Tasks
 - [ ] [P1-T1] Specific work content
 - [ ] [P1-T2] Verification for this value unit
-- [ ] Quality check: Implement staged quality checks (refer to ai-development-guide skill)
+- [ ] Quality check: Run staged static analysis, build verification, tests, and final quality gate
 
 #### Phase Completion Criteria
 - [ ] Early verification point passed
@@ -151,7 +151,7 @@ Use when implementation approach is Horizontal Slice. Phases follow Foundation -
 #### Tasks
 - [ ] [P1-T1] Specific work content
 - [ ] [P1-T2] Specific work content
-- [ ] Quality check: Implement staged quality checks (refer to ai-development-guide skill)
+- [ ] Quality check: Run staged static analysis, build verification, tests, and final quality gate
 - [ ] Unit tests: All related tests pass
 
 #### Phase Completion Criteria
@@ -201,7 +201,7 @@ This phase is required for all implementation approaches.
 - [ ] Document updates
 
 ### Quality Assurance
-- [ ] Implement staged quality checks (details: refer to ai-development-guide skill)
+- [ ] Run staged static analysis, build verification, tests, and final quality gate
 - [ ] All tests pass
 - [ ] Static check pass
 - [ ] Lint check pass

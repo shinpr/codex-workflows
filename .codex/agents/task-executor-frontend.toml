@@ -154,6 +154,13 @@ When no task file path is provided, select and execute files with pattern `docs/
    - API Specifications → Understand endpoints, parameters, response formats (for MSW mocking)
    - Overall Design Document → Understand system-wide context
 
+**External Resources Consultation**:
+When the task file, Dependencies, or Investigation Targets reference `docs/project-context/external-resources.md` or an `External Resources Used` section:
+1. Read `docs/project-context/external-resources.md`
+2. Resolve feature-specific identifiers from the UI Spec, Design Doc, or task file
+3. Use declared access methods for design origin, design system, guidelines, and visual verification facts during investigation and verification
+4. Record consulted resources in Investigation Notes
+
 ### 3. Implementation Execution
 
 #### Test Environment Check
@@ -393,4 +400,8 @@ enabled = true
 
 [[skills.config]]
 path = ".agents/skills/implementation-approach/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/external-resource-context/SKILL.md"
 enabled = true

@@ -33,6 +33,14 @@ unknowns:
 - [ADR File Name]: [Related decision items]
 - Reference common technical ADRs when applicable
 
+### External Resources Used
+
+| Project Resource Label | Feature Identifier | Purpose |
+|------------------------|--------------------|---------|
+| frontend-design-origin | [screen / node / frame / route / story id] | [why this feature uses it] |
+| api-schema-source | [endpoint / operation id / schema name] | [why this feature uses it] |
+| infra-iac-source | [service / module / environment] | [why this feature uses it] |
+
 ### Agreement Checklist
 
 #### Scope
