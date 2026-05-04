@@ -1,21 +1,21 @@
 ---
 name: external-resource-context
-description: "Captures and persists access methods for resources outside the repository, including design sources, design systems, API schemas, IaC sources, secret stores, and verification environments."
+description: "Discovers, confirms, and records external resource access methods for project design and implementation work, including design sources, design systems, API schemas, database schemas, IaC sources, secret stores, environment config, and verification environments. Use when external resource context needs to be discovered or refreshed, recorded in docs/project-context/external-resources.md, or referenced from a Design Doc/UI Spec."
 ---
 
 # External Resource Context
 
 ## Purpose
 
-This skill records access methods for resources outside the repository in a deterministic project file. Design, planning, implementation, and review work can then resolve external context consistently across sessions and subagents.
+This skill helps Codex discover required external resources, record stable access methods, and reuse recorded context during design, planning, implementation, and review work.
 
 Covered resources include design origin, design system, guidelines, visual verification environment, database schema source, migration history, secret store location, API schema source, mock environment, IaC source, and environment configuration.
 
 ## Scope Boundaries
 
-**In scope**: hearing protocol, storage location, single-source ownership rule, and lookup protocol for downstream work.
+**In scope**: hearing protocol for unclear external resources, storage location, single-source ownership rule, and lookup protocol for known resources.
 
-**Out of scope**: correctness or freshness verification of the recorded resources. The consuming workflow verifies the resource content at use time.
+**Freshness handling**: record access methods and feature identifiers here. The consuming workflow checks current resource content at use time.
 
 ## Storage Locations
 

@@ -186,7 +186,7 @@ skills:
   external-resource-context:
     skill: "external-resource-context"
     tags: [external-resources, external-resource-hearing, project-context, mcp, design-source, design-system, visual-verification, generated-artifacts, api-schema, infrastructure, secret-store, context-engineering, documentation]
-    typical-use: "Capture and reuse access methods for resources outside the repository so design, planning, implementation, and review can resolve external context consistently"
+    typical-use: "Discover, confirm, and record external resource access methods for downstream design, planning, implementation, and review"
     size: medium
     key-references:
       - "Single Source of Truth"
