@@ -1,0 +1,7 @@
+interface:
+  display_name: "external-resource-context"
+  short_description: "Record external resource access methods"
+  default_prompt: "Use $external-resource-context to capture external resources for: "
+
+policy:
+  allow_implicit_invocation: false

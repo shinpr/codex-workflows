@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-front-adjust"
+  short_description: "Implemented UI adjustment flow"
+  default_prompt: "Use $recipe-front-adjust to adjust an implemented UI: "
+
+policy:
+  allow_implicit_invocation: false

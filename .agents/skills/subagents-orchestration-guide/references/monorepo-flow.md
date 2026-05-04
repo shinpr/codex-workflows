@@ -10,81 +10,78 @@ This reference defines the orchestration flow for projects spanning multiple lay
 
 ## Design Phase
 
-### Large Scale Fullstack (6+ Files) - 14 Steps
+### Large Scale Fullstack (6+ Files) - 15 Steps
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
 | 1 | requirement-analyzer | Requirement analysis + scale determination **[Stop]** | Requirements + scale |
 | 2 | prd-creator | PRD covering entire feature (all layers) | Single PRD |
 | 3 | document-reviewer | PRD review **[Stop]** | Approval |
-| 4 | (orchestrator) | Ask user for prototype code **[Stop]** | Prototype path or none |
-| 5 | ui-spec-designer | UI Spec from PRD + optional prototype | UI Spec |
-| 6 | document-reviewer | UI Spec review **[Stop]** | Approval |
-| 7 | codebase-analyzer x2 | Per-layer codebase analysis before Design Doc creation | Analysis JSON |
-| 8 | technical-designer | **Backend** Design Doc | Backend Design Doc |
-| 9 | technical-designer-frontend | **Frontend** Design Doc (references backend Integration Points + UI Spec) | Frontend Design Doc |
-| 10 | code-verifier x2 | Verify each Design Doc against code | Verification JSON |
-| 11 | document-reviewer x2 | Review each Design Doc with verification evidence | Reviews |
-| 12 | design-sync | Cross-layer consistency verification (source: frontend Design Doc) **[Stop]** | Sync status |
-| 13 | acceptance-test-generator | Integration/E2E test skeleton from cross-layer contracts | Test skeletons |
-| 14 | work-planner | Work plan from all Design Docs **[Stop: Batch approval]** | Work plan |
+| 4 | (orchestrator) | External resource hearing **[Stop]** | Project context |
+| 5 | (orchestrator) | Ask user for prototype code **[Stop]** | Prototype path or none |
+| 6 | codebase-analyzer x2 + ui-analyzer x1 | Per-layer codebase analysis plus frontend UI analysis | Analysis JSON |
+| 7 | ui-spec-designer | UI Spec from PRD + UI analysis + optional prototype | UI Spec |
+| 8 | document-reviewer | UI Spec review **[Stop]** | Approval |
+| 9 | technical-designer | **Backend** Design Doc | Backend Design Doc |
+| 10 | technical-designer-frontend | **Frontend** Design Doc (references backend Integration Points + UI Spec + UI analysis) | Frontend Design Doc |
+| 11 | code-verifier x2 | Verify each Design Doc against code | Verification JSON |
+| 12 | document-reviewer x2 | Review each Design Doc with verification evidence | Reviews |
+| 13 | design-sync | Cross-layer consistency verification (source: frontend Design Doc) **[Stop]** | Sync status |
+| 14 | acceptance-test-generator | Integration/E2E test skeleton from cross-layer contracts | Test skeletons |
+| 15 | work-planner | Work plan from all Design Docs **[Stop: Batch approval]** | Work plan |
 
-### Medium Scale Fullstack (3-5 Files) - 12 Steps
+### Medium Scale Fullstack (3-5 Files) - 13 Steps
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
 | 1 | requirement-analyzer | Requirement analysis + scale determination **[Stop]** | Requirements + scale |
-| 2 | codebase-analyzer x2 | Per-layer codebase analysis before Design Doc creation | Analysis JSON |
+| 2 | (orchestrator) | External resource hearing **[Stop]** | Project context |
 | 3 | (orchestrator) | Ask user for prototype code **[Stop]** | Prototype path or none |
-| 4 | ui-spec-designer | UI Spec from requirements + optional prototype | UI Spec |
-| 5 | document-reviewer | UI Spec review **[Stop]** | Approval |
-| 6 | technical-designer | **Backend** Design Doc | Backend Design Doc |
-| 7 | technical-designer-frontend | **Frontend** Design Doc (references backend Integration Points + UI Spec) | Frontend Design Doc |
-| 8 | code-verifier x2 | Verify each Design Doc against code | Verification JSON |
-| 9 | document-reviewer x2 | Review each Design Doc with verification evidence | Reviews |
-| 10 | design-sync | Cross-layer consistency verification (source: frontend Design Doc) **[Stop]** | Sync status |
-| 11 | acceptance-test-generator | Integration/E2E test skeleton from cross-layer contracts | Test skeletons |
-| 12 | work-planner | Work plan from all Design Docs **[Stop: Batch approval]** | Work plan |
+| 4 | codebase-analyzer x2 + ui-analyzer x1 | Per-layer codebase analysis plus frontend UI analysis | Analysis JSON |
+| 5 | ui-spec-designer | UI Spec from requirements + UI analysis + optional prototype | UI Spec |
+| 6 | document-reviewer | UI Spec review **[Stop]** | Approval |
+| 7 | technical-designer | **Backend** Design Doc | Backend Design Doc |
+| 8 | technical-designer-frontend | **Frontend** Design Doc (references backend Integration Points + UI Spec + UI analysis) | Frontend Design Doc |
+| 9 | code-verifier x2 | Verify each Design Doc against code | Verification JSON |
+| 10 | document-reviewer x2 | Review each Design Doc with verification evidence | Reviews |
+| 11 | design-sync | Cross-layer consistency verification (source: frontend Design Doc) **[Stop]** | Sync status |
+| 12 | acceptance-test-generator | Integration/E2E test skeleton from cross-layer contracts | Test skeletons |
+| 13 | work-planner | Work plan from all Design Docs **[Stop: Batch approval]** | Work plan |
 
 ### Parallelization in Multi-Agent Steps
 
-Steps marked `x2` run independently per layer and can execute in parallel when supported.
+Steps marked `x2` run independently per layer and can execute in parallel when supported. `ui-analyzer x1` runs once for the frontend layer alongside frontend codebase analysis and consumes the saved external resource context.
 
 ### Layer Context in Design Doc Creation
 
 When spawning Design Doc creation for each layer, pass explicit context:
 
-**Large Scale (PRD available) -- Backend Design Doc**:
+| Scale | Concrete context value |
+|-------|------------------------|
+| Large | `context: { scale: "large", prd_path: "[path]", requirement_analysis: [requirement-analyzer output] }` |
+| Medium | `context: { scale: "medium", prd_path: null, requirement_analysis: [requirement-analyzer output] }` |
+
+Before spawning, replace every context placeholder with a concrete context object for the active flow scale. For filtered context placeholders, use the same `scale` and `prd_path` values, and replace `requirement_analysis` with the layer-filtered requirement analysis.
+
+**Backend Design Doc**:
 **Agent**: Spawn technical-designer
-> "Create a backend Design Doc from PRD at [path]. Codebase analysis: [backend analysis JSON]. Focus on: API contracts, data layer, business logic, service architecture."
+> "Create a backend Design Doc. context: [context]. Codebase analysis: [backend analysis JSON]. Focus on: API contracts, data layer, business logic, service architecture."
 
-**Large Scale (PRD available) -- Backend Codebase Analysis**:
+**Backend Codebase Analysis**:
 **Agent**: Spawn codebase-analyzer
-> "Analyze the existing codebase to provide evidence for backend Design Doc creation. requirement_analysis: [requirement-analyzer output filtered to backend files]. prd_path: [path]. requirements: [original user requirements]. layer: backend. target_paths: [backend file and directory scope]. focus_areas: API contracts, data layer, business logic, service architecture."
+> "Analyze the existing codebase to provide evidence for backend Design Doc creation. context: [context with requirement_analysis filtered to backend files]. requirements: [original user requirements]. layer: backend. target_paths: [backend file and directory scope]. focus_areas: API contracts, data layer, business logic, service architecture."
 
-**Large Scale (PRD available) -- Frontend Design Doc**:
+**Frontend Design Doc**:
 **Agent**: Spawn technical-designer-frontend
-> "Create a frontend Design Doc from PRD at [path]. Codebase analysis: [frontend analysis JSON]. Reference backend Design Doc at [path] for API contracts and Integration Points. Reference UI Spec at [path] for component structure and state design. Focus on: component hierarchy, state management, UI interactions, data fetching."
+> "Create a frontend Design Doc. context: [context]. Codebase analysis: [frontend analysis JSON]. UI analysis: [ui-analyzer JSON]. Reference backend Design Doc at [path] for API contracts and Integration Points. Reference UI Spec at [path] for component structure and state design. Focus on: component hierarchy, state management, UI interactions, data fetching."
 
-**Large Scale (PRD available) -- Frontend Codebase Analysis**:
+**Frontend Codebase Analysis**:
 **Agent**: Spawn codebase-analyzer
-> "Analyze the existing codebase to provide evidence for frontend Design Doc creation. requirement_analysis: [requirement-analyzer output filtered to frontend files]. prd_path: [path]. requirements: [original user requirements]. layer: frontend. target_paths: [frontend file and directory scope]. focus_areas: component hierarchy, state management, UI interactions, data fetching."
+> "Analyze the existing codebase to provide evidence for frontend Design Doc creation. context: [context with requirement_analysis filtered to frontend files]. requirements: [original user requirements]. layer: frontend. target_paths: [frontend file and directory scope]. focus_areas: component hierarchy, state management, UI interactions, data fetching."
 
-**Medium Scale (no PRD) -- Backend Design Doc**:
-**Agent**: Spawn technical-designer
-> "Create a backend Design Doc based on the following requirements: [requirement-analyzer output]. Codebase analysis: [backend analysis JSON]. Focus on: API contracts, data layer, business logic, service architecture."
-
-**Medium Scale (no PRD) -- Backend Codebase Analysis**:
-**Agent**: Spawn codebase-analyzer
-> "Analyze the existing codebase to provide evidence for backend Design Doc creation. requirement_analysis: [requirement-analyzer output filtered to backend files]. requirements: [original user requirements]. layer: backend. target_paths: [backend file and directory scope]. focus_areas: API contracts, data layer, business logic, service architecture."
-
-**Medium Scale (no PRD) -- Frontend Design Doc**:
-**Agent**: Spawn technical-designer-frontend
-> "Create a frontend Design Doc based on the following requirements: [requirement-analyzer output]. Codebase analysis: [frontend analysis JSON]. Reference backend Design Doc at [path] for API contracts and Integration Points. Reference UI Spec at [path] for component structure and state design. Focus on: component hierarchy, state management, UI interactions, data fetching."
-
-**Medium Scale (no PRD) -- Frontend Codebase Analysis**:
-**Agent**: Spawn codebase-analyzer
-> "Analyze the existing codebase to provide evidence for frontend Design Doc creation. requirement_analysis: [requirement-analyzer output filtered to frontend files]. requirements: [original user requirements]. layer: frontend. target_paths: [frontend file and directory scope]. focus_areas: component hierarchy, state management, UI interactions, data fetching."
+**Frontend UI Analysis**:
+**Agent**: Spawn ui-analyzer
+> "Gather UI facts for frontend design. context: [context with requirement_analysis filtered to frontend files]. requirements: [original user requirements]. target_paths: [frontend file and directory scope]. target_components: [frontend target components]. prototype_path: [path if provided]. Read docs/project-context/external-resources.md, resolve relevant UI external resources through declared access methods, and analyze component structure, props patterns, CSS layout, state displays, accessibility, generated artifacts, and candidate write set."
 
 ### design-sync for Cross-Layer Verification
 

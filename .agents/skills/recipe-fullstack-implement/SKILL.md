@@ -13,6 +13,7 @@ description: "Orchestrate full-cycle implementation across backend and frontend 
 4. [LOAD IF NOT ACTIVE] `documentation-criteria` -- document quality standards
 5. [LOAD IF NOT ACTIVE] `implementation-approach` -- implementation methodology
 6. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and workflow flows
+7. [LOAD IF NOT ACTIVE] `external-resource-context` -- external resource hearing and lookup
 
 **Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
 
@@ -29,7 +30,7 @@ ENFORCEMENT: Proceeding without reading monorepo-flow.md invalidates the entire 
 ## Execution Protocol
 
 1. **Spawn agents for all work** -- your role is to invoke sub-agents, pass data between them, and report results
-2. **Follow monorepo-flow.md** for the design phase (multiple Design Docs, design-sync, vertical slicing)
+2. **Follow monorepo-flow.md** for the design phase (external resource hearing at design entry, multiple Design Docs, design-sync, vertical slicing)
 3. **Follow subagents-orchestration-guide skill** for all other orchestration rules (stop points, structured responses, escalation)
 4. **Enter autonomous mode** only after "batch approval for entire implementation phase"
 
@@ -59,6 +60,7 @@ When continuing existing flow, verify:
 ### 3. Execute monorepo-flow.md
 
 **Follow monorepo-flow.md step-by-step** for the complete flow from UI Spec through Design Docs through Work Plan. The flow includes:
+- External resource hearing at the design phase entry
 - UI Spec creation (with prototype inquiry)
 - Separate Design Docs per layer (technical-designer for backend, technical-designer-frontend for frontend)
 - **Backend Design Doc**: Spawn technical-designer agent
@@ -89,6 +91,7 @@ When user responds to questions:
 **Pre-execution Checklist (MANDATORY)**:
 - [ ] Read monorepo-flow.md reference
 - [ ] Confirmed relevant flow steps
+- [ ] External resource hearing included when entering design flow
 - [ ] Identified current progress position
 - [ ] Clarified next step
 - [ ] Recognized stopping points

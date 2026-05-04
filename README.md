@@ -4,9 +4,11 @@
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Spec%20Compliant-blue)](https://developers.openai.com/codex/skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Structured agentic coding workflows for [OpenAI Codex CLI](https://developers.openai.com/codex/cli)** — specialized AI coding agents plan, implement, test, and review changes with traceable docs, task-level commits, and quality gates.
+**Structured workflows for [OpenAI Codex CLI](https://developers.openai.com/codex/cli).**
 
-Built on the [Agent Skills specification](https://developers.openai.com/codex/skills/) and [Codex subagents](https://developers.openai.com/codex/subagents). Designed for long-running tasks, large refactors, and reviewable changes.
+They help when multi-step changes stop being easy to reason about, test, or review.
+
+Built on the [Agent Skills specification](https://developers.openai.com/codex/skills/) and [Codex subagents](https://developers.openai.com/codex/subagents). This starts to matter when tasks get large: refactors, migrations, or anything that spans multiple files and needs to stay reviewable.
 
 ---
 
@@ -25,43 +27,49 @@ $recipe-implement Add user authentication with JWT
 
 `$` is Codex CLI's syntax for invoking a skill explicitly. Type `$recipe-` to see all available recipes via tab completion.
 
-Small changes stay lightweight. Larger tasks get structure: requirements → design → task decomposition → TDD implementation → quality gates.
+Small changes stay lightweight. Larger tasks are broken into requirements, design, task decomposition, TDD implementation, and quality checks.
 
 ---
 
 ## Why codex-workflows?
 
-Codex is already strong at one-shot implementation. The problem starts when a change spans multiple files, needs design decisions to stay visible, or has to survive review, testing, and follow-up edits.
+Codex works well for short, focused tasks. The problems start when a change spans multiple files, needs design decisions to stay visible, or has to survive review, testing, and follow-up edits.
 
-For larger tasks, explicit planning changes the job from raw generation into verification against a design, a task breakdown, and acceptance criteria. That matters because review loops are more reliable than first-shot generation once scope and ambiguity grow.
+Many developers have seen the same pattern: things work at first, then drift. Context grows, assumptions accumulate, intermediate decisions disappear, and results become harder to trust.
 
-codex-workflows adds the missing structure around those jobs:
+codex-workflows is built around those failure modes. Instead of asking Codex to "just implement it", it turns a request into a sequence of steps you can inspect and verify:
 - Traceable artifacts: PRD → Design Doc → Task → Commit
-- Built-in TDD and quality gates before code is ready to commit
+- Built-in TDD and quality checks before code is ready to commit
 - Agent context separation for large refactors, migrations, and PR-sized changes
 - Diagnosis and reverse-engineering flows for bugs and legacy code
 
+## Background
+
+The recipes, subagents, and quality checks in this repo were not designed top-down. Each piece was added in response to a concrete failure mode encountered during delivery work.
+
+That is why the workflow separates requirements, design, verification, implementation, and quality checks instead of treating them as one long session.
+
 ## Not Designed For
 
-- One-shot toy scripts or vibe-coding sessions where speed matters more than traceability
-- Repositories that do not use tests, lint, builds, or reviewable commits
-- Teams that do not want design docs, task breakdowns, or explicit quality gates
+- One-shot scripts or exploratory sessions where speed matters more than traceability
+- Repositories without tests, lint, builds, or reviewable commits
+- Teams that would rather skip design docs and quality checks entirely
 
 ---
 
 ## What It Does
 
-A single request becomes a structured development process. The framework chooses the level of ceremony based on scope:
+Instead of forcing a fixed workflow, the framework adjusts how much structure it adds based on scope:
 
 | Scale | File Count | What Happens |
 |-------|------------|-------------|
 | Small | 1-2 | Simplified plan → direct implementation |
 | Medium | 3-5 | Design Doc → work plan → task execution |
-| Large | 6+ | PRD → ADR → Design Doc → test skeletons → work plan → autonomous execution |
+| Large | 6+ | PRD → ADR → Design Doc → test skeletons → work plan → guided autonomous execution |
 
 For larger work, the path usually looks like this: understand the problem, analyze the codebase, design the change, break it into atomic tasks, implement with tests, and run quality checks before commit.
 
-Each step is handled by a specialized subagent in its own context, using context engineering to prevent context pollution and reduce error accumulation in long-running tasks:
+Each step isolates one concern, so decisions can be checked before they carry into later stages. Specialized subagents run in their own contexts to reduce carry-over assumptions during changes that would otherwise require long sessions:
 
 ```
 User Request
@@ -86,7 +94,7 @@ task-decomposer       →  Atomic tasks (1 task = 1 commit)
     ↓
 task-executor         →  TDD implementation per task
     ↓
-quality-fixer         →  Lint, test, build — no failing checks
+quality-fixer         →  Lint, test, build; no failing checks
     ↓
 Ready to commit
 ```
@@ -158,7 +166,7 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 | `$recipe-design` | Requirements → ADR/Design Doc | Architecture planning |
 | `$recipe-plan` | Design Doc → test skeletons → work plan | Planning phase, including nullable E2E skeleton handling |
 | `$recipe-prepare-implementation` | Verify work plan readiness and resolve prep gaps | Pre-build check that the plan is implementable |
-| `$recipe-build` | Execute backend tasks autonomously | Resume backend implementation |
+| `$recipe-build` | Execute backend tasks with validation between steps | Resume backend implementation |
 | `$recipe-review` | Design Doc compliance and security validation with auto-fixes | Post-implementation check |
 | `$recipe-diagnose` | Problem investigation → failure-point verification → solution | Bug investigation |
 | `$recipe-reverse-engineer` | Generate PRD + Design Docs from existing code | Legacy system documentation |
@@ -170,6 +178,7 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 | Recipe | What it does | When to use |
 |--------|-------------|-------------|
 | `$recipe-front-design` | Requirements → UI Spec → frontend Design Doc | Frontend architecture planning |
+| `$recipe-front-adjust` | Implemented UI adjustment with external context and verification | Focused UI changes after implementation |
 | `$recipe-front-plan` | Frontend Design Doc → test skeletons → work plan | Frontend planning phase |
 | `$recipe-front-build` | Execute frontend tasks with RTL + quality checks | Resume frontend implementation |
 | `$recipe-front-review` | Frontend compliance and security validation with React-specific fixes | Frontend post-implementation check |
@@ -217,7 +226,7 @@ $recipe-reverse-engineer src/auth module
 
 ## Foundational Skills
 
-These load automatically when the conversation context matches — no explicit invocation needed:
+These are applied automatically based on context. You rarely need to think about them directly.
 
 | Skill | What it provides |
 |-------|-----------------|
@@ -227,8 +236,9 @@ These load automatically when the conversation context matches — no explicit i
 | `documentation-criteria` | Document creation rules and templates (PRD, ADR, Design Doc, Work Plan) |
 | `implementation-approach` | Strategy selection: vertical / horizontal / hybrid slicing |
 | `integration-e2e-testing` | Integration/E2E test design, value-based selection, review criteria |
+| `external-resource-context` | Access methods for design sources, design systems, API schemas, and verification environments |
 | `task-analyzer` | Task analysis, scale estimation, skill selection |
-| `subagents-orchestration-guide` | Multi-agent coordination, workflow flows, autonomous execution |
+| `subagents-orchestration-guide` | Multi-agent coordination, workflow flows, guided autonomous execution |
 
 Language-specific references are included for TypeScript/React projects (`coding-rules/references/typescript.md`, `testing/references/typescript.md`).
 
@@ -236,7 +246,7 @@ Language-specific references are included for TypeScript/React projects (`coding
 
 ## Subagents
 
-Codex spawns these as needed during recipe execution. Each agent runs in its own context with specialized instructions and skill configurations.
+Codex spawns these as needed during recipe execution. You do not need to learn them first; recipes route work to the right agents automatically. Each agent runs in its own context with specialized instructions and skill configurations.
 
 ### Document Creation Agents
 
@@ -248,6 +258,7 @@ Codex spawns these as needed during recipe execution. Each agent runs in its own
 | `technical-designer-frontend` | Frontend ADR and Design Doc creation (React) |
 | `ui-spec-designer` | UI Specification from PRD and optional prototype code |
 | `codebase-analyzer` | Existing codebase analysis before Design Doc creation |
+| `ui-analyzer` | UI facts from external resources (design tools, design-system docs, deployed UI) and frontend code |
 | `work-planner` | Work plan creation from Design Docs |
 | `document-reviewer` | Document consistency and approval |
 | `design-sync` | Cross-document consistency verification |
@@ -286,18 +297,18 @@ Codex spawns these as needed during recipe execution. Each agent runs in its own
 
 ## How It Works
 
-### Autonomous Execution Mode
+### Guided Autonomous Execution Mode
 
-After work plan approval, the framework enters guided autonomous execution with escalation points:
+After work plan approval, the framework executes task files with explicit validation points:
 
 1. **task-executor** implements each task with TDD
 2. **quality-fixer** first rejects incomplete task-scoped implementations, then runs lint, tests, and build before every commit
 3. Escalation pauses execution when design deviation or ambiguity is detected
-4. Each task produces one commit — rollback-friendly granularity
+4. Each task produces one commit for rollback-friendly granularity
 
 ### Context Separation
 
-Each subagent runs in a fresh context. This context-engineering pattern keeps long-running agentic coding tasks legible and reviewable:
+Each subagent runs in a fresh context. This pattern keeps multi-step coding tasks legible and reviewable:
 - generation and verification happen in separate contexts, reducing author bias and carry-over assumptions
 - **document-reviewer** reviews without the author's bias
 - **investigator** collects evidence without confirmation bias
@@ -318,11 +329,13 @@ your-project/
 │   ├── documentation-criteria/
 │   ├── implementation-approach/
 │   ├── integration-e2e-testing/
+│   ├── external-resource-context/
 │   ├── task-analyzer/
 │   ├── subagents-orchestration-guide/
 │   ├── recipe-implement/     # Recipes ($recipe-*)
 │   ├── recipe-design/
 │   ├── recipe-build/
+│   ├── recipe-front-adjust/
 │   ├── recipe-plan/
 │   ├── recipe-prepare-implementation/
 │   ├── recipe-review/
@@ -334,8 +347,9 @@ your-project/
 ├── .codex/agents/            # Subagent TOML definitions
 │   ├── requirement-analyzer.toml
 │   ├── technical-designer.toml
+│   ├── ui-analyzer.toml
 │   ├── task-executor.toml
-│   └── ... (23 agents total)
+│   └── ... (25 agents total)
 └── docs/                     # Created as you use the recipes
     ├── prd/
     ├── design/
@@ -371,7 +385,11 @@ A: `$recipe-implement` is the universal entry point. It runs requirement-analyze
 
 **Q: Does this work with MCP servers?**
 
-A: Yes. Codex skills and subagents work alongside [MCP](https://developers.openai.com/codex/mcp) — skills operate at the instruction layer while MCP operates at the tool transport layer. You can add MCP servers to any agent's TOML configuration.
+A: Yes. Codex skills and subagents work alongside [MCP](https://developers.openai.com/codex/mcp) — skills operate at the instruction layer while MCP operates at the tool transport layer. Custom agents inherit parent `mcp_servers` when the agent TOML omits `mcp_servers`; add agent-local MCP config only for agent-specific servers or tool filtering.
+
+**Q: How is this related to claude-code-workflows?**
+
+A: [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) is the Claude Code counterpart. The repositories share the same workflow philosophy, adapted to each tool's native extension points. They can coexist in the same project because Codex uses `.agents/skills/`, `.codex/agents/`, and `AGENTS.md`, while Claude Code uses its own `.claude/` files and `CLAUDE.md`.
 
 **Q: What if a subagent seems stuck?**
 

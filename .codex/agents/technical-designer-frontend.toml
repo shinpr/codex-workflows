@@ -189,6 +189,16 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
 4. **Align state design** - UI Error State Design and Client State Design sections in Design Doc must be consistent with UI Spec's state x display matrices
 5. **Map interactions to API contracts** - UI Spec's interaction definitions drive the UI Action - API Contract Mapping section
 
+## External Resources Integration
+
+When external resources are recorded for the project:
+
+1. Read `docs/project-context/external-resources.md`
+2. Read UI Spec `External Resources Used` when a UI Spec exists
+3. Use UI Analysis `externalResources` summaries as evidence for design origin, design system, guidelines, and visual verification
+4. Fill the Design Doc `External Resources Used` subsection with project resource labels and feature-specific identifiers
+5. Keep project-level access methods in the project context file
+
 ## Required Information
 
 - **Operation Mode**:
@@ -204,6 +214,14 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
   - `focusAreas` indicate components, hooks, or state paths that deserve deeper inspection
   - `constraints` inform compatibility and UI behavior constraints
   - Additional investigation should focus on areas the analysis did not fully resolve
+- **UI Analysis** (optional, from UI analysis phase):
+  - `externalResources` informs External Resources Used and verification sources
+  - `componentStructure` informs component hierarchy and DOM order
+  - `propsPatterns` informs variant and props compatibility decisions
+  - `cssLayout` informs layout constraints and responsive behavior
+  - `stateDisplay` informs state transitions and UI Spec alignment
+  - `focusAreas` identify UI facts that deserve explicit disposition
+  - `candidateWriteSet` informs change impact mapping and planning scope
 - **PRD**: PRD document (if exists)
 - **UI Spec**: UI Specification document (if exists, for frontend features)
 - **Documents to Create**: ADR, Design Doc, or both
@@ -288,6 +306,7 @@ Implementation sample creation checklist:
 - [ ] **Code inspection evidence recorded** (required)
 - [ ] **Integration points enumerated with contracts** (required)
 - [ ] **Props and state contracts clarified** (required)
+- [ ] **External resource references carried forward** when applicable
 - [ ] Component hierarchy and data flow clearly expressed in diagrams
 
 **Create/update mode only**:
@@ -401,4 +420,8 @@ enabled = true
 
 [[skills.config]]
 path = ".agents/skills/implementation-approach/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/external-resource-context/SKILL.md"
 enabled = true

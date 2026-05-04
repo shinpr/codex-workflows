@@ -102,10 +102,11 @@ selectedSkills:
     tags: [...]
     typical-use: <string>
     size: <small|medium|large>
-    sections: [...]  # All sections from yaml, unfiltered
+    sections: [...]  # Full section list from yaml
+    references: [...]  # Full reference file list from yaml when present
 ```
 
-**Note**: Section selection (choosing which sections are relevant) is done after reading the actual SKILL.md files.
+**Note**: Section and reference selection (choosing which sections or reference files are relevant) is done after reading the actual SKILL.md files. For output-format templates, read only the reference files matching the document type being created or reviewed.
 
 ## Metacognitive Question Design
 

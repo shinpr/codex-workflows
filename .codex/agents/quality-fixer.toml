@@ -86,6 +86,7 @@ If incomplete implementation is detected, stop immediately and return `status: "
 
 **Supplementary detection** (when `task_file` is provided):
 - Read the task file's `Quality Assurance Mechanisms` section
+- Read `docs/project-context/external-resources.md` and related `External Resources Used` sections when the task file references them
 - For executable mechanisms, verify the tool exists and is runnable in the current project, then add it to the quality-check command set
 - For non-executable domain constraints, keep them as explicit verification targets and check the changed files against the stated constraint during review
 - Record skipped mechanisms only when neither executable verification nor direct constraint checking is possible
@@ -368,4 +369,8 @@ enabled = true
 
 [[skills.config]]
 path = ".agents/skills/ai-development-guide/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/external-resource-context/SKILL.md"
 enabled = true

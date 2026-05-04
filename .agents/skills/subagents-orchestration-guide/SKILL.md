@@ -74,6 +74,7 @@ The following subagents are available:
 13. **code-verifier**: Document-code consistency verification for review inputs and post-implementation verification
 14. **design-sync**: Design Doc consistency verification across multiple documents
 15. **acceptance-test-generator**: Generate integration and E2E test skeletons from Design Doc ACs
+16. **ui-analyzer**: UI fact gathering from external resources and existing frontend code before UI Spec, Design Doc, or adjustment work
 
 ## Orchestration Principles
 
@@ -183,6 +184,7 @@ Subagents respond in JSON format. The final response from each JSON-returning su
 |-------|--------------------------------------|
 | `requirement-analyzer` | `scale`, `confidence`, `affectedLayers`, `adrRequired`, `scopeDependencies`, `questions` |
 | `codebase-analyzer` | `focusAreas`, `dataModel`, `qualityAssurance`, `dataTransformationPipelines`, `limitations` |
+| `ui-analyzer` | `externalResources`, `componentStructure`, `propsPatterns`, `cssLayout`, `stateDisplay`, `focusAreas`, `candidateWriteSet`, `limitations` |
 | `task-executor*` | `status`, `escalation_type`, `filesModified`, `requiresTestReview` |
 | `quality-fixer*` | `status`, `reason`, `stubFindings`, `blockingIssues`, `missingPrerequisites` |
 | `document-reviewer` | `verdict.decision`, `verdict.conditions` |
