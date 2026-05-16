@@ -250,7 +250,13 @@ Lower the verdict by one level only when at least one identifier mismatch has co
 - [ ] identifierVerification contains mismatches only, and each mismatch includes confidence and evidence
 
 ### Escalation Criteria
-Recommend higher-level review when: Design Doc itself has deficiencies, security concerns discovered, critical performance issues found, or implementation introduces in-scope elements (persistent state; public-contract or cross-boundary fields/props; behavioral modes/flags/variants; reusable abstractions or component splits) that are absent from the Design Doc's Minimal Surface Alternatives section.
+Recommend higher-level review when any condition below is true:
+- Design Doc itself has deficiencies
+- Security concerns discovered
+- Critical performance issues found
+- Implementation introduces Design Doc-scope elements that match coding-rules "Minimum Surface Terms" in-scope definitions but are absent from the Design Doc's Minimal Surface Alternatives section
+
+Private single-file refactors, local helper extraction, test fixtures/mocks, and temporary migration scaffolding do not trigger escalation unless they create public, cross-boundary, persistent, or reusable surface.
 
 ### Context-Specific Guidance
 - **Prototypes/MVPs**: Prioritize functionality over completeness

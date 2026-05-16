@@ -200,7 +200,7 @@ Repeat the block below for each component.
 
 ### Minimal Surface Alternatives (When Introducing Maintenance-Surface Elements)
 
-One entry per new in-scope element. In-scope elements include persistent state, public-contract or cross-boundary fields/props, behavioral modes/flags/variants, reusable abstractions, and component splits. Mark this section as N/A with brief rationale when the design introduces no in-scope elements.
+One entry per new in-scope element as defined by coding-rules "Minimum Surface Terms". Mark this section as N/A with brief rationale when the design introduces no in-scope elements.
 
 #### Element 1: [name of the new element]
 
@@ -210,7 +210,7 @@ One entry per new in-scope element. In-scope elements include persistent state, 
 
 **Steps 2-3 - Alternatives Compared**
 
-| Alternative | Current requirements covered (AC or constraint IDs) | New state introduced (count) | New concept / mode / flag (count) | Crosses component boundary (yes/no) | Breaking change or migration required (yes/no) | Subjective cost notes |
+| Alternative | Current requirements covered (AC or constraint IDs) | New state introduced (count) | New concept / mode / flag / prop / variant (count) | Crosses component boundary (yes/no) | Breaking change or migration required (yes/no) | Subjective cost notes |
 |-------------|------------------------------------------------------|------------------------------|------------------------------------|--------------------------------------|-------------------------------------------------|-----------------------|
 | [The added element as proposed] | | | | | | |
 | [Subtractive alternative: derive / compute on demand / keep at caller / reuse existing / do not introduce new state] | | | | | | |
@@ -227,6 +227,8 @@ One entry per new in-scope element. In-scope elements include persistent state, 
 - [Alternative name]: [1-2 lines on what it was and why rejected]
 
 (Repeat the Element block above for each additional in-scope element.)
+
+Rejected Alternatives Log is element-level. Future Extensibility below is design-level.
 
 ### Contract Definitions
 
