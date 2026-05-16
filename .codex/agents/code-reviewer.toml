@@ -250,7 +250,7 @@ Lower the verdict by one level only when at least one identifier mismatch has co
 - [ ] identifierVerification contains mismatches only, and each mismatch includes confidence and evidence
 
 ### Escalation Criteria
-Recommend higher-level review when: Design Doc itself has deficiencies, security concerns discovered, or critical performance issues found.
+Recommend higher-level review when: Design Doc itself has deficiencies, security concerns discovered, critical performance issues found, or implementation introduces in-scope elements (persistent state; public-contract or cross-boundary fields/props; behavioral modes/flags/variants; reusable abstractions or component splits) that are absent from the Design Doc's Minimal Surface Alternatives section.
 
 ### Context-Specific Guidance
 - **Prototypes/MVPs**: Prioritize functionality over completeness

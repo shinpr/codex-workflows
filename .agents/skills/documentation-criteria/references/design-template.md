@@ -179,6 +179,8 @@ Use this table for runtime wiring, switching, or registration points. Record how
 
 ### Main Components
 
+Repeat the block below for each component.
+
 #### Component 1
 
 - **Responsibility**: [Scope of responsibility for this component]
@@ -195,6 +197,36 @@ Use this table for runtime wiring, switching, or registration points. Record how
 | Boundary/Interop Cost | [Low/Medium/High] | [Cost of sharing across boundaries?] |
 
 **Decision**: [reuse / extend / new] -- [rationale in 1-2 sentences]
+
+### Minimal Surface Alternatives (When Introducing Maintenance-Surface Elements)
+
+One entry per new in-scope element. In-scope elements include persistent state, public-contract or cross-boundary fields/props, behavioral modes/flags/variants, reusable abstractions, and component splits. Mark this section as N/A with brief rationale when the design introduces no in-scope elements.
+
+#### Element 1: [name of the new element]
+
+**Step 1 - Fixed Requirements**
+- [AC ID or constraint ID]: [requirement / constraint text]
+- [AC ID or constraint ID]: [requirement / constraint text]
+
+**Steps 2-3 - Alternatives Compared**
+
+| Alternative | Current requirements covered (AC or constraint IDs) | New state introduced (count) | New concept / mode / flag (count) | Crosses component boundary (yes/no) | Breaking change or migration required (yes/no) | Subjective cost notes |
+|-------------|------------------------------------------------------|------------------------------|------------------------------------|--------------------------------------|-------------------------------------------------|-----------------------|
+| [The added element as proposed] | | | | | | |
+| [Subtractive alternative: derive / compute on demand / keep at caller / reuse existing / do not introduce new state] | | | | | | |
+| [Optional third alternative] | | | | | | |
+
+**Step 4 - Selected Alternative and Rationale**
+- **Selected**: [alternative name]
+- **Rationale**:
+  - If selected = smallest alternative considered: state "smallest alternative considered; no further reduction available"
+  - If selected > smallest: name the current requirement(s) from step 1 that smaller alternatives fail to satisfy
+
+**Step 5 - Rejected Alternatives Log**
+- [Alternative name]: [1-2 lines on what it was and why rejected]
+- [Alternative name]: [1-2 lines on what it was and why rejected]
+
+(Repeat the Element block above for each additional in-scope element.)
 
 ### Contract Definitions
 
@@ -355,9 +387,11 @@ Mark items as N/A with brief rationale when the feature has no relevant trust bo
 
 ## Future Extensibility
 
-- **Extension points**: [Interfaces, hooks, or plugin mechanisms designed for future use]
-- **Known future requirements**: [Planned features that influenced current design decisions]
-- **Intentional limitations**: [What was deliberately kept simple and why]
+This section records what was excluded from the current design surface. Speculative inclusions belong in a separate proposal.
+
+- **Deferred possibilities**: [Capabilities considered during design and explicitly excluded from the current design surface. Each entry names either the current requirement it would have served, or marks itself as speculative]
+- **Intentional limitations**: [What was deliberately kept small and why]
+- **Extension points (existing, with current consumers)**: [Interfaces or hooks already in use by named current consumers. Each entry names a current consumer]
 
 ## Alternative Solutions
 

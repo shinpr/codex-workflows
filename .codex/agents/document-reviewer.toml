@@ -99,6 +99,7 @@ For DesignDoc, additionally verify:
 - [ ] Data-oriented designs contain concrete data design or Test Boundaries content, or an explicit N/A rationale
 - [ ] Verification Strategy section present with correctness definition, target comparison, verification method, observable success indicator, normalized verification timing, and early verification point
 - [ ] Output Comparison section present when the design changes existing observable behavior, an external contract, or a persisted data shape
+- [ ] Minimal Surface Alternatives section present with one entry per new in-scope element (persistent state / public-contract or cross-boundary field or prop / behavioral mode, flag, or variant / reusable abstraction or component split) when the design introduces any. If none are introduced, the section is marked N/A with rationale
 
 #### Gate 1: Quality Assessment (only after Gate 0 passes)
 
@@ -118,6 +119,7 @@ For DesignDoc, additionally verify:
 - **Code-verifier evidence integration**: When `code_verification` is provided, reconcile major or critical discrepancies and undocumented data operations as part of Gate 1 completeness and consistency review
 - **Verification Strategy quality check**: When the Verification Strategy section exists, verify that: (1) correctness definition is specific and measurable, (2) target comparison and observable success indicator are concrete when the change modifies observable behavior, external contracts, integrations, or data flow, (3) internal-only refactoring with identical observable inputs and outputs may use the minimal form, (4) verification method can detect the change's primary risk, (5) verification timing uses the normalized vocabulary or an explicit `N/A` rationale for minimal form, and (6) vertical-slice designs do not defer all verification to the final phase
 - **Output comparison check**: When the Design Doc changes existing observable behavior, an external contract, or a persisted data shape, verify that a concrete output comparison method is defined with identical input, expected output fields or format, and diff method. When upstream analysis includes `dataTransformationPipelines`, each listed step must be mapped to the comparison that verifies it; steps excluded because data passes through unchanged must include rationale. Missing mappings or rationale → `important` issue (category: `completeness`)
+- **Minimal Surface Alternatives check**: Applies when the Design Doc introduces in-scope elements (persistent state; public-contract or cross-boundary fields or props; behavioral modes, flags, or variants; reusable abstractions or component splits). Missing or empty section when the trigger fires → `critical` issue (category: `completeness`). For each entry verify: (1) Step 1 lists at least one AC ID or accepted technical constraint from the Design Doc or referenced UI Spec; speculative-only linkage → `critical` issue (category: `compliance`). (2) Steps 2-3 include at least one subtractive alternative such as derive, compute on demand, keep at caller, reuse existing, or do not introduce new state/mode/abstraction; missing subtractive alternative → `critical` issue (category: `compliance`). (3) Step 4 selects the smallest alternative or names a current requirement smaller alternatives fail to satisfy; primary rationale based on "useful", "future-ready", "convenient", or "users might want" → `critical` issue (category: `compliance`). (4) Step 5 records rejected alternatives with brief rationale; missing rejected alternatives log → `important` issue (category: `completeness`)
 - **Undetermined items review** [MANDATORY]: Every TBD, unknown, or open item MUST include: (1) **owner** — who resolves it, (2) **due** — when it gets resolved (which phase or milestone), (3) **next-phase handling** — how the next phase treats this gap. Missing any of these three → `important` issue
 
 **Perspective-specific Mode**:
@@ -275,6 +277,7 @@ Include in output when `prior_context_count > 0`:
 - [ ] Code inspection evidence covers files relevant to design scope
 - [ ] Dependencies described as existing verified against codebase or authoritative external source
 - [ ] Field propagation map present when fields cross component boundaries
+- [ ] Minimal Surface Alternatives covers every new in-scope element when applicable
 
 ## Review Criteria (for Comprehensive Mode)
 
