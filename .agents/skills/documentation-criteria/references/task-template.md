@@ -24,7 +24,7 @@ Each row is an ADR decision the implementation in this task must comply with.
 
 | Source | Axis | Decision | Compliance Check |
 |--------|------|----------|------------------|
-| [docs/adr/ADR-XXXX.md (§ <Source Section>)] | [Axis value copied verbatim from the work plan's ADR Bindings row] | [Binding decision copied from the work plan's ADR Bindings row] | [Y/N-answerable positive predicate that evaluates whether the planned and final implementation satisfy the decision] |
+| docs/adr/ADR-XXXX-title.md (§ <Source Section>) | [Axis value copied verbatim from the work plan's ADR Bindings row] | [Binding decision copied from the work plan's ADR Bindings row] | [Y/N-answerable positive predicate that evaluates whether the planned and final implementation satisfy the decision] |
 
 ## Investigation Notes
 Brief observations recorded after reading Investigation Targets:

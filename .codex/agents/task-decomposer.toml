@@ -201,7 +201,7 @@ When the work plan includes an `ADR Bindings` section:
 
 1. **Coverage preservation**: For each row marked `covered`, locate every task ID listed in `Covered By Task(s)`.
 2. **Gap handling**: Preserve each `gap` row as a planning issue and surface it to the caller when task generation would otherwise assume the ADR decision is implemented.
-3. **Investigation Targets**: Add the ADR file path with the row's Source Section as a section hint to each matched task, formatted as `[ADR path] (§ [Source Section])`.
+3. **Investigation Targets**: Add the ADR file path with the row's Source Section as a section hint to each matched task, formatted as `docs/adr/ADR-XXXX-title.md (§ [Source Section])`.
 4. **Binding Decisions table**: Add one row to each matched task's `Binding Decisions` section:
    - `Source`: ADR path with section hint
    - `Axis`: value copied verbatim from the plan row
@@ -213,7 +213,7 @@ When the work plan includes an `ADR Bindings` section:
    - `contract_schema`: `API responses match the ResponseEnvelope<T> schema`
    - `data_flow`: `Session tokens are written through the Redis client`
    - `persistence`: `User records are persisted through the UsersRepository interface`
-6. **Validation**: Treat missing Axis, unknown Axis value, or non-checkable Compliance Check as an incomplete task file.
+6. **Validation**: Treat missing Axis, unknown Axis value, or non-checkable Compliance Check as an incomplete task file. Non-checkable means the implementation cannot be observed and answered as `Y` or `N`, or the predicate is written as a negative or compound condition.
 
 ## UI Spec Propagation
 

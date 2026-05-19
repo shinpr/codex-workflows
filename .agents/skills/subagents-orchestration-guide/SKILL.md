@@ -211,7 +211,7 @@ Use this procedure after work-plan approval and before autonomous task execution
 
 1. Load the approved work plan exact path and extract Verification Strategies, Quality Assurance Mechanisms, Design-to-Plan Traceability, ADR Bindings, UI Spec Component -> Task Mapping, Connection Map, test skeleton references, E2E absence reasons, phase structure, referenced Design Docs, ADRs, and UI Specs.
 2. Evaluate these criteria with evidence:
-   - R1 Verification Strategy references resolve
+   - R1 Verification Strategy and ADR Binding references resolve
    - R2 E2E prerequisites are addressed
    - R3 Phase 1 observability exists
    - R4 UI rendering surface exists when UI work is present

@@ -161,6 +161,7 @@ For each resolved ADR:
    - `contract_schema`: constrains interface, payload, schema, props, DTO, event, or persisted record shape
    - `data_flow`: constrains how data moves, transforms, is passed, emitted, or observed
    - `persistence`: constrains storage location, repository boundary, migration, cache, or durable state behavior
+   - When multiple Axis values apply, prefer the ADR's explicit subject. If the subject remains ambiguous, use this priority order: `persistence` > `contract_schema` > `dependency_direction` > `data_flow` > `placement`.
 4. Map each binding decision to the task IDs that implement or verify the constrained area.
 5. Record one row per binding decision in the plan template's `ADR Bindings` table.
 

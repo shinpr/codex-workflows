@@ -181,9 +181,13 @@ When the task file, Dependencies, or Investigation Targets reference `docs/proje
 Run this check after Pre-implementation Verification and before the TDD cycle when the task file contains a Binding Decisions section with one or more rows.
 
 1. Confirm each Source in the Binding Decisions table has been read. Sources should also appear in Investigation Targets.
-2. Record the planned implementation approach in Investigation Notes, one sentence per distinct `Axis` value present in the Binding Decisions table. Group rows that share an Axis value when one sentence covers the group.
-3. Evaluate each row's Compliance Check against the planned approach. Record the result as `Y`, `N`, or `Unknown` with a one-line rationale.
-4. Branch per row:
+2. Use the Investigation Notes format below while recording the planned approach and evaluation results.
+   - `### Binding Decisions Evaluation`
+   - `[axis] planned: [one sentence planned approach]`
+   - `[source] [Compliance Check] -> Y|N|Unknown — [one-line rationale]`
+3. Record the planned implementation approach in Investigation Notes, one sentence per distinct `Axis` value present in the Binding Decisions table. Group rows that share an Axis value when one sentence covers the group.
+4. Evaluate each row's Compliance Check against the planned approach. Record the result as `Y`, `N`, or `Unknown` with a one-line rationale.
+5. Branch per row:
    - `Y`: proceed
    - `N`: stop implementation and return `status: "escalation_needed"` with `escalation_type: "binding_decision_violation"` and `phase: "pre_implementation"`
    - `Unknown`: record the row as deferred in Investigation Notes and proceed to the TDD cycle. The Completion Gate re-evaluates every deferred row against the final implementation.
@@ -271,6 +275,8 @@ Report in the following JSON format upon task completion (**without executing qu
 
 #### 2-1. Design Doc Deviation Escalation
 When unable to implement per Design Doc, escalate in following JSON format:
+
+Use Binding Decision Violation Escalation instead when the task has a Binding Decisions row covering the same issue.
 
 ```json
 {
