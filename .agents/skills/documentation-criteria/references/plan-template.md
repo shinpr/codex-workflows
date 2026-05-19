@@ -77,6 +77,22 @@ Include this section when a UI Spec is among the inputs. Map each UI component s
 
 **Reference key rule**: The component identifier is the UI Spec section heading verbatim. Component headings must be unique within a UI Spec.
 
+## ADR Bindings
+
+Include this section when ADRs are provided as input or listed in the Design Doc's "Prerequisite ADRs" section. Map each implementation-binding ADR decision to the task(s) it constrains. Omit this section when no ADR applies.
+
+A decision is **implementation-binding** when it constrains code placement, dependency direction, contract/schema shape, data flow, or persistence. Acceptance criteria and required behavior remain in the Design Doc; this table covers structural implementation constraints from ADRs.
+
+| ADR | Source Section | Axis | Binding Decision | Covered By Task(s) | Gap Status | Notes |
+|-----|----------------|------|------------------|--------------------|------------|-------|
+| [docs/adr/ADR-XXXX.md] | Decision / Implementation Guidance | placement / dependency_direction / contract_schema / data_flow / persistence | [One implementation-binding decision sentence, copied or condensed from the named section] | [P1-T1, P2-T1] | covered | |
+
+**Axis values**: `placement` (where code belongs), `dependency_direction` (allowed import or call direction), `contract_schema` (interface, payload, or schema shape), `data_flow` (how data moves across components), `persistence` (where and how state is stored)
+
+One row represents one independently checkable binding decision. A single ADR can contribute multiple rows. A single task can appear in multiple rows.
+
+**Gap Status values**: `covered` (mapped to one or more tasks), `gap` (no task exists yet; include justification in Notes and require user confirmation before plan approval)
+
 ## Connection Map
 
 Include this section when implementation crosses runtime, process, deployment, or service boundaries. Omit it when the change stays inside one runtime or only uses in-process package imports.

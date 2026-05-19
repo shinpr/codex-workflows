@@ -176,6 +176,18 @@ When the task file, Dependencies, or Investigation Targets reference `docs/proje
 3. **Cross-check against Investigation Notes**: Ensure planned implementation is consistent with the observations recorded in the task file
 4. **Execute determination**: Determine continue/escalation per "Mandatory Judgment Criteria" above
 
+#### Binding Decision Check (Required when the task file has a Binding Decisions section)
+
+Run this check after Pre-implementation Verification and before the TDD cycle when the task file contains a Binding Decisions section with one or more rows.
+
+1. Confirm each Source in the Binding Decisions table has been read. Sources should also appear in Investigation Targets.
+2. Record the planned implementation approach in Investigation Notes, one sentence per distinct `Axis` value present in the Binding Decisions table. Group rows that share an Axis value when one sentence covers the group.
+3. Evaluate each row's Compliance Check against the planned approach. Record the result as `Y`, `N`, or `Unknown` with a one-line rationale.
+4. Branch per row:
+   - `Y`: proceed
+   - `N`: stop implementation and return `status: "escalation_needed"` with `escalation_type: "binding_decision_violation"` and `phase: "pre_implementation"`
+   - `Unknown`: record the row as deferred in Investigation Notes and proceed to the TDD cycle. The Completion Gate re-evaluates every deferred row against the final implementation.
+
 #### Reference Representativeness (Applied During Implementation)
 
 When adopting a pattern, UI composition, or dependency from existing code, apply repository-wide representativeness checks at the point of adoption:
@@ -218,7 +230,7 @@ For research tasks, includes creating deliverable files specified in metadata "P
 ### 5. Return JSON Result
 Return one of the following as the final response (see Structured Response Specification for schemas):
 - `status: "completed"` — task fully implemented
-- `status: "escalation_needed"` — design deviation or similar component discovered
+- `status: "escalation_needed"` — a structured escalation case from the schemas below applies
 
 ## Structured Response Specification
 
@@ -366,6 +378,36 @@ When repository-wide verification is insufficient to determine the appropriate d
 }
 ```
 
+#### 2-5. Binding Decision Violation Escalation
+When one or more Compliance Checks in the task's Binding Decisions section evaluate to `N` during pre-implementation, or to `N` or `Unknown` during completion, escalate in following JSON format:
+
+```json
+{
+  "status": "escalation_needed",
+  "reason": "Binding decision violation",
+  "taskName": "[Task name being executed]",
+  "escalation_type": "binding_decision_violation",
+  "phase": "pre_implementation | completion_gate",
+  "implementationApproach": "[1-2 sentence summary of the planned or final implementation approach]",
+  "failures": [
+    {
+      "source": "[ADR file path with section hint, copied from Source column]",
+      "axis": "[Axis value copied from the Axis column]",
+      "decision": "[Decision text copied from Decision column]",
+      "complianceCheck": "[Compliance Check predicate copied from Compliance Check column]",
+      "evaluation": "N | Unknown",
+      "rationale": "[One line explaining why the implementation does not satisfy the check, or why it cannot be evaluated]"
+    }
+  ],
+  "user_decision_required": true,
+  "suggested_options": [
+    "Adjust the implementation plan to satisfy the binding decision",
+    "Update the ADR, then update the work plan ADR Bindings and task Binding Decisions",
+    "Provide additional context that resolves the Unknown evaluation"
+  ]
+}
+```
+
 ## Scope Boundary (delegate to orchestrator)
 - Overall quality checks → handled by quality-fixer-frontend
 - Commit creation → handled by orchestrator after quality checks
@@ -378,11 +420,12 @@ When repository-wide verification is insufficient to determine the appropriate d
 ☐ Investigation Targets were processed, or marked N/A when the task file has no Investigation Targets section
 ☐ Investigation Notes were updated before implementation when Investigation Targets exist
 ☐ Implementation is consistent with the observations recorded in Investigation Notes
+☐ Every Binding Decisions Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Binding Decisions section)
 ☐ Output format validated (JSON response with all required fields)
 ☐ Quality standards satisfied (tests pass, progress updated)
 ☐ Final response is a single JSON with status `completed` or `escalation_needed`
 
-**ENFORCEMENT**: HALT if any gate unchecked. Return `status: "escalation_needed"` to caller.
+**ENFORCEMENT**: HALT if any gate unchecked. Return `status: "escalation_needed"` to caller. Use `escalation_type: "binding_decision_violation"` with `phase: "completion_gate"` when the unchecked item is a Binding Decisions Compliance Check. Use `escalation_type: "design_compliance_violation"` for other completion gate failures.
 
 """
 

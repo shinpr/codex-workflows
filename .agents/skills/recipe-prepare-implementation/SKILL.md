@@ -47,11 +47,12 @@ Read the work plan passed in `$ARGUMENTS`; if absent, select the most recent non
 - Verification Strategies
 - Quality Assurance Mechanisms
 - Design-to-Plan Traceability
+- ADR Bindings
 - UI Spec Component -> Task Mapping
 - Connection Map
 - test skeleton references and E2E absence reasons
 - phase structure and task IDs
-- referenced Design Docs and UI Specs
+- referenced Design Docs, ADRs, and UI Specs
 
 If no work plan exists, stop and report the missing prerequisite.
 

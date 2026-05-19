@@ -17,9 +17,19 @@ Metadata:
 Files to read before starting implementation. Use concrete file paths, optionally with a section/function hint:
 - [e.g., src/orders/checkout.ts (processOrder function)]
 
+## Binding Decisions
+(Include this section when the work plan's ADR Bindings table covers this task. Omit otherwise.)
+
+Each row is an ADR decision the implementation in this task must comply with.
+
+| Source | Axis | Decision | Compliance Check |
+|--------|------|----------|------------------|
+| [docs/adr/ADR-XXXX.md (§ <Source Section>)] | [Axis value copied verbatim from the work plan's ADR Bindings row] | [Binding decision copied from the work plan's ADR Bindings row] | [Y/N-answerable positive predicate that evaluates whether the planned and final implementation satisfy the decision] |
+
 ## Investigation Notes
 Brief observations recorded after reading Investigation Targets:
 - [path] - [interfaces, control/data flow, state transitions, side effects relevant to this task]
+- When Binding Decisions exist, record the planned implementation approach and each Compliance Check result here.
 
 ## Implementation Steps (TDD: Red-Green-Refactor)
 ### 1. Red Phase
@@ -52,6 +62,7 @@ Brief observations recorded after reading Investigation Targets:
 - [ ] All added tests pass
 - [ ] Operation verified per Operation Verification Methods above
 - [ ] Deliverables created (for research/design tasks)
+- [ ] When Binding Decisions exist, every Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes
 
 ## Notes
 - Impact scope: [Areas where changes may propagate]
