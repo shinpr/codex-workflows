@@ -30,8 +30,9 @@ unknowns:
 
 ### Prerequisite ADRs
 
-- [ADR File Name]: [Related decision items]
+- docs/adr/ADR-XXXX-title.md: [Related decision items]
 - Reference common technical ADRs when applicable
+- ADR placeholders use the repository ADR filename convention: replace `XXXX` with the four-digit ADR number and `title` with the file slug.
 
 ### External Resources Used
 

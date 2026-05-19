@@ -31,7 +31,7 @@ Each criterion produces `pass`, `fail`, or `not_applicable`, with file:line evid
 
 | ID | Criterion | Pass Evidence |
 |----|-----------|---------------|
-| R1 | Verification Strategy references resolve | Every command, file path, function, endpoint, fixture, seed, and test reference in the work plan's Verification Strategies either exists now or is the deliverable of a task in the plan |
+| R1 | Verification Strategy and ADR Binding references resolve | Every command, file path, function, endpoint, fixture, seed, and test reference in the work plan's Verification Strategies either exists now or is the deliverable of a task in the plan; every ADR Bindings source path resolves; every ADR Bindings `covered` row references existing task IDs |
 | R2 | E2E prerequisites are addressed | For each fixture-e2e or service-integration-e2e skeleton, every noted precondition is present in the codebase or covered by a Phase 0 task |
 | R3 | Phase 1 observability exists | The first implementation phase includes at least one operation verification method executable at task completion using existing files, prior Phase 0 deliverables, or the task's own output |
 | R4 | UI rendering surface exists | When the plan implements UI components, a fixture entry, dev route, Storybook story, preview harness, or equivalent render surface exists or is covered by a Phase 0 task |
@@ -47,11 +47,12 @@ Read the work plan passed in `$ARGUMENTS`; if absent, select the most recent non
 - Verification Strategies
 - Quality Assurance Mechanisms
 - Design-to-Plan Traceability
+- ADR Bindings
 - UI Spec Component -> Task Mapping
 - Connection Map
 - test skeleton references and E2E absence reasons
 - phase structure and task IDs
-- referenced Design Docs and UI Specs
+- referenced Design Docs, ADRs, and UI Specs
 
 If no work plan exists, stop and report the missing prerequisite.
 

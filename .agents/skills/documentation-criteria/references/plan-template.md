@@ -11,8 +11,10 @@ Implementation Readiness: pending
 - Design Doc(s):
   - [docs/design/XXX.md]
   - [docs/design/YYY.md] (if multiple, e.g. backend + frontend)
-- ADR: [docs/adr/ADR-XXXX.md] (if any)
+- ADR: docs/adr/ADR-XXXX-title.md (if any)
 - PRD: [docs/prd/XXX.md] (if any)
+
+ADR placeholders use the repository ADR filename convention: replace `XXXX` with the four-digit ADR number and `title` with the file slug.
 
 ## Verification Strategies (from Design Docs)
 
@@ -76,6 +78,23 @@ Include this section when a UI Spec is among the inputs. Map each UI component s
 | [Use the UI Spec heading exactly as written, e.g. "Component: AlertCard"] | [default / loading / empty / error / partial] | [P1-T1, P2-T1] | covered | |
 
 **Reference key rule**: The component identifier is the UI Spec section heading verbatim. Component headings must be unique within a UI Spec.
+
+## ADR Bindings
+
+Include this section when ADRs are provided as input or listed in the Design Doc's "Prerequisite ADRs" section. Map each implementation-binding ADR decision to the task(s) it constrains. Omit this section when no ADR applies.
+
+A decision is **implementation-binding** when it constrains code placement, dependency direction, contract/schema shape, data flow, or persistence. Acceptance criteria and required behavior remain in the Design Doc; this table covers structural implementation constraints from ADRs.
+
+| ADR | Source Section | Axis (exactly one value) | Binding Decision | Covered By Task(s) | Gap Status | Notes |
+|-----|----------------|--------------------------|------------------|--------------------|------------|-------|
+| docs/adr/ADR-XXXX-title.md | Decision | dependency_direction | [One implementation-binding decision sentence, copied or condensed from the named section] | P1-T1, P2-T1 | covered | |
+| docs/adr/ADR-YYYY-title.md | Implementation Guidance | persistence | [Binding decision with no covering task yet] | - | gap | [Justification and user-confirmation note] |
+
+**Axis values**: `placement` (where code belongs), `dependency_direction` (allowed import or call direction), `contract_schema` (interface, payload, or schema shape), `data_flow` (how data moves across components), `persistence` (where and how state is stored)
+
+One row represents one independently checkable binding decision. A single ADR can contribute multiple rows. A single task can appear in multiple rows.
+
+**Gap Status values**: `covered` (mapped to one or more tasks), `gap` (no task exists yet; set Covered By Task(s) to `-`, include justification in Notes, and require user confirmation before plan approval)
 
 ## Connection Map
 

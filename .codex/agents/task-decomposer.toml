@@ -66,6 +66,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Create individual task files in `docs/plans/tasks/`
    - Document concrete executable procedures
    - Include task-level Quality Assurance Mechanisms when the work plan defines them
+   - Include task-level Binding Decisions when ADR Bindings cover the task
    - **Always include operation verification methods**
    - Define clear completion criteria (within executor's scope of responsibility)
 
@@ -92,6 +93,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Extract task list
    - Identify dependencies
    - Read Design-to-Plan Traceability rows and verify every `covered` item has a corresponding generated task or phase completion task
+   - Read ADR Bindings rows and verify every `covered` item has a corresponding generated task
    - **Overall Optimization Considerations**
      - Identify common processing (prevent redundant implementation)
      - Pre-map impact scope
@@ -136,6 +138,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    | fixture-e2e environment/setup work | Existing fixture data, API mock layer, browser harness configuration |
    | service-integration-e2e environment/setup work | Current environment config, startup scripts, seed scripts, auth flow references, external service stubs |
    | Cross-boundary implementation | Connection Map rows touching the task target files, caller/producer module, callee/consumer module, expected signal, contract definition |
+   | Task constrained by an ADR | ADR file with section hint matching the ADR Bindings row's Source Section value |
    | Bug fix/refactor | Affected code paths, failing tests, reproduction-related files |
    | Behavior replacement/rewrite | Existing implementation being replaced, observable outputs, Verification Strategy section in the Design Doc |
 
@@ -146,6 +149,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - When test skeletons exist, include them explicitly
    - When the work plan contains a UI Spec Component -> Task Mapping table, propagate matching component sections to every task listed in the row
    - When the work plan contains a Connection Map, propagate boundary rows touching the task's target files to every task on either side of the boundary
+   - When the work plan contains an ADR Bindings table, propagate matching binding rows to every covered task
    - When a task matches multiple natures, include Investigation Targets from all matching rows and deduplicate overlaps
 
 7. **Implementation Pattern Consistency**
@@ -190,6 +194,26 @@ When the work plan includes a `Design-to-Plan Traceability` section:
 4. **Scope-boundary integrity**: For `scope-boundary` rows, include explicit no-change notes, protected file groups, or verification steps that keep the protected boundary out of scope.
 5. **Verification integrity**: For `verification` rows, ensure the corresponding task file includes the required comparison or verification method in Operation Verification Methods.
 6. **Prerequisite integrity**: For `prerequisite` rows, place setup, migration, seed, auth, or environment work before dependent implementation tasks.
+
+## ADR Binding Propagation
+
+When the work plan includes an `ADR Bindings` section:
+
+1. **Coverage preservation**: For each row marked `covered`, locate every task ID listed in `Covered By Task(s)`.
+2. **Gap handling**: Preserve each `gap` row as a planning issue and surface it to the caller when task generation would otherwise assume the ADR decision is implemented.
+3. **Investigation Targets**: Add the ADR file path with the row's Source Section as a section hint to each matched task, formatted as `docs/adr/ADR-XXXX-title.md (§ [Source Section])`.
+4. **Binding Decisions table**: Add one row to each matched task's `Binding Decisions` section:
+   - `Source`: ADR path with section hint
+   - `Axis`: value copied verbatim from the plan row
+   - `Decision`: binding decision copied from the plan row
+   - `Compliance Check`: a Y/N-answerable positive predicate that evaluates whether the planned and final implementation satisfy the decision
+5. **Predicate shape**: Write each Compliance Check as a concrete positive statement. Examples by Axis:
+   - `placement`: `Auth entrypoint is in src/middleware/**`
+   - `dependency_direction`: `Domain code imports only from src/domain/** and src/shared/**`
+   - `contract_schema`: `API responses match the ResponseEnvelope<T> schema`
+   - `data_flow`: `Session tokens are written through the Redis client`
+   - `persistence`: `User records are persisted through the UsersRepository interface`
+6. **Validation**: Treat missing Axis, unknown Axis value, or non-checkable Compliance Check as an incomplete task file. Non-checkable means the implementation cannot be observed and answered as `Y` or `N`, or the predicate is written as a negative or compound condition.
 
 ## UI Spec Propagation
 
@@ -310,6 +334,10 @@ Please execute decomposed tasks according to the order.
 - [ ] Appropriate granularity (1-5 files/task)
 - [ ] Investigation Targets specified for every task
 - [ ] Quality Assurance Mechanisms propagated to relevant tasks when present in the plan header
+- [ ] ADR Bindings rows propagated to relevant tasks when present in the work plan
+  - [ ] ADR source includes section hint
+  - [ ] Axis copied verbatim from the work plan row
+  - [ ] Compliance Check is a Y/N-answerable positive predicate
 - [ ] Operation Verification Methods specified for every task
 - [ ] Clear completion criteria setting
 - [ ] Overall design document creation

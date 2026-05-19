@@ -185,7 +185,7 @@ Subagents respond in JSON format. The final response from each JSON-returning su
 | `requirement-analyzer` | `scale`, `confidence`, `affectedLayers`, `adrRequired`, `scopeDependencies`, `questions` |
 | `codebase-analyzer` | `focusAreas`, `dataModel`, `qualityAssurance`, `dataTransformationPipelines`, `limitations` |
 | `ui-analyzer` | `externalResources`, `componentStructure`, `propsPatterns`, `cssLayout`, `stateDisplay`, `focusAreas`, `candidateWriteSet`, `limitations` |
-| `task-executor*` | `status`, `escalation_type`, `filesModified`, `requiresTestReview` |
+| `task-executor*` | `status`, `escalation_type` (`design_compliance_violation`, `similar_function_found`, `similar_component_found`, `investigation_target_not_found`, `out_of_scope_file`, `dependency_version_uncertain`, `binding_decision_violation`), `filesModified`, `requiresTestReview` |
 | `quality-fixer*` | `status`, `reason`, `stubFindings`, `blockingIssues`, `missingPrerequisites` |
 | `document-reviewer` | `verdict.decision`, `verdict.conditions` |
 | `code-verifier` | `summary.status`, `discrepancies`, `reverseCoverage` |
@@ -209,9 +209,9 @@ Work plans use the header line `Implementation Readiness: <status>`.
 
 Use this procedure after work-plan approval and before autonomous task execution when the flow needs to verify implementation readiness.
 
-1. Load the approved work plan exact path and extract Verification Strategies, Quality Assurance Mechanisms, Design-to-Plan Traceability, UI Spec Component -> Task Mapping, Connection Map, test skeleton references, E2E absence reasons, phase structure, referenced Design Docs, and UI Specs.
+1. Load the approved work plan exact path and extract Verification Strategies, Quality Assurance Mechanisms, Design-to-Plan Traceability, ADR Bindings, UI Spec Component -> Task Mapping, Connection Map, test skeleton references, E2E absence reasons, phase structure, referenced Design Docs, ADRs, and UI Specs.
 2. Evaluate these criteria with evidence:
-   - R1 Verification Strategy references resolve
+   - R1 Verification Strategy and ADR Binding references resolve
    - R2 E2E prerequisites are addressed
    - R3 Phase 1 observability exists
    - R4 UI rendering surface exists when UI work is present
