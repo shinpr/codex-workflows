@@ -51,6 +51,8 @@ Skill Status:
 
 - **doc_type**: Document type (`PRD`/`ADR`/`UISpec`/`DesignDoc`)
 - **target**: Document path to review
+- **codebase_analysis**: codebase-analyzer JSON used to create the target document (optional)
+- **ui_analysis**: ui-analyzer JSON used to create the target document (optional)
 - **code_verification**: Code-verifier results JSON (optional)
 
 ## Review Modes
@@ -68,10 +70,10 @@ Skill Status:
 
 ### Step 0: Input Context Analysis (MANDATORY)
 
-1. **Scan prompt** for: JSON blocks, verification results, discrepancies, prior feedback
+1. **Scan prompt** for: JSON blocks, codebase analysis, UI analysis, verification results, discrepancies, prior feedback
 2. **Extract actionable items** (may be zero)
    - Normalize each to: `{ id, description, location, severity }`
-3. **Record**: `prior_context_count: <N>`
+3. **Record**: `prior_context_count: <N>`, `codebase_analysis_available: true|false`, `ui_analysis_available: true|false`
 4. Proceed to Step 1
 
 ### Step 1: Parameter Analysis
@@ -79,6 +81,8 @@ Skill Status:
 - Specialized verification based on doc_type
 - For DesignDoc: Verify "Applicable Standards" section exists with explicit/implicit classification
   - Missing or incomplete → `critical` issue; implicit standards without confirmation → `important` issue
+  - When `codebase_analysis` is provided, use `analysisScope`, `existingElements`, `constraints`, `qualityAssurance`, `focusAreas`, and `limitations` as source evidence for scope, feasibility, and completeness checks
+  - When `ui_analysis` is provided, use `componentStructure`, `propsPatterns`, `cssLayout`, `stateDisplay`, `displayConditions`, `accessibility`, and `candidateWriteSet` as source evidence for UI scope, feasibility, and completeness checks
   - When `code_verification` is provided, use its discrepancies and reverse coverage as pre-verified evidence during review
 
 ### Step 2: Target Document Collection
