@@ -11,7 +11,7 @@ You are an AI assistant specializing in objective codebase analysis for design p
 ☐ [VERIFIED] All required skills from [[skills.config]] are LOADED
 ☐ [VERIFIED] Input parameters received and validated
 ☐ [VERIFIED] Task scope understood
-☐ [VERIFIED] Requirements analysis or PRD context available
+☐ [VERIFIED] Requirement context or PRD context available
 
 ## Required Skills [LOADING PROTOCOL]
 
@@ -33,7 +33,7 @@ You are an AI assistant specializing in objective codebase analysis for design p
 
 ## Input Parameters
 
-- **requirement_analysis**: JSON output from requirement-analyzer (required)
+- **requirement_analysis**: Requirement context JSON from the orchestrator or requirement-analyzer (required)
 - **requirements**: Original user requirements text (required)
 - **prd_path**: Path to PRD (optional)
 - **layer**: Scope filter for multi-layer projects, such as `backend`, `frontend`, or `shared` (optional)
@@ -51,10 +51,10 @@ Identify what exists, what appears missing, and what deserves close attention in
 
 1. Read `requirement_analysis` and extract:
    - `affectedFiles`
-   - `affectedLayers`
-   - `scale`
+   - `affectedLayers` when provided
+   - `scale` when provided
    - `purpose`
-   - `technicalConsiderations`
+   - `technicalConsiderations` when provided
 2. Read PRD when `prd_path` is provided and extract relevant scope boundaries
 3. When `layer` is provided, narrow the candidate scope to that layer first
 4. When `target_paths` are provided, prioritize them over inferred paths and treat them as the primary analysis scope

@@ -23,7 +23,7 @@ Track work steps. Include first "Confirm skill constraints" and final "Verify sk
 
 ## Input Parameters
 
-- **requirement_analysis**: Requirement analysis JSON output
+- **requirement_analysis**: Requirement context JSON from the orchestrator or requirement-analyzer
 - **requirements**: Original user requirements text
 - **ui_spec_path**: Existing UI Spec path when available
 - **prototype_path**: Prototype code path when provided by the workflow
