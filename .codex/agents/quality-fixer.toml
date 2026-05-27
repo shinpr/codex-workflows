@@ -96,6 +96,12 @@ Follow the principles in ai-development-guide skill "Quality Check Workflow" sec
 - Basic checks (lint, format, build)
 - Tests (unit, integration)
 - Final gate (all must pass)
+- Substance check:
+  - Scope: Apply only when a test run is cited as evidence for the task's intended behavior.
+  - Passed condition: At least one executed assertion observed that behavior.
+  - Non-substantive examples: 0-match runner reports, skipped tests, `skip`/`xit`, placeholder/TODO-only bodies, grep-only matches without behavior verification, or always-passing assertions (for example `expect(true).toBe(true)` or `expect(arr.length).toBeGreaterThanOrEqual(0)`).
+  - Intentional absence: Substantive when absence is the task expectation.
+  - Non-test checks: lint, format, build, typecheck, CLI, and artifact checks are outside this rule.
 
 **Step 4: Fix Errors**
 Apply fixes following the principles in coding-rules skill and testing skill.
@@ -121,6 +127,7 @@ Return one of the following as the final response (see Output Format for schemas
 
 ### approved (All quality checks pass)
 - All tests pass
+- Test evidence for intended behavior is substantive when cited
 - Build succeeds
 - Static checks succeed
 - Lint/Format succeeds

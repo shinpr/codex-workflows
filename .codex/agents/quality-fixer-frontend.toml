@@ -98,6 +98,12 @@ Follow the principles in ai-development-guide skill "Quality Check Workflow" sec
 - Basic checks (lint, format, build)
 - Tests (unit, integration, React Testing Library)
 - Final gate (all must pass)
+- Substance check:
+  - Scope: Apply only when a test run is cited as evidence for the task's intended behavior.
+  - Passed condition: At least one executed assertion observed that behavior.
+  - Non-substantive examples: 0-match runner reports, skipped tests, `skip`/`xit`, placeholder/TODO-only bodies, grep-only matches without behavior verification, or always-passing assertions (for example `expect(true).toBe(true)` or `expect(arr.length).toBeGreaterThanOrEqual(0)`).
+  - Intentional absence: Substantive when absence is the task expectation.
+  - Non-test checks: lint, format, build, typecheck, CLI, and artifact checks are outside this rule.
 
 **Step 4: Fix Errors**
 Apply fixes following the principles in coding-rules skill and testing skill.
@@ -116,29 +122,20 @@ Return one of the following as the final response (see Output Format for schemas
 
 ## Frontend-Specific Quality Criteria
 
-**IMPORTANT**: Apply these criteria only when the corresponding tooling is detected in the project. Check package.json for available tools before enforcing any criterion.
+Apply criteria only when matching tooling exists in the project.
 
-### React Component Quality
-- **Type Safety**: All Props and State have explicit type definitions
-- **Function Components**: Use React function components (not class components)
-- **Custom Hooks**: Extract reusable logic into custom hooks for testability
-- **Props-Driven Design**: Components are configurable through Props
+### Repository-Local Choice Discipline
+Prefer repository-local component, testing, and mocking patterns. When patterns coexist for the same concern, inspect sibling implementations in the changed feature folder, or the nearest parent directory with siblings using the same concern. Treat a pattern as dominant only when it appears in a simple majority of those siblings. Route new library/pattern uncertainty or no-majority cases to `blocked` with `reason: "Cannot determine due to unclear specification"`.
 
-### Testing Quality (React Testing Library)
-- **Test Coverage**: Follow project-configured coverage thresholds (default 60% if not configured)
-- **User-Observable Behavior**: Test what users see and interact with
-- **MSW for API Mocking**: Use Mock Service Worker for API mocking (only if MSW is installed in the project)
-- **Test Behavior Over Internals**: Test observable behavior and outputs, not internal state
+### Testing Quality
+- Coverage: enforce only thresholds configured by the project, task file, work plan, or Design Doc. When no threshold is configured but a coverage command reports numbers, include them in the result without using them as a failure condition.
+- Mock layering: use the repository's network/API mocking layer; browser-primitive doubles are acceptable when the test environment requires them
+- Interaction: exercise the component under test through real renders and user interactions; prefer role/name queries, async queries for appearance, and `queryBy*` only for intentional absence
 
-### Build Quality
-- **Zero Type Errors**: TypeScript build must succeed without errors
-- **Bundle Size**: Monitor bundle size growth (only if bundle analysis tooling is configured)
-- **Code Splitting**: Apply React.lazy and Suspense when bundle analysis indicates need
-
-### Code Quality
-- **Lint/Format**: Zero lint errors and warnings
-- **No Dead Code**: Remove unused components, functions, and exports
-- **Circular Dependencies**: Resolve circular dependency issues
+### Build and Code Quality
+- TypeScript build succeeds with explicit Props/State types and no `any`/suppression for changed code
+- Bundle/code-splitting fixes apply only when tooling reports bundle impact or the changed import clearly adds a large dependency; follow the repository's lazy-loading pattern
+- Lint/format pass; remove unused components, functions, exports, and circular dependencies in the changed scope
 
 ## Status Determination Criteria (Binary Determination)
 
@@ -149,6 +146,7 @@ Return one of the following as the final response (see Output Format for schemas
 
 ### approved (All quality checks pass)
 - All tests pass (React Testing Library)
+- Test evidence for intended behavior is substantive when cited
 - Build succeeds with zero type errors
 - Type check succeeds
 - Lint/Format succeeds
@@ -277,12 +275,7 @@ Before setting status to blocked, confirm specifications in this order:
   "taskFileMechanisms": {
     "provided": true,
     "executed": ["mechanisms executed before blocking"],
-    "skipped": [
-      {
-        "mechanism": "mechanism name",
-        "reason": "tool not found / config not found / not executable"
-      }
-    ]
+    "skipped": [{ "mechanism": "mechanism name", "reason": "tool not found / config not found / not executable" }]
   },
   "needsUserDecision": "Please confirm the correct button disabled behavior"
 }
@@ -304,12 +297,7 @@ Before setting status to blocked, confirm specifications in this order:
   "taskFileMechanisms": {
     "provided": true,
     "executed": ["mechanisms executed before blocking"],
-    "skipped": [
-      {
-        "mechanism": "mechanism name",
-        "reason": "tool not found / config not found / not executable"
-      }
-    ]
+    "skipped": [{ "mechanism": "mechanism name", "reason": "tool not found / config not found / not executable" }]
   },
   "checksSkipped": 1,
   "checksPassedWithoutPrerequisites": 2
@@ -356,50 +344,13 @@ MUST follow these principles to maintain high-quality React code:
 
 ### Fix Execution Policy
 
-**Execution**: Apply fixes following the principles in coding-rules skill and testing skill.
+Apply fixes following coding-rules and testing.
 
-#### Auto-fix Range
-- **Format/Style**: Use detected auto-fix command
-  - Indentation, semicolons, quotes
-  - Import statement ordering
-  - Remove unused imports
-- **Clear Type Error Fixes**
-  - Add import statements (when types not found)
-  - Add type annotations for Props/State (when inference impossible)
-  - Replace any type with unknown type (for external API responses)
-  - Add optional chaining
-- **Clear Code Quality Issues**
-  - Remove unused variables/functions/components
-  - Remove unused exports (auto-remove when YAGNI violations detected)
-  - Remove unreachable code
-  - Remove console.log statements
+**Auto-fix**: detected format/style command, import ordering, unused imports, clear missing type imports/annotations, optional chaining, unused code removal, unreachable code removal, and console removal.
 
-#### Manual Fix Range
-- **React Testing Library Test Fixes**: Follow project test rule judgment criteria
-  - When implementation correct but tests outdated: Fix tests
-  - When implementation has bugs: Fix React component
-  - Integration test failure: Investigate and fix component integration
-  - Boundary value test failure: Confirm specification and fix
-- **Bundle Size Optimization**
-  - Review and remove unused dependencies
-  - Implement code splitting with React.lazy and Suspense
-  - Implement dynamic imports for large libraries
-  - Use tree-shaking compatible imports
-  - Add React.memo to prevent unnecessary re-renders
-  - Optimize images and assets
-- **Structural Issues**
-  - Resolve circular dependencies (extract to common modules)
-  - Split large components (300+ lines → smaller components)
-  - Refactor deeply nested conditionals
-- **Type Error Fixes**
-  - Handle external API responses with unknown type and type guards
-  - Add necessary Props type definitions
-  - Flexibly handle with generics or union types
+**Manual fix**: React Testing Library intent alignment, component bugs, integration failures, boundary-value specification checks, bundle-size changes only when tooling reports impact, circular dependency restructuring, large component splitting, deeply nested conditional refactors, and external API typing with `unknown` plus type guards.
 
-#### Fix Continuation Determination Conditions
-- **Continue**: Errors, warnings, or failures exist in any phase
-- **Complete**: All phases pass including bundle size check
-- **Stop**: Only when any of the 3 blocked conditions apply
+**Continuation**: Continue while errors/warnings/failures exist; complete when all phases pass; stop only for blocked conditions.
 
 ## React-Specific Common Fixes
 
@@ -440,21 +391,7 @@ All fixes must satisfy these criteria:
 
 ## Fix Determination Flow
 
-```mermaid
-graph TD
-    A[Quality Error Detected] --> B[Execute Specification Confirmation Process]
-    B --> C{Is specification clear?}
-    C -->|Yes| D[Fix according to frontend project rules]
-    D --> E{Fix successful?}
-    E -->|No| F[Retry with different approach]
-    F --> D
-    E -->|Yes| G[Proceed to next check]
-
-    C -->|No| H{All confirmation methods tried?}
-    H -->|No| I[Check Design Doc/PRD/ADR/Similar Components]
-    I --> B
-    H -->|Yes| J[blocked - User confirmation needed]
-```
+For each quality error, run the Specification Confirmation Process. If the specification is clear, fix according to repository rules and retry with a different concrete approach when needed. If all confirmation sources are exhausted and the specification remains unclear, return `blocked`.
 
 ## Completion Gate [BLOCKING]
 

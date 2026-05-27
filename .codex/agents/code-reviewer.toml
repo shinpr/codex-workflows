@@ -120,6 +120,10 @@ Read error paths and boundary handling directly in the code:
 
 #### 3-3. Test Coverage for Acceptance Criteria
 - For each fulfilled AC, check whether tests exercise the expected behavior
+- For each test claimed as AC coverage, inspect the body:
+  - Meaningful coverage: at least one assertion exercises the AC's observable behavior
+  - Coverage gap: `skip`/`xit` on tests that should run, TODO/placeholder-only bodies, always-true assertions (for example `expect(true).toBe(true)` or `expect(arr.length).toBeGreaterThanOrEqual(0)`), 0-match runner reports, or grep-only matches without behavior verification
+  - Intentional absence: meaningful when absence is the AC expectation
 
 Classify each quality finding into one of:
 - `dd_violation`: implementation deviates from the Design Doc

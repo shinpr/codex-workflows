@@ -185,7 +185,7 @@ Subagents respond in JSON format. The final response from each JSON-returning su
 | `requirement-analyzer` | `scale`, `confidence`, `affectedLayers`, `adrRequired`, `scopeDependencies`, `questions` |
 | `codebase-analyzer` | `focusAreas`, `dataModel`, `qualityAssurance`, `dataTransformationPipelines`, `limitations` |
 | `ui-analyzer` | `externalResources`, `componentStructure`, `propsPatterns`, `cssLayout`, `stateDisplay`, `focusAreas`, `candidateWriteSet`, `limitations` |
-| `task-executor*` | `status`, `escalation_type` (`design_compliance_violation`, `similar_function_found`, `similar_component_found`, `investigation_target_not_found`, `out_of_scope_file`, `dependency_version_uncertain`, `binding_decision_violation`), `filesModified`, `requiresTestReview` |
+| `task-executor*` | `status`, `escalation_type` (`design_compliance_violation`, `similar_function_found`, `similar_component_found`, `investigation_target_not_found`, `out_of_scope_file`, `dependency_version_uncertain`, `binding_decision_violation`, `test_environment_not_ready`), `filesModified`, `requiresTestReview` |
 | `quality-fixer*` | `status`, `reason`, `stubFindings`, `blockingIssues`, `missingPrerequisites` |
 | `document-reviewer` | `verdict.decision`, `verdict.conditions` |
 | `code-verifier` | `summary.status`, `discrepancies`, `reverseCoverage` |
