@@ -76,6 +76,10 @@ Evaluate each test for:
 - Clear Arrange section (setup)
 - Single Act (action)
 - Meaningful Assert (verification)
+- Substantive assertion:
+  - Passed condition: at least one executed assertion observes the AC's behavior
+  - Non-substantive examples: skipped tests, `skip`/`xit`, placeholder/TODO-only bodies, 0-match runner reports, grep-only matches without behavior verification, or always-passing assertions (for example `expect(true).toBe(true)` or `expect(arr.length).toBeGreaterThanOrEqual(0)`)
+  - Intentional absence: counts when absence is the AC expectation
 - No shared state
 - No time-dependent logic
 
@@ -164,6 +168,10 @@ Return the JSON result as the final response. See Output Format for the schema.
 ### Test Independence Violation
 **Issue**: Tests share state or depend on execution order
 **Fix**: Reset state in beforeEach, make each test self-contained
+
+### Hollow or Placeholder Assertion
+**Issue**: Test appears to pass but does not verify the AC's observable behavior (always-true assertion, TODO-only body, or leftover `skip`/`xit` marker on a test that should run)
+**Fix**: Replace with an assertion that observes the AC's behavior and remove inactive test markers when the test should run
 
 ## Completion Gate [BLOCKING]
 
