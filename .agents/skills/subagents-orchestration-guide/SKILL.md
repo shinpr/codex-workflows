@@ -164,6 +164,16 @@ Handling rules:
 
 **ENFORCEMENT**: Using any status value outside this vocabulary is a VIOLATION.
 
+### WorkPlan Review State [MANDATORY]
+
+Medium and Large work plans must contain a `WorkPlan Review` section. Small simplified plans are exempt because they have no Design Doc to trace against. The plan is reviewed only when that section records `Status: approved` and `Conditions: none`.
+
+Handling rules:
+- After WorkPlan review returns `approved`, invoke work-planner in update mode once to record the review section, without changing implementation content.
+- Treat WorkPlan `approved_with_conditions` the same as `needs_revision`: return to work-planner in update mode with the conditions, then re-review. Conditions must not be carried into task decomposition or implementation readiness.
+- A material work plan update resets `WorkPlan Review` to `Status: pending`.
+- Standalone build recipes apply WorkPlan review only before task decomposition, not after task files already exist.
+
 ## Scale Determination and Document Requirements
 
 | Scale | File Count | PRD | ADR | Design Doc | Work Plan |
@@ -253,7 +263,7 @@ Flow rules:
 - Pass `codebase-analyzer` output to the designer as `Codebase Analysis`
 - Pass Design Doc path to `code-verifier`, then pass `code_verification` to `document-reviewer`
 - Fullstack layer sequencing is defined in `references/monorepo-flow.md`
-- Run WorkPlan review after every Medium/Large work plan creation or update and before batch approval. On `needs_revision`, return to `work-planner` in update mode and re-review within the approval vocabulary iteration limit. On `rejected`, halt and escalate to the user. `approved_with_conditions` may proceed only when conditions are carried into the plan and resolved before implementation readiness is marked `ready`.
+- Run WorkPlan review after every Medium/Large work plan creation or update and before batch approval. On `needs_revision` or WorkPlan `approved_with_conditions`, return to `work-planner` in update mode and re-review for max 2 revision iterations as defined by the `needs_revision` row in Approval Status Vocabulary. On `rejected`, halt and escalate to the user.
 
 ## Autonomous Execution Mode
 

@@ -8,6 +8,13 @@ Related Issue/PR: #XXX (if any)
 Review Scope: [planned-files scope derived from Design Doc and task targets; for a revision plan over existing work, base branch + diff range]
 Implementation Readiness: pending
 
+## WorkPlan Review
+
+This section records the review gate state for the exact plan content. Set `Status: pending` when the plan is created or materially updated. The orchestrator treats only `Status: approved` with `Conditions: none` as reviewed.
+
+- **Status**: pending|approved
+- **Conditions**: none
+
 ## Related Documents
 - Design Doc(s):
   - [docs/design/XXX.md]
@@ -38,7 +45,7 @@ Repeat this block for each Design Doc when multiple Design Docs exist. Preserve 
 
 ### Proof Strategy
 - **Proof obligation source**: [test skeleton annotations (`Primary failure mode`, `Proof obligation`) when skeletons exist; otherwise each acceptance criterion's primary failure mode derived from the Design Doc]
-- **Per-task propagation**: every task that implements or verifies a claim records Proof Obligations (see task template) so downstream review can judge whether tests prove the claim, not merely run
+- **Per-task propagation**: every task that implements or verifies a claim records the AC ID or claim identifier in Proof Obligations (see task template) so downstream review can judge whether tests prove the claim, not merely run
 
 ## Quality Assurance Mechanisms (from Design Docs)
 

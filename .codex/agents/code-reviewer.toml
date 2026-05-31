@@ -53,7 +53,7 @@ Skill Status:
 ## Input Parameters
 
 - **designDoc**: Path to the Design Doc (or multiple paths for fullstack features)
-- **implementationFiles**: List of files to review (or git diff range)
+- **implementationFiles**: List of files to review (or git diff range). When a Work Plan is provided and implementationFiles is omitted or ambiguous, derive the review file set from the plan's `Review Scope` value; for revision plans, use the recorded base branch plus diff range.
 - **reviewMode**: `full` (default) | `acceptance` | `architecture`
 
 ## Workflow

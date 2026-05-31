@@ -59,8 +59,8 @@ Present options if multiple exist (can be specified with $ARGUMENTS).
 Spawn document-reviewer agent: "Review the work plan. doc_type: WorkPlan. target: docs/plans/[plan-name].md. mode: composite. Review semantic traceability to the Design Doc, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
 
 Branch on `verdict.decision`:
-- `approved` or `approved_with_conditions` -> proceed to Step 5
-- `needs_revision` -> spawn work-planner in update mode with the findings, then repeat Step 4. Follow the approval vocabulary iteration limit in subagents-orchestration-guide.
+- `approved` -> spawn work-planner in update mode once to record `Status: approved` and `Conditions: none` in WorkPlan Review, then proceed to Step 5
+- `approved_with_conditions` or `needs_revision` -> spawn work-planner in update mode with the findings or conditions, then repeat Step 4. Use max 2 revision iterations as defined by the `needs_revision` row in subagents-orchestration-guide Approval Status Vocabulary.
 - `rejected` -> stop and present the blocking findings to the user.
 
 ### Step 5: Plan Approval

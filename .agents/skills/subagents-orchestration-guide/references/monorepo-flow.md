@@ -107,7 +107,7 @@ After work-planner creates or updates the plan, spawn document-reviewer:
 
 > "Review the fullstack work plan. doc_type: WorkPlan. target: [work plan path]. mode: composite. Review semantic traceability to all Design Docs, UI Spec when present, cross-layer boundary coverage, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
 
-On `needs_revision`, return to work-planner in update mode and re-review within the approval vocabulary iteration limit. On `rejected`, halt and escalate to the user. Stop for batch approval only after WorkPlan review returns `approved` or `approved_with_conditions`.
+On `needs_revision` or `approved_with_conditions`, return to work-planner in update mode and re-review for max 2 revision iterations as defined by the `needs_revision` row in Approval Status Vocabulary. On `rejected`, halt and escalate to the user. Stop for batch approval only after WorkPlan review returns `approved` and the plan's `WorkPlan Review` section records `Status: approved` with `Conditions: none`.
 
 ## Task Decomposition Phase
 

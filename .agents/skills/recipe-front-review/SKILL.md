@@ -31,12 +31,13 @@ Design Doc (uses most recent if omitted): $ARGUMENTS
 
 ### 1. Prerequisite Check
 Identify the Design Doc in docs/design/ and check implementation files changed from the default branch (detect via `git symbolic-ref refs/remotes/origin/HEAD` or fall back to current branch diff).
+If a single active work plan is explicitly provided or unambiguously resolved for that Design Doc, read its `Review Scope` line. Otherwise set `Work Plan: none` and `Review Scope: none`; do not infer.
 
 **[STOP -- BLOCKING]** If no Design Doc or implementation files found, notify user and halt.
 **CANNOT proceed without both a Design Doc and implementation files.**
 
 ### 2. Execute code-reviewer
-Spawn code-reviewer agent: "Validate Design Doc compliance for [design-doc-path]. Implementation files: [git diff file list]. Review mode: full. Return structured JSON report per your Output Format specification."
+Spawn code-reviewer agent: "Validate Design Doc compliance for [design-doc-path]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. Implementation files: [git diff file list]. Review mode: full. Return structured JSON report per your Output Format specification."
 
 **Store output as**: `$STEP_2_OUTPUT`
 
