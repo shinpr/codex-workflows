@@ -192,6 +192,8 @@ Adapt comment syntax to the project's language when generating annotations.
   // @dependency: PaymentService, OrderRepository, Database
   // @real-dependency: OrderRepository, Database
   // @complexity: high
+  // Primary failure mode: payment succeeds but the order row is absent or unpersisted
+  // Proof obligation: assert order persistence after successful payment while keeping OrderRepository and Database real; only the external payment gateway may be mocked
   [Test: 'AC1: Successful payment creates persisted order with correct status']
 
   // AC1-error: "Payment failure shows user-friendly error message"
@@ -200,6 +202,8 @@ Adapt comment syntax to the project's language when generating annotations.
   // @category: core-functionality
   // @dependency: PaymentService, ErrorHandler
   // @complexity: medium
+  // Primary failure mode: payment failure still creates an order or hides the user-facing error
+  // Proof obligation: assert the visible error and the unchanged order state after a failed payment; mock only the external payment gateway failure
   [Test: 'AC1: Failed payment displays error without creating order']
 ```
 
@@ -221,6 +225,8 @@ Adapt comment syntax to the project's language when generating annotations.
   // @lane: fixture-e2e
   // @dependency: full-ui (mocked backend)
   // @complexity: medium
+  // Primary failure mode: undo banner appears but the dismissed card is not restored
+  // Proof obligation: assert browser-visible state before dismissal, after dismissal, and after undo using fixture-controlled backend state
   [Test: 'User Journey: Dismiss and undo restores the card']
 ```
 
@@ -242,6 +248,8 @@ Adapt comment syntax to the project's language when generating annotations.
   // @lane: service-integration-e2e
   // @dependency: full-system
   // @complexity: high
+  // Primary failure mode: checkout appears successful but the persisted order or confirmation event is missing
+  // Proof obligation: exercise the full local service stack and assert persisted order state plus confirmation event after checkout
   [Test: 'User Journey: Complete product purchase persists order and emits confirmation']
 ```
 
@@ -297,13 +305,15 @@ Each test case MUST have the following standard annotations for test implementat
 - **@lane**: integration | fixture-e2e | service-integration-e2e
 - **@dependency**: none | [component names] | full-ui (mocked backend) | full-system
 - **@complexity**: low | medium | high
+- **Primary failure mode**: the specific regression that should make the implemented test fail
+- **Proof obligation**: what the implemented test must assert to prove the claim, including the boundary to exercise, before/action/after state for state-changing claims, and which boundaries may be mocked with rationale
 
-These annotations are used when planning and prioritizing test implementation.
+These annotations are used when planning and prioritizing test implementation. Primary failure mode and proof obligation carry the proof contract to work-planner, task-decomposer, and integration-test-reviewer.
 
 ## Constraints and Quality Standards
 
 **Mandatory Compliance**:
-- Output test skeletons only: verification points, expected results, and pass criteria
+- Output test skeletons only: verification points, expected results, pass criteria, primary failure mode, and proof obligation
 - Downstream consumers treat these skeletons as design artifacts rather than runnable tests
 - Clearly state verification points, expected results, and pass criteria for each test
 - Preserve original AC statements in comments (ensure traceability)

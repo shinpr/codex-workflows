@@ -36,9 +36,10 @@ Design Doc (uses most recent if omitted): $ARGUMENTS
 
 ### Step 1: Prerequisite Check
 Identify Design Doc in docs/design/ and check implementation files via git diff.
+If a single active work plan is explicitly provided or unambiguously resolved for that Design Doc, read its `Review Scope` line. Otherwise set `Work Plan: none` and `Review Scope: none`; do not infer.
 
 ### Step 2: Execute code-reviewer
-Spawn code-reviewer agent: "Validate Design Doc compliance for the implementation. Design Doc path: [path]. Implementation files: [git diff file list]. Review mode: full. Return structured JSON report per your Output Format specification."
+Spawn code-reviewer agent: "Validate Design Doc compliance for the implementation. Design Doc path: [path]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. Implementation files: [git diff file list]. Review mode: full. Return structured JSON report per your Output Format specification."
 
 **Store output as**: `$STEP_2_OUTPUT`
 

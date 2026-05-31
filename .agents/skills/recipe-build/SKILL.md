@@ -55,14 +55,28 @@ Analyze task file existence state and determine the action required:
 | State | Criteria | Next Action |
 |-------|----------|-------------|
 | Tasks exist | Consumed Task Set is non-empty | User's execution instruction serves as batch approval -> Enter autonomous execution immediately |
-| No tasks + plan exists | Consumed Task Set is empty but plan exists | Confirm with user -> spawn task-decomposer |
+| No tasks + plan exists + reviewed plan | Consumed Task Set is empty and WorkPlan Review records `Status: approved`, `Conditions: none` | Confirm with user -> spawn task-decomposer |
+| No tasks + small simplified plan | Consumed Task Set is empty, plan exists, and the plan references no Design Doc | Confirm with user -> spawn task-decomposer |
+| No tasks + plan exists + unreviewed plan | Consumed Task Set is empty, the plan references a Design Doc, and WorkPlan Review is absent, pending, conditional, or not approved | Run work plan review, then confirm with user -> spawn task-decomposer |
 | Neither exists | No plan or task files | Error: Prerequisites not met |
 
 ## Task Decomposition Phase (Conditional)
 
-When task files don't exist:
+When task files don't exist, the plan references a Design Doc, and the WorkPlan Review section is absent, pending, conditional, or not approved:
 
-### 1. User Confirmation
+### 1. Work Plan Review
+
+Spawn document-reviewer agent: "Review the work plan before task decomposition. doc_type: WorkPlan. target: docs/plans/[plan-name].md. mode: composite. Review semantic traceability to the Design Doc, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
+
+Branch on `verdict.decision`:
+- `approved` -> spawn work-planner in update mode once to record `Status: approved` and `Conditions: none` in WorkPlan Review, then continue to user confirmation
+- `approved_with_conditions` -> stop before task decomposition and report that the work plan needs update via recipe-plan
+- `needs_revision` -> stop before task decomposition and report that the work plan needs update via recipe-plan
+- `rejected` -> stop before task decomposition and present the blocking findings to the user
+
+When task files don't exist and the WorkPlan Review section records `Status: approved` and `Conditions: none`, skip Work Plan Review and continue to user confirmation.
+
+### 2. User Confirmation
 ```
 No task files found.
 Work plan: docs/plans/[plan-name].md
@@ -70,10 +84,10 @@ Work plan: docs/plans/[plan-name].md
 Generate tasks from the work plan? (y/n):
 ```
 
-### 2. Task Decomposition (if approved)
+### 3. Task Decomposition (if approved)
 Spawn task-decomposer agent: "Read work plan at docs/plans/[plan-name].md and decompose into atomic tasks. Output: Individual task files in docs/plans/tasks/. Granularity: 1 task = 1 commit = independently executable."
 
-### 3. Verify Generation
+### 4. Verify Generation
 Recompute the Consumed Task Set and verify it is non-empty.
 
 ## Pre-execution Checklist
@@ -123,7 +137,7 @@ VERIFY approval status before proceeding. Once confirmed, INITIATE autonomous ex
 ## Post-Implementation Verification (After All Tasks Complete)
 
 After all task cycles finish, collect all `filesModified` from every task-executor response (deduplicated), then run both verification agents before the completion report:
-1. Spawn code-verifier agent: "Verify implementation consistency against the Design Doc. `doc_type: design-doc`. `document_path`: [path]. `code_paths`: [collected filesModified list]."
+1. Spawn code-verifier agent: "Verify implementation consistency against the Design Doc. `doc_type: design-doc`. `document_path`: [path]. `code_paths`: [collected filesModified list]. Work Plan Review Scope: [Review Scope value from the active work plan, used only to confirm the collected file set is complete]."
 2. Spawn security-reviewer agent: "Design Doc: [path]. Implementation files: [collected filesModified list]. Review security compliance."
 3. Consolidate results:
    - code-verifier passes when `summary.status` is `consistent` or `mostly_consistent`

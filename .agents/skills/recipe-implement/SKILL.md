@@ -69,7 +69,7 @@ Follow subagents-orchestration-guide skill Large/Medium/Small scale flow exactly
 **STEP 3**: Spawn technical-designer-frontend agent → spawn document-reviewer agent → spawn design-sync agent.
 **[STOP — BLOCKING]** Present Frontend Design Doc for user approval. **CANNOT proceed until user explicitly confirms.**
 
-**STEP 4**: Spawn acceptance-test-generator agent → spawn work-planner agent.
+**STEP 4**: Spawn acceptance-test-generator agent → spawn work-planner agent → spawn document-reviewer agent with `doc_type: WorkPlan`.
 **[STOP — BLOCKING]** Present Work Plan for user approval. **CANNOT proceed until user explicitly confirms.**
 
 **STEP 5**: Run implementation readiness preflight.

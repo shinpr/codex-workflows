@@ -140,7 +140,7 @@ Autonomous execution MUST stop and wait for user input at these points.
 | UI Spec | After document-reviewer completes UI Spec review (frontend/fullstack) | Approve UI Spec |
 | ADR | After document-reviewer completes ADR review (if ADR created) | Approve ADR |
 | Design | After design-sync completes consistency verification | Approve Design Doc |
-| Work Plan | After work-planner creates plan | Batch approval for implementation phase |
+| Work Plan | After document-reviewer completes WorkPlan review for Medium/Large, or after simplified plan creation for Small | Batch approval for implementation phase |
 
 **ENFORCEMENT**: After batch approval, autonomous execution proceeds without stops until completion or escalation. Skipping stop points is a CRITICAL VIOLATION.
 
@@ -163,6 +163,16 @@ Handling rules:
 - `approved_with_notes`: include the notes in the completion report for awareness
 
 **ENFORCEMENT**: Using any status value outside this vocabulary is a VIOLATION.
+
+### WorkPlan Review State [MANDATORY]
+
+Medium and Large work plans must contain a `WorkPlan Review` section. Small simplified plans are exempt because they have no Design Doc to trace against. The plan is reviewed only when that section records `Status: approved` and `Conditions: none`.
+
+Handling rules:
+- After WorkPlan review returns `approved`, invoke work-planner in update mode once to record the review section, without changing implementation content.
+- Treat WorkPlan `approved_with_conditions` the same as `needs_revision`: return to work-planner in update mode with the conditions, then re-review. Conditions must not be carried into task decomposition or implementation readiness.
+- A material work plan update resets `WorkPlan Review` to `Status: pending`.
+- Standalone build recipes apply WorkPlan review only before task decomposition, not after task files already exist.
 
 ## Scale Determination and Document Requirements
 
@@ -242,8 +252,8 @@ Always start with `requirement-analyzer`, then follow the minimum flow required 
 
 | Scale | Required flow |
 |-------|---------------|
-| Large | `requirement-analyzer` **[Stop]** -> `prd-creator` -> `document-reviewer` **[Stop]** -> optional `ui-spec-designer` + `document-reviewer` **[Stop]** -> optional ADR + `document-reviewer` **[Stop]** -> `codebase-analyzer` -> `technical-designer*` -> `code-verifier` -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` **[Stop]** -> `task-decomposer` |
-| Medium | `requirement-analyzer` **[Stop]** -> `codebase-analyzer` -> optional `ui-spec-designer` + `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` **[Stop]** -> `task-decomposer` |
+| Large | `requirement-analyzer` **[Stop]** -> `prd-creator` -> `document-reviewer` **[Stop]** -> optional `ui-spec-designer` + `document-reviewer` **[Stop]** -> optional ADR + `document-reviewer` **[Stop]** -> `codebase-analyzer` -> `technical-designer*` -> `code-verifier` -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
+| Medium | `requirement-analyzer` **[Stop]** -> `codebase-analyzer` -> optional `ui-spec-designer` + `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
 | Small | `requirement-analyzer` **[Stop]** -> simplified plan **[Stop: Batch approval]** -> direct implementation |
 
 Flow rules:
@@ -253,6 +263,7 @@ Flow rules:
 - Pass `codebase-analyzer` output to the designer as `Codebase Analysis`
 - Pass Design Doc path to `code-verifier`, then pass `code_verification` to `document-reviewer`
 - Fullstack layer sequencing is defined in `references/monorepo-flow.md`
+- Run WorkPlan review after every Medium/Large work plan creation or update and before batch approval. On `needs_revision` or WorkPlan `approved_with_conditions`, return to `work-planner` in update mode and re-review for max 2 revision iterations as defined by the `needs_revision` row in Approval Status Vocabulary. On `rejected`, halt and escalate to the user.
 
 ## Autonomous Execution Mode
 

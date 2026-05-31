@@ -67,6 +67,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Document concrete executable procedures
    - Include task-level Quality Assurance Mechanisms when the work plan defines them
    - Include task-level Binding Decisions when ADR Bindings cover the task
+   - Include task-level Proof Obligations when the work plan defines Proof Strategy, test skeleton proof annotations, or acceptance-criterion primary failure modes
    - **Always include operation verification methods**
    - Define clear completion criteria (within executor's scope of responsibility)
 
@@ -160,6 +161,9 @@ Decompose tasks based on implementation strategy patterns determined in implemen
 8. **Utilize Test Information**
    When test information (@category, @dependency, @complexity, etc.) is documented in the work plan, reflect that information in task files
 
+9. **Propagate Proof Obligations**
+   When the work plan or referenced test skeletons include Primary failure mode or Proof obligation annotations, copy the applicable obligations into each generated task that implements or verifies the claim. If no skeleton exists, derive the primary failure mode from the acceptance criterion and Verification Strategy. Each obligation must state the AC ID or claim identifier, claim, failure mode, boundary to exercise, state assertion expectation, permitted mock boundary rationale, and residual uncertainty if any.
+
 ## Verification Strategy Propagation
 
 Verification Strategy defines what correctness means at design time. L1/L2/L3 (from implementation-approach) define task-level verification depth at execution time. Use both.
@@ -194,6 +198,18 @@ When the work plan includes a `Design-to-Plan Traceability` section:
 4. **Scope-boundary integrity**: For `scope-boundary` rows, include explicit no-change notes, protected file groups, or verification steps that keep the protected boundary out of scope.
 5. **Verification integrity**: For `verification` rows, ensure the corresponding task file includes the required comparison or verification method in Operation Verification Methods.
 6. **Prerequisite integrity**: For `prerequisite` rows, place setup, migration, seed, auth, or environment work before dependent implementation tasks.
+
+## Proof Obligation Propagation
+
+When the work plan includes a `Proof Strategy` section or referenced test skeleton proof annotations:
+
+1. Locate each task that implements or verifies the related acceptance criterion, user journey, boundary, or state transition.
+2. Add a `Proof Obligations` section to the task file using the task template.
+3. Preserve the Primary failure mode and Proof obligation wording from the skeleton when available.
+4. For state-changing claims, require before -> action -> after observable state assertions.
+5. For boundary claims, require the test to exercise the stated public, integration, browser, process, service, or persistence boundary.
+6. For mocked dependencies, name only external dependencies as mockable and record why the boundary under test remains real.
+7. Record residual uncertainty when a task-level test cannot prove a claim fully and identify the later phase or task that closes the residual.
 
 ## ADR Binding Propagation
 

@@ -5,7 +5,15 @@ Type: feature|fix|refactor
 Estimated Duration: X days
 Estimated Impact: X files
 Related Issue/PR: #XXX (if any)
+Review Scope: [planned-files scope derived from Design Doc and task targets; for a revision plan over existing work, base branch + diff range]
 Implementation Readiness: pending
+
+## WorkPlan Review
+
+This section records the review gate state for the exact plan content. Set `Status: pending` when the plan is created or materially updated. The orchestrator treats only `Status: approved` with `Conditions: none` as reviewed.
+
+- **Status**: pending|approved
+- **Conditions**: none
 
 ## Related Documents
 - Design Doc(s):
@@ -34,6 +42,10 @@ Repeat this block for each Design Doc when multiple Design Docs exist. Preserve 
 - **First verification target**: [extracted from Design Doc]
 - **Success criteria**: [extracted from Design Doc]
 - **Failure response**: [extracted from Design Doc]
+
+### Proof Strategy
+- **Proof obligation source**: [test skeleton annotations (`Primary failure mode`, `Proof obligation`) when skeletons exist; otherwise each acceptance criterion's primary failure mode derived from the Design Doc]
+- **Per-task propagation**: every task that implements or verifies a claim records the AC ID or claim identifier in Proof Obligations (see task template) so downstream review can judge whether tests prove the claim, not merely run
 
 ## Quality Assurance Mechanisms (from Design Docs)
 
@@ -68,6 +80,21 @@ Map each Design Doc technical requirement to the task or phase that covers it. U
 - Normalize same-boundary field propagation into one row when the fields must move together through the same boundary for the same reason
 - Merge duplicate restatements of the same obligation from multiple DD sections into one row and cite the primary section in `DD Section`
 - Keep `scope-boundary` rows concrete: name the protected file group, component boundary, contract, or workflow that must remain unchanged
+
+## Failure Mode Checklist
+
+Domain-independent failure categories this implementation must guard against. Enumerate all eight categories, mark which apply, and list a covering task for each that applies; keep category names generic and place project-specific detail in task descriptions or notes.
+
+| Category | Applies? | Covered By Task(s) |
+|----------|----------|--------------------|
+| same-value | yes/no | [P1-T1] |
+| no-op | yes/no | |
+| empty input | yes/no | |
+| invalid option | yes/no | |
+| missing config | yes/no | |
+| unavailable boundary | yes/no | |
+| shared-state dependency | yes/no | |
+| rollback-only visibility | yes/no | |
 
 ## UI Spec Component -> Task Mapping
 

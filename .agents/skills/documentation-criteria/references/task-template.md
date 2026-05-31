@@ -58,9 +58,21 @@ Brief observations recorded after reading Investigation Targets:
 - **Failure response**: [What to do if verification fails]
 - **Verification level**: [L1 unit/local verification, L2 integration verification, or L3 end-to-end verification]
 
+## Proof Obligations
+(Include one entry per acceptance criterion, user journey, boundary, or state transition this task implements or verifies. Derive from test skeleton annotations when present; otherwise derive from the acceptance criterion's primary failure mode.)
+- **AC / Claim ID**: [AC-XXX, user journey identifier, boundary identifier, or task claim identifier]
+- **Claim**: [behavior the acceptance criterion or task promises]
+- **Primary failure mode**: [regression the test should turn red on]
+- **Boundary to exercise**: [public/integration/browser/process/service/persistence boundary, or "in-process unit"]
+- **State assertion**: [observable state before -> action -> after for state-changing claims; "N/A" otherwise]
+- **Mock boundary rationale**: [which external boundaries may be mocked and why; "none" when all real]
+- **Residual**: [what this task-level proof leaves unestablished, and which later task or phase closes it]
+
 ## Completion Criteria
+- [ ] All listed AC / Claim IDs are implemented or verified by this task
 - [ ] All added tests pass
 - [ ] Operation verified per Operation Verification Methods above
+- [ ] Each Proof Obligation is met: the test turns red under its primary failure mode and exercises the stated boundary
 - [ ] Deliverables created (for research/design tasks)
 - [ ] When Binding Decisions exist, every Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes
 
