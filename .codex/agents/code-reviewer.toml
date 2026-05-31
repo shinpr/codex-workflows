@@ -124,6 +124,7 @@ Read error paths and boundary handling directly in the code:
   - Meaningful coverage: at least one assertion exercises the AC's observable behavior
   - Coverage gap: `skip`/`xit` on tests that should run, TODO/placeholder-only bodies, always-true assertions (for example `expect(true).toBe(true)` or `expect(arr.length).toBeGreaterThanOrEqual(0)`), 0-match runner reports, or grep-only matches without behavior verification
   - Intentional absence: meaningful when absence is the AC expectation
+  - Proof adequacy: a covered test should fail under the AC's primary failure mode and should exercise the claimed boundary rather than a substitute input that bypasses it. A test that would stay green if the claimed behavior regressed is a `coverage_gap` with rationale naming the unproven failure mode.
 
 Classify each quality finding into one of:
 - `dd_violation`: implementation deviates from the Design Doc

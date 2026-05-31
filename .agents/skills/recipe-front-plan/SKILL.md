@@ -20,6 +20,7 @@ description: "Create frontend work plan from design document with test skeleton 
 **Execution Method**:
 - Test skeleton generation -> performed by acceptance-test-generator
 - Work plan creation -> performed by work-planner
+- Work plan review -> performed by document-reviewer
 
 Orchestrator spawns agents and passes structured data between them.
 
@@ -29,6 +30,7 @@ Orchestrator spawns agents and passes structured data between them.
 - Design document selection
 - Test skeleton generation with acceptance-test-generator
 - Work plan creation with work-planner
+- Work plan review with document-reviewer
 - Plan approval obtainment
 
 **Responsibility Boundary**: This skill completes with work plan approval.
@@ -50,6 +52,15 @@ Spawn acceptance-test-generator agent: "Generate test skeletons from Design Doc 
 ### Step 3: Work Plan Creation
 Spawn work-planner agent: "Create work plan from Design Doc at [path]. Integration test file: [path from step 2]. fixture-e2e test file: [path from step 2 or null]. service-integration-e2e test file: [path from step 2 or null]. E2E absence reasons by lane: [values from step 2 when an E2E lane is null]. Integration tests are created with each phase implementation, fixture-e2e runs alongside UI implementation, service-integration-e2e runs only in the final phase when a service E2E file exists. Include `Implementation Readiness: pending` in the work plan header."
 
+### Step 4: Work Plan Review
+Spawn document-reviewer agent: "Review the frontend work plan. doc_type: WorkPlan. target: docs/plans/[plan-name].md. mode: composite. Review semantic traceability to the Design Doc and UI Spec, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
+
+Branch on `verdict.decision`:
+- `approved` or `approved_with_conditions` -> proceed to Step 5
+- `needs_revision` -> spawn work-planner in update mode with the findings, then repeat Step 4. Follow the approval vocabulary iteration limit in subagents-orchestration-guide.
+- `rejected` -> stop and present the blocking findings to the user.
+
+### Step 5: Plan Approval
 **[STOP -- BLOCKING]** Interact with user to complete plan and obtain approval for plan content. Clarify specific implementation steps and risks.
 **CANNOT proceed until user explicitly approves the work plan.**
 
@@ -60,6 +71,7 @@ ENFORCEMENT: Plan content MUST be approved before declaring completion. Unapprov
 - [ ] Design document selected
 - [ ] Test skeletons generated
 - [ ] Work plan created
+- [ ] Work plan reviewed via document-reviewer
 - [ ] User approved plan content
 
 ## Output Example

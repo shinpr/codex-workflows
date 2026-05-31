@@ -46,6 +46,7 @@ Skill Status:
 8. Propagate UI Spec component and runtime boundary context into the plan so task decomposition can pass it to executors
 9. Map implementation-binding ADR decisions to constrained tasks
 10. Document in progress-trackable format
+11. Carry proof obligations from test skeletons or acceptance criteria into the work plan so task files and reviews can judge whether tests prove the claim, not merely run
 
 ## Input Parameters
 
@@ -70,6 +71,7 @@ Read the Design Doc(s), UI Spec, PRD, and ADR (if provided). Extract:
 - Quality Assurance Mechanisms from each Design Doc: all items marked `adopted`, including mechanism name, enforced quality aspect, configuration path, and covered files or project-wide scope
 - Implementation-relevant technical requirements from each Design Doc section using the category values defined in the plan template's `Design-to-Plan Traceability` section
 - Prerequisite ADR references from each Design Doc and implementation-binding decisions from each resolved ADR
+- Primary failure modes from acceptance criteria or generated test skeletons
 
 Focus on implementation-relevant items only: items that directly inform task creation, dependency ordering, verification design, or protected no-change boundaries.
 Extract `scope-boundary` rows from explicit non-target statements such as `No Ripple Effect`, compatibility constraints, or protected boundaries that must remain unchanged.
@@ -88,8 +90,10 @@ Choose Strategy A (TDD) if test skeletons are provided, Strategy B (implementati
 ### 4. Compose Phases
 
 **Common rules (all approaches)**:
+- Record Review Scope in the plan header as the planned file scope derived from the Design Doc and task targets. For revision plans, record the base branch and diff range.
 - Preserve Verification Strategies per Design Doc in the work plan header and keep each source document path. Merge strategies only when the Design Docs explicitly define a shared one
 - Include Verification Strategy summaries in the work plan header so the plan is self-sufficient for downstream task generation
+- Include a Proof Strategy in the work plan header. When test skeletons exist, use their Primary failure mode and Proof obligation annotations as the proof obligation source; otherwise derive each claim's primary failure mode from the acceptance criterion and Design Doc verification strategy.
 - Include adopted Quality Assurance Mechanisms in the work plan header so downstream task generation and quality checks inherit the intended quality gates
 - Place tasks with the lowest dependencies in earlier phases
 - Map normalized verification timing to phases as follows: `phase_1` -> earliest implementation phase, `per_phase` -> each relevant phase, `integration_phase` -> integration phase, `final_phase` -> final Quality Assurance phase
@@ -171,6 +175,20 @@ Mapping rules:
 - Acceptance criteria and required user-visible behaviors belong in `Design-to-Plan Traceability`; `ADR Bindings` covers structural implementation constraints.
 - If an ADR decision constrains the design but no task covers it, add a justified gap and flag it for user confirmation before plan approval.
 
+### 5d. Build Failure Mode Checklist
+
+Populate the plan template's `Failure Mode Checklist` before finalizing tasks. Enumerate all eight domain-independent categories, mark whether each applies, and list the task IDs that cover applicable categories. Keep category names generic and put project-specific details in task descriptions or notes.
+
+Categories:
+- same-value
+- no-op
+- empty input
+- invalid option
+- missing config
+- unavailable boundary
+- shared-state dependency
+- rollback-only visibility
+
 ### 6. Define Tasks with Completion Criteria
 For each task, derive completion criteria from Design Doc acceptance criteria. Apply the 3-element completion definition (Implementation Complete, Quality Complete, Integration Complete).
 
@@ -244,6 +262,8 @@ Read available test skeleton files (integration tests, and E2E tests only when p
 - `// @dependency:` → Dependent components (material for phase placement decisions)
 - `// @complexity:` → Complexity (high/medium/low, material for effort estimation)
 - `// Value Score:` → Priority judgment
+- `// Primary failure mode:` → Regression the implemented test must detect
+- `// Proof obligation:` → Boundary, state, and mock-rationale obligations the implemented test must satisfy
 
 #### Step 2: Reflect Meta Information in Work Plan
 
@@ -256,6 +276,11 @@ Read available test skeleton files (integration tests, and E2E tests only when p
 2. **Complexity-based Effort Estimation**
    - `// @complexity: high` → Subdivide tasks or estimate higher effort
    - `// @complexity: low` → Consider combining multiple tests into one task
+
+3. **Proof Strategy Propagation**
+   - Copy Primary failure mode and Proof obligation annotations into the plan's Proof Strategy
+   - Map each proof obligation to the task that implements or verifies the corresponding acceptance criterion or user journey
+   - When a proof obligation cannot be fully satisfied until a later phase, record the residual and the closing task
 
 #### Step 3: Extract Environment Prerequisites from E2E Skeletons
 

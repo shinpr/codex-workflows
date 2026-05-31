@@ -33,6 +33,7 @@ ENFORCEMENT: Work-planner spawned without test skeleton data (when tests were re
 - Design document selection
 - Test skeleton generation with acceptance-test-generator
 - Work plan creation with work-planner
+- Work plan review with document-reviewer
 - Plan approval obtainment
 
 **Responsibility Boundary**: This skill completes with work plan approval.
@@ -53,7 +54,18 @@ Present options if multiple exist (can be specified with $ARGUMENTS).
 
 ### Step 3: Work Plan Creation
 - Spawn work-planner agent: "Create work plan from design document at [design-doc-path]. Include deliverables from previous process according to subagents-orchestration-guide skill coordination specification. If `generatedFiles.fixtureE2e` or `generatedFiles.serviceE2e` is null, use the corresponding `e2eAbsenceReason` and accept the null E2E lane as a valid planning input. Include `Implementation Readiness: pending` in the work plan header."
-- Interact with user to complete plan and obtain approval for plan content
+
+### Step 4: Work Plan Review
+Spawn document-reviewer agent: "Review the work plan. doc_type: WorkPlan. target: docs/plans/[plan-name].md. mode: composite. Review semantic traceability to the Design Doc, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
+
+Branch on `verdict.decision`:
+- `approved` or `approved_with_conditions` -> proceed to Step 5
+- `needs_revision` -> spawn work-planner in update mode with the findings, then repeat Step 4. Follow the approval vocabulary iteration limit in subagents-orchestration-guide.
+- `rejected` -> stop and present the blocking findings to the user.
+
+### Step 5: Plan Approval
+- Present the reviewed work plan to the user for batch approval
+- If the user requests changes, spawn work-planner in update mode and re-run Step 4
 - Clarify specific implementation steps and risks
 
 **Scope**: Up to work plan creation and obtaining approval for plan content.
@@ -63,6 +75,7 @@ Present options if multiple exist (can be specified with $ARGUMENTS).
 - [ ] Design document identified and selected
 - [ ] Integration/E2E test skeleton generation confirmed with user (generated if requested)
 - [ ] Work plan created via work-planner
+- [ ] Work plan reviewed via document-reviewer
 - [ ] Plan content approved by user
 - [ ] All stopping points honored with user confirmation
 

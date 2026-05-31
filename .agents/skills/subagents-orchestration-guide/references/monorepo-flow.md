@@ -10,7 +10,7 @@ This reference defines the orchestration flow for projects spanning multiple lay
 
 ## Design Phase
 
-### Large Scale Fullstack (6+ Files) - 15 Steps
+### Large Scale Fullstack (6+ Files) - 16 Steps
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
@@ -28,9 +28,10 @@ This reference defines the orchestration flow for projects spanning multiple lay
 | 12 | document-reviewer x2 | Review each Design Doc with verification evidence | Reviews |
 | 13 | design-sync | Cross-layer consistency verification (source: frontend Design Doc) **[Stop]** | Sync status |
 | 14 | acceptance-test-generator | Integration/E2E test skeleton from cross-layer contracts | Test skeletons |
-| 15 | work-planner | Work plan from all Design Docs **[Stop: Batch approval]** | Work plan |
+| 15 | work-planner | Work plan from all Design Docs | Work plan |
+| 16 | document-reviewer | WorkPlan review **[Stop: Batch approval]** | Approval |
 
-### Medium Scale Fullstack (3-5 Files) - 13 Steps
+### Medium Scale Fullstack (3-5 Files) - 14 Steps
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
@@ -46,7 +47,8 @@ This reference defines the orchestration flow for projects spanning multiple lay
 | 10 | document-reviewer x2 | Review each Design Doc with verification evidence | Reviews |
 | 11 | design-sync | Cross-layer consistency verification (source: frontend Design Doc) **[Stop]** | Sync status |
 | 12 | acceptance-test-generator | Integration/E2E test skeleton from cross-layer contracts | Test skeletons |
-| 13 | work-planner | Work plan from all Design Docs **[Stop: Batch approval]** | Work plan |
+| 13 | work-planner | Work plan from all Design Docs | Work plan |
+| 14 | document-reviewer | WorkPlan review **[Stop: Batch approval]** | Approval |
 
 ### Parallelization in Multi-Agent Steps
 
@@ -100,6 +102,12 @@ Spawn work-planner with all Design Docs:
 > "Create a work plan from the following documents: PRD: [path] (Large Scale only), Design Doc (backend): [path], Design Doc (frontend): [path], UI Spec: [path] (if exists). Test skeletons from acceptance-test-generator: integration: [path or null], fixtureE2e: [path or null], serviceE2e: [path or null], e2eAbsenceReason: { fixtureE2e: [value or null], serviceE2e: [value or null] }. Compose phases as vertical feature slices where possible -- each phase should contain both backend and frontend work for the same feature area, enabling early integration verification per phase. Include `Implementation Readiness: pending` in the work plan header."
 
 work-planner's existing Integration Complete criteria naturally covers cross-layer verification when given multiple Design Docs.
+
+After work-planner creates or updates the plan, spawn document-reviewer:
+
+> "Review the fullstack work plan. doc_type: WorkPlan. target: [work plan path]. mode: composite. Review semantic traceability to all Design Docs, UI Spec when present, cross-layer boundary coverage, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
+
+On `needs_revision`, return to work-planner in update mode and re-review within the approval vocabulary iteration limit. On `rejected`, halt and escalate to the user. Stop for batch approval only after WorkPlan review returns `approved` or `approved_with_conditions`.
 
 ## Task Decomposition Phase
 

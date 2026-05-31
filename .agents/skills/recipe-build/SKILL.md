@@ -55,14 +55,23 @@ Analyze task file existence state and determine the action required:
 | State | Criteria | Next Action |
 |-------|----------|-------------|
 | Tasks exist | Consumed Task Set is non-empty | User's execution instruction serves as batch approval -> Enter autonomous execution immediately |
-| No tasks + plan exists | Consumed Task Set is empty but plan exists | Confirm with user -> spawn task-decomposer |
+| No tasks + plan exists | Consumed Task Set is empty but plan exists | Run work plan review, then confirm with user -> spawn task-decomposer |
 | Neither exists | No plan or task files | Error: Prerequisites not met |
 
 ## Task Decomposition Phase (Conditional)
 
 When task files don't exist:
 
-### 1. User Confirmation
+### 1. Work Plan Review
+
+Spawn document-reviewer agent: "Review the work plan before task decomposition. doc_type: WorkPlan. target: docs/plans/[plan-name].md. mode: composite. Review semantic traceability to the Design Doc, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
+
+Branch on `verdict.decision`:
+- `approved` or `approved_with_conditions` -> continue to user confirmation
+- `needs_revision` -> stop before task decomposition and report that the work plan needs update via recipe-plan
+- `rejected` -> stop before task decomposition and present the blocking findings to the user
+
+### 2. User Confirmation
 ```
 No task files found.
 Work plan: docs/plans/[plan-name].md
@@ -70,10 +79,10 @@ Work plan: docs/plans/[plan-name].md
 Generate tasks from the work plan? (y/n):
 ```
 
-### 2. Task Decomposition (if approved)
+### 3. Task Decomposition (if approved)
 Spawn task-decomposer agent: "Read work plan at docs/plans/[plan-name].md and decompose into atomic tasks. Output: Individual task files in docs/plans/tasks/. Granularity: 1 task = 1 commit = independently executable."
 
-### 3. Verify Generation
+### 4. Verify Generation
 Recompute the Consumed Task Set and verify it is non-empty.
 
 ## Pre-execution Checklist
