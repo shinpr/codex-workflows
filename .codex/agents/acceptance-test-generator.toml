@@ -111,6 +111,7 @@ For each valid AC from Phase 1:
    - Happy path (1 test mandatory)
    - Error handling (only if user-visible error)
    - Edge cases (only if high business impact)
+   - Boundary path (behavior-changing AC only): when the AC can hold on the main path while a distinct branch, state, input class, lifecycle step, or fallback regresses, capture that boundary as a proof obligation. Prefer merging the boundary path into the selected happy-path or highest-value candidate; create a separate candidate only when the boundary needs separate setup.
 
 2. **Classify test level**:
    - Integration test candidate (feature-level interaction)
@@ -167,7 +168,8 @@ Value score and E2E selection rules are defined in **integration-e2e-testing ski
 4. Reserve 1 service-integration-e2e slot only when the journey needs real cross-service verification
 5. Fill remaining fixture-e2e budget with candidates that satisfy `Value Score >= 20`
 6. Fill remaining service-integration-e2e budget with candidates that satisfy `Value Score > 50`
-7. If a lane emits no tests, return its generated file as `null` with a concrete lane-specific absence reason
+7. For every behavior-changing AC kept in scope, ensure at least one selected test represents its required boundary proof obligation. Merge the boundary path into a selected happy-path or highest-value candidate when possible; otherwise replace the lowest-value optional selected candidate. When required boundary obligations exceed the budget and no optional candidate is replaceable, keep the budget hard limit and add uncovered AC IDs and boundary paths to `boundaryProofGaps`.
+8. If a lane emits no tests, return its generated file as `null` with a concrete lane-specific absence reason
 ```
 
 **Output**: Final test set
@@ -272,7 +274,8 @@ Adapt comment syntax to the project's language when generating annotations.
   "e2eAbsenceReason": {
     "fixtureE2e": "all_e2e_candidates_below_threshold",
     "serviceE2e": "no_real_service_dependency"
-  }
+  },
+  "boundaryProofGaps": []
 }
 ```
 
@@ -293,7 +296,14 @@ Adapt comment syntax to the project's language when generating annotations.
   "e2eAbsenceReason": {
     "fixtureE2e": null,
     "serviceE2e": null
-  }
+  },
+  "boundaryProofGaps": [
+    {
+      "acId": "[AC-XXX]",
+      "boundaryPath": "[branch/state/input/lifecycle/fallback/visibility path]",
+      "reason": "budget_insufficient_for_boundary_proof"
+    }
+  ]
 }
 ```
 
@@ -306,7 +316,7 @@ Each test case MUST have the following standard annotations for test implementat
 - **@dependency**: none | [component names] | full-ui (mocked backend) | full-system
 - **@complexity**: low | medium | high
 - **Primary failure mode**: the specific regression that should make the implemented test fail
-- **Proof obligation**: what the implemented test must assert to prove the claim, including the boundary to exercise, before/action/after state for state-changing claims, and which boundaries may be mocked with rationale
+- **Proof obligation**: what the implemented test must assert to prove the claim, including the boundary to exercise, before/action/after state for state-changing claims, and which boundaries may be mocked with rationale. A behavior-changing AC is one whose promised observable behavior could still pass on the main path while a separate branch, state, input class, lifecycle step, fallback, or visibility boundary regresses. For behavior-changing ACs, name the boundary path the test must traverse when the main path alone would stay green through the regression
 
 These annotations are used when planning and prioritizing test implementation. Primary failure mode and proof obligation carry the proof contract to work-planner, task-decomposer, and integration-test-reviewer.
 
