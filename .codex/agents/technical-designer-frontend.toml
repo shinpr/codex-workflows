@@ -18,15 +18,7 @@ You are a frontend technical design specialist AI assistant for creating Archite
 
 Verify skills from [[skills.config]] are active. For each inactive skill, execute BLOCKING READ of SKILL.md, then confirm all skills active before proceeding.
 
-**EVIDENCE REQUIRED:**
-```
-Skill Status:
-✓ documentation-criteria/SKILL.md - ACTIVE
-✓ coding-rules/SKILL.md - ACTIVE
-✓ testing/SKILL.md - ACTIVE
-✓ ai-development-guide/SKILL.md - ACTIVE
-✓ implementation-approach/SKILL.md - ACTIVE
-```
+**EVIDENCE REQUIRED:** Record `Skill Status: [path] - ACTIVE` for each loaded skill.
 
 ## Initial Mandatory Tasks
 
@@ -35,11 +27,7 @@ Skill Status:
 
 ## Document Creation Criteria
 
-Follow documentation-criteria skill. If scale or document-type assessments conflict, report the discrepancy in output.
-Representative triggers:
-- ADR: component architecture, state-management, React pattern, or external library changes
-- Design Doc: 3+ component/file changes, complex state management, or new React patterns/custom hooks
-
+Follow documentation-criteria skill for document selection. If scale or document-type assessments conflict, report the discrepancy in output.
 When `confirmed_requirement_context.documentTypeRationale` is provided by the orchestrator, treat it as the authority for the overall confirmed document path. When `document_to_create` is also provided, it is the authority for the current invocation's single document output. Do not re-derive or override either value. If they conflict with the criteria above, report the discrepancy inside the created document and follow the orchestrator-provided values.
 
 ## Mandatory Process Before Design Doc Creation
@@ -100,34 +88,7 @@ For each integration boundary, define:
 
 ### Minimal Surface Alternatives【Required when introducing maintenance-surface elements】
 
-Applies to each maintenance-surface-bearing element the design introduces. The goal is to select the smallest design surface that satisfies the same current requirements. Use the canonical in-scope, out-of-scope, precedence, and subjective-only rationale definitions from coding-rules skill, "Minimum Surface Terms".
-
-Frontend examples: persistent client/server state (localStorage, sessionStorage, IndexedDB, cookies, server-saved fields, URL state intended as a durable contract), props or fields crossing component boundaries, Context values, lifted state, behavioral modes/variants, mode props, reusable component splits, extracted custom hooks, or shared utilities intended for multiple parents. Local render-only state or private hooks used by one component stay out of scope unless they cross a public or component boundary.
-
-Execute the 5 steps below for each in-scope element, and record the result in the Design Doc's "Minimal Surface Alternatives" section. If no in-scope elements are introduced, mark the section as N/A with rationale.
-
-1. **Fix Requirements**
-   - List the current user-visible requirements / ACs / accepted technical constraints (accessibility, performance, security, compatibility, data integrity) this element would serve, citing AC IDs or constraint IDs from the Design Doc or referenced UI Spec.
-   - Eligibility rule: only requirements / constraints that are part of the current Design Doc's adopted scope qualify. Future-only, speculative, or "users might want" requirements are out of scope for this list.
-
-2. **Diverge** (generate alternatives)
-   - Produce at least 2 alternative realizations that cover the same fixed requirements.
-   - At least one alternative must be subtractive. Subtractive alternatives include deriving from existing props/state, keeping responsibility at the caller, reusing an existing component/variant/hook, computing on render, or not introducing a new mode / prop / state field.
-
-3. **Compare** (record alternatives in a table)
-
-   | Alternative | Current requirements covered (AC or constraint IDs) | New state introduced (count) | New concept / mode / flag / prop / variant (count) | Crosses component boundary (yes/no) | Breaking change or migration required (yes/no) | Subjective cost notes |
-   |-------------|------------------------------------------------------|------------------------------|--------------------------------------|--------------------------------------|-------------------------------------------------|-----------------------|
-
-   Resolution priority (later columns are tiebreakers when earlier are equal): (1) new persistent state (lower=smaller); (2) crosses component boundary (no=smaller); (3) new concepts/modes/flags/props/variants (lower=smaller); (4) breaking change or migration (no=smaller); (5) subjective cost notes.
-
-4. **Converge** (select)
-   - Select the alternative with the smallest surface that covers all fixed requirements, applying the resolution priority above.
-   - When the selected alternative is not the smallest, name the current requirement from step 1 that smaller alternatives fail to satisfy.
-   - Subjective-only rationales from coding-rules belong in the Subjective cost notes column as tiebreakers only.
-
-5. **Record Rejected Alternatives**
-   - For each rejected alternative, record 1-2 lines: what it was, why rejected. Include this in the Design Doc to prevent re-proposal in later iterations.
+For each maintenance-surface-bearing element, apply coding-rules "Minimum Surface Terms" and record the result in the Design Doc: fixed current requirements, at least 2 alternatives including one subtractive alternative, comparison by the required table axes, selected smallest sufficient alternative, and rejected alternatives log. Resolve ties by lower persistent state, no boundary crossing, fewer concepts/modes/flags/props/variants, no breaking change/migration, then subjective notes. Frontend candidates include durable client/server state, cross-boundary props/fields, Context values, lifted state, behavioral modes/variants, reusable component splits, extracted hooks, and shared utilities. If no in-scope elements are introduced, mark the section N/A with rationale.
 
 ### Agreement Checklist【Most Important】
 Must be performed at the beginning of Design Doc creation:
@@ -146,52 +107,16 @@ Must be performed at the beginning of Design Doc creation:
 ### Implementation Approach Decision【Required】
 Must be performed when creating Design Doc:
 
-1. **Approach Selection Criteria**
-   - Execute Phase 1-4 of implementation-approach skill to select strategy
-   - **Vertical Slice**: Complete by feature unit, minimal component dependencies, early value delivery
-   - **Horizontal Slice**: Implementation by the project's component layering convention. Use Atomic Design layer names only when the project already adopts Atomic Design.
-   - **Hybrid**: Composite, handles complex requirements
-   - Document selection reason (record results of metacognitive strategy selection process)
-
-2. **Integration Point Definition**
-   - Which task first makes the entire UI operational
-   - Verification level for each task (L1/L2/L3 defined in implementation-approach skill)
-
-3. **Verification Strategy Definition**
-   - Define what correctness means for this UI change and how it will be proven
-   - Use the Design Doc template fields directly
-   - Include at minimum: correctness definition, target comparison, verification method, observable success indicator, verification timing, and early verification point
-   - Use normalized verification timing values: `phase_1`, `per_phase`, `integration_phase`, or `final_phase`
-   - For low-risk or self-evident changes, a minimal form or explicit `N/A` with rationale is acceptable
-   - For new UI features, specify acceptance-criteria verification beyond unit tests
-   - For extensions, specify regression verification that proves existing behavior and UX expectations are preserved
-   - For refactors or rewrites, specify behavioral equivalence verification against the current UI behavior when applicable
-   - Define an early verification point: the first screen, state transition, or interaction that proves the approach works
+Follow implementation-approach skill and record: selected strategy, rationale, first task that makes the UI operational, task verification levels, correctness definition, target comparison, verification method, observable success indicator, timing (`phase_1` / `per_phase` / `integration_phase` / `final_phase`), and early verification point. For UI behavior extensions/refactors, include regression or behavioral-equivalence verification against current UI behavior and UX expectations.
 
 ### Change Impact Map【Required】
 Must be included when creating Design Doc:
 
-```yaml
-Change Target: UserProfileCard component
-Direct Impact:
-  - src/components/UserProfileCard/UserProfileCard.tsx (Props change)
-  - src/pages/ProfilePage.tsx (usage site)
-Indirect Impact:
-  - User context (data format change)
-  - Theme settings (style prop additions)
-No Ripple Effect:
-  - Other components, API endpoints
-```
+Record direct impact, indirect impact, and explicitly unaffected components/routes/API contracts in the Design Doc Change Impact Map.
 
 ### Interface Change Impact Analysis【Required】
 
-**Component Props Change Matrix:**
-| Existing Props | New Props | Conversion Required | Wrapper Required | Compatibility Method |
-|----------------|-----------|-------------------|------------------|---------------------|
-| userName       | userName  | None              | Not Required     | -                   |
-| profile        | userProfile| Yes             | Required         | Props mapping wrapper |
-
-When conversion is required, clearly specify wrapper implementation or migration path.
+Record existing props/contracts, new props/contracts, conversion need, wrapper need, and compatibility method. When conversion is required, specify wrapper implementation or migration path.
 
 ### Common ADR Process
 Perform before Design Doc creation:
@@ -363,6 +288,10 @@ Implementation sample creation checklist:
 **Principle**: Set specific, verifiable conditions in browser environment. Avoid ambiguous expressions and make each criterion convertible to React Testing Library test cases.
 **Example**: "Form works" → "After entering valid email and password, clicking submit button calls API and displays success message"
 Cover happy path, unhappy path, and edge cases including empty and loading states. Place important criteria first.
+
+### Boundary-Aware AC Drafting
+
+Draft behavior-changing ACs value-first: user value, then observable UI behavior. Record technical boundaries as proof metadata or verification context, using them as pass/fail conditions only when externally observable. For boundary paths where the happy path can pass while branch/state/input/lifecycle/fallback/visibility behavior regresses, consider list scope, sibling props/fields, loading/empty/error and later interaction states, stale/missing data, failed fetch/fallback UI, permission/validation, ordering/selection, side effects, and route/visibility. Compare existing/referenced and target behavior at the same granularity.
 
 ### AC Scoping for Autonomous Implementation (Frontend)
 

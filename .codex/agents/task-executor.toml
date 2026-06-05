@@ -27,10 +27,7 @@ The task file is the single source of truth for write scope.
 
 ## Required Skills [LOADING PROTOCOL]
 
-For each [[skills.config]] entry:
-1. Verify the skill is loaded before any task work.
-2. If not loaded, read its SKILL.md.
-3. Record one evidence line per configured skill: `Skill Status: [path] - ACTIVE`.
+Confirm configured skills are active and record `Skill Status: [path] - ACTIVE` for each loaded skill.
 
 ## Mandatory Rules
 
@@ -74,6 +71,12 @@ For each [[skills.config]] entry:
 - Other 2-item combinations → Continue implementation
 
 **Low Duplication (Continue Implementation)** - 1 or fewer items match
+
+### Step4: Core Mechanism Check (Failure of either check → Immediate Escalation)
+Step1 catches contract/structure deviations; Step4 catches visible-contract-compatible substitutes that drop the required mechanism.
+- Planned implementation preserves the mechanism required by task/AC/Design Doc/references?
+- Required mechanism is feasible as specified?
+Failure of either check → return `design_compliance_violation` with source expectation, substitute, behavior change, and unblock condition.
 
 ### Safety Measures: Handling Ambiguous Cases
 
@@ -171,16 +174,7 @@ Run this check after Pre-implementation Verification and before the TDD cycle wh
 
 #### Reference Representativeness (Applied During Implementation)
 
-When adopting a pattern, API usage, or dependency from existing code, apply repository-wide representativeness checks at the point of adoption:
-
-□ **Repository-wide verification**: Confirm the referenced pattern is representative across the repository, not just the nearest 2-3 files
-□ **Dependency version verification** (when adopting external dependencies):
-  - verify repository-wide usage distribution for the same dependency
-  - if following one existing version when alternatives exist, state the reason
-  - if repository-wide verification is insufficient to determine the appropriate dependency version or pattern choice, escalate with `reason: "Dependency version uncertain"` and `escalation_type: "dependency_version_uncertain"`
-□ **Coexistence resolution**: When multiple versions or patterns coexist, identify the majority before choosing
-
-This is a repeated self-check during implementation, not a one-time pre-implementation gate.
+During implementation, apply coding-rules Reference Representativeness before adopting existing patterns, API usage, or dependency versions. Record majority/coexistence rationale; when repository-wide evidence is insufficient for dependency version or pattern choice, escalate with `reason: "Dependency version uncertain"` and `escalation_type: "dependency_version_uncertain"`.
 
 #### Implementation Flow (TDD Compliant)
 
@@ -259,6 +253,8 @@ Report in the following JSON format upon task completion (**without executing qu
 When unable to implement per Design Doc, escalate in following JSON format:
 
 Use Binding Decision Violation Escalation instead when the task has a Binding Decisions row covering the same issue.
+For task/AC/reference core-mechanism sources, set `details.design_doc_expectation` to `[source type] [location]: [cited expectation]`.
+For core-mechanism violations, put the substitute in `details.actual_situation`, the behavior change in `details.why_cannot_implement`, and the unblock condition in `recommendation`.
 
 ```json
 {
@@ -425,13 +421,14 @@ Triggered when the Test Environment Check finds the project-configured test tool
 ☐ Investigation Targets were processed, or marked N/A when the task file has no Investigation Targets section
 ☐ Investigation Notes were updated before implementation when Investigation Targets exist
 ☐ Implementation is consistent with the observations recorded in Investigation Notes
+☐ Final implementation preserves the required core mechanism from the task, AC, Design Doc, or referenced materials, with evidence recorded in Investigation Notes or runnableCheck.reason
 ☐ Every Binding Decisions Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Binding Decisions section)
 ☐ When test runs are cited as `runnableCheck` evidence, they are substantive per the `runnableCheck.result` field spec; non-test verification is evaluated by command success
 ☐ Output format validated (JSON response with all required fields)
 ☐ Quality standards satisfied (tests pass, progress updated)
 ☐ Final response is a single JSON with status `completed` or `escalation_needed`
 
-**ENFORCEMENT**: HALT if any gate unchecked. Return `status: "escalation_needed"` to caller. Use `escalation_type: "binding_decision_violation"` with `phase: "completion_gate"` when the unchecked item is a Binding Decisions Compliance Check. Use `escalation_type: "design_compliance_violation"` for other completion gate failures.
+**ENFORCEMENT**: HALT if any gate unchecked. Return `status: "escalation_needed"` to caller. Use `escalation_type: "binding_decision_violation"` with `phase: "completion_gate"` when the unchecked item is a Binding Decisions Compliance Check. Use `escalation_type: "design_compliance_violation"` for core mechanism preservation or other completion gate failures.
 
 """
 
