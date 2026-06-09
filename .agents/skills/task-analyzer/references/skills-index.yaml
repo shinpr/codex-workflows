@@ -155,7 +155,7 @@ skills:
 
   subagents-orchestration-guide:
     skill: "subagents-orchestration-guide"
-    tags: [orchestration, workflow, subagents, context-isolation, autonomous-execution, guided-autonomous-execution, planning, design-flow, implementation-flow, implementation-readiness, readiness-gate]
+    tags: [orchestration, workflow, subagents, context-isolation, autonomous-execution, guided-autonomous-execution, planning, design-flow, implementation-flow, implementation-readiness, readiness-resolution]
     typical-use: "Orchestrating subagents through implementation workflows, scale determination, stop points, guided autonomous execution mode"
     size: large
     key-references:

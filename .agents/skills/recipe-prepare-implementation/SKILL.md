@@ -80,6 +80,7 @@ When all applicable criteria are `pass`:
 
 When one or more criteria fail:
 1. Present the proposed prep tasks to the user and continue only after explicit approval.
+   - If the user declines prep execution, persist `Implementation Readiness: escalated` with the current Readiness Report and stop before creating prep task files.
 2. Create task files in `docs/plans/tasks/` using the task template:
    - Backend prep: `{plan-name}-backend-task-prep-{NN}.md`
    - Frontend prep: `{plan-name}-frontend-task-prep-{NN}.md`

@@ -210,14 +210,14 @@ Work plans use the header line `Implementation Readiness: <status>`.
 
 | Status | Meaning | Consumer Action |
 |--------|---------|-----------------|
-| `pending` | Initial state from work-planner; readiness has not been checked | Present the unchecked state, recommend running implementation readiness preflight, and continue only on explicit user approval |
+| `pending` | Initial state from work-planner; readiness has not been checked | Run the Implementation Readiness Preflight Procedure before task execution |
 | `ready` | Readiness scan completed and no applicable failures remain | Proceed with task execution |
 | `escalated` | Readiness scan completed, but one or more failures remain | Read the work plan's Implementation Readiness Report, present remaining gaps, and continue only on explicit user approval |
-| absent | Older work plan without the marker | Treat as `pending` |
+| absent | Older work plan without the marker | Run the Implementation Readiness Preflight Procedure and persist the resulting marker |
 
 ## Implementation Readiness Preflight Procedure
 
-Use this procedure after work-plan approval and before autonomous task execution when the flow needs to verify implementation readiness.
+Use this procedure after work-plan approval and before autonomous task execution when the flow needs to verify implementation readiness. The procedure supplies the evidence needed for user decisions; prompts for approval only after concrete failing criteria and proposed prep tasks are known.
 
 1. Load the approved work plan exact path and extract Verification Strategies, Quality Assurance Mechanisms, Design-to-Plan Traceability, ADR Bindings, UI Spec Component -> Task Mapping, Connection Map, test skeleton references, E2E absence reasons, phase structure, referenced Design Docs, ADRs, and UI Specs.
 2. Evaluate these criteria with evidence:
@@ -227,9 +227,12 @@ Use this procedure after work-plan approval and before autonomous task execution
    - R4 UI rendering surface exists when UI work is present
    - R5 Local service stack or browser harness procedure exists when applicable
 3. If every applicable criterion passes, persist `## Implementation Readiness Report` in the work plan and set `Implementation Readiness: ready`.
-4. If any criterion fails, create the smallest approved prep tasks that close the gaps, execute each exact prep task file through the standard executor -> quality-fixer -> commit cycle, then re-run the scan.
-5. After re-scan, set `Implementation Readiness: ready` when all applicable criteria pass, otherwise `Implementation Readiness: escalated`, and persist remaining gaps in the Readiness Report.
-6. Collapse completed prep task references into the Readiness Report and delete only the prep task files created for the current work plan.
+4. If any criterion fails, present the failing criteria, evidence, and the smallest proposed prep tasks that close the gaps. Continue with prep execution only after explicit user approval for those tasks.
+5. If the user declines prep execution, persist `Implementation Readiness: escalated` with the remaining gaps and stop before autonomous task execution.
+6. If the user approves prep execution, create the approved prep task files under `docs/plans/tasks/` using the task template. Use `{plan-name}-task-prep-{NN}.md` for single-layer plans, `{plan-name}-backend-task-prep-{NN}.md` for backend prep, and `{plan-name}-frontend-task-prep-{NN}.md` for frontend prep.
+7. Execute each exact prep task file through the standard executor -> quality-fixer -> commit cycle, then re-run the scan.
+8. After re-scan, set `Implementation Readiness: ready` when all applicable criteria pass, otherwise `Implementation Readiness: escalated`, and persist remaining gaps in the Readiness Report.
+9. Collapse completed prep task references into the Readiness Report and delete only the prep task files created for the current work plan.
 
 ## Handling Requirement Changes
 
