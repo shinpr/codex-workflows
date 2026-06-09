@@ -104,7 +104,7 @@ When user responds to questions:
 **Required Flow Compliance**:
 - Run quality-fixer (layer-appropriate) before every commit
 - Obtain user approval before Edit/Write outside autonomous mode
-- Run implementation readiness preflight for the approved work plan before autonomous implementation, or continue without it only after explicit user approval
+- Resolve implementation readiness for the approved work plan before autonomous implementation
 
 ENFORCEMENT: Commits without quality-fixer approval are invalid and MUST be reverted.
 

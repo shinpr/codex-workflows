@@ -180,33 +180,40 @@ Value score and E2E selection rules are defined in **integration-e2e-testing ski
 
 Adapt comment syntax to the project's language when generating annotations.
 
+A skeleton is committed before its implementation exists, so its committed form contains only comments and omits executable imports, runner blocks, and runner globals such as `describe` or `it`. This keeps freshly committed skeletons green under typecheck, lint, and build gates. The implementing task adds executable imports, runner blocks, and assertions alongside the implementation.
+
 ```
 // [Feature Name] Integration Test - Design Doc: [filename]
 // Generated: [date] | Budget Used: 2/3 integration, 0/2 E2E
-
-[Import statement using detected test framework]
-
-[Test suite using detected framework syntax]
-  // AC1: "After successful payment, order is created and persisted"
-  // Value Score: 95 | Business Value: 10 (business-critical) | Frequency: 9 (90% users)
-  // Behavior: User completes payment → Order created in DB + Payment recorded
-  // @category: core-functionality
-  // @dependency: PaymentService, OrderRepository, Database
-  // @real-dependency: OrderRepository, Database
-  // @complexity: high
-  // Primary failure mode: payment succeeds but the order row is absent or unpersisted
-  // Proof obligation: assert order persistence after successful payment while keeping OrderRepository and Database real; only the external payment gateway may be mocked
-  [Test: 'AC1: Successful payment creates persisted order with correct status']
-
-  // AC1-error: "Payment failure shows user-friendly error message"
-  // Value Score: 34 | Business Value: 8 (prevents support tickets) | Frequency: 2 (rare)
-  // Behavior: Payment fails → User sees actionable error + Order not created
-  // @category: core-functionality
-  // @dependency: PaymentService, ErrorHandler
-  // @complexity: medium
-  // Primary failure mode: payment failure still creates an order or hides the user-facing error
-  // Proof obligation: assert the visible error and the unchanged order state after a failed payment; mock only the external payment gateway failure
-  [Test: 'AC1: Failed payment displays error without creating order']
+//
+// Test case: AC1 successful payment creates persisted order
+// AC: "After successful payment, order is created and persisted"
+// Value Score: 95 | Business Value: 10 (business-critical) | Frequency: 9 (90% users)
+// Behavior: User completes payment -> Order created in DB + Payment recorded
+// @category: core-functionality
+// @lane: integration
+// @dependency: PaymentService, OrderRepository, Database
+// @real-dependency: OrderRepository, Database
+// @complexity: high
+// Primary failure mode: payment succeeds but the order row is absent or unpersisted
+// Proof obligation: assert order persistence after successful payment while keeping OrderRepository and Database real; only the external payment gateway may be mocked
+// Verification items:
+// - Persisted order exists with correct status
+// - Payment record exists
+//
+// Test case: AC1 payment failure displays error without creating order
+// AC: "Payment failure shows user-friendly error message"
+// Value Score: 34 | Business Value: 8 (prevents support tickets) | Frequency: 2 (rare)
+// Behavior: Payment fails -> User sees actionable error + Order not created
+// @category: core-functionality
+// @lane: integration
+// @dependency: PaymentService, ErrorHandler
+// @complexity: medium
+// Primary failure mode: payment failure still creates an order or hides the user-facing error
+// Proof obligation: assert the visible error and the unchanged order state after a failed payment; mock only the external payment gateway failure
+// Verification items:
+// - Visible actionable error appears
+// - Order count or order state remains unchanged
 ```
 
 ### fixture-e2e Test File
@@ -216,20 +223,20 @@ Adapt comment syntax to the project's language when generating annotations.
 // Generated: [date] | Budget Used: 1/3 fixture-e2e
 // Test Type: Browser UI with mocked backend / fixture-driven state
 // Implementation Timing: Alongside UI implementation
-
-[Import statement using detected test framework]
-
-[Test suite using detected framework syntax]
-  // User Journey: Dismiss card -> Undo banner appears -> Undo restores card
-  // Value Score: 60 | Business Value: 6 | Frequency: 7 | Defect Detection: 8
-  // Verification: Browser-visible state transitions with mocked backend state
-  // @category: fixture-e2e
-  // @lane: fixture-e2e
-  // @dependency: full-ui (mocked backend)
-  // @complexity: medium
-  // Primary failure mode: undo banner appears but the dismissed card is not restored
-  // Proof obligation: assert browser-visible state before dismissal, after dismissal, and after undo using fixture-controlled backend state
-  [Test: 'User Journey: Dismiss and undo restores the card']
+//
+// User Journey: Dismiss card -> Undo banner appears -> Undo restores card
+// Value Score: 60 | Business Value: 6 | Frequency: 7 | Defect Detection: 8
+// Verification: Browser-visible state transitions with mocked backend state
+// @category: fixture-e2e
+// @lane: fixture-e2e
+// @dependency: full-ui (mocked backend)
+// @complexity: medium
+// Primary failure mode: undo banner appears but the dismissed card is not restored
+// Proof obligation: assert browser-visible state before dismissal, after dismissal, and after undo using fixture-controlled backend state
+// Verification items:
+// - Card is visible before dismissal
+// - Undo banner is visible after dismissal
+// - Card is restored after undo
 ```
 
 ### service-integration-e2e Test File
@@ -239,20 +246,20 @@ Adapt comment syntax to the project's language when generating annotations.
 // Generated: [date] | Budget Used: 1/2 service-integration-e2e
 // Test Type: End-to-end against running local stack
 // Implementation Timing: Final phase only
-
-[Import statement using detected test framework]
-
-[Test suite using detected framework syntax]
-  // User Journey: Complete purchase flow (browse -> checkout -> payment -> confirmation persisted)
-  // Value Score: 120 | Business Value: 10 (business-critical) | Frequency: 10 (core flow) | Legal: true
-  // Verification: Order persists in DB and confirmation event is emitted
-  // @category: service-integration-e2e
-  // @lane: service-integration-e2e
-  // @dependency: full-system
-  // @complexity: high
-  // Primary failure mode: checkout appears successful but the persisted order or confirmation event is missing
-  // Proof obligation: exercise the full local service stack and assert persisted order state plus confirmation event after checkout
-  [Test: 'User Journey: Complete product purchase persists order and emits confirmation']
+//
+// User Journey: Complete purchase flow (browse -> checkout -> payment -> confirmation persisted)
+// Value Score: 120 | Business Value: 10 (business-critical) | Frequency: 10 (core flow) | Legal: true
+// Verification: Order persists in DB and confirmation event is emitted
+// @category: service-integration-e2e
+// @lane: service-integration-e2e
+// @dependency: full-system
+// @complexity: high
+// Primary failure mode: checkout appears successful but the persisted order or confirmation event is missing
+// Proof obligation: exercise the full local service stack and assert persisted order state plus confirmation event after checkout
+// Verification items:
+// - Checkout completes
+// - Order row persists
+// - Confirmation event is emitted
 ```
 
 ### Generation Report

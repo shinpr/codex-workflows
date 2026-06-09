@@ -39,9 +39,9 @@ Work plan: $ARGUMENTS
 
 ## Pre-execution Prerequisites
 
-### Implementation Readiness Check
+### Implementation Readiness Resolution
 
-Before task processing, locate the work plan to gate against.
+Before task processing, locate the work plan and resolve implementation readiness.
 
 Resolution rule:
 1. If `$ARGUMENTS` contains a work plan path, use that exact file and derive `{plan-name}` from its basename. This takes precedence over task-file mtimes.
@@ -50,7 +50,14 @@ Resolution rule:
 4. If matching task files exist, infer `{plan-name}` from the most recent matching task file and use `docs/plans/{plan-name}.md`.
 5. If no matching task files exist, use the most recent non-template work plan in `docs/plans/`.
 
-Read the work plan header and apply the Implementation Readiness Marker Contract from `subagents-orchestration-guide`.
+Read the work plan header and apply this readiness rule:
+
+| Header state | Action |
+|--------------|--------|
+| `Implementation Readiness: ready` | Proceed to Consumed Task Set computation |
+| `Implementation Readiness: pending` | Execute the Implementation Readiness Preflight Procedure from `subagents-orchestration-guide` for the resolved work plan. Re-read the resulting marker: proceed to Consumed Task Set only when it is `ready`; if it is `escalated`, follow the `escalated` row |
+| `Implementation Readiness: escalated` | Present the persisted Readiness Report remaining gaps, then continue only on explicit user approval |
+| marker absent | Execute the Implementation Readiness Preflight Procedure from `subagents-orchestration-guide` for the resolved work plan. Re-read the resulting marker: proceed to Consumed Task Set only when it is `ready`; if it is `escalated`, follow the `escalated` row |
 
 ### Consumed Task Set
 
