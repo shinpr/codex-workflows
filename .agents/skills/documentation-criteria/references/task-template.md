@@ -17,6 +17,13 @@ Metadata:
 Files to read before starting implementation. Use concrete file paths, optionally with a section/function hint:
 - [e.g., src/orders/checkout.ts (processOrder function)]
 
+## Change Category
+(Include this field only when the task is a bug fix, regression, state-change, or boundary-change. Omit otherwise.)
+
+`Change Category: <one or more of bug-fix, regression, state-change, boundary-change, comma-separated>`
+
+When present, sweep cases sharing the same path, contract, persisted state, or external boundary for the same class of defect during the Red Phase.
+
 ## Binding Decisions
 (Include this section when the work plan's ADR Bindings table covers this task. Omit otherwise.)
 
@@ -34,6 +41,7 @@ Brief observations recorded after reading Investigation Targets:
 ## Implementation Steps (TDD: Red-Green-Refactor)
 ### 1. Red Phase
 - [ ] Read all Investigation Targets and update Investigation Notes
+- [ ] (When Change Category is set) Sweep adjacent cases sharing the same path, contract, persisted state, or external boundary for the same class of defect; fold any in-scope residual into failing tests
 - [ ] Review dependency deliverables (if any)
 - [ ] Verify/create contract definitions
 - [ ] Write failing tests

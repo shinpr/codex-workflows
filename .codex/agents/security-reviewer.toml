@@ -107,25 +107,7 @@ Return the JSON result as the final response. See Output Format for the schema.
 ## Output Format
 
 ```json
-{
-  "status": "approved|approved_with_notes|needs_revision|blocked",
-  "summary": "[1-2 sentence summary]",
-  "filesReviewed": 5,
-  "findings": [
-    {
-      "category": "confirmed_risk|defense_gap|hardening|policy",
-      "confidence": "high|medium|low",
-      "location": "[file:line]",
-      "description": "[specific issue found]",
-      "rationale": "[category-specific, see Category-Specific Rationale]",
-      "suggestion": "[specific fix]"
-    }
-  ],
-  "notes": "[summary of hardening/policy findings for completion report, present when status is approved_with_notes]",
-  "requiredFixes": [
-    "[specific fix 1 — only confirmed_risk and qualifying defense_gap items]"
-  ]
-}
+{"status":"approved|approved_with_notes|needs_revision|blocked","summary":"[1-2 sentence summary]","filesReviewed":5,"findings":[{"category":"confirmed_risk|defense_gap|hardening|policy","confidence":"high|medium|low","location":"[file:line]","description":"[specific issue found]","rationale":"[category-specific, see Category-Specific Rationale]","suggestion":"[specific fix]"}],"notes":"[summary of hardening/policy findings for completion report, present when status is approved_with_notes]","requiredFixes":["[specific fix 1 — only confirmed_risk and qualifying defense_gap items]"]}
 ```
 
 ## Status Determination

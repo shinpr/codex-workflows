@@ -185,123 +185,22 @@ Before setting status to blocked, confirm specifications in this order:
 
 **When incomplete implementation is detected**:
 ```json
-{
-  "status": "stub_detected",
-  "summary": "Incomplete frontend implementation detected in changed code before quality checks.",
-  "stubFindings": [
-    {
-      "file": "src/components/CheckoutButton.tsx",
-      "indicator": "placeholder handler",
-      "details": "onClick handler still contains placeholder logic for required submission flow"
-    }
-  ],
-  "nextActions": "Return to task-executor-frontend and complete the implementation before re-running quality-fixer-frontend."
-}
+{"status":"stub_detected","summary":"Incomplete frontend implementation detected in changed code before quality checks.","stubFindings":[{"file":"src/components/CheckoutButton.tsx","indicator":"placeholder handler","details":"onClick handler still contains placeholder logic for required submission flow"}],"nextActions":"Return to task-executor-frontend and complete the implementation before re-running quality-fixer-frontend."}
 ```
 
 **When quality check succeeds**:
 ```json
-{
-  "status": "approved",
-  "summary": "Overall frontend quality check completed. All checks passed.",
-  "checksPerformed": {
-    "lint_format": {
-      "status": "passed",
-      "commands": ["<detected-lint-command>"],
-      "autoFixed": true
-    },
-    "typescript": {
-      "status": "passed",
-      "commands": ["<detected-build-command>"]
-    },
-    "tests": {
-      "status": "passed",
-      "commands": ["<detected-test-command>"],
-      "testsRun": 42,
-      "testsPassed": 42,
-      "coverage": "85%"
-    }
-  },
-  "fixesApplied": [
-    {
-      "type": "auto",
-      "category": "format",
-      "description": "Auto-fixed indentation and semicolons",
-      "filesCount": 5
-    },
-    {
-      "type": "manual",
-      "category": "type",
-      "description": "Replaced any type with unknown + type guards",
-      "filesCount": 3
-    }
-  ],
-  "taskFileMechanisms": {
-    "provided": true,
-    "executed": ["mechanism names that were found and executed"],
-    "skipped": [
-      {
-        "mechanism": "mechanism name",
-        "reason": "tool not found / config not found / not executable"
-      }
-    ]
-  },
-  "metrics": {
-    "totalErrors": 0,
-    "totalWarnings": 0,
-    "executionTime": "3m 30s"
-  },
-  "nextActions": "Ready to commit"
-}
+{"status":"approved","summary":"Overall frontend quality check completed. All checks passed.","checksPerformed":{"lint_format":{"status":"passed","commands":["<detected-lint-command>"],"autoFixed":true},"typescript":{"status":"passed","commands":["<detected-build-command>"]},"tests":{"status":"passed","commands":["<detected-test-command>"],"testsRun":42,"testsPassed":42,"coverage":"85%"}},"fixesApplied":[{"type":"auto","category":"format","description":"Auto-fixed indentation and semicolons","filesCount":5},{"type":"manual","category":"type","description":"Replaced any type with unknown + type guards","filesCount":3}],"taskFileMechanisms":{"provided":true,"executed":["mechanism names that were found and executed"],"skipped":[{"mechanism":"mechanism name","reason":"tool not found / config not found / not executable"}]},"metrics":{"totalErrors":0,"totalWarnings":0,"executionTime":"3m 30s"},"nextActions":"Ready to commit"}
 ```
 
 **blocked response format (specification conflict)**:
 ```json
-{
-  "status": "blocked",
-  "reason": "Cannot determine due to unclear specification",
-  "blockingIssues": [{
-    "type": "ux_specification_conflict",
-    "details": "Test expectation and implementation contradict on user interaction behavior",
-    "test_expects": "Button disabled on form error",
-    "implementation_behavior": "Button enabled, shows error on click",
-    "why_cannot_judge": "Correct UX specification unknown"
-  }],
-  "attemptedFixes": [
-    "Fix attempt 1: Tried aligning test to implementation",
-    "Fix attempt 2: Tried aligning implementation to test",
-    "Fix attempt 3: Tried inferring specification from Design Doc"
-  ],
-  "taskFileMechanisms": {
-    "provided": true,
-    "executed": ["mechanisms executed before blocking"],
-    "skipped": [{ "mechanism": "mechanism name", "reason": "tool not found / config not found / not executable" }]
-  },
-  "needsUserDecision": "Please confirm the correct button disabled behavior"
-}
+{"status":"blocked","reason":"Cannot determine due to unclear specification","blockingIssues":[{"type":"ux_specification_conflict","details":"Test expectation and implementation contradict on user interaction behavior","test_expects":"Button disabled on form error","implementation_behavior":"Button enabled, shows error on click","why_cannot_judge":"Correct UX specification unknown"}],"attemptedFixes":["Fix attempt 1: Tried aligning test to implementation","Fix attempt 2: Tried aligning implementation to test","Fix attempt 3: Tried inferring specification from Design Doc"],"taskFileMechanisms":{"provided":true,"executed":["mechanisms executed before blocking"],"skipped":[{"mechanism":"mechanism name","reason":"tool not found / config not found / not executable"}]},"needsUserDecision":"Please confirm the correct button disabled behavior"}
 ```
 
 **blocked response format (missing prerequisites)**:
 ```json
-{
-  "status": "blocked",
-  "reason": "Execution prerequisites not met",
-  "missingPrerequisites": [
-    {
-      "type": "browser_runtime",
-      "description": "Playwright browsers are not installed for E2E execution",
-      "affectedChecks": ["test:e2e"],
-      "resolutionSteps": ["Install the required browser runtime", "Re-run the E2E check command"]
-    }
-  ],
-  "taskFileMechanisms": {
-    "provided": true,
-    "executed": ["mechanisms executed before blocking"],
-    "skipped": [{ "mechanism": "mechanism name", "reason": "tool not found / config not found / not executable" }]
-  },
-  "checksSkipped": 1,
-  "checksPassedWithoutPrerequisites": 2
-}
+{"status":"blocked","reason":"Execution prerequisites not met","missingPrerequisites":[{"type":"browser_runtime","description":"Playwright browsers are not installed for E2E execution","affectedChecks":["test:e2e"],"resolutionSteps":["Install the required browser runtime","Re-run the E2E check command"]}],"taskFileMechanisms":{"provided":true,"executed":["mechanisms executed before blocking"],"skipped":[{"mechanism":"mechanism name","reason":"tool not found / config not found / not executable"}]},"checksSkipped":1,"checksPassedWithoutPrerequisites":2}
 ```
 
 Allowed `type` values: `seed_data`, `library`, `environment_variable`, `running_service`, `browser_runtime`, `external_dependency`, `other`

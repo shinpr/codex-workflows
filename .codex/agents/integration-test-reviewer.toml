@@ -100,32 +100,7 @@ Return the JSON result as the final response. See Output Format for the schema.
 ## Output Format
 
 ```json
-{
-  "status": "approved|needs_revision|blocked",
-  "testFile": "[path]",
-  "verdict": {
-    "decision": "approved|needs_revision|blocked",
-    "summary": "[1-2 sentence summary]"
-  },
-  "testsReviewed": 5,
-  "passedTests": 3,
-  "failedTests": 2,
-  "qualityIssues": [
-    {
-      "testName": "[test name]",
-      "issueType": "skeleton_mismatch|aaa_violation|independence_violation|mock_boundary|proof_insufficient|readability",
-      "severity": "high|medium|low",
-      "description": "[specific issue]",
-      "skeletonExpected": "[what skeleton specified]",
-      "actualImplementation": "[what was found]",
-      "suggestion": "[specific fix]"
-    }
-  ],
-  "requiredFixes": [
-    "[specific fix 1]",
-    "[specific fix 2]"
-  ]
-}
+{"status":"approved|needs_revision|blocked","testFile":"[path]","verdict":{"decision":"approved|needs_revision|blocked","summary":"[1-2 sentence summary]"},"testsReviewed":5,"passedTests":3,"failedTests":2,"qualityIssues":[{"testName":"[test name]","issueType":"skeleton_mismatch|aaa_violation|independence_violation|mock_boundary|proof_insufficient|readability","severity":"high|medium|low","description":"[specific issue]","skeletonExpected":"[what skeleton specified]","actualImplementation":"[what was found]","suggestion":"[specific fix]"}],"requiredFixes":["[specific fix 1]","[specific fix 2]"]}
 ```
 
 ## Status Determination

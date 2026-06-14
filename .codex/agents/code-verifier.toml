@@ -158,53 +158,7 @@ Return the JSON result as the final response. See Output Format for the schema.
 ### Essential Output (default)
 
 ```json
-{
-  "summary": {
-    "docType": "prd|design-doc",
-    "documentPath": "/path/to/document.md",
-    "verifiableClaimCount": 24,
-    "matchCount": 20,
-    "consistencyScore": 85,
-    "status": "consistent|mostly_consistent|needs_review|inconsistent"
-  },
-  "claimCoverage": {
-    "sectionsAnalyzed": 8,
-    "sectionsWithClaims": 7,
-    "sectionsWithZeroClaims": ["Appendix"]
-  },
-  "discrepancies": [
-    {
-      "id": "D001",
-      "status": "drift|gap|conflict",
-      "severity": "critical|major|minor",
-      "claim": "Brief claim description",
-      "documentLocation": "PRD.md:45",
-      "codeLocation": "src/auth.ts:120",
-      "evidence": "Observed implementation or enumeration result",
-      "classification": "What was found"
-    }
-  ],
-  "reverseCoverage": {
-    "routesInCode": 6,
-    "routesDocumented": 5,
-    "undocumentedRoutes": ["POST /admin/reindex (src/routes/admin.ts:42)"],
-    "testFilesFound": 4,
-    "testFilesDocumented": 2,
-    "exportsInCode": 12,
-    "exportsDocumented": 10,
-    "undocumentedExports": ["rebuildSearchIndex (src/search/index.ts:18)"],
-    "dataOperationsInCode": 3,
-    "dataOperationsDocumented": 2,
-    "undocumentedDataOperations": ["userRepository.saveUser (src/user/repository.ts:41)"],
-    "testBoundariesSectionPresent": true
-  },
-  "coverage": {
-    "documented": ["Feature areas with documentation"],
-    "undocumented": ["Code features lacking documentation"],
-    "unimplemented": ["Documented specs not yet implemented"]
-  },
-  "limitations": ["What could not be verified and why"]
-}
+{"summary":{"docType":"prd|design-doc","documentPath":"/path/to/document.md","verifiableClaimCount":24,"matchCount":20,"consistencyScore":85,"status":"consistent|mostly_consistent|needs_review|inconsistent"},"claimCoverage":{"sectionsAnalyzed":8,"sectionsWithClaims":7,"sectionsWithZeroClaims":["Appendix"]},"discrepancies":[{"id":"D001","status":"drift|gap|conflict","severity":"critical|major|minor","claim":"Brief claim description","documentLocation":"PRD.md:45","codeLocation":"src/auth.ts:120","evidence":"Observed implementation or enumeration result","classification":"What was found"}],"reverseCoverage":{"routesInCode":6,"routesDocumented":5,"undocumentedRoutes":["POST /admin/reindex (src/routes/admin.ts:42)"],"testFilesFound":4,"testFilesDocumented":2,"exportsInCode":12,"exportsDocumented":10,"undocumentedExports":["rebuildSearchIndex (src/search/index.ts:18)"],"dataOperationsInCode":3,"dataOperationsDocumented":2,"undocumentedDataOperations":["userRepository.saveUser (src/user/repository.ts:41)"],"testBoundariesSectionPresent":true},"coverage":{"documented":["Feature areas with documentation"],"undocumented":["Code features lacking documentation"],"unimplemented":["Documented specs not yet implemented"]},"limitations":["What could not be verified and why"]}
 ```
 
 ### Extended Output (verbose: true)

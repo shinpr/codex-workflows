@@ -62,6 +62,11 @@ function isUser(value: unknown): value is User {
 - **Component Hierarchy**: Follow the project's existing component architecture. Use Atoms > Molecules > Organisms > Templates > Pages only when the project adopts Atomic Design.
 - **Co-location**: Place tests, styles, and related files alongside components
 
+**Server/Client Boundary (RSC frameworks only, such as Next.js App Router)**
+- Default to server components for data fetching and rendering. Isolate interactivity behind a `"use client"` boundary at the smallest scope that needs it.
+- Keep browser-only APIs such as `window`, `localStorage`, and event handlers inside client components.
+- Skip this section for client-only SPAs with no server-component runtime.
+
 **State Management Patterns**
 - **Local State**: `useState` for component-specific state
 - **Context API**: For sharing state across component tree (theme, auth, etc.)
@@ -95,19 +100,18 @@ setUsers(users)
 - Type-safe: Always define Props type explicitly
 
 **Environment Variables**
-- **Use build tool's environment variable system**: `process.env` does not work in browsers
-- Centrally manage environment variables through configuration layer
-- Implement proper type safety and default value handling
+- **Use the build tool's env accessor**: read client-side env through the bundler's exposed accessor, such as Vite `import.meta.env` or Next.js/CRA prefixed `process.env`.
+- **Only prefixed vars reach the client**: build tools expose only vars carrying their public prefix. Match the project's bundler, such as Vite `VITE_`, Next.js `NEXT_PUBLIC_`, or CRA `REACT_APP_`.
+- Centrally manage environment variables through a typed configuration layer with defaults.
 
 ```typescript
-// Build tool environment variables (public values only)
+// Client-exposed env must carry the bundler's public prefix, or it is undefined in the browser.
+// Vite:    import.meta.env.VITE_API_URL
+// Next.js: process.env.NEXT_PUBLIC_API_URL
 const config = {
-  apiUrl: import.meta.env.API_URL || 'http://localhost:3000',
-  appName: import.meta.env.APP_NAME || 'My App'
+  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  appName: import.meta.env.VITE_APP_NAME || 'My App'
 }
-
-// Does not work in frontend
-// const apiUrl = process.env.API_URL
 ```
 
 **Security (Client-side Constraints)**
@@ -118,7 +122,7 @@ const config = {
 
 ```typescript
 // Bad: API key exposed in browser
-// const apiKey = import.meta.env.API_KEY
+// const apiKey = import.meta.env.VITE_API_KEY
 // const response = await fetch(`https://api.example.com/data?key=${apiKey}`)
 
 // Good: Backend manages secrets, frontend accesses via proxy
@@ -132,6 +136,7 @@ const response = await fetch('/api/data') // Backend handles API key authenticat
 - Promise Handling: Always use `async/await`
 - Error Handling: Always handle with `try-catch` or Error Boundary
 - Type Definition: Explicitly define return value types (e.g., `Promise<Result>`)
+- Effect race/cleanup: guard `useEffect` data fetches against out-of-order responses and post-unmount state updates with `AbortController`, a mounted/stale flag, or a server-state library such as React Query or SWR.
 
 **Format Rules**
 - Semicolon omission (follow project formatter settings)
@@ -209,10 +214,10 @@ Never include sensitive information (password, token, apiKey, secret, creditCard
 
 ## Performance Optimization
 
-- Component Memoization: Use React.memo for expensive components
+- Automatic memoization: when React Compiler is enabled, rely on it. Use manual `React.memo`, `useMemo`, or `useCallback` only for a profiler-confirmed bottleneck or stable reference identity required by third-party APIs or effect dependencies.
 - State Optimization: Minimize re-renders with proper state structure
 - Lazy Loading: Use React.lazy and Suspense for code splitting
-- Bundle Size: Monitor with the `build` script and keep under 500KB
+- Bundle Size: Monitor with the build script against the project's budget
 
 ## Non-functional Requirements
 

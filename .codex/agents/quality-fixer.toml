@@ -158,140 +158,22 @@ Return one of the following as the final response (see Output Format for schemas
 
 **When incomplete implementation is detected**:
 ```json
-{
-  "status": "stub_detected",
-  "summary": "Incomplete implementation detected in changed code before quality checks.",
-  "stubFindings": [
-    {
-      "file": "src/example.ts",
-      "indicator": "TODO marker",
-      "details": "TODO comment defers required business logic in the task scope"
-    }
-  ],
-  "nextActions": "Return to task-executor and complete the implementation before re-running quality-fixer."
-}
+{"status":"stub_detected","summary":"Incomplete implementation detected in changed code before quality checks.","stubFindings":[{"file":"src/example.ts","indicator":"TODO marker","details":"TODO comment defers required business logic in the task scope"}],"nextActions":"Return to task-executor and complete the implementation before re-running quality-fixer."}
 ```
 
 **When quality check succeeds**:
 ```json
-{
-  "status": "approved",
-  "summary": "Overall quality check completed. All checks passed.",
-  "checksPerformed": {
-    "phase1_linting": {
-      "status": "passed",
-      "commands": ["linting", "formatting"],
-      "autoFixed": true
-    },
-    "phase2_structure": {
-      "status": "passed",
-      "commands": ["unused code check", "dependency check"]
-    },
-    "phase3_build": {
-      "status": "passed",
-      "commands": ["build"]
-    },
-    "phase4_tests": {
-      "status": "passed",
-      "commands": ["test"],
-      "testsRun": 42,
-      "testsPassed": 42
-    },
-    "phase5_code_recheck": {
-      "status": "passed",
-      "commands": ["code quality re-check"]
-    }
-  },
-  "fixesApplied": [
-    {
-      "type": "auto",
-      "category": "format",
-      "description": "Auto-fixed indentation and style",
-      "filesCount": 5
-    },
-    {
-      "type": "manual",
-      "category": "correctness",
-      "description": "Improved correctness guarantees",
-      "filesCount": 2
-    }
-  ],
-  "taskFileMechanisms": {
-    "provided": true,
-    "executed": ["mechanism names that were found and executed"],
-    "skipped": [
-      {
-        "mechanism": "mechanism name",
-        "reason": "tool not found / config not found / not executable"
-      }
-    ]
-  },
-  "metrics": {
-    "totalErrors": 0,
-    "totalWarnings": 0,
-    "executionTime": "2m 15s"
-  },
-  "nextActions": "Ready to commit"
-}
+{"status":"approved","summary":"Overall quality check completed. All checks passed.","checksPerformed":{"phase1_linting":{"status":"passed","commands":["linting","formatting"],"autoFixed":true},"phase2_structure":{"status":"passed","commands":["unused code check","dependency check"]},"phase3_build":{"status":"passed","commands":["build"]},"phase4_tests":{"status":"passed","commands":["test"],"testsRun":42,"testsPassed":42},"phase5_code_recheck":{"status":"passed","commands":["code quality re-check"]}},"fixesApplied":[{"type":"auto","category":"format","description":"Auto-fixed indentation and style","filesCount":5},{"type":"manual","category":"correctness","description":"Improved correctness guarantees","filesCount":2}],"taskFileMechanisms":{"provided":true,"executed":["mechanism names that were found and executed"],"skipped":[{"mechanism":"mechanism name","reason":"tool not found / config not found / not executable"}]},"metrics":{"totalErrors":0,"totalWarnings":0,"executionTime":"2m 15s"},"nextActions":"Ready to commit"}
 ```
 
 **blocked response format (specification conflict)**:
 ```json
-{
-  "status": "blocked",
-  "reason": "Cannot determine due to unclear specification",
-  "blockingIssues": [{
-    "type": "specification_conflict",
-    "details": "Test expectation and implementation contradict",
-    "test_expects": "500 error",
-    "implementation_returns": "400 error",
-    "why_cannot_judge": "Correct specification unknown"
-  }],
-  "attemptedFixes": [
-    "Fix attempt 1: Tried aligning test to implementation",
-    "Fix attempt 2: Tried aligning implementation to test",
-    "Fix attempt 3: Tried inferring specification from related documentation"
-  ],
-  "taskFileMechanisms": {
-    "provided": true,
-    "executed": ["mechanisms executed before blocking"],
-    "skipped": [
-      {
-        "mechanism": "mechanism name",
-        "reason": "tool not found / config not found / not executable"
-      }
-    ]
-  },
-  "needsUserDecision": "Please confirm the correct error code"
-}
+{"status":"blocked","reason":"Cannot determine due to unclear specification","blockingIssues":[{"type":"specification_conflict","details":"Test expectation and implementation contradict","test_expects":"500 error","implementation_returns":"400 error","why_cannot_judge":"Correct specification unknown"}],"attemptedFixes":["Fix attempt 1: Tried aligning test to implementation","Fix attempt 2: Tried aligning implementation to test","Fix attempt 3: Tried inferring specification from related documentation"],"taskFileMechanisms":{"provided":true,"executed":["mechanisms executed before blocking"],"skipped":[{"mechanism":"mechanism name","reason":"tool not found / config not found / not executable"}]},"needsUserDecision":"Please confirm the correct error code"}
 ```
 
 **blocked response format (missing prerequisites)**:
 ```json
-{
-  "status": "blocked",
-  "reason": "Execution prerequisites not met",
-  "missingPrerequisites": [
-    {
-      "type": "seed_data",
-      "description": "E2E database is missing required seeded user records",
-      "affectedChecks": ["test:e2e"],
-      "resolutionSteps": ["Run the project seed script for E2E fixtures", "Start the dependent local services"]
-    }
-  ],
-  "taskFileMechanisms": {
-    "provided": true,
-    "executed": ["mechanisms executed before blocking"],
-    "skipped": [
-      {
-        "mechanism": "mechanism name",
-        "reason": "tool not found / config not found / not executable"
-      }
-    ]
-  },
-  "checksSkipped": 1,
-  "checksPassedWithoutPrerequisites": 3
-}
+{"status":"blocked","reason":"Execution prerequisites not met","missingPrerequisites":[{"type":"seed_data","description":"E2E database is missing required seeded user records","affectedChecks":["test:e2e"],"resolutionSteps":["Run the project seed script for E2E fixtures","Start the dependent local services"]}],"taskFileMechanisms":{"provided":true,"executed":["mechanisms executed before blocking"],"skipped":[{"mechanism":"mechanism name","reason":"tool not found / config not found / not executable"}]},"checksSkipped":1,"checksPassedWithoutPrerequisites":3}
 ```
 
 Allowed `type` values: `seed_data`, `library`, `environment_variable`, `running_service`, `external_dependency`, `other`

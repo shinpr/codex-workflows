@@ -156,6 +156,15 @@ When the task file, Dependencies, or Investigation Targets reference `docs/proje
 3. **Cross-check against Investigation Notes**: Ensure planned implementation is consistent with the observations recorded in the task file
 4. **Execute determination**: Determine continue/escalation per "Mandatory Judgment Criteria" above
 
+#### Adjacent Case Sweep (Required when the task file has a `Change Category` field set to one or more of `bug-fix`, `regression`, `state-change`, `boundary-change`)
+
+Run this check after Pre-implementation Verification and before the Binding Decision Check. Treat the task file's field value as authoritative for whether the sweep applies.
+
+1. From Investigation Targets, identify cases sharing the same path, contract, persisted state, or external boundary as the change, including related fallback rendering, stale state, retries, and external calls.
+2. Check each adjacent case for the same class of defect this task corrects.
+3. Fold adjacent residuals within Target Files into this task's behavior coverage and implementation.
+4. Record residuals outside Target Files in Investigation Notes so downstream review can detect them.
+
 #### Binding Decision Check (Required when the task file has a Binding Decisions section)
 
 Run this check after Pre-implementation Verification and before behavior-first implementation when the task file contains a Binding Decisions section with one or more rows.
@@ -223,29 +232,7 @@ Return one of the following as the final response (see Structured Response Speci
 Report in the following JSON format upon task completion (**without executing quality checks or commits**, delegating to quality assurance process):
 
 ```json
-{
-  "status": "completed",
-  "taskName": "[Exact name of executed task]",
-  "changeSummary": "[Specific summary of React component implementation/changes]",
-  "filesModified": ["src/components/Button/Button.tsx", "src/components/Button/index.ts"],
-  "testsAdded": ["src/components/Button/Button.test.tsx"],
-  "requiresTestReview": false,
-  "newTestsPassed": true,
-  "progressUpdated": {
-    "taskFile": "5/8 items completed",
-    "workPlan": "Relevant sections updated",
-    "designDoc": "Progress section updated or N/A"
-  },
-  "runnableCheck": {
-    "level": "L1: Unit test (React Testing Library) / L2: Integration test / L3: E2E test",
-    "executed": true,
-    "command": "test -- Button.test.tsx",
-    "result": "passed / failed / skipped",
-    "reason": "Test execution reason/verification content"
-  },
-  "readyForQualityCheck": true,
-  "nextActions": "Overall quality verification by quality assurance process"
-}
+{"status":"completed","taskName":"[Exact name of executed task]","changeSummary":"[Specific summary of React component implementation/changes]","filesModified":["src/components/Button/Button.tsx","src/components/Button/index.ts"],"testsAdded":["src/components/Button/Button.test.tsx"],"requiresTestReview":false,"newTestsPassed":true,"progressUpdated":{"taskFile":"5/8 items completed","workPlan":"Relevant sections updated","designDoc":"Progress section updated or N/A"},"runnableCheck":{"level":"L1: Unit test (React Testing Library) / L2: Integration test / L3: E2E test","executed":true,"command":"test -- Button.test.tsx","result":"passed / failed / skipped","reason":"Test execution reason/verification content"},"readyForQualityCheck":true,"nextActions":"Overall quality verification by quality assurance process"}
 ```
 
 ### 2. Escalation Response
@@ -258,139 +245,35 @@ For task/AC/UI Spec/reference core-mechanism sources, set `details.design_doc_ex
 For core-mechanism violations, put the substitute in `details.actual_situation`, the behavior change in `details.why_cannot_implement`, and the unblock condition in `recommendation`.
 
 ```json
-{
-  "status": "escalation_needed",
-  "reason": "Design Doc deviation",
-  "taskName": "[Task name being executed]",
-  "details": {
-    "design_doc_expectation": "[Exact quote from relevant Design Doc section]",
-    "actual_situation": "[Details of situation actually encountered]",
-    "why_cannot_implement": "[Technical reason why cannot implement per Design Doc]",
-    "attempted_approaches": ["List of solution methods considered for trial"]
-  },
-  "escalation_type": "design_compliance_violation",
-  "user_decision_required": true,
-  "suggested_options": [
-    "Modify Design Doc to match reality",
-    "Implement missing components first",
-    "Reconsider requirements and change implementation approach"
-  ],
-  "recommendation": "[Specific proposal for most appropriate solution direction]"
-}
+{"status":"escalation_needed","reason":"Design Doc deviation","taskName":"[Task name being executed]","details":{"design_doc_expectation":"[Exact quote from relevant Design Doc section]","actual_situation":"[Details of situation actually encountered]","why_cannot_implement":"[Technical reason why cannot implement per Design Doc]","attempted_approaches":["List of solution methods considered for trial"]},"escalation_type":"design_compliance_violation","user_decision_required":true,"suggested_options":["Modify Design Doc to match reality","Implement missing components first","Reconsider requirements and change implementation approach"],"recommendation":"[Specific proposal for most appropriate solution direction]"}
 ```
 
 #### 2-2. Similar Component Discovery Escalation
 When discovering similar components/hooks during existing code investigation, escalate in following JSON format:
 
 ```json
-{
-  "status": "escalation_needed",
-  "reason": "Similar component/hook discovered",
-  "taskName": "[Task name being executed]",
-  "similar_components": [
-    {
-      "file_path": "src/components/ExistingButton/ExistingButton.tsx",
-      "component_name": "ExistingButton",
-      "similarity_reason": "Same UI pattern, same Props structure",
-      "code_snippet": "[Excerpt of relevant component code]",
-      "technical_debt_assessment": "high/medium/low/unknown"
-    }
-  ],
-  "search_details": {
-    "keywords_used": ["component keywords", "feature keywords"],
-    "files_searched": 15,
-    "matches_found": 3
-  },
-  "escalation_type": "similar_component_found",
-  "user_decision_required": true,
-  "suggested_options": [
-    "Extend and use existing component",
-    "Refactor existing component then use",
-    "New implementation as technical debt (create ADR)",
-    "New implementation (clarify differentiation from existing)"
-  ],
-  "recommendation": "[Recommended approach based on existing component analysis]"
-}
+{"status":"escalation_needed","reason":"Similar component/hook discovered","taskName":"[Task name being executed]","similar_components":[{"file_path":"src/components/ExistingButton/ExistingButton.tsx","component_name":"ExistingButton","similarity_reason":"Same UI pattern, same Props structure","code_snippet":"[Excerpt of relevant component code]","technical_debt_assessment":"high/medium/low/unknown"}],"search_details":{"keywords_used":["component keywords","feature keywords"],"files_searched":15,"matches_found":3},"escalation_type":"similar_component_found","user_decision_required":true,"suggested_options":["Extend and use existing component","Refactor existing component then use","New implementation as technical debt (create ADR)","New implementation (clarify differentiation from existing)"],"recommendation":"[Recommended approach based on existing component analysis]"}
 ```
 
 #### 2-3. Investigation Target Not Found Escalation
 When an Investigation Target file does not exist or the path is stale, escalate in following JSON format:
 
 ```json
-{
-  "status": "escalation_needed",
-  "reason": "Investigation target not found",
-  "taskName": "[Task name being executed]",
-  "escalation_type": "investigation_target_not_found",
-  "missingTargets": [
-    {
-      "path": "[path specified in task file]",
-      "searchHint": "[section/function hint if provided, or null]",
-      "searchAttempts": ["Checked path directly", "Searched nearby files with similar names", "Reviewed task dependencies for renamed or moved files"]
-    }
-  ],
-  "user_decision_required": true,
-  "suggested_options": [
-    "Provide the correct file path",
-    "Remove this Investigation Target and proceed",
-    "Update the task file with current paths"
-  ],
-  "recommendation": "[Recommended next step based on what was found]"
-}
+{"status":"escalation_needed","reason":"Investigation target not found","taskName":"[Task name being executed]","escalation_type":"investigation_target_not_found","missingTargets":[{"path":"[path specified in task file]","searchHint":"[section/function hint if provided, or null]","searchAttempts":["Checked path directly","Searched nearby files with similar names","Reviewed task dependencies for renamed or moved files"]}],"user_decision_required":true,"suggested_options":["Provide the correct file path","Remove this Investigation Target and proceed","Update the task file with current paths"],"recommendation":"[Recommended next step based on what was found]"}
 ```
 
 #### 2-4. Dependency Version Uncertain Escalation
 When repository-wide verification is insufficient to determine the appropriate dependency version, escalate in following JSON format:
 
 ```json
-{
-  "status": "escalation_needed",
-  "reason": "Dependency version uncertain",
-  "taskName": "[Task name being executed]",
-  "escalation_type": "dependency_version_uncertain",
-  "dependency": {
-    "name": "[dependency name]",
-    "versionsFound": ["list of versions found in repository"],
-    "filesChecked": ["file paths where the dependency usage was found"],
-    "ambiguityReason": "[why repository state alone is insufficient]"
-  },
-  "user_decision_required": true,
-  "suggested_options": [
-    "Use the majority version already in the repository",
-    "Use a different version with explicit rationale",
-    "Research the latest stable version and decide after review"
-  ]
-}
+{"status":"escalation_needed","reason":"Dependency version uncertain","taskName":"[Task name being executed]","escalation_type":"dependency_version_uncertain","dependency":{"name":"[dependency name]","versionsFound":["list of versions found in repository"],"filesChecked":["file paths where the dependency usage was found"],"ambiguityReason":"[why repository state alone is insufficient]"},"user_decision_required":true,"suggested_options":["Use the majority version already in the repository","Use a different version with explicit rationale","Research the latest stable version and decide after review"]}
 ```
 
 #### 2-5. Binding Decision Violation Escalation
 When one or more Compliance Checks in the task's Binding Decisions section evaluate to `N` during pre-implementation, or to `N` or `Unknown` during completion, escalate in following JSON format:
 
 ```json
-{
-  "status": "escalation_needed",
-  "reason": "Binding decision violation",
-  "taskName": "[Task name being executed]",
-  "escalation_type": "binding_decision_violation",
-  "phase": "pre_implementation | completion_gate",
-  "implementationApproach": "[1-2 sentence summary of the planned or final implementation approach]",
-  "failures": [
-    {
-      "source": "[ADR file path with section hint, copied from Source column]",
-      "axis": "[Axis value copied from the Axis column]",
-      "decision": "[Decision text copied from Decision column]",
-      "complianceCheck": "[Compliance Check predicate copied from Compliance Check column]",
-      "evaluation": "N | Unknown",
-      "rationale": "[One line explaining why the implementation does not satisfy the check, or why it cannot be evaluated]"
-    }
-  ],
-  "user_decision_required": true,
-  "suggested_options": [
-    "Adjust the implementation plan to satisfy the binding decision",
-    "Update the ADR, then update the work plan ADR Bindings and task Binding Decisions",
-    "Provide additional context that resolves the Unknown evaluation"
-  ]
-}
+{"status":"escalation_needed","reason":"Binding decision violation","taskName":"[Task name being executed]","escalation_type":"binding_decision_violation","phase":"pre_implementation | completion_gate","implementationApproach":"[1-2 sentence summary of the planned or final implementation approach]","failures":[{"source":"[ADR file path with section hint, copied from Source column]","axis":"[Axis value copied from the Axis column]","decision":"[Decision text copied from Decision column]","complianceCheck":"[Compliance Check predicate copied from Compliance Check column]","evaluation":"N | Unknown","rationale":"[One line explaining why the implementation does not satisfy the check, or why it cannot be evaluated]"}],"user_decision_required":true,"suggested_options":["Adjust the implementation plan to satisfy the binding decision","Update the ADR, then update the work plan ADR Bindings and task Binding Decisions","Provide additional context that resolves the Unknown evaluation"]}
 ```
 
 #### 2-6. Test Environment Not Ready Escalation
@@ -398,16 +281,7 @@ When one or more Compliance Checks in the task's Binding Decisions section evalu
 Triggered when the Test Environment Check finds the project-configured test toolchain unavailable or unrunnable.
 
 ```json
-{
-  "status": "escalation_needed",
-  "reason": "Test environment not ready",
-  "taskName": "[Task name]",
-  "escalation_type": "test_environment_not_ready",
-  "missingComponent": "test runner | RTL setup | browser runtime | fixtures | mock server | setup file | other",
-  "description": "[why the missing component blocks tests]",
-  "user_decision_required": true,
-  "suggested_options": ["Install or configure the missing component, then re-run the task", "Reassign the task once the environment is ready"]
-}
+{"status":"escalation_needed","reason":"Test environment not ready","taskName":"[Task name]","escalation_type":"test_environment_not_ready","missingComponent":"test runner | RTL setup | browser runtime | fixtures | mock server | setup file | other","description":"[why the missing component blocks tests]","user_decision_required":true,"suggested_options":["Install or configure the missing component, then re-run the task","Reassign the task once the environment is ready"]}
 ```
 
 ## Scope Boundary (delegate to orchestrator)

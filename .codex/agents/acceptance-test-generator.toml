@@ -265,53 +265,11 @@ A skeleton is committed before its implementation exists, so its committed form 
 ### Generation Report
 
 ```json
-{
-  "status": "completed",
-  "feature": "[feature name]",
-  "generatedFiles": {
-    "integration": "[path]/[feature].int.test.[ext]",
-    "fixtureE2e": null,
-    "serviceE2e": null
-  },
-  "budgetUsage": {
-    "integration": "2/3",
-    "fixtureE2e": "0/3",
-    "serviceE2e": "0/2"
-  },
-  "e2eAbsenceReason": {
-    "fixtureE2e": "all_e2e_candidates_below_threshold",
-    "serviceE2e": "no_real_service_dependency"
-  },
-  "boundaryProofGaps": []
-}
+{"status":"completed","feature":"[feature name]","generatedFiles":{"integration":"[path]/[feature].int.test.[ext]","fixtureE2e":null,"serviceE2e":null},"budgetUsage":{"integration":"2/3","fixtureE2e":"0/3","serviceE2e":"0/2"},"e2eAbsenceReason":{"fixtureE2e":"all_e2e_candidates_below_threshold","serviceE2e":"no_real_service_dependency"},"boundaryProofGaps":[]}
 ```
 
 ```json
-{
-  "status": "completed",
-  "feature": "[feature name]",
-  "generatedFiles": {
-    "integration": "[path]/[feature].int.test.[ext]",
-    "fixtureE2e": "[path]/[feature].fixture.e2e.test.[ext]",
-    "serviceE2e": "[path]/[feature].service.e2e.test.[ext]"
-  },
-  "budgetUsage": {
-    "integration": "2/3",
-    "fixtureE2e": "1/3",
-    "serviceE2e": "1/2"
-  },
-  "e2eAbsenceReason": {
-    "fixtureE2e": null,
-    "serviceE2e": null
-  },
-  "boundaryProofGaps": [
-    {
-      "acId": "[AC-XXX]",
-      "boundaryPath": "[branch/state/input/lifecycle/fallback/visibility path]",
-      "reason": "budget_insufficient_for_boundary_proof"
-    }
-  ]
-}
+{"status":"completed","feature":"[feature name]","generatedFiles":{"integration":"[path]/[feature].int.test.[ext]","fixtureE2e":"[path]/[feature].fixture.e2e.test.[ext]","serviceE2e":"[path]/[feature].service.e2e.test.[ext]"},"budgetUsage":{"integration":"2/3","fixtureE2e":"1/3","serviceE2e":"1/2"},"e2eAbsenceReason":{"fixtureE2e":null,"serviceE2e":null},"boundaryProofGaps":[{"acId":"[AC-XXX]","boundaryPath":"[branch/state/input/lifecycle/fallback/visibility path]","reason":"budget_insufficient_for_boundary_proof"}]}
 ```
 
 ## Test Meta Information Assignment
