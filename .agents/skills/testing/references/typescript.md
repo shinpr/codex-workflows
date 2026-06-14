@@ -10,13 +10,9 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 ```
 
-### Coverage Requirements
+### Where to Concentrate Test Rigor
 
-- **Overall minimum**: 60%
-- **Atomic Design projects**: Atoms 70%+, Molecules 65%+, Organisms 60%+
-- **Other component architectures**: Keep 60% as the baseline and raise foundational or highly reused components to 70%+
-- **Custom Hooks**: 65%+
-- **Utils**: 70%+
+Test foundational, high-reuse units the hardest: shared components, custom hooks, utilities, and business rules reused across features carry the widest blast radius. Higher-composition surfaces such as pages and organisms lean more on integration or E2E coverage. Any numeric threshold is the project's CI, task file, work plan, or Design Doc config.
 
 ### Test Types
 

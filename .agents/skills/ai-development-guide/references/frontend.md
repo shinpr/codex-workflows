@@ -75,28 +75,19 @@ console.log('DEBUG:', {
 
 ## Frontend Quality Check Workflow
 
-Use the appropriate run command based on the `packageManager` field in package.json.
+Read `package.json` scripts and run them with the project's package manager from the `packageManager` field. Map the phases below using the script names declared in `package.json`.
 
-### Common Commands
-- `dev` - Development server
-- `build` - Production build
-- `preview` - Preview production build
-- `type-check` - Type check (no emit)
-
-### Quality Check Phases
-**Phase 1-3: Basic Checks**
-- `check` - Linter + formatter (Biome, ESLint, Prettier, etc.)
-- `build` - TypeScript build
-
-**Phase 4-5: Tests and Final Confirmation**
-- `test` - Test execution
-- `test:coverage:fresh` - Coverage measurement (fresh cache)
-- `check:all` - Overall integrated check
+### Phases
+1. **Lint/format** - the project's formatter and linter, such as Biome or ESLint plus Prettier
+2. **Type check** - type check without emit when the project has a dedicated command
+3. **Build** - production build
+4. **Test** - unit and integration tests
+5. **Coverage** - coverage run when configured or when the task added or changed behavior
 
 ### Troubleshooting
-- **Port in use error**: Run `cleanup:processes` script if available
-- **Cache issues**: Run tests with fresh cache option
-- **Dependency errors**: Clean reinstall dependencies
+- **Port already in use**: stop the stale dev, preview, or test process holding the port
+- **Stale cache**: re-run with the project's fresh or clean-cache option
+- **Dependency errors**: clean reinstall dependencies
 
 ## Frontend Technical Decisions
 
@@ -108,6 +99,7 @@ Use the appropriate run command based on the `packageManager` field in package.j
 ### Performance vs Readability
 - Prioritize readability unless clear bottleneck exists
 - Measure before optimizing (use React DevTools Profiler, not guesses)
+- When React Compiler is enabled, routine memoization is automatic. Use manual memoization only for a measured bottleneck or stable reference identity required by third-party APIs or effect dependencies.
 - Document reason with comments when optimizing
 
 ## Frontend Impact Analysis

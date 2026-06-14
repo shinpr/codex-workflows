@@ -80,6 +80,7 @@ Record each supplementary finding and its impact on the existing failure points 
 - Check whether the mapped execution path adequately covers the observed symptom from entry to failure
 - Identify uncovered boundaries or unverified nodes that could hide additional failure points
 - Evaluate at least 2 additional path segments or boundaries beyond the investigator's original failure-point list
+- When the investigated incident is a bug or regression, or when a failure point affects a state transition, persisted state, or external boundary, trace adjacent cases sharing the same path, contract, persisted state, or external boundary and evaluate whether they carry the same class of defect
 - Evaluate each failure point independently:
   - Is the supporting evidence sufficient?
   - Is there direct counter-evidence?
@@ -125,71 +126,7 @@ Return the JSON result as the final response. See Output Format for the schema.
 **JSON format is mandatory.**
 
 ```json
-{
-  "investigationReview": {
-    "originalFailurePointCount": 3,
-    "coverageAssessment": "sufficient|partial|insufficient",
-    "identifiedGaps": ["Perspectives overlooked in investigation"]
-  },
-  "triangulationSupplements": [
-    {
-      "source": "Additional information source investigated",
-      "findings": "Content discovered",
-      "impactOnFailurePoints": "Impact on existing failure points"
-    }
-  ],
-  "scopeValidation": {
-    "verified": true,
-    "concerns": ["Concerns"]
-  },
-  "externalResearch": [
-    {
-      "query": "Search query used",
-      "source": "Information source",
-      "findings": "Related information discovered",
-      "impactOnFailurePoints": "Impact on failure points"
-    }
-  ],
-  "additionalFailurePoints": [
-    {
-      "id": "AFP1",
-      "description": "Additional failure point description",
-      "rationale": "Why this failure point was considered",
-      "evidence": {"supporting": [], "contradicting": []},
-      "plausibility": "high|medium|low"
-    }
-  ],
-  "pathCoverageFindings": [
-    {
-      "nodeId": "N1",
-      "status": "covered|partially_covered|uncovered",
-      "findings": "Coverage finding",
-      "followUpNeeded": ["Needed follow-up"]
-    }
-  ],
-  "failurePointsEvaluation": [
-    {
-      "failurePointId": "FP1 or AFP1",
-      "description": "Failure point description",
-      "verificationLevel": "speculation|indirect|direct|verified",
-      "refutationStatus": "unrefuted|partially_refuted|refuted",
-      "remainingUncertainty": ["Remaining uncertainty"]
-    }
-  ],
-  "conclusion": {
-    "confirmedFailurePoints": [
-      {"failurePointId": "FP1", "status": "confirmed|probable|possible", "originalCheckStatus": "retained|added_by_verifier|null"}
-    ],
-    "failurePointRelationships": [
-      {"from": "FP1", "to": "FP2", "relationship": "independent|upstream_of|downstream_of|amplifies|same_boundary"}
-    ],
-    "finalStatus": "ready_for_solution|needs_more_investigation",
-    "coverageAssessment": "sufficient|partial|insufficient",
-    "statusRationale": "Rationale for status and coverage level",
-    "recommendedVerification": ["Additional verification needed to confirm conclusion"]
-  },
-  "verificationLimitations": ["Limitations of this verification process"]
-}
+{"investigationReview":{"originalFailurePointCount":3,"coverageAssessment":"sufficient|partial|insufficient","identifiedGaps":["Perspectives overlooked in investigation"]},"triangulationSupplements":[{"source":"Additional information source investigated","findings":"Content discovered","impactOnFailurePoints":"Impact on existing failure points"}],"scopeValidation":{"verified":true,"concerns":["Concerns"]},"externalResearch":[{"query":"Search query used","source":"Information source","findings":"Related information discovered","impactOnFailurePoints":"Impact on failure points"}],"additionalFailurePoints":[{"id":"AFP1","description":"Additional failure point description","rationale":"Why this failure point was considered","evidence":{"supporting":[],"contradicting":[]},"plausibility":"high|medium|low"}],"pathCoverageFindings":[{"nodeId":"N1","status":"covered|partially_covered|uncovered","findings":"Coverage finding","followUpNeeded":["Needed follow-up"]}],"failurePointsEvaluation":[{"failurePointId":"FP1 or AFP1","description":"Failure point description","verificationLevel":"speculation|indirect|direct|verified","refutationStatus":"unrefuted|partially_refuted|refuted","remainingUncertainty":["Remaining uncertainty"]}],"conclusion":{"confirmedFailurePoints":[{"failurePointId":"FP1","status":"confirmed|probable|possible","originalCheckStatus":"retained|added_by_verifier|null"}],"failurePointRelationships":[{"from":"FP1","to":"FP2","relationship":"independent|upstream_of|downstream_of|amplifies|same_boundary"}],"finalStatus":"ready_for_solution|needs_more_investigation","coverageAssessment":"sufficient|partial|insufficient","statusRationale":"Rationale for status and coverage level","recommendedVerification":["Additional verification needed to confirm conclusion"]},"verificationLimitations":["Limitations of this verification process"]}
 ```
 
 ## Completion Criteria

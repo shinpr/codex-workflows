@@ -228,57 +228,7 @@ Severity Assessment:
 ### Output Format [JSON MANDATORY]
 
 ```json
-{
-  "metadata": {
-    "review_type": "design-sync",
-    "source_design": "[source Design Doc path]",
-    "analyzed_docs": 3,
-    "analysis_date": "[execution datetime]"
-  },
-  "summary": {
-    "total_conflicts": 2,
-    "critical": 1,
-    "high": 1,
-    "medium": 0,
-    "confirmed_conflicts": 1,
-    "candidate_conflicts": 1,
-    "sync_status": "CONFLICTS_FOUND"
-  },
-  "confirmed_conflicts": [
-    {
-      "id": "CONFLICT-001",
-      "severity": "critical",
-      "confidence": "high",
-      "match_basis": "exact_string",
-      "type": "Type definition mismatch",
-      "source_file": "[source file]",
-      "source_location": "[section/line]",
-      "source_value": "[content in source file]",
-      "target_file": "[file with conflict]",
-      "target_location": "[section/line]",
-      "target_value": "[conflicting content]",
-      "recommendation": "[Recommend unifying to source file's value]"
-    }
-  ],
-  "candidate_conflicts": [
-    {
-      "id": "CANDIDATE-001",
-      "severity": "high",
-      "confidence": "medium",
-      "match_basis": "same_ac_slot",
-      "type": "Acceptance criteria conflict",
-      "source_file": "[source file]",
-      "source_location": "[section/line]",
-      "source_value": "[content in source file]",
-      "target_file": "[file with conflict]",
-      "target_location": "[section/line]",
-      "target_value": "[conflicting content]",
-      "reason": "[structural evidence linking the items]",
-      "recommendation": "[Recommend reviewing whether these describe the same design slot]"
-    }
-  ],
-  "no_conflicts_docs": ["[filename1]", "[filename2]"]
-}
+{"metadata":{"review_type":"design-sync","source_design":"[source Design Doc path]","analyzed_docs":3,"analysis_date":"[execution datetime]"},"summary":{"total_conflicts":2,"critical":1,"high":1,"medium":0,"confirmed_conflicts":1,"candidate_conflicts":1,"sync_status":"CONFLICTS_FOUND"},"confirmed_conflicts":[{"id":"CONFLICT-001","severity":"critical","confidence":"high","match_basis":"exact_string","type":"Type definition mismatch","source_file":"[source file]","source_location":"[section/line]","source_value":"[content in source file]","target_file":"[file with conflict]","target_location":"[section/line]","target_value":"[conflicting content]","recommendation":"[Recommend unifying to source file's value]"}],"candidate_conflicts":[{"id":"CANDIDATE-001","severity":"high","confidence":"medium","match_basis":"same_ac_slot","type":"Acceptance criteria conflict","source_file":"[source file]","source_location":"[section/line]","source_value":"[content in source file]","target_file":"[file with conflict]","target_location":"[section/line]","target_value":"[conflicting content]","reason":"[structural evidence linking the items]","recommendation":"[Recommend reviewing whether these describe the same design slot]"}],"no_conflicts_docs":["[filename1]","[filename2]"]}
 ```
 
 `total_conflicts` MUST equal `confirmed_conflicts + candidate_conflicts`.
@@ -290,19 +240,7 @@ When no conflicts: `"sync_status": "NO_CONFLICTS"`, `"confirmed_conflicts": []`,
 When fewer than 2 Design Docs exist, return immediately:
 
 ```json
-{
-  "metadata": {
-    "review_type": "design-sync",
-    "source_design": "[provided path]",
-    "analyzed_docs": 1
-  },
-  "summary": {
-    "sync_status": "SKIPPED",
-    "reason": "fewer_than_2_design_docs"
-  },
-  "confirmed_conflicts": [],
-  "candidate_conflicts": []
-}
+{"metadata":{"review_type":"design-sync","source_design":"[provided path]","analyzed_docs":1},"summary":{"sync_status":"SKIPPED","reason":"fewer_than_2_design_docs"},"confirmed_conflicts":[],"candidate_conflicts":[]}
 ```
 
 ENFORCEMENT: sync_status MUST be one of: CONFLICTS_FOUND | NO_CONFLICTS | SKIPPED. These three values are the complete vocabulary.

@@ -92,6 +92,10 @@ Generate at least 3 solutions from the following perspectives:
 | mitigation | Measures to reduce impact | Temporary measure while waiting for root fix |
 | fundamental | Comprehensive fix including recurrence prevention | When similar problems have occurred repeatedly |
 
+**Adjacent Case Coverage**:
+- When the investigated incident is a bug or regression, or when a confirmed failure point affects a state transition, persisted state, or external boundary, evaluate cases sharing the same path, contract, persisted state, or external boundary for the same class of defect.
+- Include adjacent cases in the solution scope when they share the defect class. Record why any are excluded in `uncertaintyHandling.residualRisks`.
+
 **Generated Solution Verification**:
 - Check if project rules have applicable guidelines
 - For areas without guidelines, research current best practices via web search to verify solutions align with standard approaches
@@ -126,60 +130,7 @@ Return the JSON result as the final response. See Output Format for the schema.
 ## Output Format
 
 ```json
-{
-  "inputSummary": {
-    "identifiedFailurePoints": [
-      {"failurePointId": "FP1", "description": "Failure point description", "status": "confirmed|probable|possible"}
-    ],
-    "failurePointRelationships": [
-      {"from": "FP1", "to": "FP2", "relationship": "independent|upstream_of|downstream_of|amplifies|same_boundary"}
-    ],
-    "coverageAssessment": "sufficient|partial|insufficient"
-  },
-  "solutions": [
-    {
-      "id": "S1",
-      "name": "Solution name",
-      "type": "direct|workaround|mitigation|fundamental",
-      "description": "Detailed solution description",
-      "implementation": {
-        "approach": "Implementation approach description",
-        "affectedFiles": ["Files requiring changes"],
-        "dependencies": ["Affected dependencies"]
-      },
-      "tradeoffs": {
-        "cost": {"level": "low|medium|high", "details": "Details"},
-        "risk": {"level": "low|medium|high", "details": "Details"},
-        "scope": {"level": "low|medium|high", "details": "Details"},
-        "maintainability": {"level": "low|medium|high", "details": "Details"},
-        "certainty": {"level": "low|medium|high", "details": "Details"}
-      },
-      "pros": ["Advantages"],
-      "cons": ["Disadvantages"]
-    }
-  ],
-  "recommendation": {
-    "selectedSolutionId": "S1",
-    "rationale": "Detailed selection rationale",
-    "alternativeIfRejected": "Alternative solution ID if recommendation rejected",
-    "conditions": "Conditions under which this recommendation is appropriate"
-  },
-  "implementationPlan": {
-    "steps": [
-      {
-        "order": 1,
-        "action": "Specific action",
-        "verification": "How to verify this step",
-        "rollback": "Rollback procedure if problems occur"
-      }
-    ],
-    "criticalPoints": ["Points requiring special attention"]
-  },
-  "uncertaintyHandling": {
-    "residualRisks": ["Risks that may remain after resolution"],
-    "monitoringPlan": "Monitoring plan after resolution"
-  }
-}
+{"inputSummary":{"identifiedFailurePoints":[{"failurePointId":"FP1","description":"Failure point description","status":"confirmed|probable|possible"}],"failurePointRelationships":[{"from":"FP1","to":"FP2","relationship":"independent|upstream_of|downstream_of|amplifies|same_boundary"}],"coverageAssessment":"sufficient|partial|insufficient"},"solutions":[{"id":"S1","name":"Solution name","type":"direct|workaround|mitigation|fundamental","description":"Detailed solution description","implementation":{"approach":"Implementation approach description","affectedFiles":["Files requiring changes"],"dependencies":["Affected dependencies"]},"tradeoffs":{"cost":{"level":"low|medium|high","details":"Details"},"risk":{"level":"low|medium|high","details":"Details"},"scope":{"level":"low|medium|high","details":"Details"},"maintainability":{"level":"low|medium|high","details":"Details"},"certainty":{"level":"low|medium|high","details":"Details"}},"pros":["Advantages"],"cons":["Disadvantages"]}],"recommendation":{"selectedSolutionId":"S1","rationale":"Detailed selection rationale","alternativeIfRejected":"Alternative solution ID if recommendation rejected","conditions":"Conditions under which this recommendation is appropriate"},"implementationPlan":{"steps":[{"order":1,"action":"Specific action","verification":"How to verify this step","rollback":"Rollback procedure if problems occur"}],"criticalPoints":["Points requiring special attention"]},"uncertaintyHandling":{"residualRisks":["Risks that may remain after resolution"],"monitoringPlan":"Monitoring plan after resolution"}}
 ```
 
 ## Completion Criteria

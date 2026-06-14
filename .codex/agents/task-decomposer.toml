@@ -121,6 +121,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Task overview
    - Target files
    - Investigation Targets
+   - Change Category when the task is a bug fix, regression, state-change, or boundary-change
    - Investigation Notes
    - Concrete implementation steps
    - Operation Verification Methods
@@ -163,6 +164,18 @@ Decompose tasks based on implementation strategy patterns determined in implemen
 
 9. **Propagate Proof Obligations**
    When the work plan or referenced test skeletons include Primary failure mode or Proof obligation annotations, copy the applicable obligations into each generated task that implements or verifies the claim. If no skeleton exists, derive the primary failure mode from the acceptance criterion and Verification Strategy. Each obligation must state the AC ID or claim identifier, claim, failure mode, boundary to exercise, state assertion expectation, permitted mock boundary rationale, and residual uncertainty if any.
+
+10. **Classify Change Category for Adjacent Case Sweep**
+   When a task corrects observed behavior or changes a path, contract, persisted state, or external boundary, classify it so executors and reviewers can run a scoped adjacent-case sweep from a concrete field instead of re-inferring intent.
+
+   - `bug-fix`: corrects observed incorrect behavior
+   - `regression`: restores behavior a prior change broke
+   - `state-change`: changes how state is written, transitioned, or persisted
+   - `boundary-change`: changes a published or consumed contract at an external, cross-package, or persisted boundary
+
+   A task can match more than one category. Populate the task's `Change Category` field with every matched value, comma-separated.
+
+   For every matched category, extend Investigation Targets with files sharing the same path, contract, persisted state, or external boundary as the change, including the owner module on both sides of an affected boundary. Union targets across all matched categories. Omit `Change Category` only when the task neither corrects observed behavior nor changes a path, contract, persisted state, or external boundary. Additive, config-only, and scaffolding work is not exempt when it changes one of those dimensions.
 
 ## Verification Strategy Propagation
 
@@ -249,6 +262,10 @@ When the work plan includes a `Connection Map` section:
 2. Add the caller/producer module, callee/consumer module, serialized contract, and expected signal to each listed task's Investigation Targets or Notes.
 3. For tasks on one side of a boundary, include an Operation Verification Method that observes the expected signal from the other side.
 4. Propagate only boundary rows explicitly mapped in the work plan.
+
+## Change Category Classification
+
+This is distinct from per-AC boundary-path proof. Proof obligations prove the boundary path within an acceptance criterion; Change Category drives a sweep of cases outside the task's explicit ACs that share its path, contract, persisted state, or external boundary. Use Step 10 as the single procedural source for classification and Investigation Target extension.
 
 ## Task File Template
 
@@ -349,6 +366,7 @@ Please execute decomposed tasks according to the order.
 - [ ] Impact scope and boundaries definition for each task
 - [ ] Appropriate granularity (1-5 files/task)
 - [ ] Investigation Targets specified for every task
+- [ ] Change Category set for bug-fix, regression, state-change, or boundary-change tasks, with adjacent path/boundary owners added to Investigation Targets
 - [ ] Quality Assurance Mechanisms propagated to relevant tasks when present in the plan header
 - [ ] ADR Bindings rows propagated to relevant tasks when present in the work plan
   - [ ] ADR source includes section hint

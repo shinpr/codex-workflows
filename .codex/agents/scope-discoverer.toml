@@ -162,76 +162,7 @@ Note: These signals are informational only during steps 1-6. Keep all discovered
 ### Essential Output
 
 ```json
-{
-  "targetPath": "/path/to/project",
-  "referenceArchitecture": "layered|mvc|clean|hexagonal|none",
-  "existingPrd": "path or null",
-  "saturationReached": true,
-  "discoveredUnits": [
-    {
-      "id": "UNIT-001",
-      "name": "Unit Name",
-      "description": "Brief description",
-      "confidence": "high|medium|low",
-      "triangulationStrength": "strong|moderate|weak",
-      "sourceCount": 3,
-      "entryPoints": ["/path1", "/path2"],
-      "relatedFiles": ["src/feature/*"],
-      "dependencies": ["UNIT-002"],
-      "valueProfile": {
-        "targetPersona": "Who this feature serves (e.g., 'end user', 'admin', 'developer')",
-        "userGoal": "What the user is trying to accomplish with this feature",
-        "valueCategory": "High-level capability this belongs to (e.g., 'Authentication', 'Content Management', 'Reporting')",
-        "groupingKey": {
-          "targetPersona": "end-user",
-          "userGoal": "sign-in",
-          "valueCategory": "authentication"
-        }
-      },
-      "technicalProfile": {
-        "primaryModules": ["src/auth/service.ts", "src/auth/controller.ts"],
-        "publicInterfaces": ["AuthService.login()", "AuthController.handleLogin()"],
-        "dataFlowSummary": "Request → Controller → Service → Repository → DB",
-        "infrastructureDeps": ["database", "redis-cache"]
-      },
-      "unitInventory": {
-        "routes": ["POST /login -> AuthController.handleLogin (src/auth/controller.ts:24)"],
-        "testFiles": ["src/auth/service.test.ts"],
-        "publicExports": ["AuthService (src/auth/service.ts:10)"]
-      }
-    }
-  ],
-  "relationships": [
-    {
-      "from": "UNIT-001",
-      "to": "UNIT-002",
-      "type": "depends_on|extends|shares_data"
-    }
-  ],
-  "uncertainAreas": [
-    {
-      "area": "Area name",
-      "reason": "Why uncertain",
-      "suggestedAction": "What to do"
-    }
-  ],
-  "prdUnits": [
-    {
-      "id": "PRD-001",
-      "name": "PRD unit name (user-value level)",
-      "description": "What this capability delivers to the user",
-      "groupingKey": {
-        "targetPersona": "end-user",
-        "userGoal": "sign-in",
-        "valueCategory": "authentication"
-      },
-      "sourceUnits": ["UNIT-001", "UNIT-003"],
-      "combinedRelatedFiles": ["src/feature-a/*", "src/feature-b/*"],
-      "combinedEntryPoints": ["/path1", "/path2", "/path3"]
-    }
-  ],
-  "limitations": ["What could not be discovered and why"]
-}
+{"targetPath":"/path/to/project","referenceArchitecture":"layered|mvc|clean|hexagonal|none","existingPrd":"path or null","saturationReached":true,"discoveredUnits":[{"id":"UNIT-001","name":"Unit Name","description":"Brief description","confidence":"high|medium|low","triangulationStrength":"strong|moderate|weak","sourceCount":3,"entryPoints":["/path1","/path2"],"relatedFiles":["src/feature/*"],"dependencies":["UNIT-002"],"valueProfile":{"targetPersona":"Who this feature serves (e.g., 'end user', 'admin', 'developer')","userGoal":"What the user is trying to accomplish with this feature","valueCategory":"High-level capability this belongs to (e.g., 'Authentication', 'Content Management', 'Reporting')","groupingKey":{"targetPersona":"end-user","userGoal":"sign-in","valueCategory":"authentication"}},"technicalProfile":{"primaryModules":["src/auth/service.ts","src/auth/controller.ts"],"publicInterfaces":["AuthService.login()","AuthController.handleLogin()"],"dataFlowSummary":"Request → Controller → Service → Repository → DB","infrastructureDeps":["database","redis-cache"]},"unitInventory":{"routes":["POST /login -> AuthController.handleLogin (src/auth/controller.ts:24)"],"testFiles":["src/auth/service.test.ts"],"publicExports":["AuthService (src/auth/service.ts:10)"]}}],"relationships":[{"from":"UNIT-001","to":"UNIT-002","type":"depends_on|extends|shares_data"}],"uncertainAreas":[{"area":"Area name","reason":"Why uncertain","suggestedAction":"What to do"}],"prdUnits":[{"id":"PRD-001","name":"PRD unit name (user-value level)","description":"What this capability delivers to the user","groupingKey":{"targetPersona":"end-user","userGoal":"sign-in","valueCategory":"authentication"},"sourceUnits":["UNIT-001","UNIT-003"],"combinedRelatedFiles":["src/feature-a/*","src/feature-b/*"],"combinedEntryPoints":["/path1","/path2","/path3"]}],"limitations":["What could not be discovered and why"]}
 ```
 
 ## Completion Criteria

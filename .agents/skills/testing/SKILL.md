@@ -52,11 +52,11 @@ For language-specific testing patterns, also read:
 
 ## Quality Requirements [MANDATORY]
 
-### Coverage Standards
+### Coverage
 
-- **Minimum 80% code coverage** for production code
-- Prioritize critical paths and business logic
-- Use coverage as a guide, not a goal
+- Treat coverage as a diagnostic signal for finding untested areas, not a target. Targets get gamed into trivial tests.
+- Concentrate tests on critical paths, business logic, and behavior whose regression would matter.
+- Prioritize meaningful assertions over the coverage number. Any required threshold comes from the project's CI, task file, work plan, or Design Doc.
 
 ### Test Characteristics
 
@@ -279,7 +279,7 @@ Always test:
 ☐ All tests pass
 ☐ No tests skipped or commented
 ☐ No debug code left in tests
-☐ Test coverage meets standards (≥ 80%)
+☐ Coverage threshold passes when the project, task file, work plan, or Design Doc defines one
 ☐ Tests run in reasonable time
 
 ### Zero Tolerance Policy

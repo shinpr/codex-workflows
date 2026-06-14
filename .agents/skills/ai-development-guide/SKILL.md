@@ -165,7 +165,9 @@ To isolate problems, attempt reproduction with minimal code:
 - Replace external dependencies with mocks
 - Create minimal configuration that reproduces problem
 
-### 4. Debug Log Output
+### 4. Debug Log Output (temporary)
+Add structured debug logs to isolate the issue, then remove them before commit.
+
 ```
 Pattern: Structured logging with context
 {
@@ -204,7 +206,7 @@ Universal quality assurance phases applicable to all languages:
 ### Phase 3: Testing
 1. **Unit Tests**: Run all unit tests
 2. **Integration Tests**: Run integration tests
-3. **Test Coverage**: Measure and verify coverage meets standards
+3. **Test Coverage**: Measure coverage when configured and use it to find gaps
 4. **E2E Tests**: Run end-to-end tests
 
 ### Phase 4: Final Quality Gate [MANDATORY]
@@ -212,7 +214,7 @@ All checks MUST pass before proceeding:
 - Zero static analysis errors
 - Build succeeds
 - All tests pass
-- Coverage meets threshold
+- Coverage threshold passes when the project, task file, work plan, or Design Doc defines one. When no threshold is configured, use coverage output only to identify untested critical paths.
 
 **ENFORCEMENT**: Cannot proceed with ANY quality check failures — fix ALL errors before marking task complete
 
