@@ -81,6 +81,18 @@ Map each Design Doc technical requirement to the task or phase that covers it. U
 - Merge duplicate restatements of the same obligation from multiple DD sections into one row and cite the primary section in `DD Section`
 - Keep `scope-boundary` rows concrete: name the protected file group, component boundary, contract, or workflow that must remain unchanged
 
+## Reference Contract Values
+
+Include this section when a Traceability row's DD Item encodes a binding observable value the implementation must reproduce exactly: a column/label set and order, a derived-display rule where one field determines another display value, or a state-lifecycle negative that states when persisted or derived state must stay unused. Serialized boundaries belong in the Connection Map / Field Propagation Map. When a value qualifies for both this table and a serialized boundary, record it only in the Connection Map. ADR-derived structural decisions belong in ADR Bindings.
+
+The Traceability table records coverage. This table carries the required value verbatim so the covering task can check the exact contract.
+
+| Design Doc (section) | Contract Type | Required Observable Value (verbatim) | Covered By Task(s) | Gap Status | Notes |
+|----------------------|---------------|--------------------------------------|--------------------|------------|-------|
+| docs/design/xxx-design.md (Section name) | structure-order / derived-display / state-lifecycle-negative | [Exact value copied from the Design Doc] | [P1-T1] | covered | |
+
+**Gap Status values**: `covered` (mapped to one or more tasks), `gap` (no task exists yet; set Covered By Task(s) to `-`, include justification in Notes, and require user confirmation before plan approval)
+
 ## Failure Mode Checklist
 
 Domain-independent failure categories this implementation must guard against. Enumerate all eight categories, mark which apply, and list a covering task for each that applies; keep category names generic and place project-specific detail in task descriptions or notes.
@@ -125,11 +137,13 @@ One row represents one independently checkable binding decision. A single ADR ca
 
 ## Connection Map
 
-Include this section when implementation crosses runtime, process, deployment, or service boundaries. Omit it when the change stays inside one runtime or only uses in-process package imports.
+Include this section when implementation crosses runtime, process, deployment, or service boundaries, or when a value is serialized and parsed across a boundary within one runtime through a query string, route parameter, form post, CLI argument, environment variable, config entry, message payload, storage key, or file.
 
-| Boundary | Caller / Producer | Callee / Consumer | Expected Signal | Covered By Task(s) |
-|----------|-------------------|-------------------|-----------------|--------------------|
-| [e.g. "web client -> API"] | [module/package initiating request or message] | [module/package receiving request or message] | [Observable evidence, e.g. HTTP 200 matching schema X] | [P1-T1, P1-T2] |
+For serialized boundaries, fill Serialized Format and Consumer Parse Rule with concrete values. Use "-" only for non-serialized external signals where the Expected Signal fully captures the boundary contract.
+
+| Boundary | Caller / Producer | Callee / Consumer | Serialized Format | Consumer Parse Rule | Expected Signal | Covered By Task(s) |
+|----------|-------------------|-------------------|-------------------|---------------------|-----------------|--------------------|
+| [producing side -> consuming side] | [module/package initiating request or message] | [module/package receiving request or message] | [exact representation the producer emits, or "-"] | [how the consumer decodes and validates it, or "-"] | [Observable evidence, e.g. HTTP 200 matching schema X] | [P1-T1, P1-T2] |
 
 ## Objective
 [Why this change is necessary, what problem it solves]

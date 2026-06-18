@@ -181,6 +181,24 @@ Run this check after Pre-implementation Verification and before behavior-first i
    - `N`: stop implementation and return `status: "escalation_needed"` with `escalation_type: "binding_decision_violation"` and `phase: "pre_implementation"`
    - `Unknown`: record the row as deferred in Investigation Notes and proceed to behavior-first implementation. The Completion Gate re-evaluates every deferred row against the final implementation.
 
+#### Reference Contract Check (Required when the task file has a Reference Contracts section)
+
+Run this check after Pre-implementation Verification and before behavior-first implementation when the task file contains a Reference Contracts section with one or more rows.
+
+1. Confirm each Source in the Reference Contracts table has been read. Sources should also appear in Investigation Targets.
+2. Verify source fidelity before planning: locate the Required Observable Value in the Source and confirm it matches verbatim. If the value is not found or the task row differs by summary, omission, reordered fields, changed labels, or changed conditions, stop implementation and return `status: "escalation_needed"` with `escalation_type: "design_compliance_violation"`. Set `details.design_doc_expectation` to the Source value or "source value not found" and `details.actual_situation` to the task row's Required Observable Value.
+3. Use the Investigation Notes format below while recording the planned approach and evaluation results.
+   - `### Reference Contracts Evaluation`
+   - `[source] planned: [one sentence planned approach]`
+   - `[source] source fidelity -> Y|N - [one-line rationale]`
+   - `[source] [Compliance Check] -> Y|N|Unknown - [one-line rationale]`
+4. Record the planned implementation approach in Investigation Notes, one sentence per row.
+5. Evaluate each row's Compliance Check against the planned approach. Record the result as `Y`, `N`, or `Unknown` with a one-line rationale.
+6. Branch per row:
+   - `Y`: proceed
+   - `N`: stop implementation and return `status: "escalation_needed"` with `escalation_type: "design_compliance_violation"`. Set `details.design_doc_expectation` to the row's Required Observable Value and `details.actual_situation` to the planned approach.
+   - `Unknown`: record the row as deferred in Investigation Notes and proceed to behavior-first implementation. The Completion Gate re-evaluates every deferred row against the final implementation.
+
 #### Reference Representativeness (Applied During Implementation)
 
 During implementation, apply coding-rules Reference Representativeness before adopting existing patterns, UI composition, or dependency versions. Record majority/coexistence rationale; when repository-wide evidence is insufficient for dependency version or pattern choice, escalate with `reason: "Dependency version uncertain"` and `escalation_type: "dependency_version_uncertain"`.
@@ -240,7 +258,7 @@ Report in the following JSON format upon task completion (**without executing qu
 #### 2-1. Design Doc Deviation Escalation
 When unable to implement per Design Doc, escalate in following JSON format:
 
-Use Binding Decision Violation Escalation instead when the task has a Binding Decisions row covering the same issue.
+Use Binding Decision Violation Escalation instead when the task has a Binding Decisions row covering the same issue. Use this Design Doc Deviation Escalation for Reference Contracts failures.
 For task/AC/UI Spec/reference core-mechanism sources, set `details.design_doc_expectation` to `[source type] [location]: [cited expectation]`.
 For core-mechanism violations, put the substitute in `details.actual_situation`, the behavior change in `details.why_cannot_implement`, and the unblock condition in `recommendation`.
 
@@ -298,12 +316,13 @@ Triggered when the Test Environment Check finds the project-configured test tool
 ☐ Implementation is consistent with the observations recorded in Investigation Notes
 ☐ Final implementation preserves the required core mechanism from the task, AC, Design Doc, UI Spec, or referenced materials, with evidence recorded in Investigation Notes or runnableCheck.reason
 ☐ Every Binding Decisions Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Binding Decisions section)
+☐ Every Reference Contracts row has source fidelity `Y` and Compliance Check `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Reference Contracts section)
 ☐ When test runs are cited as `runnableCheck` evidence, they are substantive per the `runnableCheck.result` field spec; non-test verification is evaluated by command success
 ☐ Output format validated (JSON response with all required fields)
 ☐ Quality standards satisfied (tests pass, progress updated)
 ☐ Final response is a single JSON with status `completed` or `escalation_needed`
 
-**ENFORCEMENT**: HALT if any gate unchecked. Return `status: "escalation_needed"` to caller. Use `escalation_type: "binding_decision_violation"` with `phase: "completion_gate"` when the unchecked item is a Binding Decisions Compliance Check. Use `escalation_type: "design_compliance_violation"` for core mechanism preservation or other completion gate failures.
+**ENFORCEMENT**: HALT if any gate unchecked. Return `status: "escalation_needed"` to caller. Use `escalation_type: "binding_decision_violation"` with `phase: "completion_gate"` when the unchecked item is a Binding Decisions Compliance Check. Use `escalation_type: "design_compliance_violation"` for Reference Contracts, core mechanism preservation, or other completion gate failures.
 
 """
 

@@ -237,11 +237,12 @@ Rejected Alternatives Log is element-level. Future Extensibility below is design
 // Record major contract/interface definitions here
 ```
 
-### Data Contract
+### Data Contracts
 
-#### Component 1
+#### [Component or Boundary] (repeat per component/boundary)
 
 ```yaml
+Contract: [interface / function / API / schema name]
 Input:
   Type: [Data shape, contract, or schema]
   Preconditions: [Required items, format constraints]
@@ -255,6 +256,14 @@ Output:
 Invariants:
   - [Conditions that remain unchanged before and after processing]
 ```
+
+### Observable Contract Values (When Applicable)
+
+Use this section when the design defines observable values the implementation must reproduce exactly. Omit it when the Design Doc has no such values.
+
+| Contract Type | Required Observable Value |
+|---------------|---------------------------|
+| structure-order / derived-display / state-lifecycle-negative | [Exact column/field/label set and order, derived display rule, or condition where persisted/restored/cached/derived state remains unused] |
 
 ### Test Boundaries
 
@@ -274,9 +283,11 @@ Invariants:
 
 ### Field Propagation Map (When Fields Cross Boundaries)
 
-| Field | Boundary | Status | Detail |
-|-------|----------|--------|--------|
-| [field name] | [Component A to B] | preserved / transformed / dropped | [logic or reason] |
+A boundary includes a serialized boundary: a value encoded on one side and parsed on the other through a medium such as a query string, CLI argument, environment variable, config entry, message payload, storage key, or file. For those rows, record the exact encoded representation and how the consumer parses it. Use "-" only when the row is not a serialized boundary.
+
+| Field | Boundary | Status | Serialized Format | Consumer Parse Rule | Detail |
+|-------|----------|--------|-------------------|---------------------|--------|
+| [field name] | [Component A to B] | preserved / transformed / dropped | [exact representation the producer emits when serialized; "-" otherwise] | [how the consumer decodes and validates it; "-" otherwise] | [logic or reason] |
 
 ## Verification Strategy
 

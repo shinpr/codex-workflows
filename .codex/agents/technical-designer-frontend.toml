@@ -85,6 +85,14 @@ For each integration boundary, define:
 - Input props or consumed context
 - Output events or effects
 - On Error behavior
+- Serialized Format and Consumer Parse Rule when a value crosses through a query string, route parameter, form post, storage key, config entry, message payload, file, or similar encoded medium
+
+When the design contains observable values the implementation must reproduce exactly, record them explicitly in the Design Doc using the `Observable Contract Values` table:
+- `structure-order`: column sets, field sets, label sets, or display order
+- `derived-display`: display value derived from another field, lookup, state, or configuration
+- `state-lifecycle-negative`: condition where persisted, restored, cached, or derived state must stay unused
+
+Write each Required Observable Value as a copyable exact value, not a summary. If a value is serialized and parsed across a boundary, record it in Field Propagation Map / Connection Map instead of this table.
 
 ### Minimal Surface Alternatives【Required when introducing maintenance-surface elements】
 
