@@ -67,6 +67,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Document concrete executable procedures
    - Include task-level Quality Assurance Mechanisms when the work plan defines them
    - Include task-level Binding Decisions when ADR Bindings cover the task
+   - Include task-level Reference Contracts when Reference Contract Values cover the task
    - Include task-level Proof Obligations when the work plan defines Proof Strategy, test skeleton proof annotations, or acceptance-criterion primary failure modes
    - **Always include operation verification methods**
    - Define clear completion criteria (within executor's scope of responsibility)
@@ -94,6 +95,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Extract task list
    - Identify dependencies
    - Read Design-to-Plan Traceability rows and verify every `covered` item has a corresponding generated task or phase completion task
+   - Read Reference Contract Values rows and verify every `covered` value has a corresponding generated task
    - Read ADR Bindings rows and verify every `covered` item has a corresponding generated task
    - **Overall Optimization Considerations**
      - Identify common processing (prevent redundant implementation)
@@ -139,7 +141,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    | Integration test work | Test skeleton file, target implementation under test, existing fixture/auth/setup patterns |
    | fixture-e2e environment/setup work | Existing fixture data, API mock layer, browser harness configuration |
    | service-integration-e2e environment/setup work | Current environment config, startup scripts, seed scripts, auth flow references, external service stubs |
-   | Cross-boundary implementation | Connection Map rows touching the task target files, caller/producer module, callee/consumer module, expected signal, contract definition |
+   | Cross-boundary implementation | Connection Map rows touching the task target files, caller/producer module, callee/consumer module, serialized format, consumer parse rule, expected signal, contract definition |
    | Task constrained by an ADR | ADR file with section hint matching the ADR Bindings row's Source Section value |
    | Bug fix/refactor | Affected code paths, failing tests, reproduction-related files |
    | Behavior replacement/rewrite | Existing implementation being replaced, observable outputs, Verification Strategy section in the Design Doc |
@@ -151,6 +153,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - When test skeletons exist, include them explicitly
    - When the work plan contains a UI Spec Component -> Task Mapping table, propagate matching component sections to every task listed in the row
    - When the work plan contains a Connection Map, propagate boundary rows touching the task's target files to every task on either side of the boundary
+   - When the work plan contains a Reference Contract Values table, propagate matching rows to every covered task
    - When the work plan contains an ADR Bindings table, propagate matching binding rows to every covered task
    - When a task matches multiple natures, include Investigation Targets from all matching rows and deduplicate overlaps
 
@@ -244,6 +247,25 @@ When the work plan includes an `ADR Bindings` section:
    - `persistence`: `User records are persisted through the UsersRepository interface`
 6. **Validation**: Treat missing Axis, unknown Axis value, or non-checkable Compliance Check as an incomplete task file. Non-checkable means the implementation cannot be observed and answered as `Y` or `N`, or the predicate is written as a negative or compound condition.
 
+## Reference Contract Propagation
+
+When the work plan includes a `Reference Contract Values` section:
+
+1. **Coverage preservation**: For each row marked `covered`, locate every task ID listed in `Covered By Task(s)`.
+2. **Gap handling**: Preserve each `gap` row as a planning issue and surface it to the caller when task generation would otherwise assume the observable value is implemented.
+3. **Investigation Targets**: Add the row's Design Doc path with section hint to each matched task. Deduplicate against Design-to-Plan Traceability targets.
+4. **Reference Contracts table**: Add one row to each matched task's `Reference Contracts` section:
+   - `Source`: Design Doc path with section hint
+   - `Contract Type`: value copied verbatim from the work plan row
+   - `Required Observable Value`: value copied verbatim from the work plan row, preserving exact wording, field order, labels, and conditions
+   - `Compliance Check`: a Y/N-answerable positive predicate that evaluates whether the planned and final implementation reproduces the value
+5. **Predicate shape**: Write each Compliance Check as a concrete positive statement. Examples:
+   - `The listed columns render in the specified order`
+   - `The label shows the looked-up name in place of the raw code`
+   - `The restored state is applied only when the explicit restore signal is present`
+6. **Boundary ownership**: Connection Map Propagation carries serialized boundaries. Reference Contract rows carry non-serialized observable values. When a work plan records the same value in both places, keep Connection Map propagation and surface the duplicate Reference Contract row as a planning issue.
+7. **Validation**: Treat missing Contract Type, missing Required Observable Value, non-checkable Compliance Check, or `covered` row without task IDs as an incomplete task file.
+
 ## UI Spec Propagation
 
 When the work plan includes a `UI Spec Component -> Task Mapping` section:
@@ -259,9 +281,11 @@ When the work plan includes a `UI Spec Component -> Task Mapping` section:
 When the work plan includes a `Connection Map` section:
 
 1. For each boundary row, locate all tasks listed in `Covered By Task(s)`.
-2. Add the caller/producer module, callee/consumer module, serialized contract, and expected signal to each listed task's Investigation Targets or Notes.
-3. For tasks on one side of a boundary, include an Operation Verification Method that observes the expected signal from the other side.
-4. Propagate only boundary rows explicitly mapped in the work plan.
+2. Add the caller/producer module, callee/consumer module, serialized format, consumer parse rule, and expected signal to each listed task's Investigation Targets or Notes.
+3. For serialized boundaries, require concrete serialized format and consumer parse rule values. Treat `-` in either column as an incomplete plan row unless the row is a non-serialized external signal whose Expected Signal fully captures the contract.
+4. For serialized in-runtime boundaries, include a Boundary Context note that states the producer value, the consumer parse rule, and the roundtrip check: the emitted value parses to the value the consumer expects.
+5. For tasks on one side of a boundary, include an Operation Verification Method that observes the expected signal from the other side.
+6. Propagate only boundary rows explicitly mapped in the work plan.
 
 ## Change Category Classification
 
@@ -368,6 +392,7 @@ Please execute decomposed tasks according to the order.
 - [ ] Investigation Targets specified for every task
 - [ ] Change Category set for bug-fix, regression, state-change, or boundary-change tasks, with adjacent path/boundary owners added to Investigation Targets
 - [ ] Quality Assurance Mechanisms propagated to relevant tasks when present in the plan header
+- [ ] Reference Contract Values rows propagated to relevant tasks when present in the work plan
 - [ ] ADR Bindings rows propagated to relevant tasks when present in the work plan
   - [ ] ADR source includes section hint
   - [ ] Axis copied verbatim from the work plan row

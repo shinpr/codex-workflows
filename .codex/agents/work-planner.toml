@@ -141,20 +141,38 @@ Rules:
 - Record the mapping in the `UI Spec Component -> Task Mapping` table from the plan template.
 - Mark components with no covering task as `gap` with justification and user confirmation before approval.
 
-### 5b. Map Runtime Boundaries to Tasks
+### 5b. Map Reference Contract Values to Tasks
 
-When implementation crosses runtime, process, deployment, or service boundaries, create a `Connection Map`.
+After Design-to-Plan Traceability is complete, create a `Reference Contract Values` table when any traced Design Doc item contains a binding observable value the implementation must reproduce exactly. When the Design Doc has an `Observable Contract Values` table, use that table as the primary source and copy each applicable row into the work plan.
+
+Qualifying observable values:
+- `structure-order`: column sets, field sets, label sets, or display order
+- `derived-display`: display value derived from another field, lookup, state, or configuration
+- `state-lifecycle-negative`: condition where persisted, restored, cached, or derived state must stay unused
+
+For each qualifying value:
+1. Record the Design Doc path and section.
+2. Classify the Contract Type using exactly one value above.
+3. Copy the Required Observable Value verbatim from the Design Doc. Preserve field names, labels, order, and conditions.
+4. Map it to the task IDs that implement or verify the value.
+5. Mark `covered` when concrete task IDs cover the value. Mark `gap` only when no concrete task covers it, set Covered By Task(s) to `-`, add justification in Notes, and flag it for user confirmation before plan approval.
+
+Serialized boundaries belong in the Connection Map. ADR-derived structural decisions belong in ADR Bindings. When a value qualifies both as an observable value and as a serialized boundary, record it in the Connection Map and omit a duplicate Reference Contract Values row.
+
+### 5c. Map Runtime Boundaries to Tasks
+
+When implementation crosses runtime, process, deployment, or service boundaries, or when a value is serialized and parsed within one runtime, create a `Connection Map`.
 
 A boundary qualifies only when all of the following hold:
-- The two sides run in separate processes, services, runtimes, or deployed artifacts.
-- A serialized contract crosses the boundary, such as HTTP, RPC, event payload, queue message, or webhook payload.
-- A failure on one side creates an observable signal on the other side, such as a status code, timeout, missing field, dropped message, or persisted row.
+- Two sides exchange a value through a boundary. This includes separate processes, services, runtimes, or deployed artifacts, and same-runtime serialized media such as query strings, route parameters, form posts, CLI arguments, environment variables, config entries, message payloads, storage keys, or files.
+- Producer and consumer depend on a shared representation or parse rule.
+- A mismatch creates an observable signal, such as a status code, timeout, missing field, dropped message, invalid route state, parse failure, or persisted row difference.
 
-Map only boundaries satisfying all three qualifications above: separate runtime, serialized contract, and observable cross-side signal.
+Map only boundaries satisfying all three qualifications above.
 
-For each boundary, record the caller/producer, callee/consumer, expected signal, and covering tasks in the `Connection Map` table.
+For each boundary, record the caller/producer, callee/consumer, serialized format, consumer parse rule, expected signal, and covering tasks in the `Connection Map` table. Serialized boundaries must have concrete Serialized Format and Consumer Parse Rule values. Use `-` only for non-serialized external signals where the Expected Signal fully captures the contract.
 
-### 5c. Map ADR Decisions to Tasks
+### 5d. Map ADR Decisions to Tasks
 
 When ADRs are provided as input or listed in a Design Doc's "Prerequisite ADRs" section, create an `ADR Bindings` table before finalizing tasks.
 
@@ -177,7 +195,7 @@ Mapping rules:
 - Acceptance criteria and required user-visible behaviors belong in `Design-to-Plan Traceability`; `ADR Bindings` covers structural implementation constraints.
 - If an ADR decision constrains the design but no task covers it, add a justified gap and flag it for user confirmation before plan approval.
 
-### 5d. Build Failure Mode Checklist
+### 5e. Build Failure Mode Checklist
 
 Populate the plan template's `Failure Mode Checklist` before finalizing tasks. Enumerate all eight domain-independent categories, mark whether each applies, and list the task IDs that cover applicable categories. Keep category names generic and put project-specific details in task descriptions or notes.
 
@@ -389,6 +407,9 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
   - [ ] Connection, switching, and prerequisite items mapped explicitly
   - [ ] Scope-boundary items mapped explicitly when the Design Doc defines protected no-change areas
   - [ ] Covered By Task(s) uses only normalized task IDs
+  - [ ] No unjustified `gap` entries remain
+- [ ] Reference Contract Values table completed when binding observable values appear in traced Design Doc items
+  - [ ] Each row mapped to covering task(s) or justified `gap`
   - [ ] No unjustified `gap` entries remain
 - [ ] ADR Bindings table completed when ADRs are provided or listed in Design Doc prerequisites
   - [ ] ADR references resolved with exact path or single `docs/adr/ADR-XXXX-*.md` match

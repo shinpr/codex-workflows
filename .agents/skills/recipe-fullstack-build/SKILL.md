@@ -83,7 +83,7 @@ When task files don't exist, the plan references a Design Doc, and the WorkPlan 
 
 ### 1. Work Plan Review
 
-Spawn document-reviewer agent: "Review the fullstack work plan before task decomposition. doc_type: WorkPlan. target: docs/plans/[plan-name].md. mode: composite. Review semantic traceability to all Design Docs, UI Spec when present, cross-layer boundary coverage, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
+Spawn document-reviewer agent: "Review the fullstack work plan before task decomposition. doc_type: WorkPlan. target: docs/plans/[plan-name].md. mode: composite. Review semantic traceability to all Design Docs, UI Spec when present, Reference Contract Values fidelity, cross-layer boundary coverage, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
 
 Branch on `verdict.decision`:
 - `approved` -> spawn work-planner in update mode once to record `Status: approved` and `Conditions: none` in WorkPlan Review, then continue to user confirmation

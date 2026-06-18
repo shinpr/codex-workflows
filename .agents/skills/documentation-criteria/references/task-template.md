@@ -33,10 +33,19 @@ Each row is an ADR decision the implementation in this task must comply with.
 |--------|------|----------|------------------|
 | docs/adr/ADR-XXXX-title.md (§ <Source Section>) | [Axis value copied verbatim from the work plan's ADR Bindings row] | [Binding decision copied from the work plan's ADR Bindings row] | [Y/N-answerable positive predicate that evaluates whether the planned and final implementation satisfy the decision] |
 
+## Reference Contracts
+(Include this section when the work plan's Reference Contract Values table covers this task. Omit otherwise.)
+
+Each row is a Design Doc-derived observable contract the implementation in this task must reproduce exactly. Serialized boundaries are carried by Boundary Context from the work plan's Connection Map. ADR-derived structural decisions are carried by Binding Decisions above.
+
+| Source | Contract Type | Required Observable Value | Compliance Check |
+|--------|---------------|---------------------------|------------------|
+| docs/design/xxx-design.md (§ Section name) | structure-order / derived-display / state-lifecycle-negative | [Required Observable Value copied verbatim from the work plan row] | [Y/N-answerable positive predicate that evaluates whether the planned and final implementation reproduces the value] |
+
 ## Investigation Notes
 Brief observations recorded after reading Investigation Targets:
 - [path] - [interfaces, control/data flow, state transitions, side effects relevant to this task]
-- When Binding Decisions exist, record the planned implementation approach and each Compliance Check result here.
+- When Binding Decisions or Reference Contracts exist, record the planned implementation approach and each Compliance Check result here.
 
 ## Implementation Steps (TDD: Red-Green-Refactor)
 ### 1. Red Phase
@@ -83,6 +92,7 @@ Brief observations recorded after reading Investigation Targets:
 - [ ] Each Proof Obligation is met: the test turns red under its primary failure mode and exercises the stated boundary
 - [ ] Deliverables created (for research/design tasks)
 - [ ] When Binding Decisions exist, every Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes
+- [ ] When Reference Contracts exist, every Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes
 
 ## Notes
 - Impact scope: [Areas where changes may propagate]

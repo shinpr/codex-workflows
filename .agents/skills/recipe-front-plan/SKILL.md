@@ -53,7 +53,7 @@ Spawn acceptance-test-generator agent: "Generate test skeletons from Design Doc 
 Spawn work-planner agent: "Create work plan from Design Doc at [path]. Integration test file: [path from step 2]. fixture-e2e test file: [path from step 2 or null]. service-integration-e2e test file: [path from step 2 or null]. E2E absence reasons by lane: [values from step 2 when an E2E lane is null]. Integration tests are created with each phase implementation, fixture-e2e runs alongside UI implementation, service-integration-e2e runs only in the final phase when a service E2E file exists. Include `Implementation Readiness: pending` in the work plan header."
 
 ### Step 4: Work Plan Review
-Spawn document-reviewer agent: "Review the frontend work plan. doc_type: WorkPlan. target: docs/plans/[plan-name].md. mode: composite. Review semantic traceability to the Design Doc and UI Spec, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
+Spawn document-reviewer agent: "Review the frontend work plan. doc_type: WorkPlan. target: docs/plans/[plan-name].md. mode: composite. Review semantic traceability to the Design Doc and UI Spec, Reference Contract Values fidelity, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
 
 Branch on `verdict.decision`:
 - `approved` -> spawn work-planner in update mode once to record `Status: approved` and `Conditions: none` in WorkPlan Review, then proceed to Step 5

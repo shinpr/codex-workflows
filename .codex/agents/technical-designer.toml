@@ -160,8 +160,17 @@ Record direct impact, indirect impact, and explicitly unaffected components in t
 ### Field Propagation Map【Required】
 When new or changed fields cross component boundaries:
 
-Document each field's status (preserved / transformed / dropped) at each boundary with rationale.
+Document each field's status (preserved / transformed / dropped) at each boundary with rationale. When a value is serialized and parsed through a query string, route parameter, form post, CLI argument, environment variable, config entry, message payload, storage key, or file, record the exact Serialized Format and Consumer Parse Rule.
 Skip if no fields cross component boundaries.
+
+### Observable Contract Values【Required when applicable】
+When the design contains observable values the implementation must reproduce exactly, record them explicitly in the Design Doc using the `Observable Contract Values` table:
+
+- `structure-order`: column sets, field sets, label sets, or display order
+- `derived-display`: display value derived from another field, lookup, state, or configuration
+- `state-lifecycle-negative`: condition where persisted, restored, cached, or derived state must stay unused
+
+Write each Required Observable Value as a copyable exact value, not a summary. If a value is serialized and parsed across a boundary, record it in Field Propagation Map / Connection Map instead of this table.
 
 ### Interface Change Impact Analysis【Required】
 

@@ -219,9 +219,9 @@ Work plans use the header line `Implementation Readiness: <status>`.
 
 Use this procedure after work-plan approval and before autonomous task execution when the flow needs to verify implementation readiness. The procedure supplies the evidence needed for user decisions; prompts for approval only after concrete failing criteria and proposed prep tasks are known.
 
-1. Load the approved work plan exact path and extract Verification Strategies, Quality Assurance Mechanisms, Design-to-Plan Traceability, ADR Bindings, UI Spec Component -> Task Mapping, Connection Map, test skeleton references, E2E absence reasons, phase structure, referenced Design Docs, ADRs, and UI Specs.
+1. Load the approved work plan exact path and extract Verification Strategies, Quality Assurance Mechanisms, Design-to-Plan Traceability, Reference Contract Values, ADR Bindings, UI Spec Component -> Task Mapping, Connection Map, test skeleton references, E2E absence reasons, phase structure, referenced Design Docs, ADRs, and UI Specs.
 2. Evaluate these criteria with evidence:
-   - R1 Verification Strategy and ADR Binding references resolve
+   - R1 Verification Strategy and binding references resolve
    - R2 E2E prerequisites are addressed
    - R3 Phase 1 observability exists
    - R4 UI rendering surface exists when UI work is present
