@@ -207,8 +207,9 @@ export const test = base.extend<{ authenticatedPage: Page }>({
 
 ### E2E Budget
 
-- **MAX 1-2 E2E tests per feature**
-- Only generate an additional non-reserved E2E test when `Value Score >= 50`
+- Follow `integration-e2e-testing` lane limits: fixture-e2e MAX 3 and service-integration-e2e MAX 1-2 per feature
+- Generate the reserved fixture-e2e user journey when eligible
+- Only generate additional non-reserved E2E tests when the lane threshold is met (`Value Score >= 20` for fixture-e2e, `Value Score > 50` for service-integration-e2e)
 - Prefer fewer comprehensive journey tests over many granular tests
 
 ### Test Isolation
