@@ -6,7 +6,8 @@
 - **No Unused "Just in Case" Code** - Violates YAGNI principle (Kent Beck)
 
 ## Comment Writing Rules
-- **Function Description Focus**: Describe what the code "does"
+- **Code-First Default**: Use names, types, and structure to show what the code does
+- **Intent Focus**: Use comments only for why, limitations, edge cases, or public API contracts
 - **History in Version Control**: Record development history in commits and PRs instead of code comments
 - **Timeless**: Write only content that remains valid whenever read
 - **Conciseness**: Keep explanations to necessary minimum
@@ -147,7 +148,7 @@ const response = await fetch('/api/data') // Backend handles API key authenticat
 - Delete unused code immediately
 - Delete debug `console.log()`
 - No commented-out code (manage history with version control)
-- Comments explain "why" (not "what")
+- Comments explain intent, constraints, or contracts that code cannot express directly
 
 ## Error Handling
 

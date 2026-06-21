@@ -51,8 +51,9 @@ Spawn security-reviewer agent: "Design Doc: [path]. Implementation files: [file 
 **If security-reviewer returned `blocked`**: Stop immediately. Report the blocked finding and escalate to user. Do not proceed to fix steps.
 
 **Code compliance criteria (considering project stage)**:
-- Prototype: Pass at 70%+
-- Production: 90%+ recommended
+- `code-reviewer` verdict is `pass`
+- Coverage thresholds pass only when configured by the project, task file, work plan, or Design Doc
+- Determine pass/fail from the `code-reviewer` verdict and configured coverage thresholds; treat `complianceRate` as diagnostic context only
 
 **Security criteria**:
 - `approved` or `approved_with_notes` -> Pass

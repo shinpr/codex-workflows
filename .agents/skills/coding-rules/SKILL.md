@@ -93,7 +93,8 @@ Nearby code is a starting point for investigation, not a sufficient basis for ad
 
 ## Commenting Principles
 
-- Document "what" and "why", not "how"
+- Prefer names, types, and structure over comments
+- Add comments only for why, limitations, edge cases, or public API contracts
 - No historical information — use version control
 - Remove commented-out code
 - Keep comments concise and timeless

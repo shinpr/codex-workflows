@@ -21,7 +21,7 @@ description: "Documentation creation criteria for PRD, ADR, Design Doc, UI Spec,
 | New Feature Addition (backend) | PRD -> [ADR] -> Design Doc -> Work Plan | After PRD approval |
 | New Feature Addition (frontend/fullstack) | PRD -> **UI Spec** -> [ADR] -> Design Doc -> Work Plan | UI Spec before Design Doc |
 | ADR Conditions Met (see below) | ADR -> Design Doc -> Work Plan | Start immediately |
-| 6+ Files | ADR -> Design Doc -> Work Plan (REQUIRED) | Start immediately |
+| 6+ Files | [ADR if conditions apply] -> Design Doc -> Work Plan (Design Doc + Work Plan REQUIRED) | Start immediately |
 | 3-5 Files | Design Doc -> Work Plan (REQUIRED) | Start immediately |
 | 1-2 Files | None | Direct implementation |
 
@@ -124,7 +124,7 @@ description: "Documentation creation criteria for PRD, ADR, Design Doc, UI Spec,
 `Proposed` -> `Accepted` -> `Deprecated`/`Superseded`/`Rejected`
 
 ## AI Automation Rules [MANDATORY]
-- 5+ files: MUST suggest ADR creation
+- 6+ files: MUST evaluate ADR conditions
 - Contract/data flow change detected: ADR REQUIRED
 - Check existing ADRs before implementation — ALWAYS verify alignment
 
