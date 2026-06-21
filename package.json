@@ -6,14 +6,14 @@
   "author": "Shinsuke Kagawa",
   "repository": {
     "type": "git",
-    "url": "https://github.com/shinpr/codex-workflows"
+    "url": "git+https://github.com/shinpr/codex-workflows.git"
   },
   "scripts": {
     "check:skills-index": "node scripts/check-skills-index.mjs",
     "hooks:install": "git config core.hooksPath scripts/hooks"
   },
   "bin": {
-    "codex-workflows": "./bin/cli.js"
+    "codex-workflows": "bin/cli.js"
   },
   "files": [
     "bin/",
