@@ -83,7 +83,7 @@ Map each Design Doc technical requirement to the task or phase that covers it. U
 
 ## Reference Contract Values
 
-Include this section when a Traceability row's DD Item encodes a binding observable value the implementation must reproduce exactly: a column/label set and order, a derived-display rule where one field determines another display value, or a state-lifecycle negative that states when persisted or derived state must stay unused. Serialized boundaries belong in the Connection Map / Field Propagation Map. When a value qualifies for both this table and a serialized boundary, record it only in the Connection Map. ADR-derived structural decisions belong in ADR Bindings.
+Include this section when a Traceability row's DD Item encodes a binding observable value the implementation must reproduce exactly: a column/label set and order, a derived-display rule where one field determines another display value, or a `state-lifecycle-negative` that states when persisted, restored, cached, derived, client, session, or UI state must stay unused, including reset/clear behavior that returns state to its unused/default value. Serialized boundaries belong in the Connection Map / Field Propagation Map. When a value qualifies for both this table and a serialized boundary, record it only in the Connection Map. ADR-derived structural decisions belong in ADR Bindings.
 
 The Traceability table records coverage. This table carries the required value verbatim so the covering task can check the exact contract.
 
@@ -95,7 +95,9 @@ The Traceability table records coverage. This table carries the required value v
 
 ## Failure Mode Checklist
 
-Domain-independent failure categories this implementation must guard against. Enumerate all eight categories, mark which apply, and list a covering task for each that applies; keep category names generic and place project-specific detail in task descriptions or notes.
+Domain-independent failure categories this implementation must guard against. Enumerate all nine categories, mark which apply, and list a covering task for each that applies; keep category names generic and place project-specific detail in task descriptions or notes.
+
+`missing-sort-key ordering` applies when a collection is sorted by a field or key that may be absent, null, derived, or conditionally omitted. Covering tasks must prove a deterministic fallback order for items lacking the sort key.
 
 | Category | Applies? | Covered By Task(s) |
 |----------|----------|--------------------|
@@ -107,6 +109,7 @@ Domain-independent failure categories this implementation must guard against. En
 | unavailable boundary | yes/no | |
 | shared-state dependency | yes/no | |
 | rollback-only visibility | yes/no | |
+| missing-sort-key ordering | yes/no | |
 
 ## UI Spec Component -> Task Mapping
 

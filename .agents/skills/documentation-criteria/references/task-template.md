@@ -76,12 +76,12 @@ Brief observations recorded after reading Investigation Targets:
 - **Verification level**: [L1 unit/local verification, L2 integration verification, or L3 end-to-end verification]
 
 ## Proof Obligations
-(Include one entry per acceptance criterion, user journey, boundary, or state transition this task implements or verifies. Derive from test skeleton annotations when present; otherwise derive from the acceptance criterion's primary failure mode.)
-- **AC / Claim ID**: [AC-XXX, user journey identifier, boundary identifier, or task claim identifier]
-- **Claim**: [behavior the acceptance criterion or task promises]
+(Include one entry per acceptance criterion, user journey, boundary, state transition, or applicable Failure Mode Checklist category this task implements or verifies. Derive from test skeleton annotations when present; otherwise derive from the acceptance criterion's primary failure mode or mapped Failure Mode category.)
+- **AC / Claim ID**: [AC-XXX, user journey identifier, boundary identifier, task claim identifier, or failure-mode claim identifier]
+- **Claim**: [behavior, task claim, or failure-mode condition this task proves]
 - **Primary failure mode**: [regression the test should turn red on]
 - **Boundary to exercise**: [public/integration/browser/process/service/persistence boundary, or "in-process unit"]
-- **State assertion**: [observable state before -> action -> after for state-changing claims; "N/A" otherwise]
+- **State assertion**: [observable state before -> action -> after for state-changing or state-preserving claims; "N/A" only when the claim has no observable state, side effect, persistence, rollback, idempotency, or shared-state dimension]
 - **Mock boundary rationale**: [which external boundaries may be mocked and why; "none" when all real]
 - **Residual**: [what this task-level proof leaves unestablished, and which later task or phase closes it]
 

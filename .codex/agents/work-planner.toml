@@ -148,7 +148,7 @@ After Design-to-Plan Traceability is complete, create a `Reference Contract Valu
 Qualifying observable values:
 - `structure-order`: column sets, field sets, label sets, or display order
 - `derived-display`: display value derived from another field, lookup, state, or configuration
-- `state-lifecycle-negative`: condition where persisted, restored, cached, or derived state must stay unused
+- `state-lifecycle-negative`: condition where persisted, restored, cached, derived, client, session, or UI state must stay unused, including reset/clear behavior that returns state to its unused/default value
 
 For each qualifying value:
 1. Record the Design Doc path and section.
@@ -158,6 +158,8 @@ For each qualifying value:
 5. Mark `covered` when concrete task IDs cover the value. Mark `gap` only when no concrete task covers it, set Covered By Task(s) to `-`, add justification in Notes, and flag it for user confirmation before plan approval.
 
 Serialized boundaries belong in the Connection Map. ADR-derived structural decisions belong in ADR Bindings. When a value qualifies both as an observable value and as a serialized boundary, record it in the Connection Map and omit a duplicate Reference Contract Values row.
+
+When the Design Doc introduces client, session, or UI state with a reset or clear operation, treat the condition that the state returns to its unused/default value as a `state-lifecycle-negative` and record it in Reference Contract Values even when no other binding observable value applies.
 
 ### 5c. Map Runtime Boundaries to Tasks
 
@@ -197,7 +199,7 @@ Mapping rules:
 
 ### 5e. Build Failure Mode Checklist
 
-Populate the plan template's `Failure Mode Checklist` before finalizing tasks. Enumerate all eight domain-independent categories, mark whether each applies, and list the task IDs that cover applicable categories. Keep category names generic and put project-specific details in task descriptions or notes.
+Populate the plan template's `Failure Mode Checklist` before finalizing tasks. Enumerate all nine domain-independent categories, mark whether each applies, and list the task IDs that cover applicable categories. Keep category names generic and put project-specific details in task descriptions or notes.
 
 Categories:
 - same-value
@@ -208,6 +210,9 @@ Categories:
 - unavailable boundary
 - shared-state dependency
 - rollback-only visibility
+- missing-sort-key ordering
+
+`missing-sort-key ordering` applies when a collection is sorted by a field or key that may be absent, null, derived, or conditionally omitted. Covering tasks must prove a deterministic fallback order for items lacking the sort key.
 
 ### 6. Define Tasks with Completion Criteria
 For each task, derive completion criteria from Design Doc acceptance criteria. Each task that covers an acceptance criterion must explicitly name the AC ID or claim identifier in Completion Criteria or Proof Obligations. Apply the 3-element completion definition (Implementation Complete, Quality Complete, Integration Complete).
