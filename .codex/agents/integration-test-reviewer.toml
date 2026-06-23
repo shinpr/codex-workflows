@@ -87,10 +87,10 @@ Evaluate each test for:
 
 ### 4. Claim Proof Adequacy
 
-Confirm each test proves its acceptance criterion claim, not merely that code ran. Record a `proof_insufficient` issue for each unmet obligation:
-- The test would fail under the stated primary failure mode because an assertion observes the promised behavior.
-- When the claim involves a public, integration, browser, process, service, or persistence boundary, the test exercises that boundary rather than a substitute input that bypasses it.
-- When the claim involves state change, side effect, rollback, non-mutating mode, idempotency, or persistence, the test asserts observable state before the action, performs the action, and asserts observable state after the action.
+Confirm each test proves its acceptance criterion claim or task Proof Obligation, not merely that code ran. Record a `proof_insufficient` issue for each unmet obligation:
+- The test would fail under the stated primary failure mode of the AC or task Proof Obligation, including obligations derived from a Failure Mode Checklist category rather than an AC, because an assertion observes the promised behavior or failure-mode condition.
+- When the AC or task Proof Obligation involves a public, integration, browser, process, service, or persistence boundary, the test exercises that boundary rather than a substitute input that bypasses it.
+- When the AC or task Proof Obligation involves state change, side effect, rollback, non-mutating mode, idempotency, or persistence, the test asserts observable state before the action, performs the action, and asserts observable state after the action.
 - Each mocked boundary is external to the behavior under test, with the boundary under test left real and a comment explaining why the mock is permitted.
 - Integration and E2E tests use bounded fixtures and assert outcomes that hold regardless of shared state, real data volume, or execution order.
 
@@ -126,7 +126,7 @@ Return the JSON result as the final response. See Output Format for the schema.
 - [ ] Every test has corresponding skeleton comment
 - [ ] Observable result from Behavior is asserted
 - [ ] All Verification items are covered
-- [ ] Each test proves the claim by failing under the primary failure mode and exercising the stated boundary
+- [ ] Each test proves the AC claim or task Proof Obligation by failing under the primary failure mode and exercising the stated boundary
 - [ ] No internal component mocking in integration tests
 - [ ] Clear Arrange/Act/Assert separation
 - [ ] No test interdependencies

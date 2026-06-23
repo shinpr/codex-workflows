@@ -263,7 +263,7 @@ Use this section when the design defines observable values the implementation mu
 
 | Contract Type | Required Observable Value |
 |---------------|---------------------------|
-| structure-order / derived-display / state-lifecycle-negative | [Exact column/field/label set and order, derived display rule, or condition where persisted/restored/cached/derived state remains unused] |
+| structure-order / derived-display / state-lifecycle-negative | [Exact column/field/label set and order, derived display rule, or condition where persisted/restored/cached/derived/client/session/UI state remains unused, including reset/clear behavior that returns state to its unused/default value] |
 
 ### Test Boundaries
 
@@ -342,11 +342,13 @@ System Invariants:
 
 ### Client State Design (when feature includes frontend)
 
-| State Category | State | Management Method | Sync Strategy |
-|---------------|-------|-------------------|---------------|
-| Server state | [Fetched data] | [Cache library / custom hook] | [Polling / WebSocket / manual refresh] |
-| Local UI state | [Modal open, tab selection] | [useState / useReducer] | - |
-| Temporary state | [Form input, draft] | [useState / form library] | [Auto-save / manual save] |
+| State Category | State | Management Method | Sync Strategy | Reset/Clear Behavior |
+|---------------|-------|-------------------|---------------|----------------------|
+| Server state | [Fetched data] | [Cache library / custom hook] | [Polling / WebSocket / manual refresh] | [Cleared on clear-all / preserved] |
+| Local UI state | [Modal open, tab selection] | [useState / useReducer] | - | [Reset to default / preserved] |
+| Temporary state | [Form input, draft] | [useState / form library] | [Auto-save / manual save] | [Cleared on reset / persisted] |
+
+Fill `Reset/Clear Behavior` when the feature has a reset or clear-all operation. A state that must return to its unused/default value on reset is a `state-lifecycle-negative` observable contract.
 
 ### UI Action - API Contract Mapping (when feature includes frontend)
 

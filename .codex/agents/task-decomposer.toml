@@ -227,6 +227,16 @@ When the work plan includes a `Proof Strategy` section or referenced test skelet
 6. For mocked dependencies, name only external dependencies as mockable and record why the boundary under test remains real.
 7. Record residual uncertainty when a task-level test cannot prove a claim fully and identify the later phase or task that closes the residual.
 
+## Failure Mode Propagation
+
+When the work plan contains a `Failure Mode Checklist`, propagate each applicable category to the task(s) it maps to so the failure mode reaches the executor as a provable obligation:
+
+1. For each checklist row marked `Applies? = yes`, locate the task IDs listed in `Covered By Task(s)`.
+2. Add or merge a `Proof Obligations` entry for each matched task. Use the category as the primary failure mode, instantiated for the task target. Example: `missing-sort-key ordering` becomes "items lacking the sort key are misplaced or reorder nondeterministically in this task's listing."
+3. Set `Boundary to exercise` to the public, integration, browser, process, service, persistence, or in-process boundary where the failure mode becomes observable. Use `in-process unit` only when no wider observable boundary applies.
+4. When no AC covers the category, set `AC / Claim ID` to a stable claim identifier and set `Claim` to the failure-mode condition the task must prevent. Set `State assertion` to `N/A` only when the obligation has no observable state, side effect, persistence, rollback, idempotency, or shared-state dimension; otherwise require a before -> action -> after assertion.
+5. When an AC-derived Proof Obligation already covers the same category for the task, keep one entry and preserve the stronger boundary and state assertions.
+
 ## ADR Binding Propagation
 
 When the work plan includes an `ADR Bindings` section:
@@ -393,6 +403,7 @@ Please execute decomposed tasks according to the order.
 - [ ] Change Category set for bug-fix, regression, state-change, or boundary-change tasks, with adjacent path/boundary owners added to Investigation Targets
 - [ ] Quality Assurance Mechanisms propagated to relevant tasks when present in the plan header
 - [ ] Reference Contract Values rows propagated to relevant tasks when present in the work plan
+- [ ] Failure Mode Checklist applicable categories propagated to relevant tasks as Proof Obligations when present in the work plan
 - [ ] ADR Bindings rows propagated to relevant tasks when present in the work plan
   - [ ] ADR source includes section hint
   - [ ] Axis copied verbatim from the work plan row

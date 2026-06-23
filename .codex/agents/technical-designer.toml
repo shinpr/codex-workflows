@@ -168,7 +168,7 @@ When the design contains observable values the implementation must reproduce exa
 
 - `structure-order`: column sets, field sets, label sets, or display order
 - `derived-display`: display value derived from another field, lookup, state, or configuration
-- `state-lifecycle-negative`: condition where persisted, restored, cached, or derived state must stay unused
+- `state-lifecycle-negative`: condition where persisted, restored, cached, derived, client, session, or UI state must stay unused, including reset/clear behavior that returns state to its unused/default value
 
 Write each Required Observable Value as a copyable exact value, not a summary. If a value is serialized and parsed across a boundary, record it in Field Propagation Map / Connection Map instead of this table.
 
@@ -314,7 +314,7 @@ Cover happy path, unhappy path, and edge cases. Place important criteria first.
 
 ### Boundary-Aware AC Drafting
 
-Draft behavior-changing ACs value-first: user/operator/maintainer value, then observable behavior. Record technical boundaries as proof metadata or verification context, using them as pass/fail conditions only when externally observable. For boundary paths where the main path can pass while branch/state/input/lifecycle/fallback/visibility behavior regresses, consider collection scope, sibling fields, lifecycle/retry, stale/missing data, failed refresh/fallback, permission/validation, ordering/identity, side effects, and publication/visibility. Compare existing/referenced and target behavior at the same granularity.
+Draft behavior-changing ACs value-first: user/operator/maintainer value, then observable behavior. Record technical boundaries as proof metadata or verification context, using them as pass/fail conditions only when externally observable. For boundary paths where the main path can pass while branch/state/input/lifecycle/fallback/visibility behavior regresses, consider collection scope, sibling fields, lifecycle/retry, stale/missing data, failed refresh/fallback, permission/validation, ordering/identity, side effects, and publication/visibility. When the change adds a mode, flag, or variant that overlays an existing branch axis such as selection, ordering, filtering, or display, expand the new value across each existing axis value because one branch can work while another silently no-ops. Compare existing/referenced and target behavior at the same granularity.
 
 ### AC Scoping for Autonomous Implementation
 

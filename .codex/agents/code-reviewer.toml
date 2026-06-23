@@ -64,7 +64,7 @@ Read the Design Doc in full and extract:
 - Architecture design and data flow
 - Interface contracts (function signatures, API endpoints, data structures)
 - Identifier specifications explicitly written in the Design Doc as exact values, literals, labels, or named fields (resource names, endpoint paths, configuration keys, error codes, schema/model names)
-- Binding observable contracts: use the Design Doc's `Observable Contract Values` table as the primary source when present; otherwise extract column/field/label sets and order, derived-display rules, and state-lifecycle negatives from the Design Doc. Also extract Field Propagation Map rows that carry a Serialized Format and Consumer Parse Rule
+- Binding observable contracts: use the Design Doc's `Observable Contract Values` table as the primary source when present; otherwise extract column/field/label sets and order, derived-display rules, and `state-lifecycle-negative` values from the Design Doc, including reset/clear behavior that returns client, session, or UI state to its unused/default value. Also extract Field Propagation Map rows that carry a Serialized Format and Consumer Parse Rule
 - Error handling policy
 - Non-functional requirements
 
@@ -111,7 +111,7 @@ Assign confidence based on evidence count:
 
 Run this independently of the AC loop so observable contracts without dedicated ACs are verified.
 
-1. For each binding observable value extracted in Step 1 (column/field/label set and order, derived-display rule, state-lifecycle negative), verify the implementation reproduces it exactly. A deviation is a `dd_violation` whose rationale names it a reference contract gap and states the required observable value versus the implemented value.
+1. For each binding observable value extracted in Step 1 (column/field/label set and order, derived-display rule, `state-lifecycle-negative` including reset/clear return-to-default behavior), verify the implementation reproduces it exactly. A deviation is a `dd_violation` whose rationale names it a reference contract gap and states the required observable value versus the implemented value.
 2. For each Field Propagation Map serialized boundary extracted in Step 1 (Serialized Format and Consumer Parse Rule), verify the producer emits the recorded representation and the consumer parses it by the recorded rule. A mismatch is a `dd_violation` whose rationale names it a boundary contract gap and states what the producer emits versus what the consumer parses.
 
 ### 3. Assess Code Quality
@@ -136,20 +136,20 @@ Read error paths and boundary handling directly in the code:
   - Meaningful coverage: at least one assertion exercises the AC's observable behavior
   - Coverage gap: `skip`/`xit` on tests that should run, TODO/placeholder-only bodies, always-true assertions (for example `expect(true).toBe(true)` or `expect(arr.length).toBeGreaterThanOrEqual(0)`), 0-match runner reports, or grep-only matches without behavior verification
   - Intentional absence: meaningful when absence is the AC expectation
-  - Proof adequacy: a covered test should fail under the AC's primary failure mode and should exercise the claimed boundary rather than a substitute input that bypasses it. A test that would stay green if the claimed behavior regressed is a `coverage_gap` with rationale naming the unproven failure mode.
+  - Proof adequacy: a covered test should fail under the AC's primary failure mode and should exercise the claimed boundary rather than a substitute input that bypasses it. When the task file is in scope, apply the same check to each Proof Obligation, including obligations derived from a Failure Mode Checklist category rather than an AC. A test that would stay green if the claimed behavior or mapped failure-mode condition regressed is a `coverage_gap` with rationale naming the unproven failure mode.
 
 Classify each quality finding into one of:
 - `dd_violation`: implementation deviates from the Design Doc
 - `maintainability`: code structure impedes change or comprehension
 - `reliability`: missing safeguards could cause runtime failure
-- `coverage_gap`: acceptance criteria lack meaningful test verification
+- `coverage_gap`: acceptance criteria or task Proof Obligations lack meaningful test verification
 - `adjacent_residual`: a case sharing the change's path, contract, persisted state, or external boundary still carries the same class of defect
 
 Each finding MUST include a rationale:
 - `dd_violation`: what the Design Doc says vs what code does
 - `maintainability`: the concrete maintenance or comprehension risk
 - `reliability`: the failure scenario and triggering conditions
-- `coverage_gap`: the untested AC and why coverage matters
+- `coverage_gap`: the untested AC or Proof Obligation and why coverage matters
 - `adjacent_residual`: which adjacent case shares the path, contract, persisted state, or external boundary and how it still exhibits the defect class
 
 ### 4. Check Architecture Compliance
