@@ -8,6 +8,7 @@ description: "Design Doc compliance and security validation with optional auto-f
 1. [LOAD IF NOT ACTIVE] `coding-rules` — coding standards
 2. [LOAD IF NOT ACTIVE] `testing` — test strategy and quality gates
 3. [LOAD IF NOT ACTIVE] `ai-development-guide` — AI development patterns
+4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
 
 **Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
 

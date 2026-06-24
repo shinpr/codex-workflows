@@ -28,6 +28,7 @@ Skill Status:
 ✓ testing/SKILL.md - ACTIVE
 ✓ documentation-criteria/SKILL.md - ACTIVE
 ✓ integration-e2e-testing/SKILL.md - ACTIVE
+✓ llm-friendly-context/SKILL.md - ACTIVE
 ```
 
 ## Mandatory Initial Tasks
@@ -361,4 +362,8 @@ enabled = true
 
 [[skills.config]]
 path = ".agents/skills/integration-e2e-testing/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/llm-friendly-context/SKILL.md"
 enabled = true

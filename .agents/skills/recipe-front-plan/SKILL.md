@@ -10,6 +10,7 @@ description: "Create frontend work plan from design document with test skeleton 
 1. [LOAD IF NOT ACTIVE] `documentation-criteria` -- document quality standards
 2. [LOAD IF NOT ACTIVE] `implementation-approach` -- implementation methodology
 3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and workflow flows
+4. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
 
 **Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
 

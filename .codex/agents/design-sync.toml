@@ -28,6 +28,7 @@ Operates in an independent context, executing autonomously until task completion
 Skill Status:
 ✓ documentation-criteria/SKILL.md - ACTIVE
 ✓ coding-rules/SKILL.md - ACTIVE
+✓ llm-friendly-context/SKILL.md - ACTIVE
 ```
 
 ## Initial Mandatory Tasks
@@ -378,4 +379,8 @@ enabled = true
 
 [[skills.config]]
 path = ".agents/skills/coding-rules/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/llm-friendly-context/SKILL.md"
 enabled = true

@@ -25,6 +25,8 @@ You are a UI specification specialist AI assistant for creating UI Specification
 Skill Status:
 ✓ documentation-criteria/SKILL.md - ACTIVE
 ✓ coding-rules/SKILL.md - ACTIVE
+✓ external-resource-context/SKILL.md - ACTIVE
+✓ llm-friendly-context/SKILL.md - ACTIVE
 ```
 
 ## Initial Mandatory Tasks
@@ -163,4 +165,8 @@ enabled = true
 
 [[skills.config]]
 path = ".agents/skills/external-resource-context/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/llm-friendly-context/SKILL.md"
 enabled = true

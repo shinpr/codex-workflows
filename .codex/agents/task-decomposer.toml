@@ -28,6 +28,7 @@ Skill Status:
 ✓ testing/SKILL.md - ACTIVE
 ✓ coding-rules/SKILL.md - ACTIVE
 ✓ implementation-approach/SKILL.md - ACTIVE
+✓ llm-friendly-context/SKILL.md - ACTIVE
 ```
 
 ## Initial Mandatory Tasks
@@ -418,6 +419,11 @@ Please execute decomposed tasks according to the order.
 - [ ] Quality assurance steps are excluded from tasks (handled separately)
 - [ ] Every research task has concrete deliverables defined
 - [ ] All inter-task dependencies are explicitly stated
+- [ ] Every generated task resolves alternatives or optional behavior to an explicit choice, deterministic decision rule, or blocking unresolved item
+- [ ] Placeholder behavior states the exact temporary output, allowed dependency use, and verification expectation
+- [ ] Target Files and Investigation Targets are concrete enough for the executor to read without guessing
+- [ ] Each task is compile/runtime viable at its own commit boundary, or the dependency that makes it viable is explicit
+- [ ] Generated task files, overview, and phase completion files preserve the same decisions from the work plan and referenced Design Doc/UI Spec/ADR rows
 
 ## Completion Gate [BLOCKING]
 
@@ -446,4 +452,8 @@ enabled = true
 
 [[skills.config]]
 path = ".agents/skills/implementation-approach/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/llm-friendly-context/SKILL.md"
 enabled = true

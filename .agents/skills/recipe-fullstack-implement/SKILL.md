@@ -14,6 +14,7 @@ description: "Orchestrate full-cycle implementation across backend and frontend 
 5. [LOAD IF NOT ACTIVE] `implementation-approach` -- implementation methodology
 6. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and workflow flows
 7. [LOAD IF NOT ACTIVE] `external-resource-context` -- external resource hearing and lookup
+8. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
 
 **Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
 
