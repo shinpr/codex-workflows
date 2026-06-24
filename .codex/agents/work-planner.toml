@@ -28,6 +28,7 @@ Skill Status:
 ✓ coding-rules/SKILL.md - ACTIVE
 ✓ testing/SKILL.md - ACTIVE
 ✓ implementation-approach/SKILL.md - ACTIVE
+✓ llm-friendly-context/SKILL.md - ACTIVE
 ```
 
 ## Initial Mandatory Tasks
@@ -465,4 +466,8 @@ enabled = true
 
 [[skills.config]]
 path = ".agents/skills/implementation-approach/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/llm-friendly-context/SKILL.md"
 enabled = true

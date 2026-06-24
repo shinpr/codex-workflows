@@ -27,6 +27,7 @@ Skill Status:
 ✓ documentation-criteria/SKILL.md - ACTIVE
 ✓ coding-rules/SKILL.md - ACTIVE
 ✓ testing/SKILL.md - ACTIVE
+✓ llm-friendly-context/SKILL.md - ACTIVE
 ```
 
 ## Initial Mandatory Tasks
@@ -133,6 +134,7 @@ For WorkPlan, additionally verify:
 - **Verification Strategy quality check**: When the Verification Strategy section exists, verify that: (1) correctness definition is specific and measurable, (2) target comparison and observable success indicator are concrete when the change modifies observable behavior, external contracts, integrations, or data flow, (3) internal-only refactoring with identical observable inputs and outputs may use the minimal form, (4) verification method can detect the change's primary risk, (5) verification timing uses the normalized vocabulary or an explicit `N/A` rationale for minimal form, and (6) vertical-slice designs do not defer all verification to the final phase
 - **Output comparison check**: When the Design Doc changes existing observable behavior, an external contract, or a persisted data shape, verify that a concrete output comparison method is defined with identical input, expected output fields or format, and diff method. When upstream analysis includes `dataTransformationPipelines`, each listed step must be mapped to the comparison that verifies it; steps excluded because data passes through unchanged must include rationale. Missing mappings or rationale → `important` issue (category: `completeness`)
 - **Minimal Surface Alternatives check**: Applies when the Design Doc proposes new in-scope elements as defined by coding-rules "Minimum Surface Terms". Reverse-engineer/as-is Design Docs are exempt. Missing or empty section when the trigger fires → `critical` issue (category: `completeness`). For each entry verify: (1) Step 1 lists at least one AC ID or accepted technical constraint from the Design Doc or referenced UI Spec; speculative-only linkage → `critical` issue (category: `compliance`). (2) Steps 2-3 include at least one subtractive alternative such as derive, compute on demand, keep at caller, reuse existing, or do not introduce new state/mode/abstraction; missing subtractive alternative → `important` issue (category: `compliance`). (3) Step 4 selects the smallest alternative or names a current requirement smaller alternatives fail to satisfy; primary rationale based on coding-rules subjective-only rationales → `critical` issue (category: `compliance`). (4) Step 5 records rejected alternatives with brief rationale; missing rejected alternatives log → `important` issue (category: `completeness`)
+- **LLM-facing artifact clarity check**: Review prompts, handoffs, planning artifacts, reviews, reports, generated instructions, and downstream-facing document sections against llm-friendly-context. Missing required target/action/source/output fields that make downstream work non-executable is a `critical` issue (category: `clarity`). Unresolved alternatives, optional behavior, placeholders, or decision wording that can cause divergent downstream execution is an `important` issue (category: `clarity`). Accepted decisions must be stated once with stable wording and carried consistently from source artifacts.
 - **WorkPlan semantic gate**:
   - Coverage is checked where each item lives in the plan: each acceptance criterion is covered by a task whose Completion Criteria or Proof Obligations reference the AC ID or claim identifier; each data contract, state transition, boundary, prerequisite, and protected scope item has a Design-to-Plan Traceability row mapped to a task or an explicit out-of-scope entry; each non-serialized binding observable Design Doc value is copied into Reference Contract Values when applicable; each serialized binding value is recorded in Connection Map with concrete Serialized Format and Consumer Parse Rule. Missing coverage is a `critical` issue (category: `completeness`).
   - Distinguish the cause for an uncovered acceptance criterion: when the source Design Doc supports it but no task maps to it, classify as a plan omission (`critical`, fixable by re-planning); when the source document or inputs give it no basis, classify as `rejected` because re-planning cannot invent the missing source requirement.
@@ -226,6 +228,7 @@ Include in output when `prior_context_count > 0`:
 - [ ] Dependencies described as existing verified against codebase or authoritative external source
 - [ ] Field propagation map present when fields cross component boundaries
 - [ ] Minimal Surface Alternatives covers every new in-scope element when applicable
+- [ ] LLM-facing artifacts satisfy llm-friendly-context: explicit target/action/source/output, observable success criteria, stable accepted decisions, and concrete unresolved-item escalation
 
 ## Review Criteria (for Comprehensive Mode)
 
@@ -332,4 +335,8 @@ enabled = true
 
 [[skills.config]]
 path = ".agents/skills/testing/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/llm-friendly-context/SKILL.md"
 enabled = true

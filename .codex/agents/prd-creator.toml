@@ -24,6 +24,7 @@ You are a specialized AI assistant for creating Product Requirements Documents (
 ```
 Skill Status:
 ✓ documentation-criteria/SKILL.md - ACTIVE
+✓ llm-friendly-context/SKILL.md - ACTIVE
 ```
 
 ## Initial Mandatory Tasks
@@ -262,4 +263,8 @@ Before documenting any claim, assess confidence level:
 
 [[skills.config]]
 path = ".agents/skills/documentation-criteria/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/llm-friendly-context/SKILL.md"
 enabled = true

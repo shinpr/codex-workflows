@@ -237,6 +237,7 @@ These are applied automatically based on context. You rarely need to think about
 | `implementation-approach` | Strategy selection: vertical / horizontal / hybrid slicing |
 | `integration-e2e-testing` | Integration/E2E test design, value-based selection, review criteria |
 | `external-resource-context` | Access methods for design sources, design systems, API schemas, and verification environments |
+| `llm-friendly-context` | Clear prompts, handoffs, generated artifacts, task files, and review findings for downstream agents |
 | `task-analyzer` | Task analysis, scale estimation, skill selection |
 | `subagents-orchestration-guide` | Multi-agent coordination, workflow flows, guided autonomous execution |
 

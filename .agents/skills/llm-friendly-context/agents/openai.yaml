@@ -1,0 +1,7 @@
+interface:
+  display_name: "LLM-Friendly Context"
+  short_description: "Clear prompts, handoffs, and generated instructions"
+  default_prompt: "Use $llm-friendly-context to clarify this prompt, handoff, or generated artifact: "
+
+policy:
+  allow_implicit_invocation: true

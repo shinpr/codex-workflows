@@ -7,6 +7,7 @@ description: "Execute from codebase-scoped analysis to design document creation.
 
 1. [LOAD IF NOT ACTIVE] `documentation-criteria` — document creation rules and templates
 2. [LOAD IF NOT ACTIVE] `implementation-approach` — implementation strategy
+3. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
 
 **Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
 

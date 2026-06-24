@@ -10,6 +10,7 @@ description: "Execute from codebase-scoped analysis to frontend design document 
 1. [LOAD IF NOT ACTIVE] `documentation-criteria` -- document quality standards
 2. [LOAD IF NOT ACTIVE] `implementation-approach` -- implementation methodology
 3. [LOAD IF NOT ACTIVE] `external-resource-context` -- external resource hearing and lookup
+4. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
 
 **Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
 

@@ -208,3 +208,19 @@ skills:
       - "references/api.md"
       - "references/infra.md"
       - "references/template.md"
+
+  llm-friendly-context:
+    skill: "llm-friendly-context"
+    tags: [cross-cutting, llm-facing, prompt-writing, handoff, subagent-prompt, documentation, planning, task-decomposition, test-skeleton, generated-instructions, ambiguity-reduction, output-format, success-criteria]
+    typical-use: "Writing or revising LLM-facing prompts, subagent handoffs, design/planning artifacts, review findings, completion reports, generated instructions, and task files so downstream agents can execute without guessing"
+    size: small
+    key-references:
+      - "Rewrite Patterns"
+      - "Handoff Checklist"
+      - "Generated Artifact Checklist"
+    sections:
+      - "Purpose"
+      - "Core Rules"
+      - "Rewrite Patterns"
+      - "Handoff Checklist"
+      - "Generated Artifact Checklist"

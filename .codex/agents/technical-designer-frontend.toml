@@ -391,3 +391,7 @@ enabled = true
 [[skills.config]]
 path = ".agents/skills/external-resource-context/SKILL.md"
 enabled = true
+
+[[skills.config]]
+path = ".agents/skills/llm-friendly-context/SKILL.md"
+enabled = true

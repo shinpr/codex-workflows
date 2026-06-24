@@ -6,6 +6,7 @@ description: "Execute tasks with metacognitive analysis and appropriate rule sel
 ## Required Skills [LOAD BEFORE EXECUTION]
 
 1. [LOAD IF NOT ACTIVE] `task-analyzer` — task analysis and skill selection (rule-advisor handles remaining skill selection)
+2. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
 
 **Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
 

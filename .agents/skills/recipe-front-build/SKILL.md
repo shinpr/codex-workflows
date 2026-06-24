@@ -9,6 +9,7 @@ description: "Execute frontend tasks in autonomous execution mode using task-exe
 2. [LOAD IF NOT ACTIVE] `testing` -- test strategy and quality gates
 3. [LOAD IF NOT ACTIVE] `ai-development-guide` -- AI development patterns
 4. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and workflow flows
+5. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
 
 **Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
 
