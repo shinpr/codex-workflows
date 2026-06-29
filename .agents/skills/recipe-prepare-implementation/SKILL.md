@@ -12,7 +12,7 @@ description: "Verify that an approved work plan is implementable before build ex
 5. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination
 6. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
 
-**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
 ## Purpose
 

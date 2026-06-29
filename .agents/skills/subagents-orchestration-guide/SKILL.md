@@ -5,7 +5,7 @@ description: "Guides subagent coordination through implementation workflows. Use
 
 # Subagents Orchestration Guide
 
-**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
 ## Role: The Orchestrator
 
@@ -104,12 +104,10 @@ Subagents CANNOT directly call other subagents — all coordination MUST flow th
 The orchestrator owns subagent completion. Base waiting decisions on assigned responsibility and observed state, not on an expectation of quick completion. Multi-step search, review, verification, generation, implementation, and quality work can run for extended periods.
 
 Use this contract:
-- Wait for required subagent outputs with `wait_agent`
-- Keep the current task assignment while the subagent remains `running`
-- Treat missing intermediate output as a normal execution state while the subagent remains `running`
-- Hold final artifact production until every required subagent output is available
-- After repeated empty waits, run non-destructive diagnostics: re-check prompt, inputs, expected deliverable, and agent-task fit; send a focused follow-up when it would clarify the pending deliverable
-- Resume waiting after diagnostics unless the user redirects the workflow or the orchestrator confirms a launch mistake
+- Workflow subagents are single-purpose workers expected to converge.
+- When waiting for a workflow subagent, set `timeout_ms` to the maximum value accepted by the active `wait_agent` tool and continue waiting until its completion notification is received.
+- Treat `timed_out=true` as pending and continue waiting.
+- Hold final artifact production until every required subagent output is available.
 
 Treat the following as explicit contradictory evidence:
 - The subagent returns a terminal status such as `approved`, `needs_revision`, `blocked`, `skipped`, `completed`, or `escalation_needed`
@@ -122,11 +120,10 @@ Close a running subagent only when the user redirects the workflow, the orchestr
 
 ## How to Spawn Agents
 
-Spawn agents using natural language prompts. Provide clear context about what the agent should accomplish. Every `spawn_agent` call MUST include `fork_turns="none"` or `fork_context=false` (see Spawn rule at top of this skill).
+Spawn agents using natural language prompts. Provide clear context about what the agent should accomplish. Apply the Spawn rule above.
 
 ### Spawn Prompt Requirements
 
-- Set `fork_context=false` or `fork_turns="none"` on every spawn for context isolation.
 - Each spawn prompt must name the target deliverable, input paths, and expected result. When invoking `task-executor*`, include the exact task file path, for example: `Execute the implementation task. Task file: docs/plans/tasks/[filename].md.`
 
 ## Explicit Stop Points [MANDATORY]
@@ -324,11 +321,9 @@ Stop autonomous execution and escalate to user in the following cases:
 4. **User explicitly stops**: Direct stop instruction or interruption
 
 Continue autonomous execution in the following situations:
-- A subagent takes longer than expected
-- `wait_agent` returns without a completion payload while the subagent remains `running`
+- A workflow subagent is still pending
+- `wait_agent` returns `timed_out=true`
 - The orchestrator has partial context but is still waiting on a required subagent output
-
-If repeated waits return the same `running` state, apply the completion-diagnostics contract above.
 
 Use the task loop defined in the autonomous execution diagram above. The canonical per-task cycle is:
 1. task-executor implementation

@@ -9,7 +9,7 @@ description: "Investigate problem, verify findings, and derive solutions through
 2. [LOAD IF NOT ACTIVE] `coding-rules` — coding standards
 3. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
 
-**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
 **Context**: Diagnosis flow to identify concrete failure points and present solutions
 
