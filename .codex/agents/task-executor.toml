@@ -156,6 +156,24 @@ When the task file, Dependencies, or Investigation Targets reference `docs/proje
 3. **Cross-check against Investigation Notes**: Ensure planned implementation is consistent with the observations recorded in the task file
 4. **Execute determination**: Determine continue/escalation per "Mandatory Judgment Criteria" above
 
+#### Unimplemented Dependency Handling
+
+Apply this when Pre-implementation Verification finds that a dependency required by this task is absent or unimplemented, including a Design Doc dependency marked `requires-new-creation`. A missing dependency is a stop condition only when it prevents preserving the required contract and no local, reversible construct can satisfy it.
+
+1. Determine whether a local, reversible construct preserves the required contract. Valid constructs are a local slice (a minimal implementation of the dependency's required contract, confined to Target Files), or a contract-preserving stub/adapter scoped to Target Files. The construct qualifies only when all conditions hold:
+   - It preserves the public or cross-boundary contract required by the Design Doc, task, AC, Reference Contracts, and Binding Decisions.
+   - It satisfies only the calls or behavior this task requires.
+   - It keeps schema, global configuration, and shared dependency direction unchanged.
+   - It can be removed or replaced when the real dependency is implemented without changing callers or this task's observable behavior.
+2. Branch on the result:
+   - At least one local, reversible approach preserves the contract, and choosing among equivalent approaches carries no architectural trade-off: proceed with it and record the integration handoff in Investigation Notes, including what the real dependency must later provide and where it connects.
+   - The qualifying conditions fail, or several valid constructs differ on an architectural trade-off such as placement, dependency direction, or contract shape: stop and return `status: "escalation_needed"` with `escalation_type: "design_compliance_violation"` using Design Doc Deviation Escalation. Populate every `details` field required by that schema and set top-level `recommendation`. Map fields as follows:
+     - `details.design_doc_expectation`: Design Doc requirement for the dependency and required contract.
+     - `details.actual_situation`: Absent/unimplemented dependency plus the exact undecided decision.
+     - `details.why_cannot_implement`: Why no qualifying local construct preserves the contract, or why the valid constructs require an architectural decision.
+     - `details.attempted_approaches`: Local slice, stub, adapter, or other constructs considered, with one-line result for each.
+     - `recommendation`: Specific user decision needed to unblock implementation.
+
 #### Adjacent Case Sweep (Required when the task file has a `Change Category` field set to one or more of `bug-fix`, `regression`, `state-change`, `boundary-change`)
 
 Run this check after Pre-implementation Verification and before the Binding Decision Check. Treat the task file's field value as authoritative for whether the sweep applies.
@@ -186,7 +204,7 @@ Run this check after Pre-implementation Verification and before the TDD cycle wh
 Run this check after Pre-implementation Verification and before the TDD cycle when the task file contains a Reference Contracts section with one or more rows.
 
 1. Confirm each Source in the Reference Contracts table has been read. Sources should also appear in Investigation Targets.
-2. Verify source fidelity before planning: locate the Required Observable Value in the Source and confirm it matches verbatim. If the value is not found or the task row differs by summary, omission, reordered fields, changed labels, or changed conditions, stop implementation and return `status: "escalation_needed"` with `escalation_type: "design_compliance_violation"`. Set `details.design_doc_expectation` to the Source value or "source value not found" and `details.actual_situation` to the task row's Required Observable Value.
+2. Verify source fidelity before planning: locate the Required Observable Value in the Source and confirm it matches verbatim. If the value is not found or the task row differs by summary, omission, reordered fields, changed labels, or changed conditions, stop implementation and return `status: "escalation_needed"` with `escalation_type: "design_compliance_violation"` using Design Doc Deviation Escalation. Populate every `details` field required by that schema and set top-level `recommendation`. Map the Source value or "source value not found" to `details.design_doc_expectation`, the task row's Required Observable Value to `details.actual_situation`, the source-fidelity mismatch to `details.why_cannot_implement`, the source lookup and comparison attempts to `details.attempted_approaches`, and the task or source correction needed to `recommendation`.
 3. Use the Investigation Notes format below while recording the planned approach and evaluation results.
    - `### Reference Contracts Evaluation`
    - `[source] planned: [one sentence planned approach]`
@@ -196,7 +214,7 @@ Run this check after Pre-implementation Verification and before the TDD cycle wh
 5. Evaluate each row's Compliance Check against the planned approach. Record the result as `Y`, `N`, or `Unknown` with a one-line rationale.
 6. Branch per row:
    - `Y`: proceed
-   - `N`: stop implementation and return `status: "escalation_needed"` with `escalation_type: "design_compliance_violation"`. Set `details.design_doc_expectation` to the row's Required Observable Value and `details.actual_situation` to the planned approach.
+   - `N`: stop implementation and return `status: "escalation_needed"` with `escalation_type: "design_compliance_violation"` using Design Doc Deviation Escalation. Populate every `details` field required by that schema and set top-level `recommendation`. Map the row's Required Observable Value to `details.design_doc_expectation`, the planned approach to `details.actual_situation`, the Compliance Check failure to `details.why_cannot_implement`, the planned approach and alternatives considered to `details.attempted_approaches`, and the implementation or Design Doc decision needed to `recommendation`.
    - `Unknown`: record the row as deferred in Investigation Notes and proceed to the TDD cycle. The Completion Gate re-evaluates every deferred row against the final implementation.
 
 #### Reference Representativeness (Applied During Implementation)
