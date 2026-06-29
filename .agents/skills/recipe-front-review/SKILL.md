@@ -12,7 +12,7 @@ description: "Frontend Design Doc compliance and security validation with option
 3. [LOAD IF NOT ACTIVE] `ai-development-guide` -- AI development patterns
 4. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
 
-**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
 ## Execution Method
 

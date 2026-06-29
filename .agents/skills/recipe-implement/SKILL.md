@@ -9,7 +9,7 @@ description: "Orchestrate the complete implementation lifecycle from requirement
 2. [LOAD IF NOT ACTIVE] `documentation-criteria` — document creation rules and templates
 3. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
 
-**Spawn rule**: every `spawn_agent` call MUST pass `fork_turns="none"` or `fork_context=false` for context isolation.
+**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
 # Full-Cycle Implementation
 
