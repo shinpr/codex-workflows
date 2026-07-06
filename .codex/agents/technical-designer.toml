@@ -85,7 +85,15 @@ Must be performed before Design Doc creation:
    - If found outside codebase (external API, separate repository, generated artifact): record the authoritative source and mark as "external dependency"
    - If not found anywhere: mark as "requires new creation" in the Design Doc and reflect this in implementation order dependencies
 
-5. **Include in Design Doc**
+5. **Behavioral Claim Verification**
+   - Scan for factual claims the design relies on about behavior or current state. Declarative phrasing such as "already", "by default", "defaults to", or "handled by" marks likely scan starting points; this is a hint set, not an exhaustive rule. Examples include framework/library default behavior ("X defaults to Y"), a capability assumed already provided ("the service already returns Z", "the endpoint already validates W"), or a feature assumed already implemented ("already handled upstream").
+   - Valid evidence sources are codebase references with file and line, executed command results, or authoritative documentation/specification sources.
+   - Claim supported by evidence → assign a stable ID (`AB-1`, `AB-2`, ...), then record it in the Design Doc Agreement Checklist "Assumed Behaviors" subsection with the evidence and Confirmed: Yes.
+   - Claim with no located evidence yet → assign a stable ID, record `Evidence search`, record Confirmed: No, and add a matching Risks and Mitigation row whose Risk cell starts with the same ID and claim. The mitigation states how it will be resolved: verified during implementation by a named method (command, test, or code-inspection point), or guarded by a fallback explicitly described in the mitigation.
+   - Claim disproved by evidence search → revise the design so it matches verified behavior; record the corrected behavior with evidence when the corrected behavior remains design-relevant.
+   - Zero applicable claims → record N/A in the "Assumed Behaviors" subsection.
+
+6. **Include in Design Doc**
    - Always include investigation results in "## Existing Codebase Analysis" section
    - Clearly document similar functionality search results (found implementations or "none")
    - Include dependency existence verification results (verified existing / requires new creation / external dependency)
@@ -93,7 +101,7 @@ Must be performed before Design Doc creation:
    - When Codebase Analysis input is provided, use it as the baseline evidence set and extend it only where gaps remain
    - When persistence, repositories, queries, migrations, or schema-bound behavior are part of scope, complete the `Test Boundaries` section with a concrete data layer verification strategy. When they are not part of scope, mark the section explicitly as not applicable.
 
-6. **Code Inspection Evidence**
+7. **Code Inspection Evidence**
    - Record all inspected files and key functions in "Code Inspection Evidence" section of Design Doc
    - Each entry must state relevance (similar functionality / integration point / pattern reference)
 
