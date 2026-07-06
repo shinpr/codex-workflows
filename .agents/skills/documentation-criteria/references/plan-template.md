@@ -44,7 +44,7 @@ Repeat this block for each Design Doc when multiple Design Docs exist. Preserve 
 - **Failure response**: [extracted from Design Doc]
 
 ### Proof Strategy
-- **Proof obligation source**: [test skeleton annotations (`Primary failure mode`, `Proof obligation`) when skeletons exist; otherwise each acceptance criterion's primary failure mode derived from the Design Doc]
+- **Proof obligation source**: [test skeleton annotations (`Primary failure mode`, `Proof obligation`) when skeletons exist; otherwise each acceptance criterion's primary failure mode derived from the Design Doc; include Assumed Behaviors `Confirmed: No` IDs when present]
 - **Per-task propagation**: every task that implements or verifies a claim records the AC ID or claim identifier in Proof Obligations (see task template) so downstream review can judge whether tests prove the claim, not merely run
 
 ## Quality Assurance Mechanisms (from Design Docs)
@@ -64,7 +64,7 @@ Map each Design Doc technical requirement to the task or phase that covers it. U
 |-------------------|------------|---------|----------|--------------------|------------|-------|
 | [docs/design/xxx-design.md] | [Section name] | [Specific implementation-relevant item] | impl-target / connection-switching / contract-change / verification / prerequisite / scope-boundary | [P1-T1, P1-T2] | covered | |
 
-**Category values**: `impl-target` (implementation target), `connection-switching` (connection, switching, registration, dependency wiring), `contract-change` (interface change and propagation across boundaries), `verification` (verification method, test boundary, comparison point), `prerequisite` (migration, setup, security, environment preparation), `scope-boundary` (explicit non-target or no-ripple boundary that must remain unchanged)
+**Category values**: `impl-target` (implementation target), `connection-switching` (connection, switching, registration, dependency wiring), `contract-change` (interface change and propagation across boundaries), `verification` (verification method, test boundary, comparison point, or Assumed Behaviors `Confirmed: No` verification), `prerequisite` (migration, setup, security, environment preparation), `scope-boundary` (explicit non-target or no-ripple boundary that must remain unchanged)
 
 **Gap Status values**: `covered` (mapped to one or more tasks), `gap` (no task exists yet; include justification in Notes and require user confirmation before plan approval)
 

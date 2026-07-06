@@ -61,6 +61,12 @@ unknowns:
 - [ ] [Standard/convention] `[explicit]` - Source: [config / rule file / documentation path]
 - [ ] [Observed pattern] `[implicit]` - Evidence: [file paths] - Confirmed: [Yes/No]
 
+#### Assumed Behaviors
+Behavioral or factual claims the design relies on, such as framework or library defaults, capabilities assumed already provided, or features assumed already implemented. Use stable IDs (`AB-1`, `AB-2`, ...). `Confirmed: No` means evidence has not been located yet; when evidence search disproves the claim, revise the design to match verified behavior. Mark this subsection N/A when zero applicable claims exist.
+
+- [ ] AB-1 [Claim, e.g. "framework X defaults to Y" or "service already returns Z"] - Evidence: [file:line / command output / authoritative doc] - Confirmed: Yes
+- [ ] AB-2 [Claim] - Evidence search: [searched files / commands / docs] - Confirmed: No
+
 #### Quality Assurance Mechanisms
 How quality is enforced in the change area. Each item is either adopted for this change or noted with a reason.
 
@@ -102,16 +108,12 @@ Each AC is written in EARS (Easy Approach to Requirements Syntax) format.
 
 **Format**: `[Keyword] <trigger/condition>, the system shall <expected behavior>`
 
-### [Functional Requirement 1]
+### [Functional Requirement]
 
 - [ ] **When** user clicks login button with valid credentials, the system shall authenticate and redirect to dashboard
 - [ ] **If** credentials are invalid, **then** the system shall display error message "Invalid credentials"
 - [ ] **While** user is logged in, the system shall maintain the session for configured timeout period
-
-### [Functional Requirement 2]
-
 - [ ] The system shall display data list with pagination of 10 items per page
-- [ ] **When** input is entered in search field, the system shall apply real-time filtering
 
 ## Existing Codebase Analysis
 
@@ -154,7 +156,7 @@ No Ripple Effect:
 
 ### Interface Change Impact Analysis
 
-Use this table for interface or contract compatibility decisions. Record what changes at the boundary and how compatibility is preserved.
+Record boundary changes and compatibility preservation.
 
 | Existing Interface | New Interface | Conversion Required | Adapter / Wrapper Required | Compatibility Method |
 |-------------------|---------------|---------------------|----------------------------|----------------------|
@@ -172,15 +174,13 @@ Use this table for interface or contract compatibility decisions. Record what ch
 
 ### Integration Points List
 
-Use this table for runtime wiring, switching, or registration points. Record how the integration is connected and how the switching behavior is verified.
+Runtime wiring, switching, or registration points.
 
 | Integration Point | Location | Old Implementation | New Implementation | Switching Method | Verification Method |
 |-------------------|----------|-------------------|-------------------|------------------|---------------------|
 | Integration Point 1 | [Class/Function] | [Existing Process] | [New Process] | [DI/Factory etc.] | [How this switching or integration will be verified] |
 
 ### Main Components
-
-Repeat the block below for each component.
 
 #### Component 1
 
@@ -227,9 +227,7 @@ One entry per new in-scope element as defined by coding-rules "Minimum Surface T
 - [Alternative name]: [1-2 lines on what it was and why rejected]
 - [Alternative name]: [1-2 lines on what it was and why rejected]
 
-(Repeat the Element block above for each additional in-scope element.)
-
-Rejected Alternatives Log is element-level. Future Extensibility below is design-level.
+Repeat the element block per in-scope element. Rejected Alternatives Log is element-level; Future Extensibility is design-level.
 
 ### Contract Definitions
 
@@ -259,7 +257,7 @@ Invariants:
 
 ### Observable Contract Values (When Applicable)
 
-Use this section when the design defines observable values the implementation must reproduce exactly. Omit it when the Design Doc has no such values.
+Values the implementation must reproduce exactly; omit when none exist.
 
 | Contract Type | Required Observable Value |
 |---------------|---------------------------|
@@ -283,7 +281,7 @@ Use this section when the design defines observable values the implementation mu
 
 ### Field Propagation Map (When Fields Cross Boundaries)
 
-A boundary includes a serialized boundary: a value encoded on one side and parsed on the other through a medium such as a query string, CLI argument, environment variable, config entry, message payload, storage key, or file. For those rows, record the exact encoded representation and how the consumer parses it. Use "-" only when the row is not a serialized boundary.
+For serialized boundaries -- a value encoded on one side and parsed on the other (query string, CLI argument, env/config, message payload, storage key, file) -- record exact encoding and consumer parsing. Use "-" only for non-serialized rows.
 
 | Field | Boundary | Status | Serialized Format | Consumer Parse Rule | Detail |
 |-------|----------|--------|-------------------|---------------------|--------|
@@ -291,10 +289,8 @@ A boundary includes a serialized boundary: a value encoded on one side and parse
 
 ## Verification Strategy
 
-Verification Strategy defines what correctness means and how to prove it at design time. L1/L2/L3 (from implementation-approach) define task-level verification depth at execution time.
-Use the minimal form only when the change is low-risk or the verification path is self-evident. Otherwise fill all fields concretely.
-Low-risk: changes affecting 1-2 files with no external contract, integration, or data-flow changes.
-Self-evident: internal-only refactoring with identical observable inputs and outputs.
+Define correctness and how to prove it at design time. L1/L2/L3 from implementation-approach define task-level verification depth.
+Use the minimal form only for low-risk changes (1-2 files, no external contract/integration/data-flow change) or self-evident internal refactors with identical observable inputs/outputs.
 
 ### Correctness Proof Method
 
@@ -419,6 +415,8 @@ This section records what was excluded from the current design surface. Speculat
 - **Reason for Rejection**: [Why it wasn't adopted]
 
 ## Risks and Mitigation
+
+For an Assumed Behaviors entry with `Confirmed: No`, start the Risk cell with the same ID (for example, `AB-2: [claim]`) and name the implementation-phase verification method or guard.
 
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|

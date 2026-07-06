@@ -37,18 +37,11 @@ Skill Status:
 
 ## Main Responsibilities
 
-1. Identify and structure implementation tasks
-2. Clarify task dependencies
-3. Phase division and prioritization
-4. Define completion criteria for each task (derived from Design Doc acceptance criteria)
-5. Place test implementation and execution appropriately for each phase
-6. Concretize risks and countermeasures
-7. Create explicit Design-to-Plan Traceability so Design Doc technical requirements are covered without silent omission
-8. Propagate UI Spec component and runtime boundary context into the plan so task decomposition can pass it to executors
-9. Map implementation-binding ADR decisions to constrained tasks
-10. Document in progress-trackable format
-11. Carry proof obligations from test skeletons or acceptance criteria into the work plan so task files and reviews can judge whether tests prove the claim, not merely run
-12. Record WorkPlan Review status as pending when creating or materially updating a plan
+1. Create phased, dependency-aware implementation tasks from Design Docs
+2. Preserve Design-to-Plan Traceability, Proof Strategy, QA mechanisms, ADR bindings, UI/runtime boundaries, and Assumed Behaviors verification obligations
+3. Place tests and verification in the phase required by source artifacts
+4. Produce a trackable WorkPlan with pending review/readiness state
+5. Keep completion criteria executable by downstream task decomposition
 
 ## Input Parameters
 
@@ -71,6 +64,7 @@ Read the Design Doc(s), UI Spec, PRD, and ADR (if provided). Extract:
 - Integration points and their contracts
 - Verification Strategy from each Design Doc: correctness definition, target comparison, verification method, observable success indicator, normalized verification timing, and early verification point
 - Quality Assurance Mechanisms from each Design Doc: all items marked `adopted`, including mechanism name, enforced quality aspect, configuration path, and covered files or project-wide scope
+- Assumed Behaviors from each Design Doc: every `Confirmed: No` entry, its ID, Evidence search, and matching Risks and Mitigation row
 - Implementation-relevant technical requirements from each Design Doc section using the category values defined in the plan template's `Design-to-Plan Traceability` section
 - Prerequisite ADR references from each Design Doc and implementation-binding decisions from each resolved ADR
 - Primary failure modes from acceptance criteria or generated test skeletons
@@ -96,7 +90,7 @@ Choose Strategy A (TDD) if test skeletons are provided, Strategy B (implementati
 - Include a `WorkPlan Review` section. Set `Status: pending` and `Conditions: none`. When invoked in update mode after a WorkPlan review verdict, only `approved` with no conditions may set `Status: approved`.
 - Preserve Verification Strategies per Design Doc in the work plan header and keep each source document path. Merge strategies only when the Design Docs explicitly define a shared one
 - Include Verification Strategy summaries in the work plan header so the plan is self-sufficient for downstream task generation
-- Include a Proof Strategy in the work plan header. When test skeletons exist, use their Primary failure mode and Proof obligation annotations as the proof obligation source; otherwise derive each claim's primary failure mode from the acceptance criterion and Design Doc verification strategy.
+- Include a Proof Strategy in the work plan header. When test skeletons exist, use their Primary failure mode and Proof obligation annotations as the proof obligation source; otherwise derive each claim's primary failure mode from the acceptance criterion and Design Doc verification strategy. Include every Assumed Behaviors `Confirmed: No` ID as a proof obligation source with the matching Risks and Mitigation verification method or guard.
 - Include adopted Quality Assurance Mechanisms in the work plan header so downstream task generation and quality checks inherit the intended quality gates
 - Place tasks with the lowest dependencies in earlier phases
 - Map normalized verification timing to phases as follows: `phase_1` -> earliest implementation phase, `per_phase` -> each relevant phase, `integration_phase` -> integration phase, `final_phase` -> final Quality Assurance phase
@@ -127,6 +121,7 @@ Traceability rules:
 - A broader implementation task may cover multiple DD items when the mapping remains explicit
 - Acceptance criteria alone are insufficient coverage when the DD also specifies interface changes, dependency wiring, verification boundaries, or prerequisite work
 - Verification Strategy items may map to dedicated verification tasks or phase completion tasks, but the mapping must be explicit
+- Each Assumed Behaviors `Confirmed: No` item must map to a `verification` row using its `AB-*` ID and to the task or phase completion task that performs the named verification method or guard
 - Interface change and field propagation items must map to the task that updates every affected boundary or compatibility layer
 - Scope boundaries must map to the task IDs or phase completion task IDs that verify the protected boundary remains unchanged
 - Any `gap` without justification is an error
@@ -216,7 +211,7 @@ Categories:
 `missing-sort-key ordering` applies when a collection is sorted by a field or key that may be absent, null, derived, or conditionally omitted. Covering tasks must prove a deterministic fallback order for items lacking the sort key.
 
 ### 6. Define Tasks with Completion Criteria
-For each task, derive completion criteria from Design Doc acceptance criteria. Each task that covers an acceptance criterion must explicitly name the AC ID or claim identifier in Completion Criteria or Proof Obligations. Apply the 3-element completion definition (Implementation Complete, Quality Complete, Integration Complete).
+For each task, derive completion criteria from Design Doc acceptance criteria. Each task that covers an acceptance criterion or Assumed Behaviors `Confirmed: No` item must explicitly name the AC ID or `AB-*` claim identifier in Completion Criteria or Proof Obligations. Apply the 3-element completion definition (Implementation Complete, Quality Complete, Integration Complete).
 
 ### 7. Produce Work Plan Document
 Write the work plan following the plan template from documentation-criteria skill. Include Phase Structure Diagram and Task Dependency Diagram (mermaid).
@@ -239,12 +234,11 @@ Execute file output immediately. Final approval is managed by the orchestrator r
 
 ## Important Task Design Principles
 
-1. **Executable Granularity**: Each task as logical 1-commit unit, clear completion criteria, explicit dependencies
-2. **Built-in Quality**: Simultaneous test implementation, quality checks in each phase
-3. **Risk Management**: List risks and countermeasures in advance, define detection methods
-4. **Ensure Flexibility**: Prioritize essential purpose and include only details required for task execution, verification, and dependency management
-5. **Design Doc Compliance**: All task completion criteria derived from Design Doc specifications
-6. **Implementation Pattern Consistency**: When including implementation samples, MUST ensure strict compliance with Design Doc implementation approach
+1. **Executable Granularity**: logical 1-commit unit, clear completion criteria, explicit dependencies
+2. **Built-in Quality**: tests and quality checks placed in the phase that proves the task
+3. **Risk Management**: risks include detection or mitigation method
+4. **Lean Detail**: include only details required for execution, verification, and dependency management
+5. **Design Doc Compliance**: task criteria and implementation samples follow Design Doc specifications
 
 ### Task Completion Definition: 3 Elements
 1. **Implementation Complete**: Code functions (including existing code investigation)
@@ -407,33 +401,17 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 - [ ] Design Doc(s) consistency verification
 - [ ] Verification Strategies extracted from each Design Doc and included in the plan header without unintended merging
 - [ ] Adopted Quality Assurance Mechanisms extracted from the Design Doc(s) and included in the plan header
-- [ ] Design-to-Plan Traceability table completed for all extracted implementation-relevant DD items
-  - [ ] Every row mapped to covering task(s) or justified `gap`
-  - [ ] Interface change and propagation items mapped explicitly
-  - [ ] Connection, switching, and prerequisite items mapped explicitly
-  - [ ] Scope-boundary items mapped explicitly when the Design Doc defines protected no-change areas
-  - [ ] Covered By Task(s) uses only normalized task IDs
-  - [ ] No unjustified `gap` entries remain
-- [ ] Reference Contract Values table completed when binding observable values appear in traced Design Doc items
-  - [ ] Each row mapped to covering task(s) or justified `gap`
-  - [ ] No unjustified `gap` entries remain
-- [ ] ADR Bindings table completed when ADRs are provided or listed in Design Doc prerequisites
-  - [ ] ADR references resolved with exact path or single `docs/adr/ADR-XXXX-*.md` match
-  - [ ] Each binding row has one valid Axis value
-  - [ ] Each binding row maps to covering task(s) or a justified gap
+- [ ] Design-to-Plan Traceability covers all extracted DD items, including interface, connection, prerequisite, scope-boundary, and Assumed Behaviors verification items; every row uses normalized task IDs or a justified `gap`
+- [ ] Reference Contract Values covers binding observable values when present; every row maps to task IDs or a justified `gap`
+- [ ] ADR Bindings covers provided or referenced ADR decisions; references resolve exactly, each row has one valid Axis value, and every row maps to task IDs or a justified `gap`
 - [ ] Phase structure matches the implementation approach
 - [ ] Early verification point placed in the earliest applicable phase
 - [ ] Normalized verification timing mapped consistently to phases
 - [ ] Acceptance criteria and extracted technical requirements converted to tasks or justified gaps
 - [ ] Quality assurance exists in final phase
 - [ ] Test skeleton file paths listed in corresponding phases (when provided)
+- [ ] Test design information reflected when provided: setup tasks first, risk priority applied, measurement tools planned, AC/test traceability specified, quantitative progress indicators set
 - [ ] E2E environment prerequisites addressed when E2E skeletons are provided
-- [ ] Test design information reflected (only when provided)
-  - [ ] Setup tasks placed in first phase
-  - [ ] Risk level-based prioritization applied
-  - [ ] Measurement tool implementation planned as concrete tasks
-  - [ ] AC and test case traceability specified
-  - [ ] Quantitative test resolution progress indicators set for each phase
 
 ## Update Mode Operation
 - **Constraint**: Only pre-execution plans can be updated. Plans in progress require new creation
