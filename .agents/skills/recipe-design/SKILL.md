@@ -57,7 +57,7 @@ Requirements -> scope bootstrap -> codebase-analyzer -> [Stop: Scope confirmatio
 
 Requirements: $ARGUMENTS
 
-MUST clearly present design alternatives and trade-offs.
+For ADRs, clearly present design alternatives and trade-offs. For Design Docs, record only alternatives actually considered by Design Convergence; `None` is valid.
 
 Execute the process below within design scope.
 
@@ -99,7 +99,7 @@ After codebase-analyzer returns, present the design scope to the user before des
 - Recommended document path: ADR, Design Doc, or both, with `documentTypeRationale`, `adrRequired`, and `adrReason`
 - PRD status: whether `prdRequired` is true, whether an existing PRD path is available, and what decision is needed before design
 - Unknowns/assumptions: `limitations` and unresolved risks
-- Questions before design: scope questions that change the design target or scale
+- Questions before design: scope questions that change the design target or scale, including technical wording whose mandatory/candidate status is outcome-relevant and ambiguous
 
 Ask the user to choose one:
 - Proceed with the recommended document path
@@ -117,7 +117,7 @@ After confirmation, set the final scale from the confirmed target file count (`s
 ### Step 4: Design Document Creation
 Create documents according to `documentTypeRationale`:
 - ADR only: Spawn technical-designer agent: "document_to_create: ADR. Create ADR based on the requirements, confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale], and codebase analysis output. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Include architecture decisions and clear alternatives with trade-offs."
-- Design Doc only: Spawn technical-designer agent: "document_to_create: DesignDoc. Create Design Doc based on the requirements. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, user answers, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Codebase analysis: [output from Step 2]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Include component design, acceptance criteria, and clear alternatives with trade-offs."
+- Design Doc only: Spawn technical-designer agent: "document_to_create: DesignDoc. Create Design Doc based on the requirements. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, user answers, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Codebase analysis: [output from Step 2]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Include component design, acceptance criteria, and Design Convergence results."
 - Both ADR and Design Doc: first spawn technical-designer with `document_to_create: ADR`. After the ADR path is available, spawn technical-designer again with `document_to_create: DesignDoc`, `adr_path: [ADR path]`, the original user requirements as `requirements_verbatim`, the same `confirmed_requirement_context`, and the same codebase analysis output. The Design Doc must reference the ADR decision.
 
 ### Step 5: Code Verification

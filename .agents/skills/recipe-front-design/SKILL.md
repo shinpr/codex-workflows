@@ -85,7 +85,7 @@ After codebase-analyzer returns, present the frontend design scope to the user b
 - Recommended document path: ADR, Design Doc, or both, with `documentTypeRationale`, `adrRequired`, and `adrReason`
 - PRD status: whether `prdRequired` is true, whether an existing PRD path is available, and what decision is needed before UI/design work
 - Unknowns/assumptions: `limitations` and unresolved risks
-- Questions before design: scope questions that change the UI surface, design target, or scale
+- Questions before design: scope questions that change the UI surface, design target, or scale, including technical wording whose mandatory/candidate status is outcome-relevant and ambiguous
 
 Ask the user to choose one:
 - Proceed with the recommended document path
@@ -146,14 +146,14 @@ After UI fact gathering completes, create the UI Specification:
 ### Step 8: Design Document Creation Phase
 Create appropriate design documents according to confirmed scope and scale:
 - For ADR: Spawn technical-designer-frontend agent: "document_to_create: ADR. Create ADR for [technical decision]. Requirements: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Codebase Analysis: [JSON from codebase-analyzer]. UI Analysis: [JSON from ui-analyzer, only if Step 6 ran]. Present at least two alternatives with trade-offs."
-- For Design Doc: Spawn technical-designer-frontend agent: "document_to_create: DesignDoc. Create Design Doc based on requirements. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, user answers, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Codebase Analysis: [JSON from codebase-analyzer]. UI Analysis: [JSON from ui-analyzer]. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec. Fill External Resources Used from docs/project-context/external-resources.md and feature identifiers. Present at least two alternatives with trade-offs."
+- For Design Doc: Spawn technical-designer-frontend agent: "document_to_create: DesignDoc. Create Design Doc based on requirements. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, user answers, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Codebase Analysis: [JSON from codebase-analyzer]. UI Analysis: [JSON from ui-analyzer]. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec. Fill External Resources Used from docs/project-context/external-resources.md and feature identifiers. Record only alternatives actually considered by Design Convergence; `None` is valid."
   - When both ADR and Design Doc are required, create the ADR first. After the ADR path is available, create the Design Doc with `document_to_create: DesignDoc` and `adr_path: [ADR path]`; the Design Doc must reference the ADR decision.
 - For Design Docs only, spawn code-verifier agent: "Verify Design Doc against code. doc_type: design-doc. document_path: [document path]. verbose: false."
 - Review each created document:
   - ADR: Spawn document-reviewer agent: "Review the ADR for consistency and completeness. doc_type: ADR. target: [ADR path]. mode: composite. codebase_analysis: [JSON from codebase-analyzer]. ui_analysis: [JSON from ui-analyzer, when available]."
   - Design Doc: Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. target: [Design Doc path]. mode: composite. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. codebase_analysis: [JSON from codebase-analyzer]. ui_analysis: [JSON from ui-analyzer]. code_verification: [JSON from code-verifier]."
 
-**[STOP -- BLOCKING]** Present design alternatives and trade-offs, obtain user approval.
+**[STOP -- BLOCKING]** Present the created design documents and any recorded trade-offs, then obtain user approval.
 **CANNOT proceed until user explicitly approves the design document.**
 
 ENFORCEMENT: Every stop point MUST be respected. Skipping user approval invalidates the entire workflow.

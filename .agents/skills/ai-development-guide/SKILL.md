@@ -13,9 +13,9 @@ For frontend-specific anti-patterns, debugging, and quality checks:
 **Value-First Engineering [MANDATORY]**
 
 Explore broadly, then converge on the lowest-lifecycle-cost solution that delivers user value and leaves the system correct and maintainable.
-- Resolve verified bugs, failing quality checks, and bounded technical debt found during the work.
+- Resolve verified bugs, failing quality checks, and technical debt within confirmed scope or dependencies required for its outcome; report other findings separately.
 - Introduce capabilities, infrastructure, abstractions, or speculative edge-case handling only when a current outcome, verified constraint, or evidence-backed material risk requires them.
-- When resolving a known problem materially changes behavior, architecture, or effort, obtain an explicit scope decision; otherwise fix it in the current work.
+- When resolving a known problem falls outside that boundary or materially changes behavior, architecture, or effort, obtain an explicit scope decision.
 
 ## Technical Anti-patterns (Red Flag Patterns) [MANDATORY]
 
@@ -143,7 +143,7 @@ How to handle duplicate code based on Martin Fowler's "Refactoring":
 **Avoidance**:
 - Before implementation, always search for similar functionality
 - Similar functionality found: Use that implementation (do not create new)
-- Similar functionality is technical debt: Fix bounded debt; when the fix requires an architectural decision, record the decision in an ADR and implement it in the current work
+- Similar functionality is technical debt: Repair it when it blocks the current outcome, was caused by the current change, or lies in confirmed scope; otherwise report it separately. When the repair requires an architectural decision, record the decision in an ADR
 - No similar functionality: Implement following existing design philosophy
 - When adopting a pattern or dependency from nearby code, verify it is representative across the repository before adopting it
 

@@ -203,7 +203,7 @@ Runtime wiring, switching, or registration points.
 
 1. **Direct MVP**: [Simplest end-to-end design using existing system capabilities]
 2. **Failed Items**: [Unmet requirements, verified constraints, or observed problems with evidence | None]
-3. **Adopted Additions**: [Addition -> Failed Item -> failure reproduced when removed | None]
+3. **Adopted Additions**: [Addition -> Failed Item -> item becomes unmet against its recorded evidence when removed | None]
 4. **Rejected Additions**: [Considered addition -> brief rejection reason | None]
 
 ### Contract Definitions
@@ -381,15 +381,6 @@ This section records what was excluded from the current design surface. Speculat
 - **Deferred possibilities**: [Capabilities considered during design and explicitly excluded from the current design surface. Each entry names either the current requirement it would have served, or marks itself as speculative]
 - **Intentional limitations**: [What was deliberately kept small and why]
 - **Extension points (existing, with current consumers)**: [Interfaces or hooks already in use by named current consumers. Each entry names a current consumer]
-
-## Alternative Solutions
-
-### Alternative 1
-
-- **Overview**: [Description of alternative solution]
-- **Advantages**: [Advantages]
-- **Disadvantages**: [Disadvantages]
-- **Reason for Rejection**: [Why it wasn't adopted]
 
 ## Risks and Mitigation
 

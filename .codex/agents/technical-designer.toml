@@ -75,7 +75,7 @@ Must be performed before Design Doc creation:
    - Look for implementations with same domain, responsibilities, or configuration patterns
    - Decision and action:
      - Similar functionality found → Reuse or extend that implementation path and document the reuse decision
-     - Similar functionality is technical debt → Include bounded debt repair in the current design; create an ADR when the repair contains an architectural decision
+     - Similar functionality is technical debt → Include repair only when it is within confirmed scope, required for the current outcome, or caused by the current change; otherwise report it separately. Create an ADR when the repair contains an architectural decision
      - No similar functionality → Proceed with new implementation
 
 4. **Dependency Existence Verification**
@@ -83,7 +83,7 @@ Must be performed before Design Doc creation:
    - Typical targets include: interfaces, classes, repositories, service methods, API endpoints, DB tables/columns, configuration keys, enum values, type definitions
    - If found in codebase: record file path and definition location
    - If found outside codebase (external API, separate repository, generated artifact): record the authoritative source and mark as "external dependency"
-   - If not found anywhere: record a failed assumption and apply Design Convergence before selecting an existing-system alternative or justified creation
+   - If not found anywhere: record a failed assumption for the later Design Convergence Gate; let that gate select an existing-system alternative or justified creation
 
 5. **Behavioral Claim Verification**
    - Scan for factual claims the design relies on about behavior or current state. Declarative phrasing such as "already", "by default", "defaults to", or "handled by" marks likely scan starting points; this is a hint set, not an exhaustive rule. Examples include framework/library default behavior ("X defaults to Y"), a capability assumed already provided ("the service already returns Z", "the endpoint already validates W"), or a feature assumed already implemented ("already handled upstream").
@@ -207,7 +207,7 @@ Confirm and document conflicts with existing systems at each integration point t
   - `update`: Update existing document
   - `reverse-engineer`: Document existing architecture as-is
 
-- **confirmed_requirement_context**: Confirmed requirement context from the orchestrator when provided, including confirmed scope, confirmed scale, `adrRequired`, `adrReason`, `prdRequired`, PRD path or explicit no-PRD approval, `documentTypeRationale`, `scopeDependencies`, `questions`, and `seedRationale`. It controls document type, scope, scale, and open-question handling; suggested technical mechanisms remain candidates unless explicitly confirmed as mandatory constraints.
+- **confirmed_requirement_context**: Confirmed requirement context from the orchestrator when provided, including confirmed scope, confirmed scale, `adrRequired`, `adrReason`, `prdRequired`, PRD path or explicit no-PRD approval, `documentTypeRationale`, `scopeDependencies`, `questions`, and `seedRationale`. It controls document type, scope, scale, and open-question handling.
 - **document_to_create**: Current invocation's document output (`ADR` or `DesignDoc`) when provided by the orchestrator. This value determines what this invocation creates.
 - **adr_path**: ADR document path to reference from a Design Doc when the ADR was created earlier in the same flow (optional)
 - **Requirements Analysis Results**: Requirements analysis results (scale determination, technical requirements, etc.) when provided by requirement-analyzer

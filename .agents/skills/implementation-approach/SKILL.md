@@ -28,21 +28,21 @@ Historical Context Understanding: Current form rationale, past decision validity
 
 ### Phase 2: Direct MVP
 
-Describe the simplest end-to-end design that delivers the minimum user value or required outcome from the governing artifact using the existing architecture, dependencies, persistence, and established patterns. Treat suggested technical mechanisms as candidates unless explicitly confirmed as mandatory constraints. Record the result as `Direct MVP` before considering additional mechanisms.
+Describe the simplest end-to-end design that delivers the minimum user value or required outcome from the governing artifact using the existing architecture, dependencies, persistence, and established patterns. Preserve explicit user-stated technical requirements as constraints; treat only wording framed as a suggestion or option as a candidate, and resolve outcome-relevant ambiguity before design. Record the result as `Direct MVP` before considering additional mechanisms.
 
 ### Phase 3: Failure Check [MANDATORY]
 
-Test the Direct MVP against every current requirement, verified constraint, observed defect, and evidence-backed material risk. Record only unmet items as `Failed Items`, with evidence; record `None` when all pass.
+Test the Direct MVP against every current requirement, verified constraint, observed problem, and evidence-backed material risk within confirmed scope or dependencies required for its outcome. Record only unmet items as `Failed Items`, with evidence; record `None` when all pass. Report verified problems outside that boundary separately for a scope decision.
 
 **ENFORCEMENT**: CANNOT add design surface before the Failure Check is complete.
 
 ### Phase 4: Targeted Expansion
 
-For each Failed Item, add the smallest mechanism that resolves it and record the mapping as `Adopted Additions`; record `None` when no expansion is needed. An addition without a Failed Item is excluded.
+For each Failed Item, choose the sufficient candidate with the lowest lifecycle cost, treating maintenance-surface-bearing elements defined by coding-rules as cost factors and preferring fewer new elements only when candidates are otherwise equivalent. Record it as `Adopted Additions`; record `None` when no expansion is needed. An addition without a Failed Item is excluded.
 
 ### Phase 5: Subtraction Check [MANDATORY]
 
-Remove each Adopted Addition in turn and re-run its Failed Item. Keep the addition only when the failure returns; record removed or larger options in `Rejected Additions` with a brief reason, or `None` when no addition was considered.
+Remove each Adopted Addition in turn and re-run its Failed Item. At design time, this means evaluating the design without the addition against the evidence recorded for that Failed Item. Keep the addition only when the item becomes unmet again; record removed or larger options in `Rejected Additions` with a brief reason, or `None` when no addition was considered.
 
 ### Phase 6: Implementation Approach Decision
 
