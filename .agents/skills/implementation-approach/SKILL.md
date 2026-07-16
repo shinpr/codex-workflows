@@ -26,67 +26,27 @@ Historical Context Understanding: Current form rationale, past decision validity
 
 **ENFORCEMENT**: CANNOT proceed to Phase 2 without answering all questions
 
-### Phase 2: Strategy Exploration and Creation
+### Phase 2: Direct MVP
 
-**Core Question**: "When determining before to after, what implementation patterns or strategies should be referenced?"
+Describe the simplest end-to-end design that delivers the minimum user value or required outcome from the governing artifact using the existing architecture, dependencies, persistence, and established patterns. Preserve explicit user-stated technical requirements as constraints; treat only wording framed as a suggestion or option as a candidate, and resolve outcome-relevant ambiguity before design. Record the result as `Direct MVP` before considering additional mechanisms.
 
-#### Strategy Discovery Process
-```yaml
-Research and Exploration: Tech stack examples, similar projects, OSS references, literature/blogs
-Creative Thinking: Strategy combinations, constraint-based design, phase division, extension point design
-```
+### Phase 3: Failure Check [MANDATORY]
 
-#### Reference Strategy Patterns (Creative Combinations Encouraged)
+Test the Direct MVP against every current requirement, verified constraint, observed problem, and evidence-backed material risk within confirmed scope or dependencies required for its outcome. Record only unmet items as `Failed Items`, with evidence; record `None` when all pass. Report verified problems outside that boundary separately for a scope decision.
 
-**Legacy Handling Strategies**:
-- Strangler Pattern: Gradual migration through phased replacement
-- Facade Pattern: Complexity hiding through unified interface
-- Adapter Pattern: Bridge with existing systems
+**ENFORCEMENT**: CANNOT add design surface before the Failure Check is complete.
 
-**New Development Strategies**:
-- Feature-driven Development: Vertical implementation prioritizing user value
-- Foundation-driven Development: Foundation-first construction prioritizing stability
-- Risk-driven Development: Prioritize addressing maximum risk elements
+### Phase 4: Targeted Expansion
 
-**Integration/Migration Strategies**:
-- Proxy Pattern: Transparent feature extension
-- Decorator Pattern: Phased enhancement of existing features
-- Bridge Pattern: Flexibility through abstraction
+For each Failed Item, choose the sufficient candidate with the lowest lifecycle cost, treating maintenance-surface-bearing elements defined by coding-rules as cost factors and preferring fewer new elements only when candidates are otherwise equivalent. Record it as `Adopted Additions`; record `None` when no expansion is needed. An addition without a Failed Item is excluded.
 
-**IMPORTANT**: The optimal solution is discovered through creative thinking according to each project's context. EVALUATE multiple strategy combinations before selecting.
+### Phase 5: Subtraction Check [MANDATORY]
 
-### Phase 3: Risk Assessment and Control [MANDATORY]
+Remove each Adopted Addition in turn and re-run its Failed Item. At design time, this means evaluating the design without the addition against the evidence recorded for that Failed Item. Keep the addition only when the item becomes unmet again; record removed or larger options in `Rejected Additions` with a brief reason, or `None` when no addition was considered.
 
-**Core Question**: "What risks arise when applying this to existing implementation, and what's the best way to control them?"
+### Phase 6: Implementation Approach Decision
 
-#### Risk Analysis Matrix
-```yaml
-Technical Risks: System impact, data consistency, performance degradation, integration complexity
-Operational Risks: Service availability, deployment downtime, process changes, rollback procedures
-Project Risks: Schedule delays, learning costs, quality achievement, team coordination
-```
-
-#### Risk Control Strategies
-```yaml
-Preventive Measures: Phased migration, parallel operation verification, integration/regression tests, monitoring setup
-Incident Response: Rollback procedures, log/metrics preparation, communication system, service continuation procedures
-```
-
-### Phase 4: Constraint Compatibility Verification
-
-**Core Question**: "What are this project's constraints?"
-
-#### Constraint Checklist
-```yaml
-Technical Constraints: Library compatibility, resource capacity, mandatory requirements, numerical targets
-Temporal Constraints: Deadlines/priorities, dependencies, milestones, learning periods
-Resource Constraints: Team/skills, work hours/systems, budget, external contracts
-Business Constraints: Market launch timing, customer impact, regulatory compliance
-```
-
-### Phase 5: Implementation Approach Decision
-
-Select optimal solution from basic implementation approaches (creative combinations encouraged):
+After the design converges, select its implementation slicing approach:
 
 #### Vertical Slice (Feature-driven)
 **Characteristics**: Vertical implementation across all layers by feature unit
@@ -98,14 +58,14 @@ Select optimal solution from basic implementation approaches (creative combinati
 **Application Conditions**: Foundation system stability important, multiple features depend on common foundation, layer-by-layer verification effective
 **Verification Method**: Integrated operation verification when all foundation layers complete
 
-#### Hybrid (Creative Combination)
-**Characteristics**: Flexible combination according to project characteristics
-**Application Conditions**: Unclear requirements, need to change approach per phase, transition from prototyping to full implementation
+#### Hybrid
+**Characteristics**: Combination of vertical and horizontal slices
+**Application Conditions**: Verified dependencies require foundation work before some, but not all, user-value slices
 **Verification Method**: Verify at appropriate L1/L2/L3 levels according to each phase's goals
 
-### Phase 6: Decision Rationale Documentation
+### Phase 7: Decision Rationale Documentation
 
-**Design Doc Documentation**: Clearly specify implementation strategy selection reasons and rationale.
+**Design Doc Documentation**: Record Direct MVP, Failed Items, Adopted Additions, Rejected Additions, and slicing rationale.
 
 ## Verification Level Definitions
 
@@ -127,19 +87,17 @@ Define integration points according to selected strategy:
 
 ## Anti-patterns [MANDATORY to detect]
 
-- **Pattern Fixation**: EVALUATE unique combinations instead of selecting only listed strategies
+- **Premature Expansion**: Adding design surface before the Direct MVP and Failure Check
+- **Unsupported Addition**: Adding a mechanism with no Failed Item
+- **Scope Deferral**: Deferring a verified problem without a material behavior, architecture, or effort reason
 - **Insufficient Analysis**: MUST complete Phase 1 analysis framework before strategy selection
-- **Risk Neglect**: MUST complete Phase 3 risk analysis matrix before implementation
-- **Constraint Ignorance**: MUST check Phase 4 constraint checklist before deciding strategy
-- **Rationale Omission**: MUST use Phase 6 documentation template when selecting strategy
+- **Rationale Omission**: MUST record Phase 7 outputs when selecting strategy
 
 **ENFORCEMENT**: Detecting ANY anti-pattern requires IMMEDIATE correction before proceeding
 
 ## Guidelines for Meta-cognitive Execution
 
-1. **Leverage Known Patterns**: Use as starting point, then EVALUATE creative combinations
-2. **Active Research**: Research implementation examples from similar tech stacks
-3. **Apply 5 Whys**: Pursue root causes to grasp essence
-4. **Multi-perspective Evaluation**: EVALUATE comprehensively from each Phase 1-4 perspective
-5. **Creative Thinking**: EVALUATE sequential application of multiple strategies and designs leveraging project-specific constraints
-6. **Clarify Decision Rationale**: Strategy selection rationale MUST be explicit in design documents
+1. **Investigate Broadly**: Identify impacts, existing problems, and constraints before designing
+2. **Converge Sequentially**: Complete Direct MVP, Failure Check, Targeted Expansion, and Subtraction Check in order
+3. **Use Patterns on Demand**: Apply a design pattern only when it resolves a recorded Failed Item
+4. **Preserve Context**: Record adopted and rejected decisions concisely

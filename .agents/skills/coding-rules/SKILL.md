@@ -14,26 +14,25 @@ For language-specific rules, also read:
 
 1. **Maintainability over Speed**: Prioritize long-term code health
 2. **Simplicity First**: YAGNI principle — simplest solution that meets requirements
-3. **Minimum Surface for Required Coverage**: At a fixed coverage point, choose the smallest design surface that satisfies current user-visible requirements and accepted technical constraints. See "Minimum Surface Terms" below.
+3. **Design Convergence**: Deliver the current required outcome with the least new design surface. Use "Design Surface Terms" below for classification and implementation-approach for design selection.
 4. **Explicit over Implicit**: Clear intentions through code structure and naming
 5. **Delete over Comment**: Remove unused code instead of commenting it out
 
 **ENFORCEMENT**: Every code change MUST align with these principles
 
-## Minimum Surface Terms [MANDATORY]
+## Design Surface Terms [MANDATORY]
 
-Use these definitions whenever a design, review, or implementation instruction references "Minimum Surface for Required Coverage".
+Use these definitions when classifying Design Convergence additions or code-review escalation.
 
 - **Maintenance-surface-bearing elements**: persistent state; public-contract or cross-boundary fields/props; behavioral modes, flags, or variants; reusable abstractions; extracted services; shared utilities; component splits.
-- **Out of scope**: private local variables, internal helper functions with no external observers, test fixtures or mocks, temporary migration scaffolding removed before completion, and private implementation details confined to one function or file.
-- **Precedence rule**: When an element matches both in-scope and out-of-scope conditions, the in-scope classification wins.
-- **Selection rule**: Adopt a larger surface only by naming a current requirement or accepted technical constraint that smaller alternatives fail to cover. Value-based arguments are tiebreakers only.
-- **Subjective-only rationales**: "reusable", "useful", "future-ready", "convenient", "convenient for implementation", and "users might want".
-- **Relation to YAGNI**: YAGNI decides present vs. future need over time; Minimum Surface minimizes surface area for the current accepted scope.
+- **Non-surface elements**: private local variables, internal helper functions with no external observers, test fixtures or mocks, temporary migration scaffolding removed before completion, and private implementation details confined to one function or file.
+- **Classification precedence**: When an element matches both surface-bearing and non-surface conditions, classify it as surface-bearing.
+- **Selection rule**: Follow implementation-approach Design Convergence for design selection. These terms classify design surface; they do not define a second selection process.
+- **Relation to YAGNI**: YAGNI decides present vs. future need over time; Design Convergence minimizes surface area for the current accepted scope.
 
 ## Code Quality [MANDATORY]
 
-- Refactor as you go — eliminate technical debt immediately
+- Resolve technical debt within confirmed scope or dependencies required for its outcome; report other debt separately
 - Use meaningful, descriptive names from the problem domain
 - Extract magic numbers and strings into named constants
 - Keep code self-documenting

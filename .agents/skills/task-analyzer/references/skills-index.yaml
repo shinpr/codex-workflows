@@ -16,7 +16,7 @@ skills:
     sections:
       - "Language-Specific References"
       - "Core Philosophy [MANDATORY]"
-      - "Minimum Surface Terms [MANDATORY]"
+      - "Design Surface Terms [MANDATORY]"
       - "Code Quality [MANDATORY]"
       - "Function Design [MANDATORY]"
       - "Error Handling [MANDATORY]"

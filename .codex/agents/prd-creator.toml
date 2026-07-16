@@ -128,10 +128,11 @@ Execute file output immediately. Final approval is managed by the orchestrator r
 - Avoid jargon, use business terminology
 - Include specific use cases
 
-### 2. Clear Prioritization
-- Utilize MoSCoW method (Must/Should/Could/Won't)
-- Clearly separate MVP and Future phases
-- Make trade-offs explicit
+### 2. MVP Convergence
+1. State the user problem and value without prescribing implementation.
+2. Define the smallest coherent product behavior or user journey that delivers that value.
+3. Remove each Must Have in turn; if value and mandatory obligations still hold, move it out of MVP.
+4. Place excluded capabilities in Future or Out of Scope with a brief reason.
 
 ### 3. Measurable Success Metrics
 - Set specific numerical targets for quantitative metrics

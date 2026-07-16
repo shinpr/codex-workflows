@@ -57,7 +57,7 @@ Requirements -> scope bootstrap -> codebase-analyzer -> [Stop: Scope confirmatio
 
 Requirements: $ARGUMENTS
 
-MUST clearly present design alternatives and trade-offs.
+For ADRs, clearly present design alternatives and trade-offs. For Design Docs, record only alternatives actually considered by Design Convergence; `None` is valid.
 
 Execute the process below within design scope.
 
@@ -99,7 +99,7 @@ After codebase-analyzer returns, present the design scope to the user before des
 - Recommended document path: ADR, Design Doc, or both, with `documentTypeRationale`, `adrRequired`, and `adrReason`
 - PRD status: whether `prdRequired` is true, whether an existing PRD path is available, and what decision is needed before design
 - Unknowns/assumptions: `limitations` and unresolved risks
-- Questions before design: scope questions that change the design target or scale
+- Questions before design: scope questions that change the design target or scale, including technical wording whose mandatory/candidate status is outcome-relevant and ambiguous
 
 Ask the user to choose one:
 - Proceed with the recommended document path
@@ -110,15 +110,15 @@ Ask the user to choose one:
 
 If `prdRequired` is true and the user neither provides a PRD path nor explicitly approves proceeding without a PRD, stop. This recipe does not create PRDs.
 
-After confirmation, set the final scale from the confirmed target file count (`small` 1-2, `medium` 3-5, `large` 6+), recompute `adrRequired`, `adrReason`, `prdRequired`, `confidence`, and `documentTypeRationale`, then carry the complete confirmed requirement context into design creation.
+After confirmation, set the final scale from the confirmed target file count (`small` 1-2, `medium` 3-5, `large` 6+), recompute `adrRequired`, `adrReason`, `prdRequired`, `confidence`, and `documentTypeRationale`, then carry the complete confirmed requirement context, including confirmed scope and user answers, into design creation.
 
 **[STOP — BLOCKING]** Wait for user confirmation before proceeding.
 
 ### Step 4: Design Document Creation
 Create documents according to `documentTypeRationale`:
 - ADR only: Spawn technical-designer agent: "document_to_create: ADR. Create ADR based on the requirements, confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale], and codebase analysis output. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Include architecture decisions and clear alternatives with trade-offs."
-- Design Doc only: Spawn technical-designer agent: "document_to_create: DesignDoc. Create Design Doc based on the requirements, confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale], and codebase analysis output. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Include component design, acceptance criteria, and clear alternatives with trade-offs."
-- Both ADR and Design Doc: first spawn technical-designer with `document_to_create: ADR`. After the ADR path is available, spawn technical-designer again with `document_to_create: DesignDoc`, `adr_path: [ADR path]`, the same `confirmed_requirement_context`, and the same codebase analysis output. The Design Doc must reference the ADR decision.
+- Design Doc only: Spawn technical-designer agent: "document_to_create: DesignDoc. Create Design Doc based on the requirements. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, user answers, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Codebase analysis: [output from Step 2]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Include component design, acceptance criteria, and Design Convergence results."
+- Both ADR and Design Doc: first spawn technical-designer with `document_to_create: ADR`. After the ADR path is available, spawn technical-designer again with `document_to_create: DesignDoc`, `adr_path: [ADR path]`, the original user requirements as `requirements_verbatim`, the same `confirmed_requirement_context`, and the same codebase analysis output. The Design Doc must reference the ADR decision.
 
 ### Step 5: Code Verification
 For Design Docs only, spawn code-verifier agent: "Verify the Design Doc against the current codebase. document_path: [Design Doc path from Step 4]. doc_type: design-doc."
@@ -128,7 +128,7 @@ Skip this step for ADR-only output.
 ### Step 6: Document Review
 Review each created document:
 - ADR: Spawn document-reviewer agent: "Review the ADR for consistency and completeness. doc_type: ADR. target: [ADR path]. codebase_analysis: [output from Step 2]."
-- Design Doc: Spawn document-reviewer agent: "Review the Design Doc for consistency and completeness. doc_type: DesignDoc. target: [Design Doc path]. codebase_analysis: [output from Step 2]. code_verification: [output from Step 5]."
+- Design Doc: Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. target: [Design Doc path]. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. codebase_analysis: [output from Step 2]. code_verification: [output from Step 5]."
 
 ### Step 7: Consistency Verification
 For Design Docs only, spawn design-sync agent: "Verify consistency of the design document with other existing design documents and project constraints."
