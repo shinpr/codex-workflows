@@ -4,11 +4,11 @@
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Spec%20Compliant-blue)](https://developers.openai.com/codex/skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Structured workflows for [OpenAI Codex CLI](https://developers.openai.com/codex/cli).**
+**Repeatable, reviewable development workflows for [OpenAI Codex CLI](https://developers.openai.com/codex/cli).**
 
-They help when multi-step changes stop being easy to reason about, test, or review.
+Built on the [Agent Skills specification](https://developers.openai.com/codex/skills/) and [Codex subagents](https://developers.openai.com/codex/subagents), codex-workflows turns a request into a predefined delivery process.
 
-Built on the [Agent Skills specification](https://developers.openai.com/codex/skills/) and [Codex subagents](https://developers.openai.com/codex/subagents). This starts to matter when tasks get large: refactors, migrations, or anything that spans multiple files and needs to stay reviewable.
+Small changes stay lightweight. Larger changes move through requirements, design, task decomposition, TDD implementation, and quality checks.
 
 ---
 
@@ -27,21 +27,16 @@ $recipe-implement Add user authentication with JWT
 
 `$` is Codex CLI's syntax for invoking a skill explicitly. Type `$recipe-` to see all available recipes via tab completion.
 
-Small changes stay lightweight. Larger tasks are broken into requirements, design, task decomposition, TDD implementation, and quality checks.
-
 ---
 
 ## Why codex-workflows?
 
-Codex works well for short, focused tasks. The problems start when a change spans multiple files, needs design decisions to stay visible, or has to survive review, testing, and follow-up edits.
+Codex can carry large plans to completion. codex-workflows makes the process around that work explicit and repeatable instead of rebuilding it in each prompt.
 
-Many developers have seen the same pattern: things work at first, then drift. Context grows, assumptions accumulate, intermediate decisions disappear, and results become harder to trust.
-
-codex-workflows is built around those failure modes. Instead of asking Codex to "just implement it", it turns a request into a sequence of steps you can inspect and verify:
-- Traceable artifacts: PRD → Design Doc → Task → Commit
-- Built-in TDD and quality checks before code is ready to commit
-- Agent context separation for large refactors, migrations, and PR-sized changes
-- Diagnosis and reverse-engineering flows for bugs and legacy code
+- Analysis, implementation, and review use task-specific context, reducing the chance that the same working assumptions carry from one stage to the next.
+- Recipes define which agents run at each stage, what they receive, and what they return. This is slower than open-ended delegation, but keeps agent calls within the defined workflow.
+- Design starts with the simplest end-to-end path. A new service, state, flag, or boundary must answer an unmet requirement or verified constraint.
+- Requirements and design decisions stay in versioned project documents. Review workflows detect drift, and document updates are checked against the current implementation.
 
 ## Background
 
@@ -309,7 +304,7 @@ After work plan approval, the framework executes task files with explicit valida
 
 ### Context Separation
 
-Each subagent runs in a fresh context. This pattern keeps multi-step coding tasks legible and reviewable:
+Recipes intentionally avoid passing the accumulated parent conversation to spawned agents. Each agent receives explicit task inputs and repository artifacts instead. This keeps multi-step coding tasks legible and reviewable:
 - generation and verification happen in separate contexts, reducing author bias and carry-over assumptions
 - **document-reviewer** reviews without the author's bias
 - **investigator** collects evidence without confirmation bias
