@@ -10,7 +10,8 @@
   },
   "scripts": {
     "check:skills-index": "node scripts/check-skills-index.mjs",
-    "hooks:install": "git config core.hooksPath scripts/hooks"
+    "hooks:install": "git config core.hooksPath scripts/hooks",
+    "test": "node --test scripts/tests/cli.test.js"
   },
   "bin": {
     "codex-workflows": "bin/cli.js"
