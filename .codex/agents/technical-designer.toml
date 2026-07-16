@@ -75,7 +75,7 @@ Must be performed before Design Doc creation:
    - Look for implementations with same domain, responsibilities, or configuration patterns
    - Decision and action:
      - Similar functionality found → Reuse or extend that implementation path and document the reuse decision
-     - Similar functionality is technical debt → Create ADR improvement proposal before implementation
+     - Similar functionality is technical debt → Include bounded debt repair in the current design; create an ADR when the repair contains an architectural decision
      - No similar functionality → Proceed with new implementation
 
 4. **Dependency Existence Verification**
@@ -83,7 +83,7 @@ Must be performed before Design Doc creation:
    - Typical targets include: interfaces, classes, repositories, service methods, API endpoints, DB tables/columns, configuration keys, enum values, type definitions
    - If found in codebase: record file path and definition location
    - If found outside codebase (external API, separate repository, generated artifact): record the authoritative source and mark as "external dependency"
-   - If not found anywhere: mark as "requires new creation" in the Design Doc and reflect this in implementation order dependencies
+   - If not found anywhere: record a failed assumption and apply Design Convergence before selecting an existing-system alternative or justified creation
 
 5. **Behavioral Claim Verification**
    - Scan for factual claims the design relies on about behavior or current state. Declarative phrasing such as "already", "by default", "defaults to", or "handled by" marks likely scan starting points; this is a hint set, not an exhaustive rule. Examples include framework/library default behavior ("X defaults to Y"), a capability assumed already provided ("the service already returns Z", "the endpoint already validates W"), or a feature assumed already implemented ("already handled upstream").
@@ -96,8 +96,8 @@ Must be performed before Design Doc creation:
 6. **Include in Design Doc**
    - Always include investigation results in "## Existing Codebase Analysis" section
    - Clearly document similar functionality search results (found implementations or "none")
-   - Include dependency existence verification results (verified existing / requires new creation / external dependency)
-   - Record adopted decision (use existing/improvement proposal/new implementation) and rationale
+   - Include dependency existence verification results (verified existing / failed assumption / external dependency)
+   - Record adopted decision (reuse / repair / new implementation) and rationale
    - When Codebase Analysis input is provided, use it as the baseline evidence set and extend it only where gaps remain
    - When persistence, repositories, queries, migrations, or schema-bound behavior are part of scope, complete the `Test Boundaries` section with a concrete data layer verification strategy. When they are not part of scope, mark the section explicitly as not applicable.
 
@@ -118,9 +118,9 @@ When the design introduces or significantly modifies data structures:
    - 3+ criteria fail → New structure justified
    - Record decision and rationale in Design Doc
 
-### Minimal Surface Alternatives【Required when introducing maintenance-surface elements】
+### Design Convergence Gate【Required for Design Doc creation】
 
-For each maintenance-surface-bearing element, apply coding-rules "Minimum Surface Terms" and record the result in the Design Doc: fixed current requirements, at least 2 alternatives including one subtractive alternative, comparison by the required table axes, selected smallest sufficient alternative, and rejected alternatives log. Resolve ties by lower persistent state, no boundary crossing, fewer concepts/modes/flags/props/variants, no breaking change/migration, then subjective notes. If no in-scope elements are introduced, mark the section N/A with rationale.
+Apply implementation-approach Phases 2-5 in order and record all four Design Convergence outputs. Proceed to the adopted design only after Direct MVP, Failed Items, Adopted Additions, and Rejected Additions are complete. Reverse-engineer/as-is documents are exempt.
 
 ### Integration Points【Important】
 Document all integration points with existing systems in a "## Integration Point Map" section.
@@ -186,11 +186,12 @@ Record existing operation, new operation, conversion need, adapter/wrapper need,
 
 ### Common ADR Process
 Perform before Design Doc creation:
-1. Identify common technical areas (logging, error handling, contract definitions, API design, etc.)
-2. Search `docs/adr/ADR-COMMON-*`, create if not found
-3. Include in Design Doc's "Prerequisite ADRs"
+1. Identify common technical decisions introduced or changed by the current design
+2. Search `docs/adr/ADR-COMMON-*` for an applicable decision
+3. If none exists, create the ADR before the Design Doc and make its recorded decision binding on the current design
+4. Include applicable ADRs in the Design Doc's "Prerequisite ADRs"
 
-Common ADR needed when: Technical decisions common to multiple components
+Common ADR needed when: The current design introduces or changes a technical decision shared by multiple components
 
 ### Data Contracts
 Define input/output between components (types, preconditions, guarantees, error behavior).
@@ -206,7 +207,7 @@ Confirm and document conflicts with existing systems at each integration point t
   - `update`: Update existing document
   - `reverse-engineer`: Document existing architecture as-is
 
-- **confirmed_requirement_context**: Confirmed requirement context from the orchestrator when provided, including confirmed scope, confirmed scale, `adrRequired`, `adrReason`, `prdRequired`, PRD path or explicit no-PRD approval, `documentTypeRationale`, `scopeDependencies`, `questions`, and `seedRationale`. When provided, this is the primary source for document type, scope, scale, and open-question handling.
+- **confirmed_requirement_context**: Confirmed requirement context from the orchestrator when provided, including confirmed scope, confirmed scale, `adrRequired`, `adrReason`, `prdRequired`, PRD path or explicit no-PRD approval, `documentTypeRationale`, `scopeDependencies`, `questions`, and `seedRationale`. It controls document type, scope, scale, and open-question handling; suggested technical mechanisms remain candidates unless explicitly confirmed as mandatory constraints.
 - **document_to_create**: Current invocation's document output (`ADR` or `DesignDoc`) when provided by the orchestrator. This value determines what this invocation creates.
 - **adr_path**: ADR document path to reference from a Design Doc when the ADR was created earlier in the same flow (optional)
 - **Requirements Analysis Results**: Requirements analysis results (scale determination, technical requirements, etc.) when provided by requirement-analyzer
@@ -303,7 +304,7 @@ Implementation sample creation checklist:
 - [ ] Latest best practices researched and references cited
 - [ ] **Complexity assessment**: complexity_level set; if medium/high, complexity_rationale specifies (1) requirements/ACs, (2) constraints/risks
 - [ ] **Data representation decision documented** (when new structures introduced)
-- [ ] **Minimal Surface Alternatives documented** (when maintenance-surface elements are introduced; N/A rationale when none)
+- [ ] **Design Convergence documented** (Direct MVP, Failed Items, Adopted Additions, Rejected Additions)
 - [ ] **Field propagation map included** (when fields cross boundaries)
 - [ ] **Verification Strategy defined** (correctness definition, target comparison, verification method, observable success indicator, timing, early verification point)
 - [ ] **Output Comparison defined** when changing existing observable behavior, an external contract, or a persisted data shape (comparison input, expected output fields, diff method, and transformation pipeline coverage)
@@ -359,7 +360,7 @@ What to skip:
 - Change Impact Map
 - Field Propagation Map
 - Implementation Approach Decision
-- Minimal Surface Alternatives
+- Design Convergence
 - Latest Information Research
 
 Execution steps:

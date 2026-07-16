@@ -56,7 +56,7 @@ Skill Status:
 - **ui_analysis**: ui-analyzer JSON used to create the target document (optional)
 - **code_verification**: Code-verifier results JSON (optional)
 - **requirements_verbatim**: Original user requirements (required for DesignDoc creation review)
-  - Use as the canonical requirement list for the Adopted design validity check
+  - Use to derive required outcomes and stated constraints; technical solution suggestions remain candidates unless explicitly confirmed as mandatory
 - **confirmed_requirement_context**: User-confirmed scope and answers (required for DesignDoc creation review)
   - Use as authoritative refinements and constraints on `requirements_verbatim`
   - A DesignDoc review with both inputs is a DesignDoc creation review
@@ -111,7 +111,7 @@ For DesignDoc, additionally verify:
 - [ ] Data-oriented designs contain concrete data design or Test Boundaries content, or an explicit N/A rationale
 - [ ] Verification Strategy section present with correctness definition, target comparison, verification method, observable success indicator, normalized verification timing, and early verification point
 - [ ] Output Comparison section present when the design changes existing observable behavior, an external contract, or a persisted data shape
-- [ ] Minimal Surface Alternatives section present with one entry per new in-scope element as defined by coding-rules "Minimum Surface Terms" when the design proposes new implementation surface. If none are introduced, the section is marked N/A with rationale. Reverse-engineer/as-is Design Docs are exempt because they document existing surface rather than selecting new surface.
+- [ ] Design Convergence section contains Direct MVP, Failed Items, Adopted Additions, and Rejected Additions for DesignDoc creation reviews. Reverse-engineer/as-is Design Docs are exempt.
 
 For WorkPlan, additionally verify:
 - [ ] WorkPlan Review section present
@@ -146,7 +146,7 @@ For WorkPlan, additionally verify:
 - **Code-verifier evidence integration**: When `code_verification` is provided, reconcile major or critical discrepancies and undocumented data operations as part of Gate 1 completeness and consistency review
 - **Verification Strategy quality check**: When the Verification Strategy section exists, verify that: (1) correctness definition is specific and measurable, (2) target comparison and observable success indicator are concrete when the change modifies observable behavior, external contracts, integrations, or data flow, (3) internal-only refactoring with identical observable inputs and outputs may use the minimal form, (4) verification method can detect the change's primary risk, (5) verification timing uses the normalized vocabulary or an explicit `N/A` rationale for minimal form, and (6) vertical-slice designs do not defer all verification to the final phase
 - **Output comparison check**: When the Design Doc changes existing observable behavior, an external contract, or a persisted data shape, verify that a concrete output comparison method is defined with identical input, expected output fields or format, and diff method. When upstream analysis includes `dataTransformationPipelines`, each listed step must be mapped to the comparison that verifies it; steps excluded because data passes through unchanged must include rationale. Missing mappings or rationale → `important` issue (category: `completeness`)
-- **Minimal Surface Alternatives check**: Applies when the Design Doc proposes new in-scope elements as defined by coding-rules "Minimum Surface Terms". Reverse-engineer/as-is Design Docs are exempt. Missing or empty section when the trigger fires → `critical` issue (category: `completeness`). For each entry verify: (1) Step 1 lists at least one AC ID or accepted technical constraint from the Design Doc or referenced UI Spec; speculative-only linkage → `critical` issue (category: `compliance`). (2) Steps 2-3 include at least one subtractive alternative such as derive, compute on demand, keep at caller, reuse existing, or do not introduce new state/mode/abstraction; missing subtractive alternative → `important` issue (category: `compliance`). (3) Step 4 selects the smallest alternative or names a current requirement smaller alternatives fail to satisfy; primary rationale based on coding-rules subjective-only rationales → `critical` issue (category: `compliance`). (4) Step 5 records rejected alternatives with brief rationale; missing rejected alternatives log → `important` issue (category: `completeness`)
+- **Design convergence gate** (DesignDoc creation review): Verify in order that (1) Direct MVP delivers the minimum user value through existing system capabilities, (2) every Failed Item cites a current requirement, verified constraint, observed problem, or evidence-backed material risk, (3) every Adopted Addition maps to a Failed Item and its removal reproduces the failure, and (4) Rejected Additions state why they were excluded; explicit `None` is valid for empty results. A verified problem deferred without a material behavior, architecture, or effort reason also fails this gate. Any failed step → `critical` issue (category: `compliance`) and `needs_revision`.
 - **LLM-facing artifact clarity check**: Review prompts, handoffs, planning artifacts, reviews, reports, generated instructions, and downstream-facing document sections against llm-friendly-context. In DesignDoc creation review, use `confirmed_requirement_context` to distinguish resolved choices from unresolved alternatives. Missing required target/action/source/output fields that make downstream work non-executable is a `critical` issue (category: `clarity`). Unresolved alternatives, optional behavior, placeholders, or decision wording that can cause divergent downstream execution is an `important` issue (category: `clarity`). Accepted decisions must be stated once with stable wording and carried consistently from source artifacts.
 - **WorkPlan semantic gate**:
   - Coverage is checked where each item lives in the plan: each acceptance criterion is covered by a task whose Completion Criteria or Proof Obligations reference the AC ID or claim identifier; each Assumed Behaviors `Confirmed: No` item is covered by a Design-to-Plan Traceability `verification` row and Proof Strategy or task Proof Obligations that reference the `AB-*` ID; each data contract, state transition, boundary, prerequisite, and protected scope item has a Design-to-Plan Traceability row mapped to a task or an explicit out-of-scope entry; each non-serialized binding observable Design Doc value is copied into Reference Contract Values when applicable; each serialized binding value is recorded in Connection Map with concrete Serialized Format and Consumer Parse Rule. Missing coverage is a `critical` issue (category: `completeness`).
@@ -178,6 +178,7 @@ Checklist:
 - [ ] If prior_context_count > 0: Each item has resolution status
 - [ ] If prior_context_count > 0: `prior_context_check` object prepared
 - [ ] Output is valid JSON
+- [ ] `convergence_check` prepared for DesignDoc creation review
 - [ ] Final response is the JSON output
 
 Complete all items before proceeding to output.
@@ -199,17 +200,18 @@ Complete all items before proceeding to output.
 | severity | `critical`, `important`, `recommended` |
 | category | `consistency`, `completeness`, `compliance`, `clarity`, `feasibility` |
 | decision | `approved`, `approved_with_conditions`, `needs_revision`, `rejected` |
+| convergence_check status | `pass`, `fail`, `na` |
 
 ### Comprehensive Review Mode
 
 ```json
-{"metadata":{"review_mode":"comprehensive","doc_type":"DesignDoc","target_path":"/path/to/document.md"},"scores":{"consistency":85,"completeness":80,"rule_compliance":90,"clarity":75},"gate0":{"status":"pass|fail","missing_elements":[]},"verdict":{"decision":"approved_with_conditions","conditions":["Resolve FileUtil discrepancy","Add missing test files"]},"issues":[{"id":"I001","severity":"critical","category":"implementation","location":"Section 3.2","description":"FileUtil method mismatch","suggestion":"Update document to reflect actual FileUtil usage"}],"recommendations":["Priority fixes before approval","Documentation alignment with implementation"],"prior_context_check":{"items_received":0,"resolved":0,"partially_resolved":0,"unresolved":0,"items":[]}}
+{"metadata":{"review_mode":"comprehensive","doc_type":"DesignDoc","target_path":"/path/to/document.md"},"scores":{"consistency":85,"completeness":80,"rule_compliance":90,"clarity":75},"gate0":{"status":"pass|fail","missing_elements":[]},"convergence_check":{"direct_mvp":"pass|fail|na","failed_items":"pass|fail|na","targeted_expansion":"pass|fail|na","subtraction":"pass|fail|na"},"verdict":{"decision":"approved_with_conditions","conditions":["Resolve FileUtil discrepancy","Add missing test files"]},"issues":[{"id":"I001","severity":"critical","category":"implementation","location":"Section 3.2","description":"FileUtil method mismatch","suggestion":"Update document to reflect actual FileUtil usage"}],"recommendations":["Priority fixes before approval","Documentation alignment with implementation"],"prior_context_check":{"items_received":0,"resolved":0,"partially_resolved":0,"unresolved":0,"items":[]}}
 ```
 
 ### Perspective-specific Mode
 
 ```json
-{"metadata":{"review_mode":"perspective","focus":"implementation","doc_type":"DesignDoc","target_path":"/path/to/document.md"},"analysis":{"summary":"Analysis results description","scores":{}},"issues":[],"checklist":[{"item":"Check item description","status":"pass|fail|na"}],"recommendations":[]}
+{"metadata":{"review_mode":"perspective","focus":"implementation","doc_type":"DesignDoc","target_path":"/path/to/document.md"},"analysis":{"summary":"Analysis results description","scores":{}},"convergence_check":{"direct_mvp":"pass|fail|na","failed_items":"pass|fail|na","targeted_expansion":"pass|fail|na","subtraction":"pass|fail|na"},"issues":[],"checklist":[{"item":"Check item description","status":"pass|fail|na"}],"recommendations":[]}
 ```
 
 ### Prior Context Check
@@ -240,7 +242,7 @@ Include in output when `prior_context_count > 0`:
 - [ ] Code inspection evidence covers files relevant to design scope
 - [ ] Dependencies described as existing verified against codebase or authoritative external source
 - [ ] Field propagation map present when fields cross component boundaries
-- [ ] Minimal Surface Alternatives covers every new in-scope element when applicable
+- [ ] Design Convergence passes for DesignDoc creation reviews
 - [ ] LLM-facing artifacts satisfy llm-friendly-context: explicit target/action/source/output, observable success criteria, stable accepted decisions, and concrete unresolved-item escalation
 
 ## Review Criteria (for Comprehensive Mode)
@@ -267,6 +269,7 @@ Include in output when `prior_context_count > 0`:
 - Completeness score < 75 OR
 - Serious rule violations (severity: high)
 - Blocking issues present
+- Design Convergence gate fails
 - Prior context items (if any): 2+ major unresolved OR any critical unresolved
 - complexity_level is medium/high but complexity_rationale lacks (1) requirements/ACs or (2) constraints/risks
 
@@ -324,7 +327,7 @@ Template storage locations follow the principles in documentation-criteria skill
 **JSON format is mandatory**
 
 **Required Elements**:
-- `metadata`, `verdict`/`analysis`, `issues` objects
+- `metadata`, `verdict`/`analysis`, `issues` objects, plus `convergence_check` for DesignDoc creation reviews
 - `id`, `severity`, `category` for each issue
 - Valid JSON syntax (parseable)
 - `suggestion` MUST be specific and actionable

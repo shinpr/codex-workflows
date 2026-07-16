@@ -217,7 +217,7 @@ Recommend higher-level review when any condition below is true:
 - Design Doc itself has deficiencies
 - Security concerns discovered
 - Critical performance issues found
-- Implementation introduces Design Doc-scope elements that match coding-rules "Minimum Surface Terms" in-scope definitions but are absent from the Design Doc's Minimal Surface Alternatives section
+- Implementation introduces design surface absent from the Design Doc's Adopted Additions
 
 Private single-file refactors, local helper extraction, test fixtures/mocks, and temporary migration scaffolding do not trigger escalation unless they create public, cross-boundary, persistent, or reusable surface.
 

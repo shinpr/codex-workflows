@@ -10,6 +10,13 @@ description: "Anti-pattern detection, debugging techniques, quality check workfl
 For frontend-specific anti-patterns, debugging, and quality checks:
 - **React/TypeScript Frontend**: [references/frontend.md](references/frontend.md)
 
+**Value-First Engineering [MANDATORY]**
+
+Explore broadly, then converge on the lowest-lifecycle-cost solution that delivers user value and leaves the system correct and maintainable.
+- Resolve verified bugs, failing quality checks, and bounded technical debt found during the work.
+- Introduce capabilities, infrastructure, abstractions, or speculative edge-case handling only when a current outcome, verified constraint, or evidence-backed material risk requires them.
+- When resolving a known problem materially changes behavior, architecture, or effort, obtain an explicit scope decision; otherwise fix it in the current work.
+
 ## Technical Anti-patterns (Red Flag Patterns) [MANDATORY]
 
 **IMMEDIATELY stop and reconsider design** when detecting the following patterns:
@@ -136,7 +143,7 @@ How to handle duplicate code based on Martin Fowler's "Refactoring":
 **Avoidance**:
 - Before implementation, always search for similar functionality
 - Similar functionality found: Use that implementation (do not create new)
-- Similar functionality is technical debt: Create ADR improvement proposal
+- Similar functionality is technical debt: Fix bounded debt; when the fix requires an architectural decision, record the decision in an ADR and implement it in the current work
 - No similar functionality: Implement following existing design philosophy
 - When adopting a pattern or dependency from nearby code, verify it is representative across the repository before adopting it
 
@@ -222,8 +229,6 @@ All checks MUST pass before proceeding:
 
 ### Timing of Abstraction
 - Extract patterns after writing concrete implementation 3 times (Rule of Three)
-- Apply YAGNI — implement only currently needed features
-- Prioritize current simplicity over future extensibility
 
 ### Performance vs Readability
 - Prioritize readability unless clear bottleneck exists

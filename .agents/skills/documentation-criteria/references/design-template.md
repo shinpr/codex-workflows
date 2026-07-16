@@ -199,35 +199,12 @@ Runtime wiring, switching, or registration points.
 
 **Decision**: [reuse / extend / new] -- [rationale in 1-2 sentences]
 
-### Minimal Surface Alternatives (When Introducing Maintenance-Surface Elements)
+### Design Convergence
 
-One entry per new in-scope element as defined by coding-rules "Minimum Surface Terms". Mark this section as N/A with brief rationale when the design introduces no in-scope elements.
-
-#### Element 1: [name of the new element]
-
-**Step 1 - Fixed Requirements**
-- [AC ID or constraint ID]: [requirement / constraint text]
-- [AC ID or constraint ID]: [requirement / constraint text]
-
-**Steps 2-3 - Alternatives Compared**
-
-| Alternative | Current requirements covered (AC or constraint IDs) | New state introduced (count) | New concept / mode / flag / prop / variant (count) | Crosses component boundary (yes/no) | Breaking change or migration required (yes/no) | Subjective cost notes |
-|-------------|------------------------------------------------------|------------------------------|------------------------------------|--------------------------------------|-------------------------------------------------|-----------------------|
-| [The added element as proposed] | | | | | | |
-| [Subtractive alternative: derive / compute on demand / keep at caller / reuse existing / do not introduce new state] | | | | | | |
-| [Optional third alternative] | | | | | | |
-
-**Step 4 - Selected Alternative and Rationale**
-- **Selected**: [alternative name]
-- **Rationale**:
-  - If selected = smallest alternative considered: state "smallest alternative considered; no further reduction available"
-  - If selected > smallest: name the current requirement(s) from step 1 that smaller alternatives fail to satisfy
-
-**Step 5 - Rejected Alternatives Log**
-- [Alternative name]: [1-2 lines on what it was and why rejected]
-- [Alternative name]: [1-2 lines on what it was and why rejected]
-
-Repeat the element block per in-scope element. Rejected Alternatives Log is element-level; Future Extensibility is design-level.
+1. **Direct MVP**: [Simplest end-to-end design using existing system capabilities]
+2. **Failed Items**: [Unmet requirements, verified constraints, or observed problems with evidence | None]
+3. **Adopted Additions**: [Addition -> Failed Item -> failure reproduced when removed | None]
+4. **Rejected Additions**: [Considered addition -> brief rejection reason | None]
 
 ### Contract Definitions
 
