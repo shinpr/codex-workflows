@@ -119,6 +119,8 @@ This works best when repository knowledge is explicit and local. Short `AGENTS.m
 
 ### Install
 
+Install into the current project:
+
 ```bash
 cd your-project
 npx codex-workflows install
@@ -129,6 +131,16 @@ This copies into your project:
 - `.codex/agents/` — Subagent TOML definitions
 - Manifest file for tracking managed files
 
+To make the workflows available to Codex across all projects, install them into
+your user-level `CODEX_HOME` instead:
+
+```bash
+npx codex-workflows install --user
+```
+
+This installs skills into `$CODEX_HOME/skills/` and agents into
+`$CODEX_HOME/agents/`. When `CODEX_HOME` is not set, it defaults to `~/.codex`.
+
 ### Update
 
 ```bash
@@ -137,6 +149,9 @@ npx codex-workflows update --dry-run
 
 # Apply updates
 npx codex-workflows update
+
+# Update a user-level installation
+npx codex-workflows update --user
 ```
 
 Files you've modified locally are preserved — the updater compares each file against its hash at install time and skips any file you've changed. New files from the update are added automatically.
@@ -144,6 +159,9 @@ Files you've modified locally are preserved — the updater compares each file a
 ```bash
 # Check installed version
 npx codex-workflows status
+
+# Check a user-level installation
+npx codex-workflows status --user
 ```
 
 ---
@@ -374,6 +392,10 @@ A: Designed for the latest GPT models. Lightweight subagents (e.g. rule-advisor)
 **Q: Can I customize the agents?**
 
 A: Yes. Edit the TOML files in `.codex/agents/` — change model, sandbox_mode, developer_instructions, or skills.config. Files you modify locally are preserved during `npx codex-workflows update`.
+
+For a user-level installation, edit the files in `$CODEX_HOME/agents/` and use
+`npx codex-workflows update --user`. User-level files modified after installation
+are preserved in the same way.
 
 **Q: What's the difference between `$recipe-implement` and `$recipe-fullstack-implement`?**
 
