@@ -1,220 +1,59 @@
 # TypeScript Testing Reference (Vitest + RTL + MSW + Playwright)
 
-## Unit & Integration Tests (Vitest + React Testing Library + MSW)
-
-### Test Framework Setup
-
-```typescript
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-```
+## Unit and Integration Tests
 
 ### Where to Concentrate Test Rigor
 
-Test foundational, high-reuse units the hardest: shared components, custom hooks, utilities, and business rules reused across features carry the widest blast radius. Higher-composition surfaces such as pages and organisms lean more on integration or E2E coverage. Any numeric threshold is the project's CI, task file, work plan, or Design Doc config.
+Apply the strongest focused coverage to shared components, custom hooks, utilities, and business rules reused across features. Use integration or E2E coverage for higher-composition surfaces whose proof obligation crosses component or browser boundaries. Numeric thresholds come from the project's CI, task file, work plan, or Design Doc.
 
-### Test Types
+### Test Level and Boundary Rules
 
-1. **Unit Tests (RTL)**: Verify individual components/functions, mock all external dependencies
-2. **Integration Tests (RTL + MSW)**: Verify component coordination, mock APIs with MSW
-
-### Directory Structure (Co-location)
-
-```
-src/
-└── components/
-    └── Button/
-        ├── Button.tsx
-        ├── Button.test.tsx  # Co-located with component
-        └── index.ts
-```
+- **Unit/local with RTL or Vitest**: Exercise one component, hook, function, or in-process behavior; isolate external I/O
+- **Integration with RTL and MSW**: Exercise component coordination while controlling only the API boundary named for isolation
+- Keep internal validators, formatters, and other project logic real unless the governing test-boundary decision says otherwise
+- Keep mocks type-safe and limited to the behavior the test controls or observes
 
 ### Naming Conventions
 
 - Test files: `{ComponentName}.test.tsx`
 - Integration test files: `{FeatureName}.integration.test.tsx`
 
-### Test Granularity: User-Observable Behavior Only
+### Observable Behavior
 
-**MUST Test**: Rendered output, user interactions, accessibility, error states
-**MUST NOT Test**: Component internal state, implementation details, CSS class names
-
-```typescript
-// Good: Test user-observable behavior
-expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
-
-// Bad: Test implementation details
-expect(component.state.count).toBe(0)
-```
-
-### RTL Test Example
-
-```typescript
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { Button } from './Button'
-
-describe('Button', () => {
-  it('should call onClick when clicked', async () => {
-    const user = userEvent.setup()
-    const onClick = vi.fn()
-    render(<Button label="Click me" onClick={onClick} />)
-    await user.click(screen.getByRole('button', { name: 'Click me' }))
-    expect(onClick).toHaveBeenCalledOnce()
-  })
-})
-```
-
-### MSW (Mock Service Worker) Setup
-
-```typescript
-import { http, HttpResponse } from 'msw'
-
-const handlers = [
-  http.get('/api/users/:id', () => {
-    return HttpResponse.json({ id: '1', name: 'John' } satisfies User)
-  })
-]
-```
-
-### Mock Type Safety
-
-```typescript
-type TestProps = Pick<ButtonProps, 'label' | 'onClick'>
-const mockProps: TestProps = { label: 'Click', onClick: vi.fn() }
-```
-
-### Mock Scope
-
-```typescript
-vi.mock('./api/userApi')  // External API - mock
-vi.mock('./lib/database') // External I/O - mock
-// Internal utils like validators/formatters - use real implementations
-```
-
-### Test Helpers
-
-```typescript
-// Builder pattern for test data
-const testUser = createTestUser({ name: 'Test User', email: 'test@example.com' })
-
-// Custom render function with providers
-function renderWithProviders(ui: React.ReactElement) {
-  return render(<TestProvider>{ui}</TestProvider>)
-}
-```
-
-### Literal Expected Values
-
-```typescript
-expect(formatPrice(1000)).toBe('$1,000')
-expect(calculateTax(100)).toBe(10)
-expect(user.role).toBe('admin')
-```
+- Verify rendered output, user interactions, accessibility behavior, and error states
+- Use semantic queries that reflect how users and assistive technologies find the element
+- Assert literal expected outputs and state transitions rather than deriving expectations from the same mock or implementation path
+- Exercise behavior through the public component or hook boundary; internal state, private call order, and CSS class names are not proof targets
 
 ## E2E Tests (Playwright)
 
-### Directory Layout
+### Locator Strategy
 
-```
-tests/
-└── e2e/
-    ├── pages/              # Page objects
-    │   ├── login.page.ts
-    │   └── dashboard.page.ts
-    ├── fixtures/           # Test fixtures
-    │   └── auth.fixture.ts
-    └── *.e2e.test.ts       # Test files
-```
+Use locators in this priority order:
 
-### Page Object Pattern
-
-```typescript
-import { type Page, type Locator } from '@playwright/test'
-
-export class LoginPage {
-  readonly emailInput: Locator
-  readonly passwordInput: Locator
-  readonly submitButton: Locator
-
-  constructor(private page: Page) {
-    this.emailInput = page.getByLabel('Email')
-    this.passwordInput = page.getByLabel('Password')
-    this.submitButton = page.getByRole('button', { name: 'Sign in' })
-  }
-
-  async login(email: string, password: string) {
-    await this.emailInput.fill(email)
-    await this.passwordInput.fill(password)
-    await this.submitButton.click()
-  }
-}
-```
-
-### Locator Strategy (Priority Order)
-
-1. `page.getByRole()` — best for accessibility
-2. `page.getByLabel()` — form elements
-3. `page.getByText()` — visible text
-4. `page.getByTestId()` — last resort
-
-### Basic E2E Test
-
-```typescript
-import { test, expect } from '@playwright/test'
-
-test('user can navigate to dashboard after login', async ({ page }) => {
-  // Arrange
-  await page.goto('/login')
-
-  // Act
-  await page.getByLabel('Email').fill('user@example.com')
-  await page.getByLabel('Password').fill('password')
-  await page.getByRole('button', { name: 'Sign in' }).click()
-
-  // Assert
-  await expect(page).toHaveURL('/dashboard')
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
-})
-```
-
-### Auth Fixture
-
-```typescript
-import { test as base } from '@playwright/test'
-
-export const test = base.extend<{ authenticatedPage: Page }>({
-  authenticatedPage: async ({ page }, use) => {
-    await page.goto('/login')
-    await page.getByLabel('Email').fill('user@example.com')
-    await page.getByLabel('Password').fill('password')
-    await page.getByRole('button', { name: 'Sign in' }).click()
-    await page.waitForURL('/dashboard')
-    await use(page)
-  },
-})
-```
+1. `page.getByRole()`
+2. `page.getByLabel()`
+3. `page.getByText()`
+4. `page.getByTestId()` only when no semantic locator can identify the target
 
 ### Viewport Testing
 
 | Breakpoint | Width | When to Test |
 |-----------|-------|-------------|
-| Mobile | 375px | If responsive interactions defined |
-| Tablet | 768px | If tablet layout differs |
-| Desktop | 1280px | Default — always test |
+| Mobile | 375px | UI Spec defines mobile-specific interactions |
+| Tablet | 768px | UI Spec defines tablet layout differences |
+| Desktop | 1280px | Default browser journey |
 
 ### E2E Budget
 
-- Follow `integration-e2e-testing` lane limits: fixture-e2e MAX 3 and service-integration-e2e MAX 1-2 per feature
+- Limit fixture-e2e to 3 tests and service-integration-e2e to 1-2 tests per feature
 - Generate the reserved fixture-e2e user journey when eligible
-- Only generate additional non-reserved E2E tests when the lane threshold is met (`Value Score >= 20` for fixture-e2e, `Value Score > 50` for service-integration-e2e)
+- Generate additional non-reserved E2E tests only when the lane threshold is met (`Value Score >= 20` for fixture-e2e, `Value Score > 50` for service-integration-e2e)
 - Prefer fewer comprehensive journey tests over many granular tests
 
 ### Test Isolation
 
-- Each test starts from a clean browser context
-- No shared state between tests
-- Use `beforeEach` for common setup
-- Prefer `page.goto()` over in-test navigation for setup
+- Start each test from a clean browser context
+- Give each test independent fixture and persisted state
+- Use setup hooks only for state shared by every test in their scope
+- Enter the journey at the shortest setup path that preserves the behavior under test

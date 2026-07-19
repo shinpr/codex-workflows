@@ -266,7 +266,7 @@ For serialized boundaries -- a value encoded on one side and parsed on the other
 
 ## Verification Strategy
 
-Define correctness and how to prove it at design time. L1/L2/L3 from implementation-approach define task-level verification depth.
+Define correctness and how to prove it at design time. Use task-level verification depth matching the exercised boundary: L1 for unit or local in-process behavior, L2 for interaction across a named component, persistence, process, or contract boundary, and L3 for a complete user, browser, process, or service journey.
 Use the minimal form only for low-risk changes (1-2 files, no external contract/integration/data-flow change) or self-evident internal refactors with identical observable inputs/outputs.
 
 ### Correctness Proof Method

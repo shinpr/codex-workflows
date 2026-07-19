@@ -16,16 +16,6 @@ In addition to the general anti-patterns in SKILL.md, detect these frontend-spec
 - Custom hooks with shared logic
 - Validation rules for form inputs
 
-**Implementation Example**:
-```typescript
-// Bad: Immediate commonalization on 1st duplication
-function UserEmailInput() { /* ... */ }
-function ContactEmailInput() { /* ... */ }
-
-// Good: Commonalize on 3rd occurrence
-function EmailInput({ context }: { context: 'user' | 'contact' | 'admin' }) { /* ... */ }
-```
-
 ## Frontend Fallback Design
 
 ### Layer Responsibilities (React-specific)
@@ -38,41 +28,6 @@ function EmailInput({ context }: { context: 'user' | 'contact' | 'admin' }) { /*
 - Verify Design Doc definition before implementing fallbacks
 - Log errors explicitly and make failures visible
 
-## Frontend Debugging Techniques
-
-### Error Analysis (React-specific)
-1. Read error message (first line) accurately
-2. Focus on first and last of stack trace
-3. Identify first line where your code appears
-4. **Check React DevTools for component hierarchy**
-
-### 5 Whys Example (Frontend)
-```
-Symptom: Component not rendering
-Why1: Props are undefined
-Why2: Parent component didn't pass props
-Why3: Parent using old prop names
-Why4: Component interface was updated
-Why5: No update to parent after refactoring
-Root cause: Incomplete refactoring, missing call-site updates
-```
-
-### Minimal Reproduction (React-specific)
-- Remove unrelated components
-- Replace API calls with mocks
-- Create minimal configuration that reproduces the problem
-- Use React DevTools to inspect component tree
-
-### Debug Log Pattern (Frontend)
-```typescript
-console.log('DEBUG:', {
-  context: 'user-form-submission',
-  props: { email, name },
-  state: currentState,
-  timestamp: new Date().toISOString()
-})
-```
-
 ## Frontend Quality Check Workflow
 
 Read `package.json` scripts and run them with the project's package manager from the `packageManager` field. Map the phases below using the script names declared in `package.json`.
@@ -83,11 +38,6 @@ Read `package.json` scripts and run them with the project's package manager from
 3. **Build** - production build
 4. **Test** - unit and integration tests
 5. **Coverage** - coverage run when configured or when the task added or changed behavior
-
-### Troubleshooting
-- **Port already in use**: stop the stale dev, preview, or test process holding the port
-- **Stale cache**: re-run with the project's fresh or clean-cache option
-- **Dependency errors**: clean reinstall dependencies
 
 ## Frontend Technical Decisions
 

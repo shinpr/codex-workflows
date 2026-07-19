@@ -24,7 +24,7 @@ For language-specific testing patterns, also read:
 ### RED Phase
 **STEP 1**: Write test that defines expected behavior
 **STEP 2**: Run test
-**STEP 3**: Confirm test FAILS (if it passes, the test is wrong)
+**STEP 3**: Confirm the test fails for the targeted missing behavior or regression. If it passes before implementation, verify that it can fail for the targeted defect; then determine whether the behavior is already implemented or the test does not exercise the intended failure mode.
 
 ### GREEN Phase
 **STEP 1**: Write MINIMAL code to make test pass
@@ -70,69 +70,18 @@ All tests MUST be:
 
 **ENFORCEMENT**: Tests failing ANY characteristic MUST be fixed immediately
 
-## Test Types
+## Test Level Selection
 
-### Unit Tests
-
-**Purpose**: Test individual components in isolation
-
-**Characteristics**:
-- Test single function, method, or class
-- Fast execution (milliseconds)
-- No external dependencies
-- Mock external services
-- Majority of your test suite
-
-### Integration Tests
-
-**Purpose**: Test interactions between components
-
-**Characteristics**:
-- Test multiple components together
-- May include database, file system, or APIs
-- Slower than unit tests
-- Verify contracts between modules
-- Smaller portion of test suite
-
-### End-to-End (E2E) Tests
-
-**Purpose**: Test complete workflows from user perspective
-
-**Characteristics**:
-- Test entire application stack
-- Simulate real user interactions
-- Slowest test type
-- Fewest in number
-- Highest confidence level
-
-### Test Pyramid
-
-Follow the test pyramid structure:
-```
-    /\    <- Few E2E Tests (High confidence, slow)
-   /  \
-  /    \  <- Some Integration Tests (Medium confidence, medium speed)
- /      \
-/________\ <- Many Unit Tests (Fast, foundational)
-```
+- **Unit/local**: Exercise one unit or in-process behavior and isolate external I/O
+- **Integration**: Exercise the real component, persistence, process, or contract boundary named by the proof obligation
+- **End-to-end**: Exercise the complete user, browser, process, or service journey named by the proof obligation
+- Select the level that proves the required boundary; a broader test does not replace a required focused check, and a focused test does not prove an integration boundary
 
 ## Test Design Principles
 
 ### AAA Pattern (Arrange-Act-Assert)
 
-Structure every test in three clear phases:
-
-```
-// Arrange: Setup test data and conditions
-user = createTestUser()
-validator = createValidator()
-
-// Act: Execute the code under test
-result = validator.validate(user)
-
-// Assert: Verify expected outcome
-assert(result.isValid == true)
-```
+Structure every test in clear Arrange, Act, and Assert phases.
 
 ### One Assertion Per Concept
 
@@ -167,12 +116,12 @@ Test names should clearly describe:
 
 ## Mocking and Test Doubles
 
-### When to Use Mocks
+### Boundary Selection
 
-- **Mock external dependencies**: APIs, databases, file systems
-- **Mock slow operations**: Network calls, heavy computations
-- **Mock unpredictable behavior**: Random values, current time
-- **Mock unavailable services**: Third-party services
+- In unit/local tests, isolate external I/O such as APIs, databases, file systems, network calls, time, and randomness
+- In integration and data-layer tests, keep the dependency or boundary named by the proof obligation real or production-like
+- Isolate unavailable third-party services unless their contract payload or failure behavior is the boundary under test
+- Follow the Design Doc `Test Boundaries` decision when one exists
 
 ### Mocking Principles [MANDATORY]
 
@@ -180,14 +129,6 @@ Test names should clearly describe:
 - Keep each mock limited to the behavior the test needs to control or observe
 - Verify mock expectations when relevant
 - Use adapters for external libraries/frameworks you do not control
-
-### Types of Test Doubles
-
-- **Stub**: Returns predetermined values
-- **Mock**: Verifies it was called correctly
-- **Spy**: Records information about calls
-- **Fake**: Simplified working implementation
-- **Dummy**: Passed but never used
 
 ## Data Layer Testing
 
@@ -245,29 +186,16 @@ When a Design Doc includes `Test Boundaries`, follow it as the baseline for deci
 
 ## What to Test
 
-### Focus on Behavior
-
-**Test observable behavior, not implementation**:
-
-- Good: Test that function returns expected output
-- Good: Test that correct API endpoint is called
-- Bad: Test that internal variable was set
-- Bad: Test order of private method calls
-
-### Test Edge Cases
-
-Always test:
-- **Boundary conditions**: Min/max values, empty collections
-- **Error cases**: Invalid input, null values, missing data
-- **Edge cases**: Special characters, extreme values
-- **Happy path**: Normal, expected usage
+- Test accepted behavior through the public or externally observable boundary
+- Cover the happy path and the boundary, error, and regression cases required by the proof obligation
+- Do not assert private state or private call order unless that internal contract is itself the named proof target
 
 ## Test Quality Criteria [MANDATORY]
 
 1. **Literal expectations**: Use hardcoded literal values in assertions — expected value ≠ mock return value (implementation processes data)
 2. **Result verification**: Assert return values and state, not call order
 3. **Meaningful assertions**: Every test MUST have at least one assertion — a test without assertions provides zero value
-4. **Mock external I/O only**: Mock DB/API/filesystem, use real internal utilities
+4. **Boundary fidelity**: Mock only boundaries intentionally isolated at the selected test level; keep every dependency named as real by the proof obligation or Design Doc boundary decision
 5. **Boundary coverage**: Include empty/zero/max/error cases with happy paths
 
 **ENFORCEMENT**: Tests violating ANY criterion MUST be rewritten
@@ -287,37 +215,9 @@ Always test:
 - **Zero failing tests**: Fix immediately
 - **Zero skipped tests**: Delete or fix
 - **Zero flaky tests**: Make deterministic
-- **Zero slow tests**: Optimize or split
+- **Zero unreviewed slow tests**: When a test or suite exceeds the project's accepted feedback window, optimize it, split it, move it to the appropriate test level, or record the accepted exception in the governing task or Design Doc
 
 **ENFORCEMENT**: Cannot proceed with task completion if ANY quality check fails
-
-## Test Organization
-
-### File Structure
-
-- **Mirror production structure**: Tests follow code organization
-- **Clear naming conventions**: Follow project's test file patterns
-- **Logical grouping**: Group related tests together
-- **Separate test types**: Unit, integration, e2e in separate directories
-
-### Test Suite Organization
-
-```
-tests/
-├── unit/           # Fast, isolated unit tests
-├── integration/    # Integration tests
-├── e2e/            # End-to-end tests
-├── fixtures/       # Test data and fixtures
-└── helpers/        # Shared test utilities
-```
-
-## Performance Considerations
-
-### Test Speed
-
-- **Unit tests**: < 100ms each
-- **Integration tests**: < 1s each
-- **Full suite**: Should run frequently (< 10 minutes)
 
 ## Common Anti-Patterns
 

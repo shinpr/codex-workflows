@@ -189,7 +189,7 @@ A skeleton is committed before its implementation exists, so its committed form 
 //
 // Test case: AC1 successful payment creates persisted order
 // AC: "After successful payment, order is created and persisted"
-// Value Score: 95 | Business Value: 10 (business-critical) | Frequency: 9 (90% users)
+// Value Score: 95 | Business Value: 10 (business-critical) | Frequency: 9 (90% users) | Defect Detection: 5
 // Behavior: User completes payment -> Order created in DB + Payment recorded
 // @category: core-functionality
 // @lane: integration
@@ -204,7 +204,7 @@ A skeleton is committed before its implementation exists, so its committed form 
 //
 // Test case: AC1 payment failure displays error without creating order
 // AC: "Payment failure shows user-friendly error message"
-// Value Score: 34 | Business Value: 8 (prevents support tickets) | Frequency: 2 (rare)
+// Value Score: 24 | Business Value: 8 (prevents support tickets) | Frequency: 2 (rare) | Defect Detection: 8
 // Behavior: Payment fails -> User sees actionable error + Order not created
 // @category: core-functionality
 // @lane: integration
@@ -226,7 +226,7 @@ A skeleton is committed before its implementation exists, so its committed form 
 // Implementation Timing: Alongside UI implementation
 //
 // User Journey: Dismiss card -> Undo banner appears -> Undo restores card
-// Value Score: 60 | Business Value: 6 | Frequency: 7 | Defect Detection: 8
+// Value Score: 50 | Business Value: 6 | Frequency: 7 | Defect Detection: 8
 // Verification: Browser-visible state transitions with mocked backend state
 // @category: fixture-e2e
 // @lane: fixture-e2e
@@ -249,7 +249,7 @@ A skeleton is committed before its implementation exists, so its committed form 
 // Implementation Timing: Final phase only
 //
 // User Journey: Complete purchase flow (browse -> checkout -> payment -> confirmation persisted)
-// Value Score: 120 | Business Value: 10 (business-critical) | Frequency: 10 (core flow) | Legal: true
+// Value Score: 120 | Business Value: 10 (business-critical) | Frequency: 10 (core flow) | Legal: true | Defect Detection: 10
 // Verification: Order persists in DB and confirmation event is emitted
 // @category: service-integration-e2e
 // @lane: service-integration-e2e

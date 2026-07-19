@@ -14,7 +14,7 @@ For language-specific rules, also read:
 
 1. **Maintainability over Speed**: Prioritize long-term code health
 2. **Simplicity First**: YAGNI principle — simplest solution that meets requirements
-3. **Design Convergence**: Deliver the current required outcome with the least new design surface. Use "Design Surface Terms" below for classification and implementation-approach for design selection.
+3. **Design Convergence**: Deliver the current required outcome with the least new design surface. Add surface only to satisfy a current requirement, verified constraint, observed problem, or evidence-backed material risk; among sufficient options, choose the lowest-lifecycle-cost option.
 4. **Explicit over Implicit**: Clear intentions through code structure and naming
 5. **Delete over Comment**: Remove unused code instead of commenting it out
 
@@ -27,7 +27,7 @@ Use these definitions when classifying Design Convergence additions or code-revi
 - **Maintenance-surface-bearing elements**: persistent state; public-contract or cross-boundary fields/props; behavioral modes, flags, or variants; reusable abstractions; extracted services; shared utilities; component splits.
 - **Non-surface elements**: private local variables, internal helper functions with no external observers, test fixtures or mocks, temporary migration scaffolding removed before completion, and private implementation details confined to one function or file.
 - **Classification precedence**: When an element matches both surface-bearing and non-surface conditions, classify it as surface-bearing.
-- **Selection rule**: Follow implementation-approach Design Convergence for design selection. These terms classify design surface; they do not define a second selection process.
+- **Selection rule**: Add a surface-bearing element only when it is required by a current requirement, verified constraint, observed problem, or evidence-backed material risk. Prefer fewer new elements only when the remaining candidates are otherwise sufficient and equivalent.
 - **Relation to YAGNI**: YAGNI decides present vs. future need over time; Design Convergence minimizes surface area for the current accepted scope.
 
 ## Code Quality [MANDATORY]

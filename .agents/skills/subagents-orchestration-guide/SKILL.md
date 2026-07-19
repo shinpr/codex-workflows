@@ -143,23 +143,23 @@ Autonomous execution MUST stop and wait for user input at these points.
 
 ### Approval Status Vocabulary [MANDATORY]
 
-All agents MUST use this vocabulary consistently:
+These values standardize review and approval decisions. Review and approval agents MUST use this vocabulary consistently. Executor and quality-control operational statuses such as `completed`, `escalation_needed`, and `stub_detected` remain governed by their agent schemas and the Structured Response Specification.
 
 | Status | Scope | Meaning | Next Action |
 |--------|-------|---------|-------------|
-| `approved` | All agents | All criteria met | Proceed to next phase |
+| `approved` | Review/approval agents | All criteria met | Proceed to next phase |
 | `approved_with_conditions` | Document agents | Criteria met with minor open items | Proceed — carry conditions as input to next phase |
 | `approved_with_notes` | security-reviewer | Only hardening/policy findings | Proceed — include notes in completion report (no resolution required) |
-| `needs_revision` | All agents | Significant issues found | Return to author agent for revision (max 2 iterations) |
+| `needs_revision` | Review/approval agents | Significant issues found | Return to author agent for revision (max 2 iterations) |
 | `rejected` | Document agents | Fundamental problems | Halt workflow, escalate to user |
 | `blocked` | security-reviewer | Committed secrets or high-confidence exploitable risk | Halt workflow immediately, escalate to user (requires human intervention) |
-| `skipped` | All agents | Preconditions not met for this step | Report reason, proceed |
+| `skipped` | Review/approval agents whose schema permits skipping | Preconditions not met for this step | Report reason, proceed |
 
 Handling rules:
 - `approved_with_conditions`: append the listed conditions to the document's open-items section, carry them into the next phase, and resolve them before implementation
 - `approved_with_notes`: include the notes in the completion report for awareness
 
-**ENFORCEMENT**: Using any status value outside this vocabulary is a VIOLATION.
+**ENFORCEMENT**: Using any status value outside this vocabulary for a review or approval decision is a VIOLATION.
 
 ### WorkPlan Review State [MANDATORY]
 
