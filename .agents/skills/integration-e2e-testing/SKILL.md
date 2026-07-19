@@ -41,6 +41,13 @@ description: "Integration and E2E test design principles, value-based selection,
 Value Score = (Business Value x User Frequency) + (Legal Requirement x 10) + Defect Detection
 ```
 
+Score each factor as follows:
+
+- **Business Value**: `0` for no material outcome impact, `5` for a material secondary outcome, and `10` for a critical or core outcome; interpolate `1-4` and `6-9`
+- **User Frequency**: `0` below 1% of eligible journeys, `1-9` for the corresponding 10%-90% band, and `10` for virtually every eligible journey
+- **Legal Requirement**: `1` when legally required, otherwise `0`
+- **Defect Detection**: `0` when existing tests already prove the same failure mode, `5` for a material coverage gap, and `10` when this is the primary detector of a critical regression; interpolate `1-4` and `6-9`
+
 Use `Value Score` for ranking candidates of the same test type. Handle E2E cost through budget limits and reserved-slot rules instead of cost-division scoring.
 
 ### E2E Lane Thresholds

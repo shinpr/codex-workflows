@@ -1,6 +1,6 @@
 ---
 name: ai-development-guide
-description: "Anti-pattern detection, debugging techniques, quality check workflow, and implementation completeness assurance. Use when: fixing bugs, reviewing code quality, refactoring, making technical decisions, or performing quality assurance."
+description: "Anti-pattern detection, root-cause discipline, quality check workflow, and implementation completeness assurance. Use when: fixing bugs, reviewing code quality, refactoring, making technical decisions, or performing quality assurance."
 ---
 
 # AI Developer Guide - Technical Decision Criteria and Anti-pattern Collection
@@ -24,7 +24,7 @@ Explore broadly, then converge on the lowest-lifecycle-cost solution that delive
 ### Code Quality Anti-patterns
 1. **Writing similar code 3 or more times** - Violates Rule of Three
 2. **Multiple responsibilities mixed in a single file** - Violates Single Responsibility Principle (SRP)
-3. **Defining same content in multiple files** - Violates DRY principle
+3. **Maintaining the same runtime rule or data in multiple implementation sources when one source can safely serve all consumers** - Creates synchronization risk
 4. **Making changes without checking dependencies** - Potential for unexpected impacts
 5. **Disabling code with comments** - Should use version control
 6. **Error suppression** - Hiding problems creates technical debt
@@ -76,19 +76,6 @@ Make errors explicit with full context. Prioritize primary code reliability over
 
 **ENFORCEMENT**: Fallbacks without Design Doc approval are PROHIBITED
 
-### Implementation Pattern
-
-```
-AVOID: Silent fallback that hides errors
-    <handle error>:
-        return DEFAULT_VALUE  // Error hidden, debugging impossible
-
-PREFERRED: Explicit failure with context
-    <handle error>:
-        log_error('Operation failed', context, error)
-        <propagate error>  // Re-throw, return Error type, return error tuple
-```
-
 ## Rule of Three - Criteria for Code Duplication
 
 How to handle duplicate code based on Martin Fowler's "Refactoring":
@@ -113,77 +100,14 @@ How to handle duplicate code based on Martin Fowler's "Refactoring":
 - Significant readability decrease from commonalization
 - Simple helpers in test code
 
-## Common Failure Patterns and Avoidance Methods
+## Pattern 5: Existing Code Investigation [MANDATORY]
 
-### Pattern 1: Error Fix Chain
-**Symptom**: Fixing one error causes new errors
-**Cause**: Surface-level fixes without understanding root cause
-**Avoidance**: Identify root cause with 5 Whys before fixing
-
-### Pattern 2: Circumventing Correctness Guarantees
-**Symptom**: Bypassing safety mechanisms (type systems, validation, contracts)
-**Cause**: Impulse to avoid correctness errors
-**Avoidance**: Use language-appropriate safety mechanisms
-
-### Pattern 3: Implementation Without Sufficient Testing
-**Symptom**: Many bugs after implementation
-**Cause**: Ignoring Red-Green-Refactor process
-**Avoidance**: Always start with failing tests
-
-### Pattern 4: Ignoring Technical Uncertainty
-**Symptom**: Frequent unexpected errors when introducing new technology
-**Cause**: Assuming things work without prior investigation
-**Avoidance**:
-- Record certainty evaluation at the beginning of task files
-- For low certainty cases, create minimal verification code first
-
-### Pattern 5: Insufficient Existing Code Investigation
-**Symptom**: Duplicate implementations, architecture inconsistency, integration failures, adopting outdated patterns
-**Cause**: Insufficient understanding of existing code before implementation; referencing only nearby files without checking representativeness
-**Avoidance**:
-- Before implementation, always search for similar functionality
-- Similar functionality found: Use that implementation (do not create new)
+Before implementation:
+- Search for similar functionality
+- Similar functionality found: Verify that it satisfies the current requirement and is representative of the repository; reuse or extend it when both checks pass
 - Similar functionality is technical debt: Repair it when it blocks the current outcome, was caused by the current change, or lies in confirmed scope; otherwise report it separately. When the repair requires an architectural decision, record the decision in an ADR
-- No similar functionality: Implement following existing design philosophy
+- No suitable similar functionality: Implement using representative repository patterns
 - When adopting a pattern or dependency from nearby code, verify it is representative across the repository before adopting it
-
-## Debugging Techniques
-
-### 1. Error Analysis Procedure
-1. Read error message (first line) accurately
-2. Focus on first and last of stack trace
-3. Identify first line where your code appears
-
-### 2. 5 Whys - Root Cause Analysis
-```
-Example:
-Symptom: Build error
-Why1: Contract definitions don't match
-Why2: Interface was updated
-Why3: Dependency change
-Why4: Package update impact
-Why5: Major version upgrade with breaking changes
-Root cause: Inappropriate version specification in dependency manifest
-```
-
-### 3. Minimal Reproduction Code
-To isolate problems, attempt reproduction with minimal code:
-- Remove unrelated parts
-- Replace external dependencies with mocks
-- Create minimal configuration that reproduces problem
-
-### 4. Debug Log Output (temporary)
-Add structured debug logs to isolate the issue, then remove them before commit.
-
-```
-Pattern: Structured logging with context
-{
-  context: 'operation-name',
-  input: { relevant, input, data },
-  state: currentState,
-  timestamp: current_time_ISO8601
-}
-```
 
 ## Quality Assurance Mechanism Awareness
 
@@ -224,21 +148,6 @@ All checks MUST pass before proceeding:
 - Coverage threshold passes when the project, task file, work plan, or Design Doc defines one. When no threshold is configured, use coverage output only to identify untested critical paths.
 
 **ENFORCEMENT**: Cannot proceed with ANY quality check failures — fix ALL errors before marking task complete
-
-## Situations Requiring Technical Decisions
-
-### Timing of Abstraction
-- Extract patterns after writing concrete implementation 3 times (Rule of Three)
-
-### Performance vs Readability
-- Prioritize readability unless clear bottleneck exists
-- **Measure first** — profile before optimizing (no guessing)
-- Document reason with comments when optimizing
-
-### Granularity of Contracts and Interfaces
-- Overly detailed contracts reduce maintainability
-- Design interfaces that appropriately express domain
-- Use abstraction mechanisms to reduce duplication
 
 ## Implementation Completeness Assurance
 
@@ -286,15 +195,20 @@ Complete these stages sequentially before any implementation:
 ### Unused Code Deletion
 
 When unused code is detected:
-- Will it be used in this work? Yes: Implement now | No: Delete now (Git preserves)
+- Within confirmed scope or dependencies required for the current outcome: Will it be used in this work? Yes: Implement now | No: Delete now (Git preserves)
+- Outside that boundary: Report it separately for a scope decision
 - Applies to: Code, tests, docs, configs, assets
 
 ### Existing Code Modification
 
 ```
-In use? No -> Delete
-       Yes -> Working? No -> Delete + Reimplement
-                     Yes -> Fix/Extend
+Within confirmed scope or required dependency?
+  No  -> Report separately
+  Yes -> In use?
+           No  -> Delete
+           Yes -> Working?
+                    No  -> Delete + Reimplement
+                    Yes -> Fix/Extend
 ```
 
 **Principle**: Prefer clean implementation over patching broken code

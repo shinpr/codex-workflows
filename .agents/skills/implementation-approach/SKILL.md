@@ -38,7 +38,7 @@ Test the Direct MVP against every current requirement, verified constraint, obse
 
 ### Phase 4: Targeted Expansion
 
-For each Failed Item, choose the sufficient candidate with the lowest lifecycle cost, treating maintenance-surface-bearing elements defined by coding-rules as cost factors and preferring fewer new elements only when candidates are otherwise equivalent. Record it as `Adopted Additions`; record `None` when no expansion is needed. An addition without a Failed Item is excluded.
+For each Failed Item, choose the sufficient candidate with the lowest lifecycle cost. Treat persistent state, public-contract or cross-boundary fields and props, behavioral modes, flags or variants, reusable abstractions, extracted services, shared utilities, and component splits as maintenance-surface-bearing cost factors. Prefer fewer new elements only when candidates are otherwise sufficient and equivalent. Record the choice as `Adopted Additions`; record `None` when no expansion is needed. An addition without a Failed Item is excluded.
 
 ### Phase 5: Subtraction Check [MANDATORY]
 
@@ -61,7 +61,7 @@ After the design converges, select its implementation slicing approach:
 #### Hybrid
 **Characteristics**: Combination of vertical and horizontal slices
 **Application Conditions**: Verified dependencies require foundation work before some, but not all, user-value slices
-**Verification Method**: Verify at appropriate L1/L2/L3 levels according to each phase's goals
+**Verification Method**: Use the task verification level required by each phase's proof obligation
 
 ### Phase 7: Decision Rationale Documentation
 
@@ -69,13 +69,23 @@ After the design converges, select its implementation slicing approach:
 
 ## Verification Level Definitions
 
-Priority for completion verification of each task:
+Task verification levels describe the boundary exercised by the task's runnable check:
 
-- **L1: Functional Operation Verification** - Operates as end-user feature (e.g., search executable)
-- **L2: Test Operation Verification** - New tests added and passing
-- **L3: Build Success Verification** - Code builds/runs without errors
+- **L1: Unit or Local Verification** - Exercises one unit or an in-process behavior without crossing an integration boundary
+- **L2: Integration Verification** - Exercises interaction across components, persistence, processes, or another named integration boundary
+- **L3: End-to-End Verification** - Exercises the complete user, browser, process, or service journey required by the proof obligation
 
-**Priority**: L1 > L2 > L3 in order of verifiability importance
+Select the level that exercises the boundary named by the task's proof obligation. A broader level does not replace a required narrower check, and a narrower level does not prove a required integration or end-to-end boundary.
+
+### Completion Evidence Priority
+
+When judging whether implementation is complete, prefer evidence in this order:
+
+1. **Functional operation evidence** - The required end-user or externally observable behavior operates
+2. **Test operation evidence** - The relevant tests execute and pass
+3. **Build evidence** - The code builds or runs without errors
+
+Build success alone does not prove required behavior when functional or test evidence is applicable.
 
 ## Integration Point Definitions
 

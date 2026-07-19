@@ -22,19 +22,6 @@
 3. **Union Types / Intersection Types**: Combinations of multiple types
 4. **Type Assertions (Last Resort)**: Only when type is certain
 
-**Type Guard Implementation Pattern**
-```typescript
-function isUser(value: unknown): value is User {
-  return typeof value === 'object' && value !== null && 'id' in value && 'name' in value
-}
-```
-
-**Modern Type Features**
-- **satisfies Operator**: `const config = { apiUrl: '/api' } satisfies Config` - Preserves inference
-- **const Assertion**: `const ROUTES = { HOME: '/' } as const satisfies Routes` - Immutable and type-safe
-- **Branded Types**: `type UserId = string & { __brand: 'UserId' }` - Distinguish meaning
-- **Template Literal Types**: `type EventName = \`on\${Capitalize<string>}\`` - Express string patterns with types
-
 **Type Safety in Frontend Implementation**
 - **React Props/State**: TypeScript manages types, unknown unnecessary
 - **External API Responses**: Always receive as `unknown`, validate with type guards
@@ -57,8 +44,8 @@ function isUser(value: unknown): value is User {
 ## Coding Conventions
 
 **Component Design Criteria**
-- **Function Components (Mandatory)**: Official React recommendation, optimizable by modern tooling
-- **Classes Prohibited**: Class components completely deprecated (Exception: Error Boundary)
+- **Function Components (Mandatory)**: Use function components for new and modified React components
+- **Class Component Exception**: Retain or introduce a class component only when an existing or required Error Boundary needs it
 - **Custom Hooks**: Standard pattern for logic reuse and dependency injection
 - **Component Hierarchy**: Follow the project's existing component architecture. Use Atoms > Molecules > Organisms > Templates > Pages only when the project adopts Atomic Design.
 - **Co-location**: Place tests, styles, and related files alongside components
@@ -79,21 +66,8 @@ function isUser(value: unknown): value is User {
 - **Unidirectional Flow**: Data flows top-down via props
 - **Immutable Updates**: Use immutable patterns for state updates
 
-```typescript
-// Good: Immutable state update
-setUsers(prev => [...prev, newUser])
-
-// Bad: Mutable state update
-users.push(newUser)
-setUsers(users)
-```
-
 **Function Design**
 - **0-2 parameters maximum**: Use object for 3+ parameters
-  ```typescript
-  // Object parameter
-  function createUser({ name, email, role }: CreateUserParams) {}
-  ```
 
 **Props Design (Props-driven Approach)**
 - Props are the interface: Define all necessary information as props
@@ -103,32 +77,14 @@ setUsers(users)
 **Environment Variables**
 - **Use the build tool's env accessor**: read client-side env through the bundler's exposed accessor, such as Vite `import.meta.env` or Next.js/CRA prefixed `process.env`.
 - **Only prefixed vars reach the client**: build tools expose only vars carrying their public prefix. Match the project's bundler, such as Vite `VITE_`, Next.js `NEXT_PUBLIC_`, or CRA `REACT_APP_`.
-- Centrally manage environment variables through a typed configuration layer with defaults.
-
-```typescript
-// Client-exposed env must carry the bundler's public prefix, or it is undefined in the browser.
-// Vite:    import.meta.env.VITE_API_URL
-// Next.js: process.env.NEXT_PUBLIC_API_URL
-const config = {
-  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000',
-  appName: import.meta.env.VITE_APP_NAME || 'My App'
-}
-```
+- Centrally manage environment variables through a typed configuration layer.
+- Treat a missing required variable as a configuration error. Use a default only when requirements or a Design Doc explicitly define that fallback.
 
 **Security (Client-side Constraints)**
 - **CRITICAL**: All frontend code is public and visible in browser
 - **Never store secrets client-side**: No API keys, tokens, or secrets in environment variables
 - Do not include `.env` files in Git
 - Do not include sensitive information in error messages
-
-```typescript
-// Bad: API key exposed in browser
-// const apiKey = import.meta.env.VITE_API_KEY
-// const response = await fetch(`https://api.example.com/data?key=${apiKey}`)
-
-// Good: Backend manages secrets, frontend accesses via proxy
-const response = await fetch('/api/data') // Backend handles API key authentication
-```
 
 **Dependency Injection**
 - **Custom Hooks for dependency injection**: Ensure testability and modularity
@@ -155,39 +111,6 @@ const response = await fetch('/api/data') // Backend handles API key authenticat
 **Absolute Rule**: Handle every error explicitly with log output, recovery logic, or escalation appropriate to the failure mode.
 
 **Fail-Fast Principle**: Fail quickly on errors to prevent continued processing in invalid states
-```typescript
-// Bad: Unconditional fallback
-catch (error) {
-  return defaultValue // Hides error
-}
-
-// Good: Explicit failure
-catch (error) {
-  logger.error('Processing failed', error)
-  throw error // Handle with Error Boundary or higher layer
-}
-```
-
-**Result Type Pattern**: Express errors with types for explicit handling
-```typescript
-type Result<T, E> = { ok: true; value: T } | { ok: false; error: E }
-
-function parseUser(data: unknown): Result<User, ValidationError> {
-  if (!isValid(data)) return { ok: false, error: new ValidationError() }
-  return { ok: true, value: data as User }
-}
-```
-
-**Custom Error Classes**
-```typescript
-export class AppError extends Error {
-  constructor(message: string, public readonly code: string, public readonly statusCode = 500) {
-    super(message)
-    this.name = this.constructor.name
-  }
-}
-// Purpose-specific: ValidationError(400), ApiError(502), NotFoundError(404)
-```
 
 **Layer-Specific Error Handling (React)**
 - Error Boundary: Catch React component errors, display fallback UI

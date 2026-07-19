@@ -368,13 +368,13 @@ Decompose tasks based on implementation approach and technical dependencies deci
 
 **Verification Level Assignment** [REQUIRED per task]:
 Each task MUST specify its verification level from implementation-approach skill:
-- **L1**: Functional operation verification (end-user feature works)
-- **L2**: Test operation verification (new tests added and passing)
-- **L3**: Build success verification (code builds without errors)
+- **L1: Unit or Local Verification** - Exercises one unit or an in-process behavior without crossing an integration boundary
+- **L2: Integration Verification** - Exercises interaction across components, persistence, processes, or another named integration boundary
+- **L3: End-to-End Verification** - Exercises the complete user, browser, process, or service journey required by the proof obligation
 
 Include in task format:
 ```
-Verification: L1 — [specific verification method]
+Verification: L1 — [specific unit or local verification method]
 ```
 
 **ENFORCEMENT**: Tasks without a verification level assignment are incomplete.

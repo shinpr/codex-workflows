@@ -41,13 +41,12 @@ skills:
       - "Test-Driven Development - Kent Beck"
       - "Red-Green-Refactor Cycle - Kent Beck"
       - "AAA Pattern - Arrange-Act-Assert"
-      - "Test Pyramid - Mike Cohn"
     sections:
       - "Language-Specific References"
       - "Core Testing Philosophy"
       - "TDD Process [MANDATORY for all code changes]"
       - "Quality Requirements [MANDATORY]"
-      - "Test Types"
+      - "Test Level Selection"
       - "Test Design Principles"
       - "Test Independence"
       - "Mocking and Test Doubles"
@@ -56,8 +55,6 @@ skills:
       - "What to Test"
       - "Test Quality Criteria [MANDATORY]"
       - "Verification Requirements [MANDATORY for VERIFY phase]"
-      - "Test Organization"
-      - "Performance Considerations"
       - "Common Anti-Patterns"
       - "Regression Testing"
     references:
@@ -66,7 +63,7 @@ skills:
   ai-development-guide:
     skill: "ai-development-guide"
     tags: [anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, refactoring, code-reading, best-practices, fail-fast, error-handling, impact-analysis]
-    typical-use: "Technical decision criteria, anti-pattern detection, debugging techniques, quality check workflows, impact analysis procedures"
+    typical-use: "Technical decision criteria, anti-pattern detection, root-cause discipline, quality check workflows, impact analysis procedures"
     size: large
     key-references:
       - "Rule of Three - Martin Fowler"
@@ -78,11 +75,9 @@ skills:
       - "Technical Anti-patterns (Red Flag Patterns) [MANDATORY]"
       - "Fail-Fast Fallback Design Principles"
       - "Rule of Three - Criteria for Code Duplication"
-      - "Common Failure Patterns and Avoidance Methods"
-      - "Debugging Techniques"
+      - "Pattern 5: Existing Code Investigation [MANDATORY]"
       - "Quality Assurance Mechanism Awareness"
       - "Quality Check Workflow [MANDATORY]"
-      - "Situations Requiring Technical Decisions"
       - "Implementation Completeness Assurance"
       - "Impact Analysis"
     references:
