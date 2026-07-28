@@ -117,8 +117,7 @@ Spawn document-reviewer agent: "Review the following PRD considering code verifi
 
 Spawn prd-creator agent: "Update PRD based on review feedback and code verification results. Operation Mode: update. Existing PRD: $STEP_2_OUTPUT. Review Feedback: $STEP_4_OUTPUT. Code Verification Results: $STEP_3_OUTPUT. Address discrepancies by severity. Critical and major items require correction. Minor items: correct if straightforward, otherwise leave as-is with rationale."
 
-**Loop Control**: Maximum 2 revision cycles. After 2 cycles, flag for human review regardless of status.
-ENFORCEMENT: Exceeding 2 revision cycles without flagging produces unreviewed output.
+**Loop Control**: Apply Review Revision Convergence from `subagents-orchestration-guide` with `prd-creator` as the author and `$STEP_4_OUTPUT` as the prior review.
 
 #### Unit Completion
 
@@ -224,7 +223,7 @@ Spawn document-reviewer agent: "Review the following Design Doc considering code
 
 Spawn technical-designer agent: "Update Design Doc based on review feedback and code verification results. Operation Mode: update. Existing Design Doc: $STEP_7_OUTPUT. Review Feedback: $STEP_9_OUTPUT. Code Verification Results: $STEP_8_OUTPUT. Address discrepancies by severity. Critical and major items require correction. Minor items: correct if straightforward, otherwise leave as-is with rationale."
 
-**Loop Control**: Maximum 2 revision cycles. After 2 cycles, flag for human review regardless of status.
+**Loop Control**: Apply Review Revision Convergence from `subagents-orchestration-guide` with `technical-designer` as the author and `$STEP_9_OUTPUT` as the prior review.
 
 #### Unit Completion
 
@@ -247,7 +246,7 @@ Output summary including:
 | Discovery finds nothing | Ask user for project structure hints |
 | Generation fails | Log failure, continue with other units, report in summary |
 | consistencyScore < 50 | **[STOP — BLOCKING]** Flag for mandatory human review. **CANNOT proceed until user explicitly confirms.** |
-| Review rejects after 2 revisions | Stop loop, flag for human intervention |
+| Review cannot converge because authoritative input is missing or contradictory | Present the exact missing or contradictory input |
 
 ## Completion Criteria
 

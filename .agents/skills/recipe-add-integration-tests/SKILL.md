@@ -8,7 +8,8 @@ description: "Add integration/E2E tests to existing codebase using Design Docs."
 1. [LOAD IF NOT ACTIVE] `testing` — test strategy and quality gates
 2. [LOAD IF NOT ACTIVE] `integration-e2e-testing` — integration and E2E test patterns
 3. [LOAD IF NOT ACTIVE] `documentation-criteria` — document creation rules and templates
-4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
+4. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — review revision convergence and agent coordination
+5. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
@@ -147,7 +148,7 @@ Keep `testsAdded` as reporting metadata only.
 
 Check Step 5 result:
 - `status: approved` -> Mark complete, proceed to Step 7
-- `status: needs_revision` -> Spawn the layer-appropriate executor with: "Fix the following issues in test files: [requiredFixes from Step 5]." Then return to Step 5. Maximum 2 revision cycles per task file; if still `needs_revision`, escalate to the user.
+- `status: needs_revision` -> Apply Review Revision Convergence from `subagents-orchestration-guide` with the layer-appropriate executor as the author, using `requiredFixes` as the review findings, then return to Step 5.
 
 ### Step 7: Quality Check
 

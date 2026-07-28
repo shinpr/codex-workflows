@@ -78,8 +78,7 @@ Spawn document-reviewer agent: "Review the frontend work plan before task decomp
 
 Branch on `verdict.decision`:
 - `approved` -> spawn work-planner in update mode once to record `Status: approved` and `Conditions: none` in WorkPlan Review, then continue to user confirmation
-- `approved_with_conditions` -> stop before task decomposition and report that the work plan needs update via recipe-front-plan
-- `needs_revision` -> stop before task decomposition and report that the work plan needs update via recipe-front-plan
+- `approved_with_conditions` or `needs_revision` -> apply Review Revision Convergence from `subagents-orchestration-guide` with `work-planner` as the author, then repeat Work Plan Review
 - `rejected` -> stop before task decomposition and present the blocking findings to the user
 
 When task files don't exist and the WorkPlan Review section records `Status: approved` and `Conditions: none`, skip Work Plan Review and continue to user confirmation.

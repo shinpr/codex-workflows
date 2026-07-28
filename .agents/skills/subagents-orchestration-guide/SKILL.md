@@ -138,7 +138,7 @@ These values standardize review and approval decisions. Review and approval agen
 | `approved` | Review/approval agents | All criteria met | Proceed to next phase |
 | `approved_with_conditions` | Document agents | Criteria met with minor open items | Proceed — carry conditions as input to next phase |
 | `approved_with_notes` | security-reviewer | Only hardening/policy findings | Proceed — include notes in completion report (no resolution required) |
-| `needs_revision` | Review/approval agents | Significant issues found | Return to author agent for revision (max 2 iterations) |
+| `needs_revision` | Review/approval agents | Significant issues found | Return to author agent under Review Revision Convergence |
 | `rejected` | Document agents | Fundamental problems | Halt workflow, escalate to user |
 | `blocked` | security-reviewer | Committed secrets or high-confidence exploitable risk | Halt workflow immediately, escalate to user (requires human intervention) |
 | `skipped` | Review/approval agents whose schema permits skipping | Preconditions not met for this step | Report reason, proceed |
@@ -148,6 +148,17 @@ Handling rules:
 - `approved_with_notes`: include the notes in the completion report for awareness
 
 **ENFORCEMENT**: Using any status value outside this vocabulary for a review or approval decision is a VIOLATION.
+
+### Review Revision Convergence [MANDATORY]
+
+Review-result routing runs before any adjacent user-approval stop. Reach the approval stop only after the review status permits progression under the Approval Status Vocabulary.
+
+On `needs_revision`, and on WorkPlan `approved_with_conditions`:
+1. Pass the complete findings or conditions to the author agent in update mode.
+2. Re-run the same reviewer with the previous review included as prior review context. Use `prior_context_check` when the reviewer provides it; otherwise compare its finding IDs or normalized required fixes.
+3. Continue the author-review loop until the review permits progression or identifies an item that requires escalation under the existing `rejected`, `blocked`, or requirement-change rules.
+
+Revision loops have no fixed iteration limit. After each review, compare unresolved findings by stable ID, or by normalized category, location, and description when IDs are absent. When the same unresolved set and evidence recur unchanged, run a convergence pass: inspect the governing sources, artifact, author output, and reviewer evidence; then give the author one targeted correction per evidence-resolved finding. Escalate only when a faithful correction requires a missing or contradictory authoritative input or an explicit user decision, and name that exact input or decision. The orchestrator selects the next route from this evidence; user input is requested only for the exact unresolved input or decision.
 
 ### WorkPlan Review State [MANDATORY]
 
@@ -251,7 +262,7 @@ Flow rules:
 - Pass `codebase-analyzer` output to the designer as `Codebase Analysis`
 - Pass Design Doc path to `code-verifier`, then pass `code_verification` to `document-reviewer`
 - Fullstack layer sequencing is defined in `references/monorepo-flow.md`
-- Run WorkPlan review after every Medium/Large work plan creation or update and before batch approval. On `needs_revision` or WorkPlan `approved_with_conditions`, return to `work-planner` in update mode and re-review for max 2 revision iterations as defined by the `needs_revision` row in Approval Status Vocabulary. On `rejected`, halt and escalate to the user.
+- Run WorkPlan review after every Medium/Large work plan creation or update and before batch approval. On `needs_revision` or WorkPlan `approved_with_conditions`, apply Review Revision Convergence with `work-planner` as the author. On `rejected`, halt and escalate to the user.
 
 ## Autonomous Execution Mode
 
