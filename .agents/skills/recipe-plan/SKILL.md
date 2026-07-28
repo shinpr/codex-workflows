@@ -63,7 +63,7 @@ Spawn document-reviewer agent: "Review the work plan. doc_type: WorkPlan. target
 
 Branch on `verdict.decision`:
 - `approved` -> spawn work-planner in update mode once to record `Status: approved` and `Conditions: none` in WorkPlan Review, then proceed to Step 5
-- `approved_with_conditions` or `needs_revision` -> spawn work-planner in update mode with the findings or conditions, then repeat Step 4. Use max 2 revision iterations as defined by the `needs_revision` row in subagents-orchestration-guide Approval Status Vocabulary.
+- `approved_with_conditions` or `needs_revision` -> apply Review Revision Convergence (`author`: work-planner; `artifact`: work plan); on `progression`, follow the `approved` branch
 - `rejected` -> stop and present the blocking findings to the user.
 
 ### Step 5: Plan Approval

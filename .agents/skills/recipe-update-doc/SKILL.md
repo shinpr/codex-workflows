@@ -124,16 +124,11 @@ Spawn document-reviewer agent: "Review the following updated document. doc_type:
 
 **Store output as**: `$STEP_5_OUTPUT`
 
-**[STOP — BLOCKING]** Present review results to user for approval.
-**CANNOT proceed until user explicitly confirms.**
-
 **On review result**:
-- Approved -> Proceed to Step 6
-- Needs revision -> Return to Step 4 with review feedback (max 2 iterations):
-  Spawn [Update Agent from Step 2] agent: "Operation Mode: update. Existing Document: [path from Step 1]. Review Feedback to Address: $STEP_5_OUTPUT. Address each issue raised in the review feedback."
-- **After 2 rejections** -> Flag for human review, present accumulated feedback to user and end
-
-Present review result to user for approval.
+- `approved` -> **[STOP — BLOCKING]** Present review results to the user and proceed to Step 6 only after explicit approval
+- `approved_with_conditions` -> Apply the Approval Status Vocabulary conditions handling, then **[STOP — BLOCKING]** present the result and proceed to Step 6 only after explicit approval
+- `needs_revision` -> Apply Review Revision Convergence (`author`: [Update Agent from Step 2]; `artifact`: target document); on `progression`, follow the matching approved branch
+- `rejected` -> **[STOP — BLOCKING]** Present the exact blocking findings and required user decision, then wait
 
 ### Step 6: Consistency Verification (Design Doc only) [Stop]
 
@@ -156,7 +151,7 @@ For Design Doc, spawn design-sync agent: "Verify consistency of the updated Desi
 |-------|--------|
 | Target document not found | Report and end (suggest $recipe-design instead) |
 | Sub-agent update fails | Log failure, present error to user, retry once |
-| Review rejects after 2 revisions | Stop loop, flag for human intervention |
+| Review Revision Convergence returns `non_convergent` | Stop the loop, present the exact unresolved findings and attempted corrections, then wait |
 | design-sync detects conflicts | Present to user for resolution decision |
 
 ## Completion Criteria

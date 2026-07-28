@@ -136,18 +136,32 @@ These values standardize review and approval decisions. Review and approval agen
 | Status | Scope | Meaning | Next Action |
 |--------|-------|---------|-------------|
 | `approved` | Review/approval agents | All criteria met | Proceed to next phase |
-| `approved_with_conditions` | Document agents | Criteria met with minor open items | Proceed — carry conditions as input to next phase |
+| `approved_with_conditions` | Document agents | Criteria met with minor open items | Proceed per document-specific handling; WorkPlan uses WorkPlan Review State |
 | `approved_with_notes` | security-reviewer | Only hardening/policy findings | Proceed — include notes in completion report (no resolution required) |
-| `needs_revision` | Review/approval agents | Significant issues found | Return to author agent for revision (max 2 iterations) |
+| `needs_revision` | Review/approval agents | Significant issues found | Use Review Revision Convergence when the active workflow owns the repair author; otherwise use the workflow's specific routing |
 | `rejected` | Document agents | Fundamental problems | Halt workflow, escalate to user |
 | `blocked` | security-reviewer | Committed secrets or high-confidence exploitable risk | Halt workflow immediately, escalate to user (requires human intervention) |
 | `skipped` | Review/approval agents whose schema permits skipping | Preconditions not met for this step | Report reason, proceed |
 
 Handling rules:
-- `approved_with_conditions`: append the listed conditions to the document's open-items section, carry them into the next phase, and resolve them before implementation
+- `approved_with_conditions` for PRD, ADR, UI Spec, and Design Doc: append the listed conditions to the document's open-items section, carry them into the next phase, and resolve them before implementation
 - `approved_with_notes`: include the notes in the completion report for awareness
 
 **ENFORCEMENT**: Using any status value outside this vocabulary for a review or approval decision is a VIOLATION.
+
+### Review Revision Convergence [MANDATORY]
+
+Review-result routing runs before any adjacent user-approval stop. Reach the approval stop only after the review status permits progression under the Approval Status Vocabulary. This procedure applies when the active workflow owns an author that can repair the reviewed artifact; review-only routing and Post-Implementation Verification retain their specific contracts.
+
+Inputs are `author`, `artifact`, `reviewer`, and the complete `current_review` response. Callers name the author and artifact; reviewer and current review are the active review agent and its response. The procedure retains the preceding response as `previous_review`.
+
+1. Invoke the author through its existing update or repair contract with the complete current findings.
+2. Re-run the reviewer through its declared input contract. Include the previous review JSON as `prior feedback` only when that reviewer accepts or scans prior-context input.
+3. Return `progression` when the review status satisfies the caller's phase gate; the WorkPlan phase gate accepts `approved`. Return `escalation` with the artifact, triggering findings, and attempted corrections for `rejected`, `blocked`, or a requirement change.
+4. Otherwise compare unresolved findings between `previous_review` and `current_review`. Match document-reviewer findings by `issues[].id`, or by normalized category, location, and description when an ID is absent. Match integration-test-reviewer findings by normalized `testName`, `issueType`, and `expectedClaim`, or by normalized `requiredFixes` text when structured issue fields are absent; normalization ignores case and whitespace only. Compare unresolved severity-count vectors from highest to lowest; progress exists when the first changed count decreases, or when new governing-source evidence makes a correction executable. Each distinct evidence item establishes progress on its first use for the matched finding and is then recorded as evaluated.
+5. On no progress, run one convergence pass using the governing sources to give the author targeted corrections. If the next review still makes no progress, return `non_convergent` with the artifact, unresolved findings, and attempted corrections.
+
+`progression`, `escalation`, and `non_convergent` are procedure control states, separate from the review and approval decisions governed by the Approval Status Vocabulary. The procedure owns the author-review loop; callers route its returned state exactly once and continue from the named destination. Observable progress governs loop length. The default route for `escalation` and `non_convergent` halts the current phase and presents the returned artifact, unresolved findings, and attempted corrections to the user; a caller-defined route takes precedence.
 
 ### WorkPlan Review State [MANDATORY]
 
@@ -155,7 +169,7 @@ Medium and Large work plans must contain a `WorkPlan Review` section. Small simp
 
 Handling rules:
 - After WorkPlan review returns `approved`, invoke work-planner in update mode once to record the review section, without changing implementation content.
-- Treat WorkPlan `approved_with_conditions` the same as `needs_revision`: return to work-planner in update mode with the conditions, then re-review. Conditions must not be carried into task decomposition or implementation readiness.
+- WorkPlan `approved_with_conditions` enters Review Revision Convergence with `work-planner` as the author. Resolve the conditions within convergence before task decomposition or implementation readiness.
 - A material work plan update resets `WorkPlan Review` to `Status: pending`.
 - Standalone build recipes apply WorkPlan review only before task decomposition, not after task files already exist.
 
@@ -182,7 +196,7 @@ Subagents respond in JSON format. The final response from each JSON-returning su
 | `ui-analyzer` | `externalResources`, `componentStructure`, `propsPatterns`, `cssLayout`, `stateDisplay`, `focusAreas`, `candidateWriteSet`, `limitations` |
 | `task-executor*` | `status`, `escalation_type` (`design_compliance_violation`, `similar_function_found`, `similar_component_found`, `investigation_target_not_found`, `out_of_scope_file`, `dependency_version_uncertain`, `binding_decision_violation`, `test_environment_not_ready`), `filesModified`, `requiresTestReview` |
 | `quality-fixer*` | Inputs: `task_file`, `filesModified`; outputs: `status`, `reason`, `stubFindings`, `blockingIssues`, `missingPrerequisites` |
-| `document-reviewer` | `verdict.decision`, `verdict.conditions` |
+| `document-reviewer` | `verdict.decision`, `verdict.conditions`, `issues`, `prior_context_check` |
 | `code-verifier` | `summary.status`, `blockingReason`, `discrepancies`, `reverseCoverage` |
 | `design-sync` | `sync_status` |
 | `integration-test-reviewer` | Inputs: `changedTestFiles`, `diffBase`, optional review-basis inputs; outputs: `status`, `reviewBasis`, `requiredFixes` |
@@ -251,7 +265,7 @@ Flow rules:
 - Pass `codebase-analyzer` output to the designer as `Codebase Analysis`
 - Pass Design Doc path to `code-verifier`, then pass `code_verification` to `document-reviewer`
 - Fullstack layer sequencing is defined in `references/monorepo-flow.md`
-- Run WorkPlan review after every Medium/Large work plan creation or update and before batch approval. On `needs_revision` or WorkPlan `approved_with_conditions`, return to `work-planner` in update mode and re-review for max 2 revision iterations as defined by the `needs_revision` row in Approval Status Vocabulary. On `rejected`, halt and escalate to the user.
+- Run WorkPlan review after every Medium/Large work plan creation or update and before batch approval. On `needs_revision` or WorkPlan `approved_with_conditions`, apply Review Revision Convergence (`author`: work-planner; `artifact`: work plan); on `progression`, follow the `approved` branch. On `rejected`, halt and escalate to the user.
 
 ## Autonomous Execution Mode
 
@@ -286,7 +300,7 @@ Batch approval -> Start autonomous execution mode
       -> Escalation judgment:
           - escalation_needed/blocked -> Escalate to user
           - requiresTestReview: true -> integration-test-reviewer with changedTestFiles from filesModified, diffBase, taskFile, and matching skeletonFiles when available from acceptance-test-generator output or task/work-plan references
-              - needs_revision -> back to task-executor
+              - needs_revision -> Review Revision Convergence (`author`: task-executor/task-executor-frontend; `artifact`: changed test files); on `progression` -> quality-fixer
               - approved -> quality-fixer
               - blocked/unrecognized -> Escalate to user
           - No issues -> quality-fixer
@@ -309,6 +323,7 @@ Stop autonomous execution and escalate to user in the following cases:
 2. **Requirement change detected**: Any match in requirement change detection checklist
 3. **Work-planner update restriction violated**: Requirement changes after task-decomposer starts require overall redesign
 4. **User explicitly stops**: Direct stop instruction or interruption
+5. **Review cannot converge**: Review Revision Convergence returns `non_convergent`; report its artifact, unresolved findings, and attempted corrections
 
 Continue autonomous execution in the following situations:
 - A workflow subagent is still pending

@@ -78,8 +78,7 @@ Spawn document-reviewer agent: "Review the work plan before task decomposition. 
 
 Branch on `verdict.decision`:
 - `approved` -> spawn work-planner in update mode once to record `Status: approved` and `Conditions: none` in WorkPlan Review, then continue to user confirmation
-- `approved_with_conditions` -> stop before task decomposition and report that the work plan needs update via recipe-plan
-- `needs_revision` -> stop before task decomposition and report that the work plan needs update via recipe-plan
+- `approved_with_conditions` or `needs_revision` -> apply Review Revision Convergence (`author`: work-planner; `artifact`: work plan); on `progression`, follow the `approved` branch
 - `rejected` -> stop before task decomposition and present the blocking findings to the user
 
 When task files don't exist and the WorkPlan Review section records `Status: approved` and `Conditions: none`, skip Work Plan Review and continue to user confirmation.
@@ -118,7 +117,7 @@ For EACH task, YOU MUST:
 3. **CHECK task-executor response**:
    - `status: "escalation_needed"` or `"blocked"` -> STOP and escalate to user
    - `requiresTestReview` is `true` -> Spawn integration-test-reviewer agent with `changedTestFiles: [integration/E2E paths from filesModified]`, `diffBase`, and `taskFile: [task-file-path]`; when matching integration/E2E skeleton paths are available from acceptance-test-generator output or task/work-plan references, pass only those paths as `skeletonFiles`
-     - `needs_revision` -> Return to step 2 with `requiredFixes`
+     - `needs_revision` -> Apply Review Revision Convergence (`author`: task-executor; `artifact`: changed test files); on `progression`, proceed to step 4
      - `approved` -> Proceed to step 4
      - `blocked` or unrecognized status -> STOP and escalate to user
    - `readyForQualityCheck: true` -> Proceed to step 4
