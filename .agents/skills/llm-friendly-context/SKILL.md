@@ -16,6 +16,7 @@ The goal is stable downstream execution. The next agent should know the target a
 1. **Use positive, executable instructions**
    - State the action the next agent should perform.
    - Convert quality policies into observable acceptance criteria.
+   - Keep a prohibition only when it protects an irreversible boundary or shipped contract. Name the protected condition and the allowed action.
    - Example: `Preserve existing public API behavior across the documented compatibility cases.`
 
 2. **Make vague instructions concrete**
@@ -29,10 +30,12 @@ The goal is stable downstream execution. The next agent should know the target a
 4. **Provide necessary context**
    - Include purpose, source artifacts, hard constraints, accepted decisions, and unresolved conditions.
    - Prefer concrete file paths and section hints over broad module names.
+   - Follow references only while they can change an in-scope decision, action, or verification result.
 
 5. **Decompose complex work into verifiable steps**
    - Split work with 3+ objectives or sequential dependencies into ordered steps.
    - Each step needs a checkpoint stating the evidence that proves completion.
+   - In Codex workflows, use `update_plan` as the state machine: keep one step `in_progress`, complete it only after its checkpoint evidence exists, then advance.
 
 6. **Permit uncertainty explicitly**
    - If source material is missing, contradictory, or unverifiable, state the uncertainty and required escalation.
@@ -68,6 +71,8 @@ Before sending a prompt or artifact to another agent, verify:
 - [ ] Output format or expected status fields are specified.
 - [ ] Success criteria are observable.
 - [ ] Ambiguous expressions have been rewritten or marked as unresolved.
+- [ ] Every retained prohibition names the protected condition and allowed alternative.
+- [ ] Sequential work exposes one current state and does not advance without prerequisite evidence.
 - [ ] The next agent can complete its scope through explicit choices, decision rules, or blocking unresolved items.
 
 ## Generated Artifact Checklist
@@ -77,5 +82,6 @@ Before writing or finalizing a generated document:
 - [ ] Each requirement, claim, task, test skeleton, or review finding has enough source context to trace why it exists.
 - [ ] Every executable instruction names the target, action, and expected result.
 - [ ] Verification steps say what to run or observe and what result proves success.
+- [ ] Every retained prohibition names the protected condition and allowed alternative.
 - [ ] Derived artifacts preserve copied decisions with the same wording and meaning as their source artifacts.
 - [ ] Blocking missing information records the missing input and escalation condition.

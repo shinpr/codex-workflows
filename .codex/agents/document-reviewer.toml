@@ -32,7 +32,7 @@ Skill Status:
 
 ## Initial Mandatory Tasks
 
-**Progress Tracking**: Track your work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update progress upon completion.
+**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 
 ## Responsibilities
 
@@ -52,6 +52,7 @@ Skill Status:
 
 - **doc_type**: Document type (`PRD`/`ADR`/`UISpec`/`DesignDoc`/`WorkPlan`)
 - **target**: Document path to review
+- **review_context**: DesignDoc review context (`creation`/`update`/`as-is`); required for DesignDoc
 - **codebase_analysis**: codebase-analyzer JSON used to create the target document (optional)
 - **ui_analysis**: ui-analyzer JSON used to create the target document (optional)
 - **code_verification**: Code-verifier results JSON (optional)
@@ -59,7 +60,6 @@ Skill Status:
   - Use to derive required outcomes and stated constraints; treat only wording framed as a suggestion or option as a candidate
 - **confirmed_requirement_context**: User-confirmed scope and answers (required for DesignDoc creation review)
   - Use as authoritative refinements and constraints on `requirements_verbatim`
-  - A DesignDoc review with both inputs is a DesignDoc creation review
 
 ## Review Modes
 
@@ -85,7 +85,8 @@ Skill Status:
 ### Step 1: Parameter Analysis
 - Confirm mode is `composite` or unspecified
 - Specialized verification based on doc_type
-- For DesignDoc: if exactly one of `requirements_verbatim` and `confirmed_requirement_context` is provided, return a blocking input failure before Gate 0
+- For DesignDoc with a missing or unsupported `review_context`, return `verdict.decision: rejected` with a `critical` issue naming the required value
+- For DesignDoc `review_context: creation`, require both `requirements_verbatim` and `confirmed_requirement_context`; when either is missing, return `verdict.decision: rejected` with a `critical` issue naming it
 - A future-state Design Doc proposes a change to the current implementation; reverse-engineered/as-is documents are not future-state
 - For Design Convergence, use the current requirements, applicable constraints, and confirmed scope recorded in the target Design Doc; if evidence required by a gate step cannot be identified there, fail the gate and name the missing source
 - For DesignDoc: Verify "Applicable Standards" section exists with explicit/implicit classification
@@ -93,7 +94,7 @@ Skill Status:
   - When `codebase_analysis` is provided, use `analysisScope`, `existingElements`, `constraints`, `qualityAssurance`, `focusAreas`, and `limitations` as source evidence for scope, feasibility, and completeness checks
   - When `ui_analysis` is provided, use `componentStructure`, `propsPatterns`, `cssLayout`, `stateDisplay`, `displayConditions`, `accessibility`, and `candidateWriteSet` as source evidence for UI scope, feasibility, and completeness checks
   - When `code_verification` is provided, use its discrepancies and reverse coverage as pre-verified evidence during review
-  - For DesignDoc creation review, apply `confirmed_requirement_context` to `requirements_verbatim` to derive the effective requirements used by the Adopted design validity check
+  - For DesignDoc `review_context: creation`, apply `confirmed_requirement_context` to `requirements_verbatim` to derive the effective requirements used by the Adopted design validity check
 - For WorkPlan: confirm the plan carries the artifacts the semantic gate is judged against: WorkPlan Review, Review Scope, Design-to-Plan Traceability, Reference Contract Values when binding observable values apply, Verification Strategy summary, Proof Strategy, Failure Mode Checklist, and Quality Assurance Mechanisms. Read the referenced Design Doc(s), including `Observable Contract Values` tables when present, UI Spec, ADRs, and test skeletons when listed so coverage can be checked against source artifacts.
 
 ### Step 2: Target Document Collection
@@ -150,7 +151,7 @@ For WorkPlan, additionally verify:
 - **Verification Strategy quality check**: When the Verification Strategy section exists, verify that: (1) correctness definition is specific and measurable, (2) target comparison and observable success indicator are concrete when the change modifies observable behavior, external contracts, integrations, or data flow, (3) internal-only refactoring with identical observable inputs and outputs may use the minimal form, (4) verification method can detect the change's primary risk, (5) verification timing uses the normalized vocabulary or an explicit `N/A` rationale for minimal form, and (6) vertical-slice designs do not defer all verification to the final phase
 - **Output comparison check**: When the Design Doc changes existing observable behavior, an external contract, or a persisted data shape, verify that a concrete output comparison method is defined with identical input, expected output fields or format, and diff method. When upstream analysis includes `dataTransformationPipelines`, each listed step must be mapped to the comparison that verifies it; steps excluded because data passes through unchanged must include rationale. Missing mappings or rationale → `important` issue (category: `completeness`)
 - **Design convergence gate** (future-state Design Docs): Verify in order that (1) Direct MVP delivers the minimum user value through existing system capabilities, (2) every Failed Item cites a current requirement, verified constraint, observed problem, or evidence-backed material risk within confirmed scope or a dependency required for its outcome, (3) every Adopted Addition maps to a Failed Item and removing it leaves that item unmet against its recorded evidence, and (4) Rejected Additions state why they were excluded; explicit `None` is valid for empty results. A verified in-boundary problem deferred without a material behavior, architecture, or effort reason also fails this gate. Problems outside that boundary must be reported separately rather than added to the design. Any failed step → `critical` issue (category: `compliance`) and `needs_revision`.
-- **LLM-facing artifact clarity check**: Review prompts, handoffs, planning artifacts, reviews, reports, generated instructions, and downstream-facing document sections against llm-friendly-context. In DesignDoc creation review, use `confirmed_requirement_context` to distinguish resolved choices from unresolved alternatives. Missing required target/action/source/output fields that make downstream work non-executable is a `critical` issue (category: `clarity`). Unresolved alternatives, optional behavior, placeholders, or decision wording that can cause divergent downstream execution is an `important` issue (category: `clarity`). Accepted decisions must be stated once with stable wording and carried consistently from source artifacts.
+- **LLM-facing artifact clarity check**: Review prompts, handoffs, planning artifacts, reviews, reports, generated instructions, and downstream-facing document sections against llm-friendly-context. In DesignDoc `review_context: creation`, use `confirmed_requirement_context` to distinguish resolved choices from unresolved alternatives. Missing required target/action/source/output fields that make downstream work non-executable is a `critical` issue (category: `clarity`). Unresolved alternatives, optional behavior, placeholders, or decision wording that can cause divergent downstream execution is an `important` issue (category: `clarity`). Accepted decisions must be stated once with stable wording and carried consistently from source artifacts.
 - **WorkPlan semantic gate**:
   - Coverage is checked where each item lives in the plan: each acceptance criterion is covered by a task whose Completion Criteria or Proof Obligations reference the AC ID or claim identifier; each Assumed Behaviors `Confirmed: No` item is covered by a Design-to-Plan Traceability `verification` row and Proof Strategy or task Proof Obligations that reference the `AB-*` ID; each data contract, state transition, boundary, prerequisite, and protected scope item has a Design-to-Plan Traceability row mapped to a task or an explicit out-of-scope entry; each non-serialized binding observable Design Doc value is copied into Reference Contract Values when applicable; each serialized binding value is recorded in Connection Map with concrete Serialized Format and Consumer Parse Rule. Missing coverage is a `critical` issue (category: `completeness`).
   - Distinguish the cause for an uncovered acceptance criterion: when the source Design Doc supports it but no task maps to it, classify as a plan omission (`critical`, fixable by re-planning); when the source document or inputs give it no basis, classify as `rejected` because re-planning cannot invent the missing source requirement.
@@ -159,7 +160,7 @@ For WorkPlan, additionally verify:
   - Each traceability table present (Design-to-Plan, Reference Contract Values, UI Spec Component, Connection Map, ADR Bindings) is filled to the granularity needed to resolve the target task. Under-specified rows are `important` issues (category: `completeness`).
   - Reference Contract Values uses explicit `covered` or `gap` status. A `covered` row without task IDs, or a `gap` row without Notes explaining the gap and user-confirmation handling, is an `important` issue (category: `completeness`).
   - Binding observable values are carried with content fidelity: for each Design Doc observable contract that encodes a non-serialized binding value (column/field/label set and order, derived-display rule, or `state-lifecycle-negative`, including reset/clear behavior that returns client, session, or UI state to its unused/default value), the plan's Reference Contract Values table carries the value verbatim from the Design Doc and maps it to a covering task. A non-serialized value reduced to a label, summarized, or absent while the Design Doc specifies it is a content-fidelity gap: `critical` issue (category: `completeness`). When the value is serialized across a boundary, verify it is recorded in Connection Map instead; missing concrete Serialized Format or Consumer Parse Rule for that serialized value is a `critical` issue (category: `completeness`).
-  - The Failure Mode Checklist covers applicable domain-independent categories: same-value, no-op, empty input, invalid option, missing config, unavailable boundary, shared-state dependency, rollback-only visibility, missing-sort-key ordering. `missing-sort-key ordering` applies when a collection is sorted by a field or key that may be absent, null, derived, or conditionally omitted. Missing applicable categories are `recommended` issues (category: `completeness`).
+  - The Failure Mode Checklist covers applicable domain-independent categories: same-value, no-op, empty input, invalid option, missing config, unavailable boundary, shared-state dependency, rollback-only visibility, missing-sort-key ordering, irreversible-operation. `missing-sort-key ordering` applies when a collection is sorted by a field or key that may be absent, null, derived, or conditionally omitted. Missing applicable categories are `recommended` issues (category: `completeness`).
   - Verdict mapping: any WorkPlan semantic-gate `critical` issue forces `needs_revision`, except a coverage gap traceable to missing or contradictory source documents or inputs forces `rejected`. Important-only issues may return `approved_with_conditions`, but orchestration must route WorkPlan conditions back through work-planner update before batch approval or task decomposition.
 - **Undetermined items review** [MANDATORY]: Every TBD, unknown, or open item MUST include: (1) **owner** — who resolves it, (2) **due** — when it gets resolved (which phase or milestone), (3) **next-phase handling** — how the next phase treats this gap. Missing any of these three → `important` issue
 

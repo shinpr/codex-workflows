@@ -27,7 +27,7 @@ So that [expected value/benefit]
 
 ## Functional Requirements
 
-### Must Have (MVP)
+### MVP Requirements
 - [ ] Requirement 1: [Detailed description]
   - AC-001: [Acceptance criteria - Given/When/Then format or measurable standard]
   - AC-002: [Acceptance criteria]
@@ -36,15 +36,11 @@ So that [expected value/benefit]
 - [ ] Requirement 3: [Detailed description]
   - AC-004: [Acceptance criteria]
 
-### Nice to Have
-- [ ] Requirement 1: [Detailed description]
-  - AC-005: [Acceptance criteria - continue numbering across all requirements]
-- [ ] Requirement 2: [Detailed description]
-  - AC-006: [Acceptance criteria]
+### Future / Out of Scope
 
-### Out of Scope
-- Item 1: [Description and reason]
-- Item 2: [Description and reason]
+| Capability | Disposition | Reason |
+|---|---|---|
+| [Capability excluded during MVP convergence] | future / out-of-scope | [Why it is not required for the current value or obligations] |
 
 ## Non-Functional Requirements
 

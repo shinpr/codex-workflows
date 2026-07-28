@@ -40,10 +40,11 @@ Skill Status:
 ## Input Parameters
 
 - **task_file** (optional): Path to the task file being verified. When provided, read the task file's `Quality Assurance Mechanisms` section and use the listed mechanisms as supplementary hints for quality-check discovery. Primary detection remains code, manifest, and configuration based.
+- **filesModified** (recommended): Exact task-scoped write set.
 
 ## Initial Required Tasks
 
-**Progress Tracking**: Track your work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update progress upon completion.
+**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 
 ### Package Manager
 Use the appropriate run command based on the `packageManager` field in package.json.
@@ -104,6 +105,8 @@ Follow the principles in ai-development-guide skill "Quality Check Workflow" sec
   - Non-substantive examples: 0-match runner reports, skipped tests, `skip`/`xit`, placeholder/TODO-only bodies, grep-only matches without behavior verification, or always-passing assertions (for example `expect(true).toBe(true)` or `expect(arr.length).toBeGreaterThanOrEqual(0)`).
   - Intentional absence: Substantive when absence is the task expectation.
   - Non-test checks: lint, format, build, typecheck, CLI, and artifact checks are outside this rule.
+
+**Capability probe**: For each task behavior cited as verified, confirm that an executed interaction observes the exact user-visible postcondition, not only a hook/helper or textual match.
 
 **Step 4: Fix Errors**
 Apply fixes following the principles in coding-rules skill and testing skill.
@@ -190,7 +193,7 @@ Before setting status to blocked, confirm specifications in this order:
 
 **When quality check succeeds**:
 ```json
-{"status":"approved","summary":"Overall frontend quality check completed. All checks passed.","checksPerformed":{"lint_format":{"status":"passed","commands":["<detected-lint-command>"],"autoFixed":true},"typescript":{"status":"passed","commands":["<detected-build-command>"]},"tests":{"status":"passed","commands":["<detected-test-command>"],"testsRun":42,"testsPassed":42,"coverage":"85%"}},"fixesApplied":[{"type":"auto","category":"format","description":"Auto-fixed indentation and semicolons","filesCount":5},{"type":"manual","category":"type","description":"Replaced any type with unknown + type guards","filesCount":3}],"taskFileMechanisms":{"provided":true,"executed":["mechanism names that were found and executed"],"skipped":[{"mechanism":"mechanism name","reason":"tool not found / config not found / not executable"}]},"metrics":{"totalErrors":0,"totalWarnings":0,"executionTime":"3m 30s"},"nextActions":"Ready to commit"}
+{"status":"approved","summary":"Overall frontend quality check completed. All checks passed.","checksPerformed":{"lint_format":{"status":"passed","commands":["<detected-lint-command>"],"autoFixed":true},"typescript":{"status":"passed","commands":["<detected-build-command>"]},"tests":{"status":"passed","commands":["<detected-test-command>"],"testsRun":42,"testsPassed":42,"coverage":"85%"}},"capabilityProbes":[{"claim":"<user-visible postcondition>","command":"<executed command>","result":"passed"}],"fixesApplied":[{"type":"auto","category":"format","description":"Auto-fixed indentation and semicolons","filesCount":5},{"type":"manual","category":"type","description":"Replaced any type with unknown + type guards","filesCount":3}],"taskFileMechanisms":{"provided":true,"executed":["mechanism names that were found and executed"],"skipped":[{"mechanism":"mechanism name","reason":"tool not found / config not found / not executable"}]},"metrics":{"totalErrors":0,"totalWarnings":0,"executionTime":"3m 30s"},"nextActions":"Ready to commit"}
 ```
 
 **blocked response format (specification conflict)**:
@@ -251,30 +254,6 @@ Apply fixes following coding-rules and testing.
 
 **Continuation**: Continue while errors/warnings/failures exist; complete when all phases pass; stop only for blocked conditions.
 
-## React-Specific Common Fixes
-
-### TypeScript Errors
-- **Props type definition**: Add explicit type definitions for all component Props
-- **Unknown API responses**: Use `unknown` type with type guards for external data
-- **Event handlers**: Use proper React event types (`React.ChangeEvent`, `React.MouseEvent`)
-- **Refs**: Use `React.RefObject<T>` or `React.MutableRefObject<T>`
-
-### React Testing Library Test Errors
-- **Component not rendering**: Check for missing providers (Context, Router, etc.)
-- **Async operations**: Use `waitFor`, `findBy*` queries for async assertions
-- **User interactions**: Use `@testing-library/user-event` for realistic interactions
-- **MSW handlers**: Verify Mock Service Worker handlers match API contracts
-- **Cleanup**: Ensure proper cleanup with `cleanup()` after each test
-
-### Build Errors
-- **Missing dependencies**: Add to package.json and install
-- **Import errors**: Verify import paths and module resolution
-- **Configuration issues**: Check build tool configuration files
-
-### Circular Dependencies
-- **Component dependencies**: Extract shared types or utilities to common modules
-- **Context dependencies**: Restructure Context providers and consumers
-
 ## Required Fix Standards
 
 All fixes must satisfy these criteria:
@@ -295,6 +274,7 @@ For each quality error, run the Specification Confirmation Process. If the speci
 ## Completion Gate [BLOCKING]
 
 ☐ All completion criteria met with evidence
+☐ Every cited task behavior has a user-visible capability probe
 ☐ Output format validated (JSON response with status)
 ☐ Quality standards satisfied (all phases pass with zero errors OR blocked status returned)
 

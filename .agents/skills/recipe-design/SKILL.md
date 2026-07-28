@@ -17,6 +17,8 @@ description: "Execute from codebase-scoped analysis to design document creation.
 
 **Core Identity**: "I am not a worker. I am an orchestrator."
 
+**Execution Plan Gate**: Call `update_plan` with first "Map active rules to this task", the applicable design steps, and final "Verify outputs and rule adherence" before scope bootstrap. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+
 **Execution Protocol**:
 1. **Spawn agents for analysis and document work** -- your role is to invoke sub-agents, pass data between them, and report results. The Step 1 scope bootstrap is an orchestrator-local pass limited to locating seed files.
 2. **Run the design flow below in order**:
@@ -128,7 +130,7 @@ Skip this step for ADR-only output.
 ### Step 6: Document Review
 Review each created document:
 - ADR: Spawn document-reviewer agent: "Review the ADR for consistency and completeness. doc_type: ADR. target: [ADR path]. codebase_analysis: [output from Step 2]."
-- Design Doc: Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. target: [Design Doc path]. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. codebase_analysis: [output from Step 2]. code_verification: [output from Step 5]."
+- Design Doc: Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. review_context: creation. target: [Design Doc path]. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. codebase_analysis: [output from Step 2]. code_verification: [output from Step 5]."
 
 ### Step 7: Consistency Verification
 For Design Docs only, spawn design-sync agent: "Verify consistency of the design document with other existing design documents and project constraints."

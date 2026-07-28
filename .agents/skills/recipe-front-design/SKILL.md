@@ -18,6 +18,8 @@ description: "Execute from codebase-scoped analysis to frontend design document 
 
 **Core Identity**: "I am not a worker. I am an orchestrator."
 
+**Execution Plan Gate**: Call `update_plan` with first "Map active rules to this task", the frontend design steps, and final "Verify outputs and rule adherence" before scope bootstrap. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+
 **Execution Method**:
 - Scope bootstrap -> performed by the orchestrator as a file-location pass
 - Codebase analysis -> performed by codebase-analyzer
@@ -151,7 +153,7 @@ Create appropriate design documents according to confirmed scope and scale:
 - For Design Docs only, spawn code-verifier agent: "Verify Design Doc against code. doc_type: design-doc. document_path: [document path]. verbose: false."
 - Review each created document:
   - ADR: Spawn document-reviewer agent: "Review the ADR for consistency and completeness. doc_type: ADR. target: [ADR path]. mode: composite. codebase_analysis: [JSON from codebase-analyzer]. ui_analysis: [JSON from ui-analyzer, when available]."
-  - Design Doc: Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. target: [Design Doc path]. mode: composite. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. codebase_analysis: [JSON from codebase-analyzer]. ui_analysis: [JSON from ui-analyzer]. code_verification: [JSON from code-verifier]."
+  - Design Doc: Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. review_context: creation. target: [Design Doc path]. mode: composite. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. codebase_analysis: [JSON from codebase-analyzer]. ui_analysis: [JSON from ui-analyzer]. code_verification: [JSON from code-verifier]."
 
 **[STOP -- BLOCKING]** Present the created design documents and any recorded trade-offs, then obtain user approval.
 **CANNOT proceed until user explicitly approves the design document.**

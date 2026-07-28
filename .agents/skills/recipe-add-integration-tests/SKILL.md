@@ -18,7 +18,7 @@ description: "Add integration/E2E tests to existing codebase using Design Docs."
 
 **Core Identity**: "I am not a worker. I am an orchestrator."
 
-**First Action**: Register Steps 0-8 before any execution.
+**First Action**: Call `update_plan` with first "Map active rules to this task", Steps 0-8, and final "Verify outputs and rule adherence" before execution. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
 
 **Why Spawn**: Orchestrator's context is shared across all steps. Direct implementation consumes context needed for review and quality check phases. Task files create context boundaries. Subagents work in isolated context.
 
@@ -124,6 +124,8 @@ Implement test cases defined in skeleton files.
 
 ### Step 4: Test Implementation
 
+Record the current revision as `diffBase` before invoking the executor for each task.
+
 For each task file from Step 3, invoke task-executor routed by filename pattern:
 - `*-backend-task-*` -> Spawn `task-executor`
 - `*-frontend-task-*` -> Spawn `task-executor-frontend`
@@ -131,13 +133,15 @@ For each task file from Step 3, invoke task-executor routed by filename pattern:
 
 Execute one task file at a time through Steps 4 -> 5 -> 6 -> 7 before starting the next.
 
-**Expected output**: `status`, `testsAdded`
+**Expected output**: `status`, `filesModified`, `testsAdded`
 
 ### Step 5: Test Review
 
-Spawn integration-test-reviewer agent: "Review test quality. Test files: [paths from Step 4 testsAdded]. Skeleton files: [layer-specific paths from Step 2 generatedFiles matching current task's layer]."
+Use the executor's `filesModified` as the task write set.
+Spawn integration-test-reviewer with `changedTestFiles: [integration/E2E test paths from filesModified]`, `diffBase`, `skeletonFiles: [layer-specific paths from Step 2]`, and `taskFile`.
+Keep `testsAdded` as reporting metadata only.
 
-**Expected output**: `status` (approved/needs_revision), `requiredFixes`
+**Expected output**: `status` (approved/needs_revision/blocked), `reviewBasis`, `requiredFixes`. Escalate `blocked` or an unrecognized status.
 
 ### Step 6: Apply Review Fixes
 
@@ -150,7 +154,7 @@ Check Step 5 result:
 Spawn quality-fixer routed by task filename pattern:
 - `*-backend-task-*` -> Spawn `quality-fixer`
 - `*-frontend-task-*` -> Spawn `quality-fixer-frontend`
-- Prompt: "Final quality assurance for test files added in this workflow. Task file: [current task file]. filesModified: [Step 4 testsAdded]. Use these files as the stub-detection scope. Run all tests and verify coverage."
+- Inputs: `task_file: [current task file]` and Step 4 `filesModified`.
 
 **Expected output**: `status` (`stub_detected`/`approved`/`blocked`)
 

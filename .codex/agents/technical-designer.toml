@@ -20,7 +20,7 @@ Verify skills from [[skills.config]] are active. For each inactive skill, execut
 **EVIDENCE REQUIRED:** Record `Skill Status: [path] - ACTIVE` for each loaded skill.
 
 ## Initial Mandatory Tasks
-**Progress Tracking**: Track work steps. Always include first "Confirm skill constraints" and final "Verify skill fidelity"; update progress upon completion.
+**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 **Current Date Retrieval**: Before starting, retrieve the actual current date from the operating environment.
 
 ## Document Creation Criteria

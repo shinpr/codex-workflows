@@ -25,7 +25,7 @@ Target: $ARGUMENTS
 2. **Process one step at a time**: Execute steps sequentially within each unit (2 -> 3 -> 4 -> 5). Each step's output is the required input for the next step. Complete all steps for one unit before starting the next
 3. **Pass `$STEP_N_OUTPUT` as-is** to sub-agents -- the orchestrator bridges data without processing or filtering it, except for steps that explicitly define a deterministic transformation with an input schema, output schema, and mapping rules
 
-**Task Registration**: Register phases first, then steps within each phase as you enter it. Track status for each step.
+**Execution Plan Gate**: After scope confirmation, call `update_plan` once with first "Map active rules to this task", all applicable workflow steps across both phases, and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
 
 ## Step 0: Initial Configuration
 
@@ -57,7 +57,7 @@ Phase 2: Design Doc Generation (if requested)
 
 ## Phase 1: PRD Generation
 
-**Register tasks**:
+**Confirm these steps are present in the plan**:
 - Step 1: PRD Scope Discovery
 - Per-unit processing (Steps 2-5 for each unit)
 
@@ -131,7 +131,7 @@ ENFORCEMENT: Exceeding 2 revision cycles without flagging produces unreviewed ou
 
 *Execute only if Design Docs were requested in Step 0*
 
-**Register tasks**:
+**Confirm these steps are present in the plan**:
 - Step 6: Design Doc Scope Mapping
 - Per-unit processing (Steps 7-10 for each unit)
 
@@ -211,7 +211,7 @@ Spawn code-verifier agent: "Verify consistency between Design Doc and code imple
 
 **Required Input**: $STEP_8_OUTPUT (verification data from Step 8)
 
-Spawn document-reviewer agent: "Review the following Design Doc considering code verification findings. doc_type: DesignDoc. target: $STEP_7_OUTPUT. mode: composite. code_verification: $STEP_8_OUTPUT. Parent PRD: $APPROVED_PRD_PATH. Additional Review Focus: Technical accuracy of documented interfaces, consistency with parent PRD scope, completeness of unit boundary definitions."
+Spawn document-reviewer agent: "Review the following Design Doc considering code verification findings. doc_type: DesignDoc. review_context: as-is. target: $STEP_7_OUTPUT. mode: composite. code_verification: $STEP_8_OUTPUT. Parent PRD: $APPROVED_PRD_PATH. Additional Review Focus: Technical accuracy of documented interfaces, consistency with parent PRD scope, completeness of unit boundary definitions."
 
 **Store output as**: `$STEP_9_OUTPUT`
 

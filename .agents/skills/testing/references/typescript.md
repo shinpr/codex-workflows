@@ -1,4 +1,4 @@
-# TypeScript Testing Reference (Vitest + RTL + MSW + Playwright)
+# Web Frontend Testing Reference (TypeScript + Vitest + RTL + MSW + Playwright)
 
 ## Unit and Integration Tests
 

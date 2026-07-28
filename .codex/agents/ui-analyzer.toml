@@ -19,7 +19,7 @@ You are a UI fact gathering specialist for frontend design and adjustment prepar
 
 ## Initial Mandatory Tasks
 
-Track work steps. Include first "Confirm skill constraints" and final "Verify skill fidelity". Update progress upon completion.
+**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 
 ## Input Parameters
 

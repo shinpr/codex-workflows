@@ -11,6 +11,18 @@ description: "Guides subagent coordination through implementation workflows. Use
 
 The orchestrator coordinates subagents. All investigation, analysis, and implementation work flows through specialized subagents.
 
+### Execution Plan Gate
+
+For workflows with three or more objectives or sequential dependencies, call `update_plan` before the first substantive action.
+
+- Register the workflow phases once; do not create a fresh plan for each subagent call.
+- Use "Map active rules to this task" as the first step and "Verify outputs and rule adherence" as the final step.
+- While work remains, keep exactly one step `in_progress`.
+- Mark a step `completed` only after its named artifact, status, or verification evidence exists.
+- Start the next step only after every prerequisite step is `completed`.
+- After final verification evidence exists, mark every step `completed`.
+- Update the plan immediately when a result changes the valid next state, including revision, blocked, and escalation branches.
+
 ### Prompt Construction Rule
 Every subagent prompt must include:
 1. Input deliverables with file paths (from previous step or prerequisite check)
@@ -51,30 +63,6 @@ Receive New Task -> Analyze requirements with requirement-analyzer
 - Changes in technical requirements (processing methods, output format changes, etc.)
 
 **ENFORCEMENT**: If any one applies — MUST restart from requirement-analyzer with integrated requirements
-
-## Available Subagents
-
-The following subagents are available:
-
-### Implementation Support Agents
-1. **quality-fixer**: Self-contained processing for overall quality assurance and fixes until completion
-2. **task-decomposer**: Appropriate task decomposition of work plans
-3. **task-executor**: Individual task execution and structured response
-4. **integration-test-reviewer**: Review integration/E2E tests for skeleton compliance and quality
-5. **security-reviewer**: Security compliance review against Design Doc and coding-rules after all tasks complete
-
-### Document Creation Agents
-6. **requirement-analyzer**: Requirement analysis and work scale determination
-7. **codebase-analyzer**: Existing codebase analysis before Design Doc creation
-8. **prd-creator**: Product Requirements Document creation
-9. **ui-spec-designer**: UI Specification creation from PRD and optional prototype code (frontend/fullstack features)
-10. **technical-designer**: ADR/Design Doc creation
-11. **work-planner**: Work plan creation from Design Doc and test skeletons
-12. **document-reviewer**: Single document quality and rule compliance check
-13. **code-verifier**: Document-code consistency verification for review inputs and post-implementation verification
-14. **design-sync**: Design Doc consistency verification across multiple documents
-15. **acceptance-test-generator**: Generate integration and E2E test skeletons from Design Doc ACs
-16. **ui-analyzer**: UI fact gathering from external resources and existing frontend code before UI Spec, Design Doc, or adjustment work
 
 ## Orchestration Principles
 
@@ -193,11 +181,11 @@ Subagents respond in JSON format. The final response from each JSON-returning su
 | `codebase-analyzer` | `focusAreas`, `dataModel`, `qualityAssurance`, `dataTransformationPipelines`, `limitations` |
 | `ui-analyzer` | `externalResources`, `componentStructure`, `propsPatterns`, `cssLayout`, `stateDisplay`, `focusAreas`, `candidateWriteSet`, `limitations` |
 | `task-executor*` | `status`, `escalation_type` (`design_compliance_violation`, `similar_function_found`, `similar_component_found`, `investigation_target_not_found`, `out_of_scope_file`, `dependency_version_uncertain`, `binding_decision_violation`, `test_environment_not_ready`), `filesModified`, `requiresTestReview` |
-| `quality-fixer*` | `status`, `reason`, `stubFindings`, `blockingIssues`, `missingPrerequisites` |
+| `quality-fixer*` | Inputs: `task_file`, `filesModified`; outputs: `status`, `reason`, `stubFindings`, `blockingIssues`, `missingPrerequisites` |
 | `document-reviewer` | `verdict.decision`, `verdict.conditions` |
-| `code-verifier` | `summary.status`, `discrepancies`, `reverseCoverage` |
+| `code-verifier` | `summary.status`, `blockingReason`, `discrepancies`, `reverseCoverage` |
 | `design-sync` | `sync_status` |
-| `integration-test-reviewer` | `status`, `requiredFixes` |
+| `integration-test-reviewer` | Inputs: `changedTestFiles`, `diffBase`, optional review-basis inputs; outputs: `status`, `reviewBasis`, `requiredFixes` |
 | `security-reviewer` | `status`, `findings`, `notes`, `requiredFixes` |
 | `acceptance-test-generator` | `status`, `generatedFiles.integration`, `generatedFiles.fixtureE2e`, `generatedFiles.serviceE2e`, `e2eAbsenceReason.fixtureE2e`, `e2eAbsenceReason.serviceE2e` |
 
@@ -293,21 +281,23 @@ After "batch approval for entire implementation phase" with work-planner, autono
 Batch approval -> Start autonomous execution mode
   -> task-decomposer: Task decomposition
   -> Task execution loop:
+      -> Orchestrator: capture diffBase
       -> task-executor: Implementation
       -> Escalation judgment:
           - escalation_needed/blocked -> Escalate to user
-          - requiresTestReview: true -> integration-test-reviewer
+          - requiresTestReview: true -> integration-test-reviewer with changedTestFiles from filesModified, diffBase, taskFile, and matching skeletonFiles when available from acceptance-test-generator output or task/work-plan references
               - needs_revision -> back to task-executor
               - approved -> quality-fixer
+              - blocked/unrecognized -> Escalate to user
           - No issues -> quality-fixer
-      -> quality-fixer: Quality check and fixes using the executor `filesModified` set as the stub-detection scope
+      -> quality-fixer: Quality check and fixes with task_file and filesModified
           - stub_detected -> task-executor/task-executor-frontend: complete implementation -> re-run quality-fixer
       -> Orchestrator: Execute git commit
       -> Check remaining tasks:
           - Yes -> next task
           - No -> code-verifier + security-reviewer: Post-implementation verification
               - all pass -> Completion report
-              - any fail -> layer-appropriate task-executor: Verification fixes -> quality-fixer -> re-run failed verifiers
+              - any fail -> exact ephemeral task path -> layer-appropriate task-executor -> quality-fixer -> re-run all verifiers
               - blocked -> Escalate to user
 ```
 
@@ -326,7 +316,7 @@ Continue autonomous execution in the following situations:
 - The orchestrator has partial context but is still waiting on a required subagent output
 
 Use the task loop defined in the autonomous execution diagram above. The canonical per-task cycle is:
-1. task-executor implementation
+1. capture `diffBase`, then task-executor implementation
 2. escalation or integration-test-reviewer decision
 3. quality-fixer quality gate
 4. git commit on approval
@@ -335,10 +325,10 @@ Use the task loop defined in the autonomous execution diagram above. The canonic
 
 | Verifier | Pass | Fail | Blocked |
 |----------|------|------|---------|
-| code-verifier | `summary.status` is `consistent` or `mostly_consistent` | `summary.status` is `needs_review` or `inconsistent` | — |
+| code-verifier | `summary.status` is `consistent` or `mostly_consistent` | `summary.status` is `needs_review` or `inconsistent` | `summary.status` is `blocked` |
 | security-reviewer | `status` is `approved` or `approved_with_notes` | `status` is `needs_revision` | `status` is `blocked` |
 
-Re-run only verifiers that failed on the previous verification cycle.
+Consolidate failed verifier findings into one ephemeral task per required executor and pass each exact task path through its executor and quality-fixer. Re-run both code-verifier and security-reviewer after any verification fix because the fix can invalidate either result. Delete the ephemeral task files after both verifiers pass.
 Maximum retry count is 1 verification fix cycle. If any failed verifier still fails after the re-run, escalate to the user.
 
 ## Main Orchestrator Roles
@@ -361,6 +351,8 @@ Maximum retry count is 1 verification fix cycle. If any failed verifier still fa
 | `codebase-analyzer` | `technical-designer*` | `Codebase Analysis`, including `focusAreas`, `dataModel`, `qualityAssurance`, `dataTransformationPipelines`, `limitations` |
 | `technical-designer*` | `code-verifier` | Design Doc path |
 | `code-verifier` | `document-reviewer` | `code_verification` JSON |
+| `task-executor*` | `integration-test-reviewer` | `diffBase`, changed integration/E2E paths from `filesModified`, task file, matching skeleton paths when available, and prompt claims when used |
+| `task-executor*` | `quality-fixer*` | exact `task_file` and `filesModified` |
 | `acceptance-test-generator` | `work-planner` | `generatedFiles.integration`, `generatedFiles.fixtureE2e`, `generatedFiles.serviceE2e`, `e2eAbsenceReason: { fixtureE2e, serviceE2e }` |
 | Design Doc | `work-planner` | Verification Strategy summary, Output Comparison details, implementation-relevant technical requirements, protected no-change boundaries |
 

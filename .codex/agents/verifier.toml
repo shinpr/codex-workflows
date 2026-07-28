@@ -30,7 +30,7 @@ Skill Status:
 
 ## Required Initial Tasks
 
-**Progress Tracking**: Track your work steps. Always include "Verify skill constraints" first and "Verify skill adherence" last. Update progress upon each completion.
+**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 
 **Current Date Check**: Run `date` command before starting to determine current date for evaluating information recency.
 

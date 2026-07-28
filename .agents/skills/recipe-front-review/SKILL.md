@@ -43,7 +43,7 @@ Spawn code-reviewer agent: "Validate Design Doc compliance for [design-doc-path]
 **Store output as**: `$STEP_2_OUTPUT`
 
 ### 3. Execute security-reviewer
-Spawn security-reviewer agent: "Design Doc: [path]. Implementation files: [file list from git diff in Step 1]. Review security compliance."
+Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]` and `implementationFiles: [file list from git diff in Step 1]`.
 
 **Store output as**: `$STEP_3_OUTPUT` and `$STEP_1_FILES` (the initial file list)
 
@@ -111,12 +111,14 @@ If all findings are skipped: Skip fix steps, proceed to Final Report.
 ## Pre-fix Metacognition
 
 1. **Spawn rule-advisor agent**: "Analyze fixes needed. Code issues: $STEP_2_OUTPUT. Security findings: $STEP_3_OUTPUT. Determine root solutions vs symptomatic treatments."
-2. **Design-side update**: If any finding is routed to `d`, spawn technical-designer-frontend in update mode, then document-reviewer, then design-sync when multiple Design Docs exist. If both `d` and `c` routes exist, re-evaluate `c` findings against the updated Design Doc and drop any now satisfied.
-3. **Register tasks**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Create task file -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`. Include only code compliance issues and security requiredFixes routed to `c`.
+2. **Design-side update**: If any finding is routed to `d`, spawn technical-designer-frontend in update mode, then document-reviewer with `doc_type: DesignDoc` and `review_context: update`, then design-sync when multiple Design Docs exist. If both `d` and `c` routes exist, re-evaluate `c` findings against the updated Design Doc and drop any now satisfied.
+3. **Plan fixes**: Call `update_plan` once for the approved fix flow, with first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`. Create task file -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`. Include only code compliance issues and security requiredFixes routed to `c`.
 4. **Spawn task-executor-frontend agent**: "Execute staged auto-fixes for [task-file-path]. Stop at 5 files."
-5. **Spawn quality-fixer-frontend agent**: "Execute all frontend quality checks and confirm quality gate passage"
+5. **Spawn quality-fixer-frontend** with `task_file: [task-file-path]` and executor `filesModified`.
 6. **Re-validate code-reviewer**: Spawn code-reviewer agent: "Re-validate compliance for [design-doc-path]. Prior issues: $STEP_2_OUTPUT. Measure improvement."
-7. **Re-validate security-reviewer** (only if security fixes were applied): Spawn security-reviewer agent: "Re-validate security after fixes. Prior findings: $STEP_3_OUTPUT. Design Doc: [path]. Implementation files: [union of $STEP_1_FILES and task-executor-frontend filesModified from step 4, deduplicated]."
+7. **Re-validate security-reviewer**: Spawn security-reviewer with prior findings, `governingDocuments: [{type: "design-doc", path: [path]}]`, and `implementationFiles: [union of $STEP_1_FILES and task-executor-frontend filesModified from step 4, deduplicated]`.
+
+After any code fix, both review agents must re-run. Delete the task file only after both pass.
 
 ENFORCEMENT: Auto-fixes MUST go through quality-fixer-frontend before re-validation. Skipping quality checks invalidates fixes.
 

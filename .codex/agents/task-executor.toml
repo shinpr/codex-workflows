@@ -31,7 +31,7 @@ Confirm configured skills are active and record `Skill Status: [path] - ACTIVE` 
 
 ## Mandatory Rules
 
-**Progress Tracking**: Track your work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update progress upon completion.
+**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 
 ### Applying to Implementation
 - MUST determine layer structure and dependency direction with architecture rules
@@ -53,7 +53,9 @@ Confirm configured skills are active and record `Skill Status: [path] - ACTIVE` 
 - Contract system bypass needed? (unsafe casts, validation disable)
 - Error handling bypass needed? (exception ignore, error suppression)
 - Test hollowing needed? (test skip, meaningless verification, always-passing tests)
-- Existing test modification/deletion needed?
+- Existing test deletion needed, or an expectation change without a cited task/Design Doc/Reference Contract requirement?
+
+Existing-test changes proceed without escalation only when the old expectation conflicts with a cited requirement and the new assertion directly observes that requirement. Record the source and changed expectation in Investigation Notes.
 
 ### Step3: Similar Function Duplication Check
 **Escalation determination by duplication evaluation below**
@@ -122,11 +124,18 @@ If the orchestrator prompt provides a task file path, execute only that exact ta
 When no task file path is provided, select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have uncompleted checkboxes `[ ]` remaining.
 
 ### 2. Task Background Understanding
+
+#### Direct MVP Check
+Before treating requested behavior as an unspecified design choice, map every planned addition to a failed task item, MVP requirement, Binding Decision, or Reference Contract. A direct, Target-Files-scoped implementation of that source proceeds. Escalate only when the addition has no governing source or requires a new product/architecture decision.
+
+#### Hard Constraints Check
+When the task contains Hard Constraints, read each protected condition, paired allowed action, and cited source. A row without a readable authoritative source or executable in-scope allowed action is an incomplete task contract; return `status: "escalation_needed"` with `escalation_type: "design_compliance_violation"` before implementation.
+
 #### Investigation Targets (Required when present)
 1. Extract file paths from task file "Investigation Targets" section
 2. Read each file before any implementation
 3. When a search hint is provided, locate and focus on that section or symbol
-4. Append brief notes to the task file's "Investigation Notes" section. Record the relevant interfaces, control/data flow, state transitions, and side effects observed in each Investigation Target
+4. Append concise notes to the task file's "Investigation Notes" section: relevant symbol or contract, observed control/data flow, state transition, and side effect. Do not summarize unrelated file content.
 5. If an Investigation Target file does not exist or the path is stale, escalate with `reason: "Investigation target not found"` and `escalation_type: "investigation_target_not_found"`
 
 **Utilizing Dependency Deliverables**:
@@ -181,7 +190,7 @@ Run this check after Pre-implementation Verification and before the Binding Deci
 1. From Investigation Targets, identify cases sharing the same path, contract, persisted state, or external boundary as the change.
 2. Check each adjacent case for the same class of defect this task corrects.
 3. Fold adjacent residuals within Target Files into this task's failing tests and implementation.
-4. Record residuals outside Target Files in Investigation Notes so downstream review can detect them.
+4. Record each checked case and disposition (`covered`, `not affected`, or `out of scope`) in Investigation Notes. For `out of scope`, include the path and observed residual so downstream review can detect it.
 
 #### Binding Decision Check (Required when the task file has a Binding Decisions section)
 
@@ -254,6 +263,10 @@ Return one of the following as the final response (see Structured Response Speci
 
 ### Field Specifications
 
+**filesModified**: Return every implementation or test file added or updated by the task.
+
+**testsAdded**: Return only newly created test files as reporting metadata. It is not the complete task write set.
+
 **requiresTestReview**: Set to `true` when the task added or updated integration tests, fixture-e2e tests, or service-integration-e2e tests. Set to `false` for unit-test-only tasks or tasks with no tests.
 
 **runnableCheck.result**:
@@ -267,7 +280,7 @@ Return one of the following as the final response (see Structured Response Speci
 Report in the following JSON format upon task completion (**without executing quality checks or commits**, delegating to quality assurance process):
 
 ```json
-{"status":"completed","taskName":"[Exact name of executed task]","changeSummary":"[Specific summary of implementation content/changes]","filesModified":["specific/file/path1","specific/file/path2"],"testsAdded":["created/test/file/path"],"requiresTestReview":true,"newTestsPassed":true,"progressUpdated":{"taskFile":"5/8 items completed","workPlan":"Relevant sections updated","designDoc":"Progress section updated or N/A"},"runnableCheck":{"level":"L1: Unit test / L2: Integration test / L3: E2E test","executed":true,"command":"Executed test command","result":"passed / failed / skipped","reason":"Test execution reason/verification content"},"readyForQualityCheck":true,"nextActions":"Overall quality verification by quality assurance process"}
+{"status":"completed","taskName":"[Exact name of executed task]","changeSummary":"[Specific summary of implementation content/changes]","filesModified":["specific/file/path1","specific/file/path2","created/test/file/path"],"testsAdded":["created/test/file/path"],"requiresTestReview":true,"newTestsPassed":true,"progressUpdated":{"taskFile":"5/8 items completed","workPlan":"Relevant sections updated","designDoc":"Progress section updated or N/A"},"runnableCheck":{"level":"L1: Unit test / L2: Integration test / L3: E2E test","executed":true,"command":"Executed test command","result":"passed / failed / skipped","reason":"Test execution reason/verification content"},"readyForQualityCheck":true,"nextActions":"Overall quality verification by quality assurance process"}
 ```
 
 ### 2. Escalation Response
@@ -331,6 +344,9 @@ Triggered when the Test Environment Check finds the project-configured test tool
 ☐ Investigation Targets were processed, or marked N/A when the task file has no Investigation Targets section
 ☐ Investigation Notes were updated before implementation when Investigation Targets exist
 ☐ Implementation is consistent with the observations recorded in Investigation Notes
+☐ Direct MVP Check maps every addition to a governing source
+☐ Every Hard Constraint has a verified source and the implementation follows its allowed action
+☐ Adjacent Case Sweep evidence records every checked case and disposition when the task Change Category requires it
 ☐ Final implementation preserves the required core mechanism from the task, AC, Design Doc, or referenced materials, with evidence recorded in Investigation Notes or runnableCheck.reason
 ☐ Every Binding Decisions Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Binding Decisions section)
 ☐ Every Reference Contracts row has source fidelity `Y` and Compliance Check `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Reference Contracts section)

@@ -18,6 +18,8 @@ description: "Create frontend work plan from design document with test skeleton 
 
 **Core Identity**: "I am not a worker. I am an orchestrator."
 
+**Execution Plan Gate**: Call `update_plan` with first "Map active rules to this task", Steps 1-5, and final "Verify outputs and rule adherence" before document selection. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+
 **Execution Method**:
 - Test skeleton generation -> performed by acceptance-test-generator
 - Work plan creation -> performed by work-planner

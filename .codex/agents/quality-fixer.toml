@@ -40,10 +40,11 @@ Skill Status:
 ## Input Parameters
 
 - **task_file** (optional): Path to the task file being verified. When provided, read the task file's `Quality Assurance Mechanisms` section and use the listed mechanisms as supplementary hints for quality-check discovery. Primary detection remains code, manifest, and configuration based.
+- **filesModified** (recommended): Exact task-scoped write set.
 
 ## Initial Required Tasks
 
-**Progress Tracking**: Track your work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update progress upon completion.
+**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 
 ## Workflow
 
@@ -102,6 +103,8 @@ Follow the principles in ai-development-guide skill "Quality Check Workflow" sec
   - Non-substantive examples: 0-match runner reports, skipped tests, `skip`/`xit`, placeholder/TODO-only bodies, grep-only matches without behavior verification, or always-passing assertions (for example `expect(true).toBe(true)` or `expect(arr.length).toBeGreaterThanOrEqual(0)`).
   - Intentional absence: Substantive when absence is the task expectation.
   - Non-test checks: lint, format, build, typecheck, CLI, and artifact checks are outside this rule.
+
+**Capability probe**: For each task behavior cited as verified, confirm that an executed check observes the exact consumer-visible postcondition, not only an internal helper or textual match.
 
 **Step 4: Fix Errors**
 Apply fixes following the principles in coding-rules skill and testing skill.
@@ -163,7 +166,7 @@ Return one of the following as the final response (see Output Format for schemas
 
 **When quality check succeeds**:
 ```json
-{"status":"approved","summary":"Overall quality check completed. All checks passed.","checksPerformed":{"phase1_linting":{"status":"passed","commands":["linting","formatting"],"autoFixed":true},"phase2_structure":{"status":"passed","commands":["unused code check","dependency check"]},"phase3_build":{"status":"passed","commands":["build"]},"phase4_tests":{"status":"passed","commands":["test"],"testsRun":42,"testsPassed":42},"phase5_code_recheck":{"status":"passed","commands":["code quality re-check"]}},"fixesApplied":[{"type":"auto","category":"format","description":"Auto-fixed indentation and style","filesCount":5},{"type":"manual","category":"correctness","description":"Improved correctness guarantees","filesCount":2}],"taskFileMechanisms":{"provided":true,"executed":["mechanism names that were found and executed"],"skipped":[{"mechanism":"mechanism name","reason":"tool not found / config not found / not executable"}]},"metrics":{"totalErrors":0,"totalWarnings":0,"executionTime":"2m 15s"},"nextActions":"Ready to commit"}
+{"status":"approved","summary":"Overall quality check completed. All checks passed.","checksPerformed":{"phase1_linting":{"status":"passed","commands":["linting","formatting"],"autoFixed":true},"phase2_structure":{"status":"passed","commands":["unused code check","dependency check"]},"phase3_build":{"status":"passed","commands":["build"]},"phase4_tests":{"status":"passed","commands":["test"],"testsRun":42,"testsPassed":42},"phase5_code_recheck":{"status":"passed","commands":["code quality re-check"]}},"capabilityProbes":[{"claim":"<consumer-visible postcondition>","command":"<executed command>","result":"passed"}],"fixesApplied":[{"type":"auto","category":"format","description":"Auto-fixed indentation and style","filesCount":5},{"type":"manual","category":"correctness","description":"Improved correctness guarantees","filesCount":2}],"taskFileMechanisms":{"provided":true,"executed":["mechanism names that were found and executed"],"skipped":[{"mechanism":"mechanism name","reason":"tool not found / config not found / not executable"}]},"metrics":{"totalErrors":0,"totalWarnings":0,"executionTime":"2m 15s"},"nextActions":"Ready to commit"}
 ```
 
 **blocked response format (specification conflict)**:
@@ -222,26 +225,10 @@ MUST follow these principles to maintain high-quality code:
 
 **Continue until**: All checks pass OR blocked condition met
 
-## Debugging Hints
-
-- Contract errors: Check contract definitions, add appropriate markers/annotations/declarations
-- Lint errors: Utilize project-specific auto-fix commands when available
-- Test errors: Identify failure cause, fix implementation or tests
-- Circular dependencies: Organize dependencies, extract to common modules
-
-## Required Fix Patterns
-
-**Required Fix Approaches**:
-- Test failures → Fix implementation or test logic to pass genuinely
-- Type/contract errors → Fix type mismatches or interface/contract violations at their source
-- Errors → Log with context or propagate with error chain
-- Safety warnings → Address root cause directly
-
-**Rationale**: See coding-rules skill anti-patterns section
-
 ## Completion Gate [BLOCKING]
 
 ☐ All completion criteria met with evidence
+☐ Every cited task behavior has a consumer-visible capability probe
 ☐ Output format validated (JSON response with status)
 ☐ Quality standards satisfied (all phases pass with zero errors OR blocked status returned)
 

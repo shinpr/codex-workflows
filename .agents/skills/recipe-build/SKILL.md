@@ -110,16 +110,19 @@ Recompute the Consumed Task Set and verify it is non-empty.
 
 **MANDATORY EXECUTION CYCLE**: `task-executor -> escalation check -> quality-fixer -> commit`
 
+Before entering the loop, call `update_plan` once with first "Map active rules to this task", one step per task cycle, and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`. Do not recreate the plan inside the loop.
+
 For EACH task, YOU MUST:
-1. **Register tasks**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity"
+1. **Capture diff base**: Record the current revision as `diffBase`.
 2. **Spawn task-executor agent**: "Execute the task implementation for [task-file-path]"
 3. **CHECK task-executor response**:
    - `status: "escalation_needed"` or `"blocked"` -> STOP and escalate to user
-   - `requiresTestReview` is `true` -> Spawn integration-test-reviewer agent: "Review integration tests in [test-files]"
+   - `requiresTestReview` is `true` -> Spawn integration-test-reviewer agent with `changedTestFiles: [integration/E2E paths from filesModified]`, `diffBase`, and `taskFile: [task-file-path]`; when matching integration/E2E skeleton paths are available from acceptance-test-generator output or task/work-plan references, pass only those paths as `skeletonFiles`
      - `needs_revision` -> Return to step 2 with `requiredFixes`
      - `approved` -> Proceed to step 4
+     - `blocked` or unrecognized status -> STOP and escalate to user
    - `readyForQualityCheck: true` -> Proceed to step 4
-4. **Spawn quality-fixer agent**: "Execute all quality checks and fixes. Task file: [task-file-path]. The task file path above is also the `task_file` input. Read its `Quality Assurance Mechanisms` section as supplementary quality-check hints. filesModified: [task-executor response filesModified]. Use these files as the stub-detection scope."
+4. **Spawn quality-fixer agent** with `task_file` and executor `filesModified`.
 5. **CHECK quality-fixer response**:
    - `status: "stub_detected"` -> Return to step 2 with `stubFindings`
    - `status: "blocked"` -> STOP and escalate to user
@@ -144,20 +147,21 @@ VERIFY approval status before proceeding. Once confirmed, INITIATE autonomous ex
 
 ## Post-Implementation Verification (After All Tasks Complete)
 
-After all task cycles finish, collect all `filesModified` from every task-executor response (deduplicated), then run both verification agents before the completion report:
-1. Spawn code-verifier agent: "Verify implementation consistency against the Design Doc. `doc_type: design-doc`. `document_path`: [path]. `code_paths`: [collected filesModified list]. Work Plan Review Scope: [Review Scope value from the active work plan, used only to confirm the collected file set is complete]."
-2. Spawn security-reviewer agent: "Design Doc: [path]. Implementation files: [collected filesModified list]. Review security compliance."
+After all task cycles finish, collect all `filesModified` from every task-executor response (deduplicated). Resolve `governingDocuments` to the active Design Doc(s), or to the active Work Plan when no Design Doc governs the change, then run both verification agents before the completion report:
+1. Spawn code-verifier for each governing document with its matching `doc_type`, `document_path`, and the collected `code_paths`.
+2. Spawn security-reviewer with typed `governingDocuments: [{type, path}]` and `implementationFiles: [collected filesModified list]`.
 3. Consolidate results:
    - code-verifier passes when `summary.status` is `consistent` or `mostly_consistent`
    - code-verifier fails when `summary.status` is `needs_review` or `inconsistent`
+   - code-verifier `blocked` or unrecognized status -> Escalate to user
    - security-reviewer passes when `status` is `approved` or `approved_with_notes`
    - security-reviewer fails when `status` is `needs_revision`
    - security-reviewer `blocked` -> Escalate to user
 4. If either verifier fails:
-   - Create a single fix task covering verifier discrepancies and security requiredFixes
-   - Spawn task-executor with that consolidated task
-   - Spawn quality-fixer
-   - Re-run only the verifier(s) that failed
+   - Create one ephemeral fix task per executor route covering verifier discrepancies and security requiredFixes
+   - Pass each exact task path to task-executor and then quality-fixer
+   - Re-run both code-verifier and security-reviewer after any fix
+   - Delete the ephemeral task files only after both verifiers pass
    - Maximum retry count is 1 verification fix cycle; if any failed verifier still fails after re-run, escalate to the user
 5. If both verifiers pass -> Proceed to completion report
 
