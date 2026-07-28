@@ -107,7 +107,7 @@ After work-planner creates or updates the plan, spawn document-reviewer:
 
 > "Review the fullstack work plan. doc_type: WorkPlan. target: [work plan path]. mode: composite. Review semantic traceability to all Design Docs, UI Spec when present, Reference Contract Values fidelity, cross-layer boundary coverage, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
 
-On `needs_revision` or `approved_with_conditions`, apply Review Revision Convergence from the parent skill with `work-planner` as the author. On `rejected`, halt and escalate to the user. Stop for batch approval only after WorkPlan review returns `approved` and the plan's `WorkPlan Review` section records `Status: approved` with `Conditions: none`.
+On `needs_revision` or `approved_with_conditions`, apply Review Revision Convergence (`author`: work-planner; `artifact`: work plan); on `progression`, follow the `approved` branch. On `rejected`, halt and escalate to the user. Stop for batch approval only after WorkPlan review returns `approved` and the plan's `WorkPlan Review` section records `Status: approved` with `Conditions: none`.
 
 ## Task Decomposition Phase
 

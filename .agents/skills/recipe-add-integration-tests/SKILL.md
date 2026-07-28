@@ -148,7 +148,7 @@ Keep `testsAdded` as reporting metadata only.
 
 Check Step 5 result:
 - `status: approved` -> Mark complete, proceed to Step 7
-- `status: needs_revision` -> Apply Review Revision Convergence from `subagents-orchestration-guide` with the layer-appropriate executor as the author, using `requiredFixes` as the review findings, then return to Step 5.
+- `status: needs_revision` -> Apply Review Revision Convergence (`author`: layer-appropriate executor; `artifact`: changed test files); on `progression`, proceed to Step 7.
 
 ### Step 7: Quality Check
 

@@ -255,26 +255,26 @@ Include in output when `prior_context_count > 0`:
 - Gate 0: All structural existence checks pass
 - Consistency score > 90
 - Completeness score > 85
-- No rule violations (severity: high is zero)
+- Zero rule violations at `important` or `critical`
 - No blocking issues
-- Prior context items (if any): All critical/major resolved
+- Prior context items (if any): All `critical` and `important` items resolved
 
 ### Approved with Conditions
 - Gate 0: All structural existence checks pass
 - Consistency score > 80
 - Completeness score > 75
-- Only minor rule violations (severity: medium or below)
+- Highest rule-violation severity is `important`, when rule violations exist
 - Only easily fixable issues
-- Prior context items (if any): At most 1 major unresolved
+- Prior context items (if any): At most 1 `important` item unresolved and zero `critical` items unresolved
 
 ### Needs Revision
 - Gate 0: Any structural existence check fails OR
 - Consistency score < 80 OR
 - Completeness score < 75 OR
-- Serious rule violations (severity: high)
+- At least one rule violation has severity `critical`
 - Blocking issues present
 - Design Convergence gate fails
-- Prior context items (if any): 2+ major unresolved OR any critical unresolved
+- Prior context items (if any): 2+ `important` items unresolved OR any `critical` item unresolved
 - complexity_level is medium/high but complexity_rationale lacks (1) requirements/ACs or (2) constraints/risks
 
 ### Rejected

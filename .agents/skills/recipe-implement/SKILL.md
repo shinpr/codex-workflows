@@ -114,7 +114,7 @@ Before the first task, call `update_plan` once with first "Map active rules to t
 2. Check task-executor response:
    - `status: escalation_needed` or `blocked` -> Escalate to user
    - `requiresTestReview` is `true` -> Spawn integration-test-reviewer with changed integration/E2E paths from `filesModified`, `diffBase`, and `taskFile`; when matching integration/E2E skeleton paths are available from acceptance-test-generator output or task/work-plan references, pass only those paths as `skeletonFiles`
-     - `needs_revision` -> Return to step 1 with `requiredFixes`
+     - `needs_revision` -> Apply Review Revision Convergence (`author`: layer-appropriate executor; `artifact`: changed test files); on `progression`, proceed to step 3
      - `approved` -> Proceed to step 3
      - `blocked` or unrecognized status -> Escalate to user
    - Otherwise -> Proceed to step 3

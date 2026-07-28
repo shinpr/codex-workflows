@@ -108,20 +108,17 @@ Spawn document-reviewer agent: "Review the following PRD considering code verifi
 
 **Store output as**: `$STEP_4_OUTPUT`
 
+If `verdict.decision` is `rejected`, halt the current unit and escalate the blocking findings to the user.
+
 #### Step 5: Revision (conditional)
 
-**Trigger Conditions** (any one of the following):
-- Review status is "Needs Revision" or "Rejected"
-- Critical discrepancies exist in `$STEP_3_OUTPUT`
-- consistencyScore < 70
-
-Spawn prd-creator agent: "Update PRD based on review feedback and code verification results. Operation Mode: update. Existing PRD: $STEP_2_OUTPUT. Review Feedback: $STEP_4_OUTPUT. Code Verification Results: $STEP_3_OUTPUT. Address discrepancies by severity. Critical and major items require correction. Minor items: correct if straightforward, otherwise leave as-is with rationale."
-
-**Loop Control**: Apply Review Revision Convergence from `subagents-orchestration-guide` with `prd-creator` as the author and `$STEP_4_OUTPUT` as the prior review.
+- If `verdict.decision` is `needs_revision`, apply Review Revision Convergence (`author`: prd-creator; `artifact`: `$STEP_2_OUTPUT`); on `progression`, retain its final review as the current review and evaluate the next bullet.
+- If the current review permits progression and critical discrepancies exist in `$STEP_3_OUTPUT` or consistencyScore < 70, spawn prd-creator once: "Update PRD based on code verification results. Operation Mode: update. Existing PRD: $STEP_2_OUTPUT. Code Verification Results: $STEP_3_OUTPUT. Address discrepancies by severity. Critical and major items require correction. Minor items: correct if straightforward, otherwise leave as-is with rationale." Then re-run Step 4 and route the new verdict only; this verification-triggered correction runs once per unit.
+- After the applicable revision bullets complete, continue to Unit Completion.
 
 #### Unit Completion
 
-- [ ] Review status is "Approved" or "Approved with Conditions"
+- [ ] `verdict.decision` is `approved` or `approved_with_conditions`
 - [ ] Human review passed (if enabled in Step 0)
 
 **Next**: Proceed to next unit. After all units -> Phase 2.
@@ -214,20 +211,17 @@ Spawn document-reviewer agent: "Review the following Design Doc considering code
 
 **Store output as**: `$STEP_9_OUTPUT`
 
+If `verdict.decision` is `rejected`, halt the current unit and escalate the blocking findings to the user.
+
 #### Step 10: Revision (conditional)
 
-**Trigger Conditions** (same as Step 5):
-- Review status is "Needs Revision" or "Rejected"
-- Critical discrepancies exist in `$STEP_8_OUTPUT`
-- consistencyScore < 70
-
-Spawn technical-designer agent: "Update Design Doc based on review feedback and code verification results. Operation Mode: update. Existing Design Doc: $STEP_7_OUTPUT. Review Feedback: $STEP_9_OUTPUT. Code Verification Results: $STEP_8_OUTPUT. Address discrepancies by severity. Critical and major items require correction. Minor items: correct if straightforward, otherwise leave as-is with rationale."
-
-**Loop Control**: Apply Review Revision Convergence from `subagents-orchestration-guide` with `technical-designer` as the author and `$STEP_9_OUTPUT` as the prior review.
+- If `verdict.decision` is `needs_revision`, apply Review Revision Convergence (`author`: technical-designer; `artifact`: `$STEP_7_OUTPUT`); on `progression`, retain its final review as the current review and evaluate the next bullet.
+- If the current review permits progression and critical discrepancies exist in `$STEP_8_OUTPUT` or consistencyScore < 70, spawn technical-designer once: "Update Design Doc based on code verification results. Operation Mode: update. Existing Design Doc: $STEP_7_OUTPUT. Code Verification Results: $STEP_8_OUTPUT. Address discrepancies by severity. Critical and major items require correction. Minor items: correct if straightforward, otherwise leave as-is with rationale." Then re-run Step 9 and route the new verdict only; this verification-triggered correction runs once per unit.
+- After the applicable revision bullets complete, continue to Unit Completion.
 
 #### Unit Completion
 
-- [ ] Review status is "Approved" or "Approved with Conditions"
+- [ ] `verdict.decision` is `approved` or `approved_with_conditions`
 - [ ] Human review passed (if enabled in Step 0)
 
 **Next**: Proceed to next unit. After all units -> Final Report.
@@ -246,7 +240,7 @@ Output summary including:
 | Discovery finds nothing | Ask user for project structure hints |
 | Generation fails | Log failure, continue with other units, report in summary |
 | consistencyScore < 50 | **[STOP — BLOCKING]** Flag for mandatory human review. **CANNOT proceed until user explicitly confirms.** |
-| Review cannot converge because authoritative input is missing or contradictory | Present the exact missing or contradictory input |
+| Review Revision Convergence returns `non_convergent` | Stop the unit loop, present the exact unresolved findings and attempted corrections, then wait |
 
 ## Completion Criteria
 

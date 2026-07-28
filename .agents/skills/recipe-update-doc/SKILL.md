@@ -125,9 +125,10 @@ Spawn document-reviewer agent: "Review the following updated document. doc_type:
 **Store output as**: `$STEP_5_OUTPUT`
 
 **On review result**:
-- Approved or approved with conditions -> Present review results to the user for approval, then proceed to Step 6 after approval
-- Needs revision -> Apply Review Revision Convergence from `subagents-orchestration-guide` with [Update Agent from Step 2] as the author and return to Step 4
-- Rejected -> Present the exact blocking findings and required user decision, then end
+- `approved` -> **[STOP — BLOCKING]** Present review results to the user and proceed to Step 6 only after explicit approval
+- `approved_with_conditions` -> Apply the Approval Status Vocabulary conditions handling, then **[STOP — BLOCKING]** present the result and proceed to Step 6 only after explicit approval
+- `needs_revision` -> Apply Review Revision Convergence (`author`: [Update Agent from Step 2]; `artifact`: target document); on `progression`, follow the matching approved branch
+- `rejected` -> **[STOP — BLOCKING]** Present the exact blocking findings and required user decision, then wait
 
 ### Step 6: Consistency Verification (Design Doc only) [Stop]
 
@@ -150,7 +151,7 @@ For Design Doc, spawn design-sync agent: "Verify consistency of the updated Desi
 |-------|--------|
 | Target document not found | Report and end (suggest $recipe-design instead) |
 | Sub-agent update fails | Log failure, present error to user, retry once |
-| Review cannot converge because authoritative input is missing or contradictory | Present the exact missing or contradictory input |
+| Review Revision Convergence returns `non_convergent` | Stop the loop, present the exact unresolved findings and attempted corrections, then wait |
 | design-sync detects conflicts | Present to user for resolution decision |
 
 ## Completion Criteria
