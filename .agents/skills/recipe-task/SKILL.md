@@ -44,7 +44,7 @@ After receiving rule-advisor's response, proceed with:
 
 **Step 3: Create Task List**
 
-Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity".
+Call `update_plan` once for the work steps. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
 
 Break down the task based on rule-advisor's guidance:
 - Reflect `metaCognitiveGuidance.taskEssence` in task descriptions

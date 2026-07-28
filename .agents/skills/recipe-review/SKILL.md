@@ -18,7 +18,7 @@ description: "Design Doc compliance and security validation with optional auto-f
 
 **Core Identity**: "I am not a worker. I am an orchestrator."
 
-**First Action**: Register Steps 1-11 before any execution.
+**First Action**: Call `update_plan` with first "Map active rules to this task", Steps 1-11, and final "Verify outputs and rule adherence" before execution. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
 
 ## Execution Method
 
@@ -45,7 +45,7 @@ Spawn code-reviewer agent: "Validate Design Doc compliance for the implementatio
 **Store output as**: `$STEP_2_OUTPUT`
 
 ### Step 3: Execute security-reviewer
-Spawn security-reviewer agent: "Design Doc: [path]. Implementation files: [file list from git diff in Step 1]. Review security compliance."
+Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]` and `implementationFiles: [file list from git diff in Step 1]`.
 
 **Store output as**: `$STEP_3_OUTPUT` and `$STEP_1_FILES` (the initial file list)
 
@@ -119,7 +119,7 @@ Reference documentation-criteria skill for task file template.
 Run this step only when the user routes at least one finding to `d`.
 
 1. Spawn technical-designer agent in update mode: "Update Design Doc at [path]. The implementation is being accepted as correct for these findings: [d-routed findings with code locations and current Design Doc values]. Update the relevant sections and add change history."
-2. Spawn document-reviewer agent: "Review updated Design Doc at [path] for consistency and completeness."
+2. Spawn document-reviewer agent: "Review updated Design Doc at [path] for consistency and completeness. doc_type: DesignDoc. review_context: update."
 3. If multiple Design Docs exist in `docs/design/`, spawn design-sync agent: "Check cross-Design Doc consistency after updating [path]."
 4. If the user selected both `d` and `c` routes, re-evaluate the `c` findings against the updated Design Doc and drop any that are now satisfied.
 
@@ -134,15 +134,17 @@ Spawn task-executor agent: "Execute review fixes. Task file: docs/plans/tasks/re
 
 ### Step 8: Quality Check
 
-Spawn quality-fixer agent: "Confirm quality gate passage for fixed files."
+Spawn quality-fixer with `task_file: docs/plans/tasks/review-fixes-YYYYMMDD.md` and executor `filesModified`.
 
 ### Step 9: Re-validate code-reviewer
 
 Spawn code-reviewer agent: "Re-validate Design Doc compliance after fixes. Prior compliance issues: $STEP_2_OUTPUT. Verify each prior issue is resolved."
 
-### Step 10: Re-validate security-reviewer (only if security fixes were applied)
+### Step 10: Re-validate security-reviewer
 
-Spawn security-reviewer agent: "Re-validate security after fixes. Prior findings: $STEP_3_OUTPUT. Design Doc: [path]. Implementation files: [union of $STEP_1_FILES and task-executor filesModified from Step 7, deduplicated]."
+Spawn security-reviewer with prior findings, `governingDocuments: [{type: "design-doc", path: [path]}]`, and `implementationFiles: [union of $STEP_1_FILES and task-executor filesModified from Step 7, deduplicated]`.
+
+After any code fix, both Steps 9 and 10 are mandatory even when only one reviewer initially reported a finding. Delete the task file only after both pass.
 
 ### Step 11: Final Report
 

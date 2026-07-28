@@ -1,149 +1,39 @@
-# TypeScript Development Rules (Frontend)
+# Web Frontend TypeScript and React
 
-## Basic Principles
+Apply only rules relevant to the changed code and prefer repository configuration and local patterns.
 
-- **Aggressive Refactoring** - Prevent technical debt and maintain health
-- **No Unused "Just in Case" Code** - Violates YAGNI principle (Kent Beck)
+## Type Boundaries
 
-## Comment Writing Rules
-- **Code-First Default**: Use names, types, and structure to show what the code does
-- **Intent Focus**: Use comments only for why, limitations, edge cases, or public API contracts
-- **History in Version Control**: Record development history in commits and PRs instead of code comments
-- **Timeless**: Write only content that remains valid whenever read
-- **Conciseness**: Keep explanations to necessary minimum
+- Treat external, persisted, URL, and browser-storage input as untrusted until validated.
+- Prefer `unknown`, generics, unions, and type guards over `any` or suppression.
+- Keep public Props, request/response shapes, and serialized values aligned with governing contracts.
+- Use assertions only when the invariant is established at the same boundary and cannot be expressed more safely.
 
-## Type Safety
+## React Boundaries
 
-**Absolute Rule**: Use `unknown`, generics, unions, intersections, or validated assertions instead of `any`. `any` disables type checking and becomes a source of runtime errors.
+- Match the repository's component, state, data-fetching, routing, styling, and test patterns.
+- Keep one authoritative owner for state and preserve unidirectional updates.
+- Place browser-only behavior behind the repository's client boundary when server/client components coexist.
+- Guard asynchronous effects against stale results and post-unmount updates using the repository's established mechanism.
+- Use class components only where the repository or framework requires them, such as an existing Error Boundary contract.
 
-**any Type Alternatives (Priority Order)**
-1. **unknown Type + Type Guards**: Use for validating external input (API responses, localStorage, URL parameters)
-2. **Generics**: When type flexibility is needed
-3. **Union Types / Intersection Types**: Combinations of multiple types
-4. **Type Assertions (Last Resort)**: Only when type is certain
+Do not introduce a state library, server-state library, component hierarchy, alias convention, memoization strategy, or code-splitting pattern merely because it is common elsewhere.
 
-**Type Safety in Frontend Implementation**
-- **React Props/State**: TypeScript manages types, unknown unnecessary
-- **External API Responses**: Always receive as `unknown`, validate with type guards
-- **localStorage/sessionStorage**: Treat as `unknown`, validate
-- **URL Parameters**: Treat as `unknown`, validate
-- **Form Input (Controlled Components)**: Type-safe with React synthetic events
+## Environment and Security
 
-**Type Safety in Data Flow**
-- **Frontend to Backend**: Props/State (Type Guaranteed) to API Request (Serialization)
-- **Backend to Frontend**: API Response (`unknown`) to Type Guard to State (Type Guaranteed)
+- Read client environment values through the configured build-tool interface.
+- Only expose variables explicitly intended for the client; never place secrets in frontend configuration or bundles.
+- Surface missing required configuration as the governing contract specifies.
+- Keep sensitive values out of UI errors and logs.
 
-**Type Complexity Management**
-- **Props Design**:
-  - Props count: 3-7 props ideal (consider component splitting if exceeds 10)
-  - Optional Props: 50% or less (consider default values or Context if excessive)
-  - Nesting: Up to 2 levels (flatten deeper structures)
-- Type Assertions: Review design if used 3+ times
-- **External API Types**: Relax constraints and define according to reality (convert appropriately internally)
+## Performance
 
-## Coding Conventions
+Apply memoization, lazy loading, and bundle changes only when repository tooling, profiling, or a governing requirement supplies evidence. Verify the named metric or consumer-visible effect after the change.
 
-**Component Design Criteria**
-- **Function Components (Mandatory)**: Use function components for new and modified React components
-- **Class Component Exception**: Retain or introduce a class component only when an existing or required Error Boundary needs it
-- **Custom Hooks**: Standard pattern for logic reuse and dependency injection
-- **Component Hierarchy**: Follow the project's existing component architecture. Use Atoms > Molecules > Organisms > Templates > Pages only when the project adopts Atomic Design.
-- **Co-location**: Place tests, styles, and related files alongside components
+## Completion Checks
 
-**Server/Client Boundary (RSC frameworks only, such as Next.js App Router)**
-- Default to server components for data fetching and rendering. Isolate interactivity behind a `"use client"` boundary at the smallest scope that needs it.
-- Keep browser-only APIs such as `window`, `localStorage`, and event handlers inside client components.
-- Skip this section for client-only SPAs with no server-component runtime.
-
-**State Management Patterns**
-- **Local State**: `useState` for component-specific state
-- **Context API**: For sharing state across component tree (theme, auth, etc.)
-- **Custom Hooks**: Encapsulate state logic and side effects
-- **Server State**: React Query or SWR for API data caching
-
-**Data Flow Principles**
-- **Single Source of Truth**: Each piece of state has one authoritative source
-- **Unidirectional Flow**: Data flows top-down via props
-- **Immutable Updates**: Use immutable patterns for state updates
-
-**Function Design**
-- **0-2 parameters maximum**: Use object for 3+ parameters
-
-**Props Design (Props-driven Approach)**
-- Props are the interface: Define all necessary information as props
-- Declare dependencies explicitly through props, hooks, or injected modules instead of relying on ambient global state
-- Type-safe: Always define Props type explicitly
-
-**Environment Variables**
-- **Use the build tool's env accessor**: read client-side env through the bundler's exposed accessor, such as Vite `import.meta.env` or Next.js/CRA prefixed `process.env`.
-- **Only prefixed vars reach the client**: build tools expose only vars carrying their public prefix. Match the project's bundler, such as Vite `VITE_`, Next.js `NEXT_PUBLIC_`, or CRA `REACT_APP_`.
-- Centrally manage environment variables through a typed configuration layer.
-- Treat a missing required variable as a configuration error. Use a default only when requirements or a Design Doc explicitly define that fallback.
-
-**Security (Client-side Constraints)**
-- **CRITICAL**: All frontend code is public and visible in browser
-- **Never store secrets client-side**: No API keys, tokens, or secrets in environment variables
-- Do not include `.env` files in Git
-- Do not include sensitive information in error messages
-
-**Dependency Injection**
-- **Custom Hooks for dependency injection**: Ensure testability and modularity
-
-**Asynchronous Processing**
-- Promise Handling: Always use `async/await`
-- Error Handling: Always handle with `try-catch` or Error Boundary
-- Type Definition: Explicitly define return value types (e.g., `Promise<Result>`)
-- Effect race/cleanup: guard `useEffect` data fetches against out-of-order responses and post-unmount state updates with `AbortController`, a mounted/stale flag, or a server-state library such as React Query or SWR.
-
-**Format Rules**
-- Semicolon omission (follow project formatter settings)
-- Types in `PascalCase`, variables/functions in `camelCase`
-- Imports use absolute paths (`src/`)
-
-**Clean Code Principles**
-- Delete unused code immediately
-- Delete debug `console.log()`
-- No commented-out code (manage history with version control)
-- Comments explain intent, constraints, or contracts that code cannot express directly
-
-## Error Handling
-
-**Absolute Rule**: Handle every error explicitly with log output, recovery logic, or escalation appropriate to the failure mode.
-
-**Fail-Fast Principle**: Fail quickly on errors to prevent continued processing in invalid states
-
-**Layer-Specific Error Handling (React)**
-- Error Boundary: Catch React component errors, display fallback UI
-- Custom Hook: Detect business rule violations, propagate AppError as-is
-- API Layer: Convert fetch errors to domain errors
-
-**Structured Logging and Sensitive Information Protection**
-Never include sensitive information (password, token, apiKey, secret, creditCard) in logs
-
-**Asynchronous Error Handling in React**
-- Error Boundary setup mandatory: Catch rendering errors
-- Use try-catch with all async/await in event handlers
-- Always log and re-throw errors or display error state
-
-## Refactoring Techniques
-
-**Basic Policy**
-- Small Steps: Maintain always-working state through gradual improvements
-- Safe Changes: Minimize the scope of changes at once
-- Behavior Guarantee: Ensure existing behavior remains unchanged while proceeding
-
-**Implementation Procedure**: Understand Current State > Gradual Changes > Behavior Verification > Final Validation
-
-**Priority**: Duplicate Code Removal > Large Function Division > Complex Conditional Branch Simplification > Type Safety Improvement
-
-## Performance Optimization
-
-- Automatic memoization: when React Compiler is enabled, rely on it. Use manual `React.memo`, `useMemo`, or `useCallback` only for a profiler-confirmed bottleneck or stable reference identity required by third-party APIs or effect dependencies.
-- State Optimization: Minimize re-renders with proper state structure
-- Lazy Loading: Use React.lazy and Suspense for code splitting
-- Bundle Size: Monitor with the build script against the project's budget
-
-## Non-functional Requirements
-
-- **Browser Compatibility**: Chrome/Firefox/Safari/Edge (latest 2 versions)
-- **Rendering Time**: Within 5 seconds for major pages
+- [ ] Project typecheck/build command passes
+- [ ] No new `any`, suppression, or unchecked external input in changed code
+- [ ] Props and serialized contracts match their source
+- [ ] Async cleanup and race handling follow the repository pattern where applicable
+- [ ] Performance changes have measured evidence

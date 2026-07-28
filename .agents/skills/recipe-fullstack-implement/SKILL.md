@@ -74,11 +74,14 @@ All stop points defined in monorepo-flow.md MUST be respected.
 
 ### 5. Register All Flow Steps (MANDATORY)
 
-**After scale determination, register all steps of the monorepo-flow.md**:
-- First task: "Confirm skill constraints"
-- Register each step as individual task
+**After scale determination, call `update_plan` once for all applicable monorepo-flow.md steps**:
+- First task: "Map active rules to this task"
+- Final task: "Verify outputs and rule adherence"
+- Register each applicable flow step once
 - Mark currently executing step as in_progress
-- **Complete task registration before spawning subagents**
+- While work remains, keep exactly one step `in_progress`; complete it only after evidence is recorded and prerequisites for the next step are satisfied
+- After final verification evidence exists, mark every step `completed`
+- **Register the complete plan before spawning subagents**
 
 ## After requirement-analyzer [Stop]
 
@@ -133,28 +136,30 @@ Before executing task files, execute the Implementation Readiness Preflight Proc
 ```
 
 **Rules**:
-1. Execute ONE task completely before starting next (each task goes through the full 4-step cycle individually, using the correct executor per filename pattern)
+1. Execute ONE task completely before starting next; capture `diffBase` before its executor call
 2. Check executor status before quality-fixer (escalation check)
-3. Quality-fixer MUST run after each executor (no skipping), MUST receive the executor `filesModified` list as stub-detection scope, and MUST receive the current task file as the `task_file` input so it reads the task file's `Quality Assurance Mechanisms` section as supplementary quality-check hints
-4. If quality-fixer returns `status: "stub_detected"`, route the task back to the same executor with `stubFindings`
-5. Commit MUST execute only when quality-fixer returns `status: "approved"` (do not defer to end)
+3. When `requiresTestReview` is true, integration-test-reviewer receives changed integration/E2E paths from `filesModified`, `diffBase`, and `taskFile`; when matching integration/E2E skeleton paths are available from acceptance-test-generator output or task/work-plan references, pass only those paths as `skeletonFiles`; `blocked` or unrecognized status escalates to the user
+4. Quality-fixer MUST run after each executor with `filesModified` and `task_file`
+5. If quality-fixer returns `status: "stub_detected"`, route the task back to the same executor with `stubFindings`
+6. Commit MUST execute only when quality-fixer returns `status: "approved"` (do not defer to end)
 
 ### Post-Implementation Verification (After All Tasks Complete)
 
-After all task cycles finish, collect all `filesModified` from every task-executor/task-executor-frontend response (deduplicated), then run both verification agents before the completion report:
-1. Spawn code-verifier once per Design Doc: "Verify implementation consistency against the Design Doc. `doc_type: design-doc`. `document_path`: [single design doc path]. `code_paths`: [collected filesModified list]."
-2. Spawn security-reviewer agent: "Design Doc: [path(s)]. Implementation files: [collected filesModified list]. Review security compliance."
+After all task cycles finish, collect all `filesModified` from every task-executor/task-executor-frontend response (deduplicated). Resolve governing documents to Design Docs, or the Work Plan when no Design Doc governs the change:
+1. Spawn code-verifier once per governing document with matching `doc_type`, `document_path`, and collected `code_paths`.
+2. Spawn security-reviewer with typed `governingDocuments: [{type, path}]` and `implementationFiles`.
 3. Consolidate results:
    - each code-verifier run passes when `summary.status` is `consistent` or `mostly_consistent`
    - a code-verifier run fails when `summary.status` is `needs_review` or `inconsistent`
+   - code-verifier `blocked` or unrecognized status -> Escalate to user
    - security-reviewer passes when `status` is `approved` or `approved_with_notes`
    - security-reviewer fails when `status` is `needs_revision`
    - security-reviewer `blocked` -> Escalate to user
 4. If any verifier fails:
-   - Create a single fix task covering verifier discrepancies and security requiredFixes
-   - Spawn the layer-appropriate task-executor
-   - Spawn the layer-appropriate quality-fixer
-   - Re-run only the verifier(s) that failed
+   - Create one ephemeral fix task per executor route covering verifier discrepancies and security requiredFixes
+   - Pass each exact task path through the layer-appropriate executor and quality-fixer
+   - Re-run all code-verifier runs and security-reviewer after any fix
+   - Delete ephemeral task files only after all verifiers pass
    - Maximum retry count is 1 verification fix cycle; if any failed verifier still fails after re-run, escalate to the user
 5. If all verifiers pass -> Proceed to completion report
 

@@ -1,143 +1,64 @@
 ---
 name: coding-rules
-description: "Language-agnostic coding standards for maintainability, readability, and quality. Use when: implementing features, refactoring code, reviewing code quality, or writing functions."
+description: "Repository-aware implementation rules for minimal design surface, contract safety, representative patterns, and verifiable changes. Use when implementing, refactoring, or reviewing code."
 ---
 
 # Coding Rules
 
-## Language-Specific References
+## Reference
 
-For language-specific rules, also read:
-- **TypeScript/React**: [references/typescript.md](references/typescript.md)
+Read [references/typescript.md](references/typescript.md) only for TypeScript used in web frontend work, including React applications. It does not apply to backend or non-web TypeScript. Read [references/security-checks.md](references/security-checks.md) when the change crosses an input, authorization, secret, persistence, or output boundary.
 
-## Core Philosophy [MANDATORY]
+## Source Order
 
-1. **Maintainability over Speed**: Prioritize long-term code health
-2. **Simplicity First**: YAGNI principle — simplest solution that meets requirements
-3. **Design Convergence**: Deliver the current required outcome with the least new design surface. Add surface only to satisfy a current requirement, verified constraint, observed problem, or evidence-backed material risk; among sufficient options, choose the lowest-lifecycle-cost option.
-4. **Explicit over Implicit**: Clear intentions through code structure and naming
-5. **Delete over Comment**: Remove unused code instead of commenting it out
+Follow, in order:
 
-**ENFORCEMENT**: Every code change MUST align with these principles
+1. Task, acceptance criteria, Binding Decisions, and Reference Contracts
+2. Governing Design Doc, ADR, Work Plan, and repository instructions
+3. Representative repository patterns
+4. Language/framework defaults
 
-## Design Surface Terms [MANDATORY]
+Do not substitute generic best practice for a sourced project contract.
 
-Use these definitions when classifying Design Convergence additions or code-review escalation.
+## Minimal Design Surface
 
-- **Maintenance-surface-bearing elements**: persistent state; public-contract or cross-boundary fields/props; behavioral modes, flags, or variants; reusable abstractions; extracted services; shared utilities; component splits.
-- **Non-surface elements**: private local variables, internal helper functions with no external observers, test fixtures or mocks, temporary migration scaffolding removed before completion, and private implementation details confined to one function or file.
-- **Classification precedence**: When an element matches both surface-bearing and non-surface conditions, classify it as surface-bearing.
-- **Selection rule**: Add a surface-bearing element only when it is required by a current requirement, verified constraint, observed problem, or evidence-backed material risk. Prefer fewer new elements only when the remaining candidates are otherwise sufficient and equivalent.
-- **Relation to YAGNI**: YAGNI decides present vs. future need over time; Design Convergence minimizes surface area for the current accepted scope.
+Deliver the current requirement with the least new persistent surface. Persistent state, public/cross-boundary fields, modes, flags, reusable abstractions, shared utilities, and component/service splits require a current requirement, verified constraint, observed problem, or evidence-backed material risk.
 
-## Code Quality [MANDATORY]
+Private local implementation details and test fixtures are not new design surface. If an element matches both categories, treat it as design surface. If several sufficient options remain, prefer the one with lower lifecycle cost.
 
-- Resolve technical debt within confirmed scope or dependencies required for its outcome; report other debt separately
-- Use meaningful, descriptive names from the problem domain
-- Extract magic numbers and strings into named constants
-- Keep code self-documenting
+## Contract and Boundary Safety
 
-## Function Design [MANDATORY]
+- Preserve required signatures, schemas, serialized values, field order, state transitions, dependency direction, and error behavior.
+- Validate untrusted input at the boundary and encode output for its destination.
+- Propagate or handle errors with useful context; do not silently suppress them.
+- Keep secrets and sensitive values out of source, client bundles, errors, and logs.
+- Use parameterized data access and verify authorization at resource access points when applicable.
+- For persistent or shared state, verify when partial, stale, committed, and rollback-only states become observable.
 
-- **0-2 parameters** per function (use objects for 3+)
-- Single responsibility — each function MUST do one thing well
-- Keep functions < 50 lines
-- Use pure functions where possible — separate data transformation from side effects
-- Use early returns to keep nesting ≤ 3 levels
-- **Inject external dependencies explicitly** — pass as parameters for testability
+## Repository-Local Choice
 
-## Error Handling [MANDATORY]
+Before adopting a pattern, API, or dependency:
 
-- **Always handle errors**: Log with context or propagate explicitly — error suppression is PROHIBITED
-- **Fail fast**: Detect and report errors early
-- **Protect sensitive data**: Mask passwords, tokens, PII from logs
-- Use language-appropriate error handling mechanisms
-- Include error context when re-throwing
+1. Inspect the changed feature and relevant siblings.
+2. Check whether the pattern is representative where alternatives coexist.
+3. Follow the dominant compatible pattern or record why another existing pattern is required.
+4. Escalate dependency/version or architecture choices when repository evidence cannot resolve them.
 
-**ENFORCEMENT**: Zero silent error suppression — every error MUST have log output and appropriate handling
+Nearby code is evidence, not authority by itself.
 
-## Dependency Management
+## Change Discipline
 
-- **Inject external dependencies explicitly** — pass as parameters for testability
-- Depend on abstractions, not concrete implementations
-- Minimize inter-module dependencies
+- Keep the change within the task's target files and accepted scope.
+- Use names and structure that expose domain intent.
+- Remove unused code and obsolete comments in the changed scope.
+- Optimize only from measurements or a sourced requirement.
+- Refactor in reversible increments and run the focused verification after each behavior-affecting step.
+- Report adjacent debt outside scope; do not expand the change silently.
 
-## Reference Representativeness
+## Completion Gate
 
-### Verifying References Before Adoption
-
-When adopting patterns, APIs, or dependencies from existing code:
-- If referencing only nearby files, verify the pattern is representative across the repository before adopting it
-- If multiple approaches coexist, identify the majority pattern and make a deliberate choice
-- If adopting an external dependency, verify repository-wide usage distribution for that dependency and its version
-- If repository evidence is insufficient to choose an appropriate dependency version, escalate instead of guessing
-- If following an existing pattern when alternatives exist, state the reason for following it
-
-### Principle
-
-Nearby code is a starting point for investigation, not a sufficient basis for adoption. Confirm that the reference is representative of repository conventions before using it as the model.
-
-## Performance
-
-- **Measure first**: Profile before optimizing — no premature optimization
-- Focus on algorithms over micro-optimizations
-- Choose data structures based on access patterns
-
-## Code Organization
-
-- One primary responsibility per file
-- Group related functionality together
-- Separate concerns: domain logic, data access, presentation
-- Keep files ≤ 500 lines
-
-## Commenting Principles
-
-- Prefer names, types, and structure over comments
-- Add comments only for why, limitations, edge cases, or public API contracts
-- No historical information — use version control
-- Remove commented-out code
-- Keep comments concise and timeless
-
-## Refactoring [SAFE CHANGE PROTOCOL]
-
-**STEP 1**: Understand current state
-**STEP 2**: Make one small change
-**STEP 3**: Run tests — confirm all pass
-**STEP 4**: Repeat from STEP 2
-
-**Triggers**: duplication, functions > 50 lines, complex conditionals
-
-**ENFORCEMENT**: Each step MUST maintain working state
-
-## Security
-
-### Secure Defaults
-- Store credentials and secrets through environment variables or dedicated secret managers
-- Use parameterized queries (prepared statements) for all database access
-- Use established cryptographic libraries provided by the language or framework
-- Generate security-critical values (tokens, IDs, nonces) with cryptographically secure random generators
-- Encrypt sensitive data at rest and in transit using standard protocols
-
-### Input and Output Boundaries
-- Validate all external input at system entry points for expected format, type, and length
-- Encode output appropriately for its rendering context (HTML, SQL, shell, URL)
-- Return only information necessary for the caller in error responses; log detailed diagnostics server-side
-
-### Access Control
-- Apply authentication to all entry points that handle user data or trigger state changes
-- Verify authorization for each resource access, not only at the entry point
-- Grant only the permissions required for the operation (files, database connections, API scopes)
-
-### Knowledge Cutoff Supplement (2026-03)
-- OWASP Top 10:2025 shifted from symptoms to root causes; added "Software Supply Chain Failures" (A03) and "Mishandling of Exceptional Conditions" (A10)
-- Recent research indicates AI-generated code shows elevated rates of access control gaps — treat authentication and authorization as high-priority review targets
-- OpenSSF published "Security-Focused Guide for AI Code Assistant Instructions" — recommends language-specific, actionable constraints over generic advice
-- For detailed detection patterns, see `references/security-checks.md`
-
-## Version Control [MANDATORY]
-
-- Atomic, focused commits with clear messages
-- Commit working code that passes all tests
-- Never commit debug code or secrets
-
-**ENFORCEMENT**: Code MUST pass all quality checks before commit
+- [ ] Every addition maps to a governing requirement or verified risk
+- [ ] Public and cross-boundary contracts remain exact
+- [ ] Repository-local pattern choice is supported by evidence
+- [ ] Errors, sensitive data, and persistent state boundaries are handled
+- [ ] Focused and repository-required checks pass

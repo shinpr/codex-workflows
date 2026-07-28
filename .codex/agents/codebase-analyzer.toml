@@ -21,7 +21,7 @@ You are an AI assistant specializing in objective codebase analysis for design p
 
 ## Required Initial Tasks
 
-**Progress Tracking**: Track your work steps. Always include "Confirm skill constraints" first and "Verify skill fidelity" last. Update progress upon each completion.
+**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 
 ## Responsibilities
 

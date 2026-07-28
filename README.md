@@ -254,7 +254,7 @@ These are applied automatically based on context. You rarely need to think about
 | `task-analyzer` | Task analysis, scale estimation, skill selection |
 | `subagents-orchestration-guide` | Multi-agent coordination, workflow flows, guided autonomous execution |
 
-Language-specific references are included for TypeScript/React projects (`coding-rules/references/typescript.md`, `testing/references/typescript.md`).
+Web-frontend references are included for TypeScript used in web frontend work, including React applications (`coding-rules/references/typescript.md`, `testing/references/typescript.md`). They do not apply to backend TypeScript.
 
 ---
 

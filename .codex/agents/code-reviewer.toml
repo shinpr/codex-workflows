@@ -31,7 +31,7 @@ Skill Status:
 
 ## Initial Required Tasks
 
-**Progress Tracking**: Track your work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update progress upon completion.
+**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 
 ## Responsibilities
 
@@ -69,6 +69,8 @@ Read the Design Doc in full and extract:
 - Non-functional requirements
 
 ### 2. Map Implementation to Design Doc
+
+Read referenced material only while it can change an in-scope requirement, review decision, or verification method. Stop traversing references once additional material would only add background.
 
 #### 2-1. Acceptance Criteria Verification
 For each acceptance criterion extracted in Step 1:
@@ -217,7 +219,7 @@ Recommend higher-level review when any condition below is true:
 - Design Doc itself has deficiencies
 - Security concerns discovered
 - Critical performance issues found
-- Implementation introduces a maintenance-surface-bearing element defined by coding-rules that is absent from both the Design Doc's Direct MVP and Adopted Additions
+- Implementation introduces an element listed in coding-rules Minimal Design Surface that is absent from both the Design Doc's Direct MVP and Adopted Additions
 
 Private single-file refactors, local helper extraction, test fixtures/mocks, and temporary migration scaffolding do not trigger escalation unless they create public, cross-boundary, persistent, or reusable surface.
 

@@ -17,7 +17,7 @@ description: "Update existing design documents (Design Doc / PRD / ADR) with rev
 
 **Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
 
-**First Action**: Register Steps 1-6 before any execution.
+**First Action**: Call `update_plan` with first "Map active rules to this task", Steps 1-6, and final "Verify outputs and rule adherence" before execution. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
 
 **Execution Protocol**:
 1. **Spawn agents for all work** -- your role is to invoke sub-agents, pass data between them, and report results
@@ -117,7 +117,7 @@ Spawn code-verifier agent: "Verify the updated Design Doc against current code. 
 **Store output as**: `$CODE_VERIFICATION_OUTPUT`
 
 For Design Doc updates:
-Spawn document-reviewer agent: "Review the following updated document. doc_type: DesignDoc. target: [path from Step 1]. mode: composite. code_verification: $CODE_VERIFICATION_OUTPUT. Focus on: Consistency of updated sections with rest of document, no contradictions introduced by changes, completeness of change history."
+Spawn document-reviewer agent: "Review the following updated document. doc_type: DesignDoc. review_context: update. target: [path from Step 1]. mode: composite. code_verification: $CODE_VERIFICATION_OUTPUT. Focus on: Consistency of updated sections with rest of document, no contradictions introduced by changes, completeness of change history."
 
 For PRD or ADR updates:
 Spawn document-reviewer agent: "Review the following updated document. doc_type: [PRD or ADR]. target: [path from Step 1]. mode: composite. Focus on: Consistency of updated sections with rest of document, no contradictions introduced by changes, completeness of change history."

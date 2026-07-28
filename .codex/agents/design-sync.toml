@@ -33,7 +33,7 @@ Skill Status:
 
 ## Initial Mandatory Tasks
 
-**Progress Tracking**: Track your work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update progress upon completion.
+**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 
 ## Detection Criteria (The Only Rule)
 

@@ -13,6 +13,14 @@ Metadata:
 - [ ] [Implementation file path]
 - [ ] [Test file path]
 
+## Hard Constraints
+
+| Protected condition | Allowed action | Source |
+|---|---|---|
+| [Data/state/contract condition that must remain true] | [What the implementation may do while preserving it] | [User request / approved governing document path (§ section) / named task dependency] |
+
+Include this section only for constraints with a listed source. Before escalation, record and use the smallest in-scope option satisfying the outcome and every constraint; escalate only the unmet item.
+
 ## Investigation Targets
 Files to read before starting implementation. Use concrete file paths, optionally with a section/function hint:
 - [e.g., src/orders/checkout.ts (processOrder function)]

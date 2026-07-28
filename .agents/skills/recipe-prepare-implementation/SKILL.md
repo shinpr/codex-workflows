@@ -42,6 +42,8 @@ R4 applies only to UI work. R5 applies when the plan uses a local service stack 
 
 ## Execution Flow
 
+Before Step 1, call `update_plan` with first "Map active rules to this task", Steps 1-6, and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+
 ### Step 1: Load Inputs
 
 Read the work plan passed in `$ARGUMENTS`; if absent, select the most recent non-template `docs/plans/*.md`. Extract:
@@ -99,10 +101,11 @@ Layer selection:
 ### Step 5: Execute Prep Tasks
 
 Run each prep task through the standard 4-step cycle:
-1. Spawn the layer-appropriate task executor with the exact prep task path in the prompt: "Execute implementation-readiness prep task. Task file: [exact prep task path]."
+1. Capture `diffBase`, then spawn the layer-appropriate task executor with the exact prep task path in the prompt: "Execute implementation-readiness prep task. Task file: [exact prep task path]."
 2. Check for `blocked` or `escalation_needed`.
-3. Spawn the layer-appropriate quality fixer with the task file as `task_file`.
-4. Commit only when the quality fixer returns `approved`.
+3. If the executor requires test review, call integration-test-reviewer with changed integration/E2E paths from `filesModified`, `diffBase`, and `taskFile`; when matching integration/E2E skeleton paths are available from task/work-plan references, pass only those paths as `skeletonFiles`; escalate `blocked` or an unrecognized status.
+4. Spawn the layer-appropriate quality fixer with `task_file` and executor `filesModified`.
+5. Commit only when the quality fixer returns `approved`.
 
 Append this scope boundary to every subagent prompt:
 

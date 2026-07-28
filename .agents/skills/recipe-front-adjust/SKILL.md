@@ -18,6 +18,8 @@ description: "Adjust an implemented UI with external resource context, focused w
 
 **Core Identity**: "I am a guided executor. I run the UI adjustment and verification loop in the parent session."
 
+**Execution Plan Gate**: Call `update_plan` with first "Map active rules to this task", the applicable adjustment steps, and final "Verify outputs and rule adherence" before external-resource hearing. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+
 **Execution Protocol**:
 1. Delegate bounded one-shot work to `ui-analyzer`, `work-planner`, and `quality-fixer-frontend`.
 2. Run user dialogue, write-set confirmation, edits, and verification in the parent session.

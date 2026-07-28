@@ -33,7 +33,7 @@ Skill Status:
 
 ## Initial Mandatory Tasks
 
-**Progress Tracking**: Track your work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update progress upon completion.
+**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 
 ## Primary Principle of Task Division
 
@@ -69,6 +69,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Include task-level Quality Assurance Mechanisms when the work plan defines them
    - Include task-level Binding Decisions when ADR Bindings cover the task
    - Include task-level Reference Contracts when Reference Contract Values cover the task
+   - Include task-level Hard Constraints only for sourced protected conditions covering irreversible state or a shipped contract; pair each with the allowed implementation path
    - Include task-level Proof Obligations when the work plan defines Proof Strategy, test skeleton proof annotations, or acceptance-criterion primary failure modes
    - **Always include operation verification methods**
    - Define clear completion criteria (within executor's scope of responsibility)
@@ -276,6 +277,14 @@ When the work plan includes a `Reference Contract Values` section:
    - `The restored state is applied only when the explicit restore signal is present`
 6. **Boundary ownership**: Connection Map Propagation carries serialized boundaries. Reference Contract rows carry non-serialized observable values. When a work plan records the same value in both places, keep Connection Map propagation and surface the duplicate Reference Contract row as a planning issue.
 7. **Validation**: Treat missing Contract Type, missing Required Observable Value, non-checkable Compliance Check, or `covered` row without task IDs as an incomplete task file.
+
+## Hard Constraint Propagation
+
+For each protected condition that directly governs a task:
+1. Add it only when violating it could irreversibly damage data/state or break a shipped contract.
+2. Cite the authoritative Design Doc, ADR, task dependency, or repository rule.
+3. Pair it with the minimal allowed in-scope action so the executor can continue without guessing.
+4. Omit generic cautions and constraints with no authoritative source.
 
 ## UI Spec Propagation
 

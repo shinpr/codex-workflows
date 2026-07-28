@@ -18,6 +18,8 @@ description: "Create work plan from design document with optional test skeleton 
 
 **Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
 
+**Execution Plan Gate**: Call `update_plan` with first "Map active rules to this task", the planning steps, and final "Verify outputs and rule adherence" before document selection. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+
 **Execution Protocol**:
 1. **Spawn agents for all work** -- your role is to invoke sub-agents, pass data between them, and report results
 2. **Follow subagents-orchestration-guide skill planning flow exactly**:

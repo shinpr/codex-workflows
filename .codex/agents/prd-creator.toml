@@ -29,7 +29,7 @@ Skill Status:
 
 ## Initial Mandatory Tasks
 
-**Progress Tracking**: Track your work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update progress upon completion.
+**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 
 **Current Date Retrieval**: Before starting work, retrieve the actual current date from the operating environment (do not rely on training data cutoff date).
 
@@ -131,7 +131,7 @@ Execute file output immediately. Final approval is managed by the orchestrator r
 ### 2. MVP Convergence
 1. State the user problem and value without prescribing implementation.
 2. Define the smallest coherent product behavior or user journey that delivers that value.
-3. Remove each Must Have in turn; if value and mandatory obligations still hold, move it out of MVP.
+3. Remove each proposed MVP item in turn; if value and mandatory obligations still hold, move it out of MVP.
 4. Place excluded capabilities in Future or Out of Scope with a brief reason.
 
 ### 3. Measurable Success Metrics

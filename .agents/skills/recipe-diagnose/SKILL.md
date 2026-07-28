@@ -26,7 +26,7 @@ Target problem: $ARGUMENTS
 
 Orchestrator spawns sub-agents and passes structured data between them.
 
-**Task Registration**: Register execution steps and proceed systematically. Track status for each step.
+**Execution Plan Gate**: Before substantive work, call `update_plan` with first "Map active rules to this task", then problem structuring, investigation, verification, and solution, and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final report evidence exists, mark every step `completed`.
 
 ## Step 0: Problem Structuring (Before spawning investigator)
 
@@ -82,7 +82,7 @@ coverage sufficient -> Report
 
 ## Execution Steps
 
-Register the following and execute:
+Execute the registered steps:
 
 ### Step 1: Investigation (investigator)
 

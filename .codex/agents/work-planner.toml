@@ -33,7 +33,7 @@ Skill Status:
 
 ## Initial Mandatory Tasks
 
-**Progress Tracking**: Track your work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update progress upon completion.
+**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 
 ## Main Responsibilities
 
@@ -195,7 +195,7 @@ Mapping rules:
 
 ### 5e. Build Failure Mode Checklist
 
-Populate the plan template's `Failure Mode Checklist` before finalizing tasks. Enumerate all nine domain-independent categories, mark whether each applies, and list the task IDs that cover applicable categories. Keep category names generic and put project-specific details in task descriptions or notes.
+Populate the plan template's `Failure Mode Checklist` before finalizing tasks. Enumerate all ten domain-independent categories, mark whether each applies, and list the task IDs that cover applicable categories. Keep category names generic and put project-specific details in task descriptions or notes.
 
 Categories:
 - same-value
@@ -207,6 +207,7 @@ Categories:
 - shared-state dependency
 - rollback-only visibility
 - missing-sort-key ordering
+- irreversible-operation
 
 `missing-sort-key ordering` applies when a collection is sorted by a field or key that may be absent, null, derived, or conditionally omitted. Covering tasks must prove a deterministic fallback order for items lacking the sort key.
 

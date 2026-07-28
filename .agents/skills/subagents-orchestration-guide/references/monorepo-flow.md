@@ -125,21 +125,21 @@ Layer is determined from the task's **Target files** paths -- this is a factual 
 Each task uses the standard 4-step cycle with layer-appropriate agents:
 
 ### backend-task
-1. task-executor: Implementation
+1. Capture `diffBase`; task-executor: Implementation
 2. Escalation check
-3. quality-fixer: Quality check and fixes
+3. quality-fixer: Quality check and fixes with `task_file` and `filesModified`
 4. git commit (on status: "approved")
 
 ### frontend-task
-1. task-executor-frontend: Implementation
+1. Capture `diffBase`; task-executor-frontend: Implementation
 2. Escalation check
-3. quality-fixer-frontend: Quality check and fixes
+3. quality-fixer-frontend: Quality check and fixes with `task_file` and `filesModified`
 4. git commit (on status: "approved")
 
 ### integration-test-reviewer Placement
 
 When `requiresTestReview` is `true`:
-- Standard flow (integration-test-reviewer after task-executor, before quality-fixer)
+- Standard flow: integration-test-reviewer after executor and before quality-fixer, with changed integration/E2E paths from `filesModified`, `diffBase`, `taskFile`, and only matching `skeletonFiles` when available from acceptance-test-generator output or task/work-plan references
 
 ## Agent Routing Summary
 

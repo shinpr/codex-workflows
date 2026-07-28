@@ -95,7 +95,7 @@ The Traceability table records coverage. This table carries the required value v
 
 ## Failure Mode Checklist
 
-Domain-independent failure categories this implementation must guard against. Enumerate all nine categories, mark which apply, and list a covering task for each that applies; keep category names generic and place project-specific detail in task descriptions or notes.
+Domain-independent failure categories this implementation must guard against. Enumerate all ten categories, mark which apply, and list a covering task for each that applies; keep category names generic and place project-specific detail in task descriptions or notes.
 
 `missing-sort-key ordering` applies when a collection is sorted by a field or key that may be absent, null, derived, or conditionally omitted. Covering tasks must prove a deterministic fallback order for items lacking the sort key.
 
@@ -110,6 +110,9 @@ Domain-independent failure categories this implementation must guard against. En
 | shared-state dependency | yes/no | |
 | rollback-only visibility | yes/no | |
 | missing-sort-key ordering | yes/no | |
+| irreversible-operation | yes/no | |
+
+Set `irreversible-operation` to `yes` when an operation cannot be safely reversed or retried, and assign a covering task.
 
 ## UI Spec Component -> Task Mapping
 
