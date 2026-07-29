@@ -100,6 +100,12 @@ The included [Work Plan template](.agents/skills/documentation-criteria/referenc
 
 The [Task template](.agents/skills/documentation-criteria/references/task-template.md) then carries protected conditions, allowed actions, binding decisions, observable contract values, proof obligations, and yes-or-no completion checks into implementation. Final review reads the governing documents and completed diff rather than relying on the implementation conversation.
 
+### A real workflow run
+
+[The BytePlus Seedream provider integration in mcp-image](https://github.com/shinpr/mcp-image/pull/114) was an 18-file change that added a third external image provider while preserving the provider-neutral MCP request, client, file-save, and file-URI contracts. The workflow divided the implementation into eight planned tasks and carried provider routing, capability differences, external-call boundaries, and verification obligations through design, implementation, and review.
+
+The resulting integration could move directly into live evaluation through the production MCP path. That evaluation established the final model routing, prompt-generation limit, timeout, and response handling without changing the public MCP contract. Independent reviews also returned the implementation for an unbounded file read, a runtime validation bypass, a blocking FIFO path, and inconsistent API-key normalization. All four findings were fixed before merge, and the PR passed all 303 tests across 19 files plus a no-retry live provider call.
+
 ---
 
 ## Installation
