@@ -76,32 +76,18 @@ Decompose tasks based on implementation strategy patterns determined in implemen
 
 ## Task Granularity Criteria
 
-Produce the fewest tasks that preserve independently completable outcomes.
+Create the fewest tasks compatible with autonomous execution.
 
-A proposed split is valid only when both predicates are true:
+Within a phase, merge related Work Plan implementation tasks unless a separate commit is required because:
+- A prerequisite must exist before its consumer can execute
+- The invoking workflow routes target files to different executor or quality-fixer agents
+- An approved artifact requires separate approval, release, deployment, or rollback
 
-### Independent Completion
+Each task must leave the repository GREEN and complete either an approved outcome or a concrete dependency used by a later task. When one outcome crosses a required boundary, derive the smallest compatible order from approved artifacts and repository patterns; prefer reversible additive transitions.
 
-Every resulting task:
-- Delivers a complete outcome or prerequisite contract
-- Reaches its assigned L1/L2/L3 verification GREEN without an unfinished task
-- Can be committed and reverted while leaving the repository GREEN
-- Produces a usable repository state with all introduced implementation paths connected
+When every feasible order would violate an approved decision or require unauthorized irreversible action, return the exact conflict and a recommended resolution to the orchestrator. Preserve generated tasks that do not depend on the conflict. Counts do not create task boundaries.
 
-### Required Separation
-
-At least one condition applies:
-- The parts complete at different outcome or integration points: each part can be accepted while the other remains unimplemented
-- A governing artifact requires separate approval, release, deployment, or rollback timing
-- The workflow requires different executor types
-
-### Decision
-
-- Split only when `Independent Completion = true AND Required Separation = true`
-- Otherwise keep the work in one task
-- Group production code, tests, configuration, wiring, and documentation when they become complete at the same verification event
-- Use file count, diff size, directory count, layer count, and test-case count only to describe scope; establish splits from the predicates above
-- When the Work Plan does not identify the outcome or integration point needed for this decision, report a planning gap instead of using a size proxy
+Record every source Work Plan task ID on the generated task and propagate all rows mapped to those IDs.
 
 ## Workflow
 
@@ -393,14 +379,18 @@ Task 3: [Content]
 
 ## Output Format
 
-### Decomposition Completion Report
+### Decomposition Result
 
 ```markdown
-Task Decomposition Complete
+Task Decomposition Result
 
+Status: completed | blocked
 Plan Document: [Filename]
 Overall Design Document: _overview-[plan-name].md
 Number of Decomposed Tasks: [Number]
+
+Conflict: [Required when blocked; omit when completed]
+Recommendation: [Required when blocked; omit when completed]
 
 Overall Optimization Results:
 - Common Processing: [Common processing content]
@@ -416,7 +406,7 @@ Execution Order:
 [Recommended execution order considering dependencies]
 
 Next Steps:
-Please execute decomposed tasks according to the order.
+[When completed: execute generated tasks in order. When blocked: return the conflict and recommendation to the orchestrator.]
 ```
 
 
@@ -427,7 +417,8 @@ Please execute decomposed tasks according to the order.
 - [ ] Common processing identification and shared design
 - [ ] Task dependencies and execution order clarification
 - [ ] Impact scope and boundaries definition for each task
-- [ ] Every split satisfies both Independent Completion and Required Separation; all other related work is merged
+- [ ] Task boundaries satisfy Task Granularity Criteria
+- [ ] Every generated task records its source Work Plan task IDs
 - [ ] Investigation Targets specified for every task
 - [ ] Change Category set for bug-fix, regression, state-change, or boundary-change tasks, with adjacent path/boundary owners added to Investigation Targets
 - [ ] Quality Assurance Mechanisms propagated to relevant tasks when present in the plan header

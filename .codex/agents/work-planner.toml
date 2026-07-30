@@ -252,8 +252,8 @@ Include completion conditions in task names (e.g., "Service implementation and u
 
 ### Strategy A: Test-Driven Development (when test design information provided)
 
-#### Phase 0: Shared Test Preparation (When Required)
-Use Phase 0 for shared test setup or harness artifacts that pass existing checks independently and are consumed by multiple implementation tasks.
+#### Phase 0: Test Execution Prerequisites (When Required)
+Use Phase 0 for independently GREEN test setup or harness artifacts that must exist before a consuming implementation task can execute.
 
 **Test Implementation Timing and Placement**:
 - Unit tests: Include the Red-Green-Refactor cycle in the implementation task that makes the test GREEN
@@ -340,7 +340,7 @@ When an E2E lane generated file is `null` and its `e2eAbsenceReason` is missing:
 #### Step 4: Classify and Place Tests
 
 **Test Classification**:
-- Setup items (Mock preparation, measurement tools, Helpers, etc.) → Prioritize in Phase 1
+- Setup that need not exist before its consumer executes → Include in the consuming implementation task
 - Unit tests (individual functions) → Include Red-Green-Refactor in the relevant implementation task
 - Integration tests → Place as create/execute tasks when relevant feature implementation is complete
 - fixture-e2e tests → Place as create/execute tasks alongside relevant UI implementation
@@ -350,10 +350,7 @@ When an E2E lane generated file is `null` and its `e2eAbsenceReason` is missing:
 - Risk levels ("high risk", "required", etc.) → Move to earlier phases
 
 **Task Generation Principles**:
-- Create the fewest implementation tasks that preserve independent GREEN completion and required sequencing boundaries
-- Group source, tests, configuration, wiring, and documentation when they become complete at the same outcome or integration point
-- Create separate tasks only when every resulting task can independently reach GREEN and a different outcome, required sequencing boundary, or executor-type boundary exists
-- Group test cases by the outcome or integration point at which they become GREEN, regardless of count
+- Within each phase, group implementation, tests, configuration, wiring, and documentation that become GREEN at the same verification point, regardless of count
 - Specify "X test implementations" in each task (quantify progress)
 - Specify traceability: Show correspondence with acceptance criteria in "AC1 support (3 items)" format
 

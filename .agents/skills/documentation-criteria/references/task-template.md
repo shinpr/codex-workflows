@@ -3,7 +3,7 @@
 Metadata:
 - Dependencies: task-01 -> Deliverable: docs/plans/analysis/research-results.md
 - Provides: docs/plans/analysis/api-spec.md (for research/design tasks)
-- Granularity: Independently completable single-commit unit
+- Source Plan Tasks: [P1-T1, P1-T2]
 
 ## Implementation Content
 [What this task will achieve]

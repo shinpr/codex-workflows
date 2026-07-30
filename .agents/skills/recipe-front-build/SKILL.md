@@ -21,7 +21,7 @@ description: "Execute frontend tasks in autonomous execution mode using task-exe
 1. **Spawn agents for all work** -- your role is to invoke sub-agents, pass data between them, and report results
 2. **Follow the 4-step task cycle exactly**: task-executor-frontend -> escalation check -> quality-fixer-frontend -> commit
 3. **Enter autonomous mode** when user provides execution instruction with existing task files -- this IS the batch approval
-4. **Scope**: Complete when all tasks are committed or escalation occurs
+4. **Scope**: Complete when all tasks are committed or user input is required
 
 **CRITICAL**: MUST run quality-fixer-frontend before every commit.
 ENFORCEMENT: Commits without quality-fixer-frontend approval are invalid and MUST be reverted.
@@ -92,17 +92,17 @@ Generate tasks from the work plan? (y/n):
 ```
 
 ### 3. Task Decomposition (if approved)
-Spawn task-decomposer agent: "Read work plan at docs/plans/[plan-name].md and produce the fewest independently completable tasks. Output: Individual task files in docs/plans/tasks/. Granularity: 1 task = 1 commit."
+Spawn task-decomposer agent: "Read the approved work plan at docs/plans/[plan-name].md and generate executable task files in docs/plans/tasks/."
 
 ### 4. Verify Generation
-Recompute the Consumed Task Set and verify it is non-empty.
+Check task-decomposer `Status`. Apply Orchestrator Escalation Resolution for `blocked` or an unrecognized status. Only after `completed`, recompute the Consumed Task Set and verify it is non-empty.
 
 ## Pre-execution Checklist
 
 - [ ] Confirmed task files exist in docs/plans/tasks/
 - [ ] Identified task execution order (dependencies)
 - [ ] **Environment check**: Can I execute per-task commit cycle?
-  - If commit capability unavailable -> Escalate before autonomous mode
+  - If commit capability unavailable -> Apply Orchestrator Escalation Resolution before autonomous mode
   - Other environments (tests, quality tools) -> Subagents will escalate
 
 ## Task Execution Cycle (4-Step Cycle) - Frontend Specialized
@@ -123,16 +123,16 @@ For EACH task, YOU MUST:
 1. **Capture diff base**: Record the current revision as `diffBase`.
 2. **Spawn task-executor-frontend agent**: "Task file: docs/plans/tasks/[filename].md Execute frontend implementation"
 3. **CHECK task-executor-frontend response**:
-   - `status: "escalation_needed"` or `"blocked"` -> STOP and escalate to user
+   - `status: "escalation_needed"` or `"blocked"` -> Apply Orchestrator Escalation Resolution
    - `requiresTestReview` is `true` -> Spawn integration-test-reviewer with `changedTestFiles: [integration/E2E paths from filesModified]`, `diffBase`, and `taskFile`; when matching integration/E2E skeleton paths are available from acceptance-test-generator output or task/work-plan references, pass only those paths as `skeletonFiles`
      - `needs_revision` -> Apply Review Revision Convergence (`author`: task-executor-frontend; `artifact`: changed test files); on `progression`, proceed to step 4
      - `approved` -> Proceed to step 4
-     - `blocked` or unrecognized status -> STOP and escalate to user
+     - `blocked` or unrecognized status -> Apply Orchestrator Escalation Resolution
    - `readyForQualityCheck: true` -> Proceed to step 4
 4. **Spawn quality-fixer-frontend agent** with `task_file` and executor `filesModified`.
 5. **CHECK quality-fixer-frontend response**:
    - `status: "stub_detected"` -> Return to step 2 with `stubFindings`
-   - `status: "blocked"` -> STOP and escalate to user
+   - `status: "blocked"` -> Apply Orchestrator Escalation Resolution
    - `status: "approved"` -> Proceed to step 6
 6. **COMMIT on approval**: After `status: "approved"` from quality-fixer-frontend -> Execute git commit. Use `changeSummary` for commit message.
 
@@ -160,16 +160,16 @@ After all task cycles finish, collect all `filesModified` from every task-execut
 3. Consolidate results:
    - code-verifier passes when `summary.status` is `consistent` or `mostly_consistent`
    - code-verifier fails when `summary.status` is `needs_review` or `inconsistent`
-   - code-verifier `blocked` or unrecognized status -> Escalate to user
+   - code-verifier `blocked` or unrecognized status -> Apply Orchestrator Escalation Resolution
    - security-reviewer passes when `status` is `approved` or `approved_with_notes`
    - security-reviewer fails when `status` is `needs_revision`
-   - security-reviewer `blocked` -> Escalate to user
+   - security-reviewer `blocked` -> Apply Orchestrator Escalation Resolution
 4. If either verifier fails:
    - Create one ephemeral frontend fix task covering verifier discrepancies and security requiredFixes
    - Pass its exact path to task-executor-frontend and then quality-fixer-frontend
    - Re-run both code-verifier and security-reviewer after any fix
    - Delete the ephemeral task file only after both verifiers pass
-   - Maximum retry count is 1 verification fix cycle; if any failed verifier still fails after re-run, escalate to the user
+   - If any verifier still fails after re-run, apply Orchestrator Escalation Resolution
 5. If both verifiers pass -> Proceed to completion report
 
 ## Final Cleanup
@@ -194,7 +194,7 @@ If cleanup fails, report the failed path but do not invalidate completed impleme
 - [ ] All tasks executed through 4-step cycle (task-executor-frontend -> check -> quality-fixer-frontend -> commit)
 - [ ] System constraint suffix appended to all sub-agent prompts
 - [ ] All quality gates passed
-- [ ] All tasks committed or escalation completed
+- [ ] All tasks committed or user input requested
 
 ## Output Example
 Frontend implementation phase completed.

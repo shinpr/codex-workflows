@@ -142,7 +142,7 @@ Use the executor's `filesModified` as the task write set.
 Spawn integration-test-reviewer with `changedTestFiles: [integration/E2E test paths from filesModified]`, `diffBase`, `skeletonFiles: [layer-specific paths from Step 2]`, and `taskFile`.
 Keep `testsAdded` as reporting metadata only.
 
-**Expected output**: `status` (approved/needs_revision/blocked), `reviewBasis`, `requiredFixes`. Escalate `blocked` or an unrecognized status.
+**Expected output**: `status` (approved/needs_revision/blocked), `reviewBasis`, `requiredFixes`. Apply Orchestrator Escalation Resolution for `blocked` or an unrecognized status.
 
 ### Step 6: Apply Review Fixes
 
@@ -163,7 +163,7 @@ Spawn quality-fixer routed by task filename pattern:
 
 On quality-fixer result:
 - `status: "stub_detected"` -> Return to Step 4 with `stubFindings`
-- `status: "blocked"` -> Escalate to user
+- `status: "blocked"` -> Apply Orchestrator Escalation Resolution
 - `status: "approved"` -> Commit test files
 - MUST commit test files with appropriate message
 ENFORCEMENT: Commits without quality-fixer approval are invalid.

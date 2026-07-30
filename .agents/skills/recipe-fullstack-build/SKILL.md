@@ -31,7 +31,7 @@ ENFORCEMENT: Proceeding without reading monorepo-flow.md invalidates the entire 
    - `*-frontend-task-*` -> task-executor-frontend + quality-fixer-frontend
 3. **Follow the 4-step task cycle exactly**: executor -> escalation check -> quality-fixer -> commit
 4. **Enter autonomous mode** when user provides execution instruction with existing task files -- this IS the batch approval
-5. **Scope**: Complete when all tasks are committed or escalation occurs
+5. **Scope**: Complete when all tasks are committed or user input is required
 
 **CRITICAL**: MUST run layer-appropriate quality-fixer before every commit.
 ENFORCEMENT: Commits without quality-fixer approval are invalid and MUST be reverted.
@@ -102,17 +102,17 @@ Generate tasks from the work plan? (y/n):
 ```
 
 ### 3. Task Decomposition (if approved)
-Spawn task-decomposer agent: "Read work plan at docs/plans/[plan-name].md and produce the fewest independently completable tasks. Output: Individual task files in docs/plans/tasks/. Granularity: 1 task = 1 commit. Use layer-aware naming: {plan}-backend-task-{n}.md, {plan}-frontend-task-{n}.md based on target file paths."
+Spawn task-decomposer agent: "Read the approved work plan at docs/plans/[plan-name].md and generate executable task files in docs/plans/tasks/. Use layer-aware naming: {plan}-backend-task-{n}.md, {plan}-frontend-task-{n}.md based on target file paths."
 
 ### 4. Verify Generation
-Recompute the Consumed Task Set and verify it is non-empty.
+Check task-decomposer `Status`. Apply Orchestrator Escalation Resolution for `blocked` or an unrecognized status. Only after `completed`, recompute the Consumed Task Set and verify it is non-empty.
 
 ## Pre-execution Checklist
 
 - [ ] Confirmed task files exist in docs/plans/tasks/
 - [ ] Identified task execution order (dependencies)
 - [ ] **Environment check**: Can I execute per-task commit cycle?
-  - If commit capability unavailable -> Escalate before autonomous mode
+  - If commit capability unavailable -> Apply Orchestrator Escalation Resolution before autonomous mode
   - Other environments (tests, quality tools) -> Subagents will escalate
 
 ## Agent Routing Table
@@ -133,16 +133,16 @@ For EACH task, YOU MUST:
 1. **Capture diff base**: Record the current revision as `diffBase`.
 2. **Spawn task-executor or task-executor-frontend agent** (per routing table): "Execute the task implementation for [task-file-path]"
 3. **CHECK executor response**:
-   - `status: "escalation_needed"` or `"blocked"` -> STOP and escalate to user
+   - `status: "escalation_needed"` or `"blocked"` -> Apply Orchestrator Escalation Resolution
    - `requiresTestReview` is `true` -> Spawn integration-test-reviewer with `changedTestFiles: [integration/E2E paths from filesModified]`, `diffBase`, and `taskFile`; when matching integration/E2E skeleton paths are available from acceptance-test-generator output or task/work-plan references, pass only those paths as `skeletonFiles`
      - `needs_revision` -> Apply Review Revision Convergence (`author`: layer-appropriate executor; `artifact`: changed test files); on `progression`, proceed to step 4
      - `approved` -> Proceed to step 4
-     - `blocked` or unrecognized status -> STOP and escalate to user
+     - `blocked` or unrecognized status -> Apply Orchestrator Escalation Resolution
    - `readyForQualityCheck: true` -> Proceed to step 4
 4. **Spawn quality-fixer agent** (layer-appropriate per routing table) with `task_file` and executor `filesModified`.
 5. **CHECK quality-fixer response**:
    - `status: "stub_detected"` -> Return to step 2 with `stubFindings`
-   - `status: "blocked"` -> STOP and escalate to user
+   - `status: "blocked"` -> Apply Orchestrator Escalation Resolution
    - `status: "approved"` -> Proceed to step 6
 6. **COMMIT on approval**: After `status: "approved"` from quality-fixer -> Execute git commit
 
@@ -170,16 +170,16 @@ After all task cycles finish, collect all `filesModified` from every task-execut
 3. Consolidate results:
    - each code-verifier run passes when `summary.status` is `consistent` or `mostly_consistent`
    - a code-verifier run fails when `summary.status` is `needs_review` or `inconsistent`
-   - code-verifier `blocked` or unrecognized status -> Escalate to user
+   - code-verifier `blocked` or unrecognized status -> Apply Orchestrator Escalation Resolution
    - security-reviewer passes when `status` is `approved` or `approved_with_notes`
    - security-reviewer fails when `status` is `needs_revision`
-   - security-reviewer `blocked` -> Escalate to user
+   - security-reviewer `blocked` -> Apply Orchestrator Escalation Resolution
 4. If any verifier fails:
    - Create one ephemeral fix task per executor route covering verifier discrepancies and security requiredFixes
    - Pass each exact task path to the layer-appropriate task-executor and then quality-fixer
    - Re-run all code-verifier runs and security-reviewer after any fix
    - Delete the ephemeral task files only after all verifiers pass
-   - Maximum retry count is 1 verification fix cycle; if any failed verifier still fails after re-run, escalate to the user
+   - If any verifier still fails after re-run, apply Orchestrator Escalation Resolution
 5. If all verifiers pass -> Proceed to completion report
 
 ## Final Cleanup
@@ -206,7 +206,7 @@ If cleanup fails, report the failed path but do not invalidate completed impleme
 - [ ] All tasks executed through 4-step cycle (executor -> check -> quality-fixer -> commit)
 - [ ] System constraint suffix appended to all sub-agent prompts
 - [ ] All quality gates passed
-- [ ] All tasks committed or escalation completed
+- [ ] All tasks committed or user input requested
 
 ## Output Example
 Fullstack implementation phase completed.
