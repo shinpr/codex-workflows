@@ -127,7 +127,7 @@ Autonomous execution MUST stop and wait for user input at these points.
 | Design | After design-sync completes consistency verification | Approve Design Doc |
 | Work Plan | After document-reviewer completes WorkPlan review for Medium/Large, or after simplified plan creation for Small | Batch approval for implementation phase |
 
-**ENFORCEMENT**: After batch approval, autonomous execution proceeds without stops until completion or escalation. Skipping stop points is a CRITICAL VIOLATION.
+**ENFORCEMENT**: After batch approval, autonomous execution proceeds without stops until completion or Orchestrator Escalation Resolution requires user input. Skipping stop points is a CRITICAL VIOLATION.
 
 ### Approval Status Vocabulary [MANDATORY]
 
@@ -140,7 +140,7 @@ These values standardize review and approval decisions. Review and approval agen
 | `approved_with_notes` | security-reviewer | Only hardening/policy findings | Proceed — include notes in completion report (no resolution required) |
 | `needs_revision` | Review/approval agents | Significant issues found | Use Review Revision Convergence when the active workflow owns the repair author; otherwise use the workflow's specific routing |
 | `rejected` | Document agents | Fundamental problems | Halt workflow, escalate to user |
-| `blocked` | security-reviewer | Committed secrets or high-confidence exploitable risk | Halt workflow immediately, escalate to user (requires human intervention) |
+| `blocked` | security-reviewer | Committed secrets or high-confidence exploitable risk | Apply Orchestrator Escalation Resolution |
 | `skipped` | Review/approval agents whose schema permits skipping | Preconditions not met for this step | Report reason, proceed |
 
 Handling rules:
@@ -162,6 +162,15 @@ Inputs are `author`, `artifact`, `reviewer`, and the complete `current_review` r
 5. On no progress, run one convergence pass using the governing sources to give the author targeted corrections. If the next review still makes no progress, return `non_convergent` with the artifact, unresolved findings, and attempted corrections.
 
 `progression`, `escalation`, and `non_convergent` are procedure control states, separate from the review and approval decisions governed by the Approval Status Vocabulary. The procedure owns the author-review loop; callers route its returned state exactly once and continue from the named destination. Observable progress governs loop length. The default route for `escalation` and `non_convergent` halts the current phase and presents the returned artifact, unresolved findings, and attempted corrections to the user; a caller-defined route takes precedence.
+
+### Orchestrator Escalation Resolution [MANDATORY]
+
+Apply this procedure when a workflow subagent returns `escalation_needed` or `blocked`, a required status is unrecognized, or autonomous execution would otherwise escalate. The response returns control to the orchestrator; it is not itself a human stop.
+
+1. Resolve the issue from approved requirements, governing artifacts, repository evidence, and prior agent outputs. Choose the smallest resolution that preserves approved intent.
+2. Invoke the responsible author to update the task, governing artifact, or implementation, then retry the interrupted step with the resolution and updated artifact.
+3. Continue while corrections make observable progress. On the first no-progress result, make one targeted correction from the governing sources and retry once.
+4. Resume the workflow when the interrupted step succeeds. Escalate to the user only when resolution requires a new or changed requirement, a business decision, unavailable external authority, an unauthorized irreversible action, or the targeted retry makes no progress. Preserve completed work and unaffected tasks.
 
 ### WorkPlan Review State [MANDATORY]
 
@@ -278,7 +287,7 @@ Flow rules:
 - Quality check tools (quality-fixer will detect and escalate if missing)
 - Test runner (task-executor will detect and escalate if missing)
 
-**If critical environment unavailable**: Escalate with specific missing component before entering autonomous mode
+**If critical environment unavailable**: Apply Orchestrator Escalation Resolution with the specific missing component before entering autonomous mode
 
 ### Authority Grant
 
@@ -294,15 +303,16 @@ After "batch approval for entire implementation phase" with work-planner, autono
 ```
 Batch approval -> Start autonomous execution mode
   -> task-decomposer: Task decomposition
+      - blocked/unrecognized -> Orchestrator Escalation Resolution
   -> Task execution loop:
       -> Orchestrator: capture diffBase
       -> task-executor: Implementation
       -> Escalation judgment:
-          - escalation_needed/blocked -> Escalate to user
+          - escalation_needed/blocked -> Orchestrator Escalation Resolution
           - requiresTestReview: true -> integration-test-reviewer with changedTestFiles from filesModified, diffBase, taskFile, and matching skeletonFiles when available from acceptance-test-generator output or task/work-plan references
               - needs_revision -> Review Revision Convergence (`author`: task-executor/task-executor-frontend; `artifact`: changed test files); on `progression` -> quality-fixer
               - approved -> quality-fixer
-              - blocked/unrecognized -> Escalate to user
+              - blocked/unrecognized -> Orchestrator Escalation Resolution
           - No issues -> quality-fixer
       -> quality-fixer: Quality check and fixes with task_file and filesModified
           - stub_detected -> task-executor/task-executor-frontend: complete implementation -> re-run quality-fixer
@@ -312,14 +322,14 @@ Batch approval -> Start autonomous execution mode
           - No -> code-verifier + security-reviewer: Post-implementation verification
               - all pass -> Completion report
               - any fail -> exact ephemeral task path -> layer-appropriate task-executor -> quality-fixer -> re-run all verifiers
-              - blocked -> Escalate to user
+              - blocked -> Orchestrator Escalation Resolution
 ```
 
 ### Conditions for Stopping Autonomous Execution
 
-Stop autonomous execution and escalate to user in the following cases:
+Stop autonomous execution and request user input in the following cases:
 
-1. **Escalation from subagent**: When receiving `status: "escalation_needed"` or `status: "blocked"`
+1. **Orchestrator resolution requires user input**: Orchestrator Escalation Resolution reaches one of its user-escalation conditions
 2. **Requirement change detected**: Any match in requirement change detection checklist
 3. **Work-planner update restriction violated**: Requirement changes after task-decomposer starts require overall redesign
 4. **User explicitly stops**: Direct stop instruction or interruption
@@ -344,7 +354,7 @@ Use the task loop defined in the autonomous execution diagram above. The canonic
 | security-reviewer | `status` is `approved` or `approved_with_notes` | `status` is `needs_revision` | `status` is `blocked` |
 
 Consolidate failed verifier findings into one ephemeral task per required executor and pass each exact task path through its executor and quality-fixer. Re-run both code-verifier and security-reviewer after any verification fix because the fix can invalidate either result. Delete the ephemeral task files after both verifiers pass.
-Maximum retry count is 1 verification fix cycle. If any failed verifier still fails after the re-run, escalate to the user.
+If any verifier still fails after the re-run, apply Orchestrator Escalation Resolution.
 
 ## Main Orchestrator Roles
 
@@ -373,7 +383,7 @@ Maximum retry count is 1 verification fix cycle. If any failed verifier still fa
 
 Handoff rules:
 - Verify generated integration, fixture-e2e, and service-integration-e2e file paths exist before passing them onward
-- Escalate only when required outputs are missing without a valid absence reason
+- Apply Orchestrator Escalation Resolution only when required outputs are missing without a valid absence reason
 - Require work-planner to map every carried-forward technical requirement to a covering task or a justified `gap`
 
 ## Important Constraints [MANDATORY]

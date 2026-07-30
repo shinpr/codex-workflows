@@ -112,16 +112,16 @@ Before the first task, call `update_plan` once with first "Map active rules to t
 
 1. Record the current revision as `diffBase`, then spawn task-executor (or task-executor-frontend): "Implement task [task-file-path]"
 2. Check task-executor response:
-   - `status: escalation_needed` or `blocked` -> Escalate to user
+   - `status: escalation_needed` or `blocked` -> Apply Orchestrator Escalation Resolution
    - `requiresTestReview` is `true` -> Spawn integration-test-reviewer with changed integration/E2E paths from `filesModified`, `diffBase`, and `taskFile`; when matching integration/E2E skeleton paths are available from acceptance-test-generator output or task/work-plan references, pass only those paths as `skeletonFiles`
      - `needs_revision` -> Apply Review Revision Convergence (`author`: layer-appropriate executor; `artifact`: changed test files); on `progression`, proceed to step 3
      - `approved` -> Proceed to step 3
-     - `blocked` or unrecognized status -> Escalate to user
+     - `blocked` or unrecognized status -> Apply Orchestrator Escalation Resolution
    - Otherwise -> Proceed to step 3
 3. Spawn quality-fixer (or quality-fixer-frontend) with `task_file` and executor `filesModified`.
 4. Check quality-fixer response:
    - `status: "stub_detected"` -> Return to step 1 with `stubFindings`
-   - `status: "blocked"` -> Escalate to user
+   - `status: "blocked"` -> Apply Orchestrator Escalation Resolution
    - `status: "approved"` -> Proceed to step 5
 5. git commit -> Execute on `status: "approved"`
 
@@ -133,16 +133,16 @@ After all task cycles finish, collect all `filesModified` from every executor re
 3. Consolidate results:
    - code-verifier passes when `summary.status` is `consistent` or `mostly_consistent`
    - code-verifier fails when `summary.status` is `needs_review` or `inconsistent`
-   - code-verifier `blocked` or unrecognized status -> Escalate to user
+   - code-verifier `blocked` or unrecognized status -> Apply Orchestrator Escalation Resolution
    - security-reviewer passes when `status` is `approved` or `approved_with_notes`
    - security-reviewer fails when `status` is `needs_revision`
-   - security-reviewer `blocked` -> Escalate to user
+   - security-reviewer `blocked` -> Apply Orchestrator Escalation Resolution
 4. If either verifier fails:
    - Create one ephemeral fix task per executor route covering verifier discrepancies and security requiredFixes
    - Pass each exact path through the layer-appropriate executor and quality-fixer
    - Re-run both verification agents after any fix
    - Delete ephemeral task files only after both pass
-   - Maximum retry count is 1 verification fix cycle; if any failed verifier still fails after re-run, escalate to the user
+   - If any verifier still fails after re-run, apply Orchestrator Escalation Resolution
 5. If both verifiers pass -> Proceed to completion report
 
 ### Test Information Communication
@@ -162,5 +162,5 @@ After acceptance-test-generator execution, when spawning work-planner, communica
 - [ ] code-verifier included before document-reviewer for Design Doc review
 - [ ] All stopping points honored with user confirmation obtained
 - [ ] Quality-fixer spawned before every commit
-- [ ] All tasks committed or escalation completed
+- [ ] All tasks committed or user input requested
 - [ ] System constraint suffix appended to all sub-agent prompts

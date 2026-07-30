@@ -102,7 +102,7 @@ When user responds to questions:
 - [ ] codebase-analyzer included before each Design Doc creation
 - [ ] code-verifier included before each Design Doc review
 - [ ] **Environment check**: Can I execute per-task commit cycle?
-  - If commit capability unavailable -> Escalate before autonomous mode
+  - If commit capability unavailable -> Apply Orchestrator Escalation Resolution before autonomous mode
   - Other environments (tests, quality tools) -> Subagents will escalate
 
 **Required Flow Compliance**:
@@ -138,7 +138,7 @@ Before executing task files, execute the Implementation Readiness Preflight Proc
 **Rules**:
 1. Execute ONE task completely before starting next; capture `diffBase` before its executor call
 2. Check executor status before quality-fixer (escalation check)
-3. When `requiresTestReview` is true, integration-test-reviewer receives changed integration/E2E paths from `filesModified`, `diffBase`, and `taskFile`; when matching integration/E2E skeleton paths are available from acceptance-test-generator output or task/work-plan references, pass only those paths as `skeletonFiles`; `blocked` or unrecognized status escalates to the user
+3. When `requiresTestReview` is true, integration-test-reviewer receives changed integration/E2E paths from `filesModified`, `diffBase`, and `taskFile`; when matching integration/E2E skeleton paths are available from acceptance-test-generator output or task/work-plan references, pass only those paths as `skeletonFiles`; apply Orchestrator Escalation Resolution for `blocked` or an unrecognized status
 4. Quality-fixer MUST run after each executor with `filesModified` and `task_file`
 5. If quality-fixer returns `status: "stub_detected"`, route the task back to the same executor with `stubFindings`
 6. Commit MUST execute only when quality-fixer returns `status: "approved"` (do not defer to end)
@@ -151,16 +151,16 @@ After all task cycles finish, collect all `filesModified` from every task-execut
 3. Consolidate results:
    - each code-verifier run passes when `summary.status` is `consistent` or `mostly_consistent`
    - a code-verifier run fails when `summary.status` is `needs_review` or `inconsistent`
-   - code-verifier `blocked` or unrecognized status -> Escalate to user
+   - code-verifier `blocked` or unrecognized status -> Apply Orchestrator Escalation Resolution
    - security-reviewer passes when `status` is `approved` or `approved_with_notes`
    - security-reviewer fails when `status` is `needs_revision`
-   - security-reviewer `blocked` -> Escalate to user
+   - security-reviewer `blocked` -> Apply Orchestrator Escalation Resolution
 4. If any verifier fails:
    - Create one ephemeral fix task per executor route covering verifier discrepancies and security requiredFixes
    - Pass each exact task path through the layer-appropriate executor and quality-fixer
    - Re-run all code-verifier runs and security-reviewer after any fix
    - Delete ephemeral task files only after all verifiers pass
-   - Maximum retry count is 1 verification fix cycle; if any failed verifier still fails after re-run, escalate to the user
+   - If any verifier still fails after re-run, apply Orchestrator Escalation Resolution
 5. If all verifiers pass -> Proceed to completion report
 
 ### Test Information Communication
@@ -183,7 +183,7 @@ After acceptance-test-generator execution, when calling work-planner, communicat
 - [ ] All stop points respected with user approval
 - [ ] All tasks executed through layer-appropriate 4-step cycle
 - [ ] All quality gates passed
-- [ ] All tasks committed or escalation completed
+- [ ] All tasks committed or user input requested
 
 ## Execution Method
 

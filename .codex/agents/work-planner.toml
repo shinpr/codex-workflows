@@ -252,11 +252,11 @@ Include completion conditions in task names (e.g., "Service implementation and u
 
 ### Strategy A: Test-Driven Development (when test design information provided)
 
-#### Phase 0: Test Preparation (Unit Tests Only)
-Create Red state tests based on unit test definitions provided from previous process.
+#### Phase 0: Test Execution Prerequisites (When Required)
+Use Phase 0 for independently GREEN test setup or harness artifacts that must exist before a consuming implementation task can execute.
 
 **Test Implementation Timing and Placement**:
-- Unit tests: Phase 0 Red → Green during implementation
+- Unit tests: Include the Red-Green-Refactor cycle in the implementation task that makes the test GREEN
 - Integration tests: Create and execute at completion of relevant feature implementation (include in phase tasks like "[Feature name] implementation with integration test creation")
 - fixture-e2e tests: Create and execute alongside the relevant UI feature implementation
 - service-integration-e2e tests: Execute only in final phase
@@ -340,8 +340,8 @@ When an E2E lane generated file is `null` and its `e2eAbsenceReason` is missing:
 #### Step 4: Classify and Place Tests
 
 **Test Classification**:
-- Setup items (Mock preparation, measurement tools, Helpers, etc.) → Prioritize in Phase 1
-- Unit tests (individual functions) → Start from Phase 0 with Red-Green-Refactor
+- Setup that need not exist before its consumer executes → Include in the consuming implementation task
+- Unit tests (individual functions) → Include Red-Green-Refactor in the relevant implementation task
 - Integration tests → Place as create/execute tasks when relevant feature implementation is complete
 - fixture-e2e tests → Place as create/execute tasks alongside relevant UI implementation
 - service-integration-e2e tests → Place as execute-only tasks in final phase when a skeleton exists
@@ -350,7 +350,7 @@ When an E2E lane generated file is `null` and its `e2eAbsenceReason` is missing:
 - Risk levels ("high risk", "required", etc.) → Move to earlier phases
 
 **Task Generation Principles**:
-- Always decompose 5+ test cases into subtasks (setup/high risk/normal/low risk)
+- Within each phase, group implementation, tests, configuration, wiring, and documentation that become GREEN at the same verification point, regardless of count
 - Specify "X test implementations" in each task (quantify progress)
 - Specify traceability: Show correspondence with acceptance criteria in "AC1 support (3 items)" format
 
