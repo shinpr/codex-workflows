@@ -74,15 +74,34 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - **Always include operation verification methods**
    - Define clear completion criteria (within executor's scope of responsibility)
 
-## Task Size Criteria
-- **Small (Recommended)**: 1-2 files
-- **Medium (Acceptable)**: 3-5 files
-- **Large (Must Split)**: 6+ files
+## Task Granularity Criteria
 
-### Judgment Criteria
-- Cognitive load: Amount readable while maintaining context (1-2 files is appropriate)
-- Reviewability: PR diff within 100 lines (ideal), within 200 lines (acceptable)
-- Rollback: Granularity that can be reverted in 1 commit
+Produce the fewest tasks that preserve independently completable outcomes.
+
+A proposed split is valid only when both predicates are true:
+
+### Independent Completion
+
+Every resulting task:
+- Delivers a complete outcome or prerequisite contract
+- Reaches its assigned L1/L2/L3 verification GREEN without an unfinished task
+- Can be committed and reverted while leaving the repository GREEN
+- Produces a usable repository state with all introduced implementation paths connected
+
+### Required Separation
+
+At least one condition applies:
+- The parts complete at different outcome or integration points: each part can be accepted while the other remains unimplemented
+- A governing artifact requires separate approval, release, deployment, or rollback timing
+- The workflow requires different executor types
+
+### Decision
+
+- Split only when `Independent Completion = true AND Required Separation = true`
+- Otherwise keep the work in one task
+- Group production code, tests, configuration, wiring, and documentation when they become complete at the same verification event
+- Use file count, diff size, directory count, layer count, and test-case count only to describe scope; establish splits from the predicates above
+- When the Work Plan does not identify the outcome or integration point needed for this decision, report a planning gap instead of using a size proxy
 
 ## Workflow
 
@@ -408,7 +427,7 @@ Please execute decomposed tasks according to the order.
 - [ ] Common processing identification and shared design
 - [ ] Task dependencies and execution order clarification
 - [ ] Impact scope and boundaries definition for each task
-- [ ] Appropriate granularity (1-5 files/task)
+- [ ] Every split satisfies both Independent Completion and Required Separation; all other related work is merged
 - [ ] Investigation Targets specified for every task
 - [ ] Change Category set for bug-fix, regression, state-change, or boundary-change tasks, with adjacent path/boundary owners added to Investigation Targets
 - [ ] Quality Assurance Mechanisms propagated to relevant tasks when present in the plan header
