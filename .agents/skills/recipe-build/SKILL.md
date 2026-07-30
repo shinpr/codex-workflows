@@ -92,7 +92,7 @@ Generate tasks from the work plan? (y/n):
 ```
 
 ### 3. Task Decomposition (if approved)
-Spawn task-decomposer agent: "Read work plan at docs/plans/[plan-name].md and decompose into atomic tasks. Output: Individual task files in docs/plans/tasks/. Granularity: 1 task = 1 commit = independently executable."
+Spawn task-decomposer agent: "Read work plan at docs/plans/[plan-name].md and produce the fewest independently completable tasks. Output: Individual task files in docs/plans/tasks/. Granularity: 1 task = 1 commit."
 
 ### 4. Verify Generation
 Recompute the Consumed Task Set and verify it is non-empty.
