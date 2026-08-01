@@ -76,6 +76,7 @@ skills:
     sections:
       - "Templates"
       - "Creation Decision Matrix [MANDATORY]"
+      - "Structural Scale"
       - "ADR Creation Conditions [MANDATORY if Any Apply]"
       - "Detailed Document Definitions"
       - "Creation Process [MANDATORY]"
@@ -91,6 +92,25 @@ skills:
       - "references/design-template.md"
       - "references/plan-template.md"
       - "references/task-template.md"
+
+  requirement-convergence:
+    skill: "requirement-convergence"
+    tags: [requirements, scope, convergence, outcome, non-goals, cost, roi, over-implementation, planning]
+    typical-use: "Converging what is worth building before design and preserving explicit exclusions"
+    size: small
+    key-references:
+      - "Observed scope facts"
+      - "User-authored exclusions"
+    sections:
+      - "Purpose"
+      - "Convergence Record"
+      - "Hearing Protocol"
+      - "Storage Protocol"
+      - "Downstream Contract"
+      - "Quality Checklist"
+      - "References"
+    references:
+      - "references/criteria.md"
 
   implementation-approach:
     skill: "implementation-approach"

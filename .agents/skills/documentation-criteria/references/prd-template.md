@@ -38,9 +38,11 @@ So that [expected value/benefit]
 
 ### Future / Out of Scope
 
-| Capability | Disposition | Reason |
-|---|---|---|
-| [Capability excluded during MVP convergence] | future / out-of-scope | [Why it is not required for the current value or obligations] |
+| Capability | Disposition | Origin | Reason |
+|---|---|---|---|
+| [Capability excluded during requirement convergence] | future / out-of-scope | user / analysis | [Why it is not required for the current outcome] |
+
+If the user considered exclusions and chose none, record: `User confirmed no non-goals.`
 
 ## Non-Functional Requirements
 
@@ -66,6 +68,10 @@ So that [expected value/benefit]
 - Known constraints: [e.g., external library limitations]
 
 ## Success Criteria
+
+### Converged Outcome
+
+[The one observable result from requirement convergence]
 
 ### Quantitative Metrics
 1. [Measurable success metric 1]

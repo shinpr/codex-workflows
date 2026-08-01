@@ -6,8 +6,9 @@ description: "Execute from codebase-scoped analysis to design document creation.
 ## Required Skills [LOAD BEFORE EXECUTION]
 
 1. [LOAD IF NOT ACTIVE] `documentation-criteria` — document creation rules and templates
-2. [LOAD IF NOT ACTIVE] `implementation-approach` — implementation strategy
-3. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
+2. [LOAD IF NOT ACTIVE] `requirement-convergence` — outcome, exclusion, and rough-cost convergence before design
+3. [LOAD IF NOT ACTIVE] `implementation-approach` — implementation strategy
+4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
@@ -79,7 +80,7 @@ Build a lightweight seed for codebase-analyzer. This is a file-location pass onl
 Construct `requirement_analysis` with:
 - `affectedFiles`: the Step 1 seed
 - `affectedLayers`: layers inferred from paths, or `["unknown"]` when unclear
-- `scale`: provisional scale from file count (`small` 1-2, `medium` 3-5, `large` 6+)
+- `scale`: provisional Structural Scale from the apparent outcomes, responsibility boundaries, and migration needs; file count is supporting evidence
 - `purpose`: the user requirements
 - `confidence`: `confirmed` when target files are explicit or the ranked seed is focused; otherwise `provisional`
 - `adrRequired`: `true` when the request changes architecture, introduces technology or dependencies, changes data flow/storage/contract ownership, or changes shared cross-boundary contracts; otherwise `false`
@@ -95,7 +96,9 @@ Construct `requirement_analysis` with:
 Spawn codebase-analyzer agent: "Analyze the existing codebase to provide evidence for Design Doc creation. requirement_analysis: [Step 1 requirement_analysis]. requirements: $ARGUMENTS. target_paths: [Step 1 affectedFiles]."
 
 ### Step 3: Scope Confirmation
-After codebase-analyzer returns, present the design scope to the user before design work:
+After codebase-analyzer returns, build and judge the requirement-convergence record from the user request and returned scope facts. Estimate rough cost from those facts, then run the hearing on fields below `ready` before design work.
+
+Present the design scope to the user:
 - Target files/modules: `analysisScope.filesAnalyzed` and directly relevant modules
 - Affected layers: inferred from `analysisScope.categoriesDetected`, `focusAreas`, and paths
 - Recommended document path: ADR, Design Doc, or both, with `documentTypeRationale`, `adrRequired`, and `adrReason`
@@ -112,14 +115,14 @@ Ask the user to choose one:
 
 If `prdRequired` is true and the user neither provides a PRD path nor explicitly approves proceeding without a PRD, stop. This recipe does not create PRDs.
 
-After confirmation, set the final scale from the confirmed target file count (`small` 1-2, `medium` 3-5, `large` 6+), recompute `adrRequired`, `adrReason`, `prdRequired`, `confidence`, and `documentTypeRationale`, then carry the complete confirmed requirement context, including confirmed scope and user answers, into design creation.
+After confirmation, set the final scale from documentation-criteria Structural Scale, recompute `adrRequired`, `adrReason`, `prdRequired`, `confidence`, and `documentTypeRationale`, then carry the complete confirmed requirement context and compact `convergence` object into design creation.
 
 **[STOP — BLOCKING]** Wait for user confirmation before proceeding.
 
 ### Step 4: Design Document Creation
 Create documents according to `documentTypeRationale`:
 - ADR only: Spawn technical-designer agent: "document_to_create: ADR. Create ADR based on the requirements, confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale], and codebase analysis output. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Include architecture decisions and clear alternatives with trade-offs."
-- Design Doc only: Spawn technical-designer agent: "document_to_create: DesignDoc. Create Design Doc based on the requirements. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, user answers, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Codebase analysis: [output from Step 2]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Include component design, acceptance criteria, and Design Convergence results."
+- Design Doc only: Spawn technical-designer agent: "document_to_create: DesignDoc. Create Design Doc based on the requirements. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including convergence, confirmed scope, user answers, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Codebase analysis: [output from Step 2]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Include component design, acceptance criteria, and Design Convergence results."
 - Both ADR and Design Doc: first spawn technical-designer with `document_to_create: ADR`. After the ADR path is available, spawn technical-designer again with `document_to_create: DesignDoc`, `adr_path: [ADR path]`, the original user requirements as `requirements_verbatim`, the same `confirmed_requirement_context`, and the same codebase analysis output. The Design Doc must reference the ADR decision.
 
 ### Step 5: Code Verification
@@ -143,6 +146,7 @@ Skip this step for ADR-only output.
 
 - [ ] Built the Step 1 scope bootstrap seed or obtained target files/modules from the user
 - [ ] Spawned codebase-analyzer with populated requirement context and passed its findings into design creation
+- [ ] Converged the requirement and persisted the record in the Design Doc or one-hop context
 - [ ] Confirmed the design scope with the user before document creation
 - [ ] Created all documents required by `documentTypeRationale` via technical-designer
 - [ ] Spawned code-verifier and passed its findings into document review for Design Docs

@@ -24,14 +24,13 @@ You are a specialized AI assistant for creating Product Requirements Documents (
 ```
 Skill Status:
 ✓ documentation-criteria/SKILL.md - ACTIVE
+✓ requirement-convergence/SKILL.md - ACTIVE
 ✓ llm-friendly-context/SKILL.md - ACTIVE
 ```
 
 ## Initial Mandatory Tasks
 
 **Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
-
-**Current Date Retrieval**: Before starting work, retrieve the actual current date from the operating environment (do not rely on training data cutoff date).
 
 ## Responsibilities
 
@@ -56,7 +55,7 @@ Skill Status:
   - `update`: Update existing PRD
   - `reverse-engineer`: Create PRD from existing implementation (Reverse PRD)
 
-- **Requirements Analysis Results**: Requirements analysis results
+- **Requirements Analysis Results**: Requirements analysis results, including the converged `convergence` object
 - **Existing PRD**: Path to existing PRD file for reference (if any)
 - **Project Context**:
   - Target users (sales, marketing, HR, etc.)
@@ -129,10 +128,10 @@ Execute file output immediately. Final approval is managed by the orchestrator r
 - Include specific use cases
 
 ### 2. MVP Convergence
-1. State the user problem and value without prescribing implementation.
-2. Define the smallest coherent product behavior or user journey that delivers that value.
-3. Remove each proposed MVP item in turn; if value and mandatory obligations still hold, move it out of MVP.
-4. Place excluded capabilities in Future or Out of Scope with a brief reason.
+1. Map `convergence.outcome` to `Success Criteria > Converged Outcome`.
+2. Include only `desired-future` requirements in MVP Requirements.
+3. Put user-authored `nonGoals` and user-raised `speculative` requirements in Future / Out of Scope with origin `user` and a reason. An analysis-suggested exclusion enters this list only after the user accepts it.
+4. Keep `weak-but-explicit` fields visible in Undetermined Items.
 
 ### 3. Measurable Success Metrics
 - Set specific numerical targets for quantitative metrics
@@ -158,6 +157,7 @@ Execute file output immediately. Final approval is managed by the orchestrator r
 - [ ] Are all user personas considered?
 - [ ] Are success metrics measurable?
 - [ ] Is scope clear (included/excluded)?
+- [ ] Does the PRD preserve the convergence outcome, exclusions, speculative items, and open fields?
 - [ ] Can non-technical people understand it?
 - [ ] Is feasibility considered?
 - [ ] Is there consistency with existing systems?
@@ -264,6 +264,10 @@ Before documenting any claim, assess confidence level:
 
 [[skills.config]]
 path = ".agents/skills/documentation-criteria/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/requirement-convergence/SKILL.md"
 enabled = true
 
 [[skills.config]]

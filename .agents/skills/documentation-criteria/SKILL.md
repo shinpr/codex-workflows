@@ -18,14 +18,26 @@ description: "Documentation creation criteria for PRD, ADR, Design Doc, UI Spec,
 
 | Condition | Required Documents | Creation Order |
 |-----------|-------------------|----------------|
-| New Feature Addition (backend) | PRD -> [ADR] -> Design Doc -> Work Plan | After PRD approval |
-| New Feature Addition (frontend/fullstack) | PRD -> **UI Spec** -> [ADR] -> Design Doc -> Work Plan | UI Spec before Design Doc |
+| Large new feature (backend) | PRD -> [ADR] -> Design Doc -> Work Plan | After PRD approval |
+| Large new feature (frontend/fullstack) | PRD -> **UI Spec** -> [ADR] -> Design Doc -> Work Plan | UI Spec before Design Doc |
 | ADR Conditions Met (see below) | ADR -> Design Doc -> Work Plan | Start immediately |
-| 6+ Files | [ADR if conditions apply] -> Design Doc -> Work Plan (Design Doc + Work Plan REQUIRED) | Start immediately |
-| 3-5 Files | Design Doc -> Work Plan (REQUIRED) | Start immediately |
-| 1-2 Files | None | Direct implementation |
+| Large structural scale | PRD -> [ADR if conditions apply] -> Design Doc -> Work Plan | After PRD approval |
+| Medium structural scale | Design Doc -> Work Plan (REQUIRED) | Start immediately |
+| Small structural scale | None | Direct implementation |
 
-**ENFORCEMENT**: EVALUATE file count and ADR conditions BEFORE starting implementation
+**ENFORCEMENT**: EVALUATE structural scale and ADR conditions BEFORE starting implementation
+
+## Structural Scale
+
+Classify the decision burden, not repository layout. File count is supporting evidence only.
+
+| Scale | Structural condition |
+|-------|----------------------|
+| Small | One coherent outcome follows existing patterns, stays within one responsibility boundary, and is easy to reverse |
+| Medium | One coherent outcome coordinates across a boundary or requires a durable design decision |
+| Large | Multiple independently valuable outcomes, separate layer-specific designs, or a staged migration/rollout must converge |
+
+An ADR condition makes the work at least Medium because it creates a durable decision. It does not by itself make the work Large. Choose Large only when the work must be decomposed into separately designed or staged outcomes.
 
 ## ADR Creation Conditions [MANDATORY if Any Apply]
 
@@ -76,7 +88,7 @@ description: "Documentation creation criteria for PRD, ADR, Design Doc, UI Spec,
   - Correctness proof method
   - Early verification point
   - Minimal form allowed for low-risk or self-evident changes: concise entries or explicit `N/A` with rationale
-    Low-risk: changes affecting 1-2 files with no external contract, integration, or data-flow changes
+    Low-risk: one reversible change following an existing pattern with no external contract, integration, or data-flow changes
     Self-evident: internal-only refactoring with identical observable inputs and outputs
 
 ### Work Plan
@@ -124,7 +136,7 @@ description: "Documentation creation criteria for PRD, ADR, Design Doc, UI Spec,
 `Proposed` -> `Accepted` -> `Deprecated`/`Superseded`/`Rejected`
 
 ## AI Automation Rules [MANDATORY]
-- 6+ files: MUST evaluate ADR conditions
+- Evaluate ADR conditions for every task; do not infer them from file count
 - Contract/data flow change detected: ADR REQUIRED
 - Check existing ADRs before implementation — ALWAYS verify alignment
 

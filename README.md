@@ -75,13 +75,13 @@ flowchart LR
     G -->|Passed| H[Complete]
 ```
 
-The requirement and affected layers decide the route. The workflow does not create a full document set by default:
+The converged requirement and structural decision burden decide the route. File count is supporting evidence, not a threshold, so repository layout alone cannot inflate a task:
 
-| Scale | Expected file count | What happens |
-|-------|------------|-------------|
-| Small | 1-2 | Simplified plan → direct implementation |
-| Medium | 3-5 | Design Doc → work plan → task execution |
-| Large | 6+ | PRD when required → ADR when required → Design Doc → test skeletons when required → work plan → task execution |
+| Scale | Structural signal | What happens |
+|-------|-------------------|--------------|
+| Small | One reversible outcome within an existing boundary | Simplified plan → direct implementation |
+| Medium | One outcome crosses a boundary or needs a durable decision | Design Doc → work plan → task execution |
+| Large | Independent outcomes, layer-specific designs, or staged migration/rollout | PRD when required → ADR when required → Design Doc → test skeletons when required → work plan → task execution |
 
 After work plan approval, Codex tracks the execution steps, implements each task with focused verification, runs repository quality checks, and creates one commit per task. A design deviation, unresolved contract, or out-of-scope write pauses execution for a decision.
 
@@ -231,6 +231,7 @@ Recipes load the repository-aware guidance required for the current task. You ra
 | `testing` | TDD Red-Green-Refactor, test types, AAA pattern, mocking |
 | `ai-development-guide` | Anti-patterns, debugging (5 Whys), quality check workflow |
 | `documentation-criteria` | Document creation rules and templates (PRD, ADR, Design Doc, Work Plan) |
+| `requirement-convergence` | Outcome, requirement layers, user-authored exclusions, and rough structural cost before design |
 | `implementation-approach` | Strategy selection: vertical / horizontal / hybrid slicing |
 | `integration-e2e-testing` | Integration/E2E test design, value-based selection, review criteria |
 | `external-resource-context` | Access methods for design sources, design systems, API schemas, and verification environments |
@@ -255,7 +256,7 @@ Codex spawns these as needed during recipe execution. You do not need to learn t
 
 | Agent | Role |
 |-------|------|
-| `requirement-analyzer` | Requirements analysis and work scale determination |
+| `requirement-analyzer` | Requirement convergence, rough cost, and structural work scale determination |
 | `prd-creator` | PRD creation and structuring |
 | `technical-designer` | ADR and Design Doc creation (backend) |
 | `technical-designer-frontend` | Frontend ADR and Design Doc creation (React) |
@@ -285,7 +286,7 @@ Codex spawns these as needed during recipe execution. You do not need to learn t
 | `code-reviewer` | Design Doc compliance validation |
 | `code-verifier` | Document-code consistency verification |
 | `security-reviewer` | Security compliance review after implementation |
-| `rule-advisor` | Skill selection via metacognitive analysis |
+| `rule-advisor` | Skill selection for standalone work not already governed by a recipe |
 | `scope-discoverer` | Codebase scope discovery for reverse docs, including PRD unit grouping |
 
 ### Diagnosis Agents
@@ -314,6 +315,7 @@ your-project/
 │   ├── testing/
 │   ├── ai-development-guide/
 │   ├── documentation-criteria/
+│   ├── requirement-convergence/
 │   ├── implementation-approach/
 │   ├── integration-e2e-testing/
 │   ├── external-resource-context/

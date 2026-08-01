@@ -31,11 +31,13 @@ Identify the fundamental purpose beyond surface-level work:
 
 ### 2. Estimate Task Scale
 
-| Scale | File Count | Indicators |
-|-------|------------|------------|
-| Small | 1-2 | Single function/component change |
-| Medium | 3-5 | Multiple related components |
-| Large | 6+ | Cross-cutting concerns, architecture impact |
+Use documentation-criteria Structural Scale. Count files only as supporting evidence.
+
+| Scale | Indicators |
+|-------|------------|
+| Small | One reversible outcome within an existing responsibility boundary |
+| Medium | One outcome crossing a boundary or requiring a durable design decision |
+| Large | Multiple independent outcomes, layer-specific designs, or staged migration/rollout |
 
 **Scale affects skill priority:**
 - Larger scale: process/documentation skills more important

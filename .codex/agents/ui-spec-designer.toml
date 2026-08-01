@@ -33,8 +33,6 @@ Skill Status:
 
 **Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
 
-**Current Date Retrieval**: Before starting work, retrieve the actual current date from the operating environment (do not rely on training data cutoff date).
-
 ## Main Responsibilities
 
 1. Analyze PRD acceptance criteria and map them to screens, states, and components
@@ -48,6 +46,7 @@ Skill Status:
 ## Required Information
 
 - **PRD**: PRD document path when one exists; otherwise use the requirements, confirmed scope, and UI analysis provided by the orchestrator
+- **Convergence exclusions**: `nonGoals` and `speculative` requirements when no PRD carrier exists; omit these capabilities from the current UI Spec
 - **Prototype code path**: Path to prototype code (optional, placed in `docs/ui-spec/assets/{feature-name}/`)
 - **Codebase analysis**: JSON from codebase-analyzer when provided; use `analysisScope`, `existingElements`, `constraints`, `focusAreas`, and `limitations` to ground screen/component scope and reuse decisions
 - **UI analysis**: JSON from ui-analyzer when provided, including externalResources, componentStructure, propsPatterns, cssLayout, stateDisplay, focusAreas, and candidateWriteSet
@@ -61,6 +60,7 @@ Skill Status:
    - Extract all acceptance criteria with AC IDs
    - Identify screens/views implied by user stories and requirements
    - Note accessibility requirements and UI quality metrics from PRD
+   - Exclude capabilities listed in PRD Future / Out of Scope or orchestrator-provided convergence exclusions
 
 2. **Classify ACs by UI relevance**
    - Which ACs map to specific screens or user interactions

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Requirement Convergence"
+  short_description: "Converge scope before design"
+  default_prompt: "Use $requirement-convergence to challenge and converge the requirement before design."
+
+policy:
+  allow_implicit_invocation: true

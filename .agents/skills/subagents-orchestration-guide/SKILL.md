@@ -49,11 +49,18 @@ To accurately analyze user requirements, pass them directly to requirement-analy
 
 ```
 Receive New Task -> Analyze requirements with requirement-analyzer
+                 -> Converge requirements at the requirements stop
                  -> Scale assessment
                  -> Execute flow based on scale
 ```
 
 **During flow execution, determine next subagent according to scale determination table**
+
+### Requirement Convergence
+
+`requirement-analyzer` returns a compact `convergence` object. At the requirements stop, run the requirement-convergence hearing on fields below `ready`, using analyzer facts and cost evidence as the observed basis. Apply direct field answers in the orchestrator; re-invoke the analyzer only when an answer changes structural scope or cost evidence. Continue when every applicable field is `ready` or user-approved `weak-but-explicit`.
+
+Before a PRD or Design Doc exists, include the object only in the handoff that needs it. After it is persisted, pass the document path instead of copying the object through later prompts.
 
 ### Requirement Change Detection During Flow [MANDATORY]
 
@@ -120,7 +127,7 @@ Autonomous execution MUST stop and wait for user input at these points.
 
 | Phase | Stop Point | User Action Required |
 |-------|------------|---------------------|
-| Requirements | After requirement-analyzer completes | Confirm requirements / Answer questions |
+| Requirements | After requirement-analyzer completes | Converge fields below `ready`, then confirm requirements |
 | PRD | After document-reviewer completes PRD review | Approve PRD |
 | UI Spec | After document-reviewer completes UI Spec review (frontend/fullstack) | Approve UI Spec |
 | ADR | After document-reviewer completes ADR review (if ADR created) | Approve ADR |
@@ -184,11 +191,11 @@ Handling rules:
 
 ## Scale Determination and Document Requirements
 
-| Scale | File Count | PRD | ADR | Design Doc | Work Plan |
-|-------|------------|-----|-----|------------|-----------|
-| Small | 1-2 | Update* | Not needed | Not needed | Simplified |
-| Medium | 3-5 | Update* | Conditional** | **Required** | **Required** |
-| Large | 6+ | **Required*** | Conditional** | **Required** | **Required** |
+| Scale | Structural condition | PRD | ADR | Design Doc | Work Plan |
+|-------|----------------------|-----|-----|------------|-----------|
+| Small | One reversible outcome within an existing responsibility boundary | Update* | Not needed | Not needed | Simplified |
+| Medium | One outcome crosses a boundary or needs a durable decision | Update* | Conditional** | **Required** | **Required** |
+| Large | Independent outcomes, layer-specific designs, or staged migration/rollout | **Required*** | Conditional** | **Required** | **Required** |
 
 \* Update if PRD exists for the relevant feature
 \*\* When there are architecture changes, new technology introduction, or data flow changes
@@ -200,7 +207,7 @@ Subagents respond in JSON format. The final response from each JSON-returning su
 
 | Agent | Routing fields the orchestrator uses |
 |-------|--------------------------------------|
-| `requirement-analyzer` | `scale`, `confidence`, `affectedLayers`, `adrRequired`, `scopeDependencies`, `questions` |
+| `requirement-analyzer` | `convergence`, `scale`, `scaleRationale`, `confidence`, `affectedLayers`, `adrRequired`, `scopeDependencies`, `questions` |
 | `codebase-analyzer` | `focusAreas`, `dataModel`, `qualityAssurance`, `dataTransformationPipelines`, `limitations` |
 | `ui-analyzer` | `externalResources`, `componentStructure`, `propsPatterns`, `cssLayout`, `stateDisplay`, `focusAreas`, `candidateWriteSet`, `limitations` |
 | `task-executor*` | `status`, `escalation_type` (`design_compliance_violation`, `similar_function_found`, `similar_component_found`, `investigation_target_not_found`, `out_of_scope_file`, `dependency_version_uncertain`, `binding_decision_violation`, `test_environment_not_ready`), `filesModified`, `requiresTestReview` |
@@ -259,7 +266,7 @@ Document generation agents (work-planner, technical-designer, prd-creator) can u
 
 ## Basic Flow for Work Planning
 
-Always start with `requirement-analyzer`, then follow the minimum flow required by scale and affected layers.
+Always start with `requirement-analyzer`, converge its result at the requirements stop, then follow the minimum flow required by scale and affected layers.
 
 | Scale | Required flow |
 |-------|---------------|
@@ -270,7 +277,8 @@ Always start with `requirement-analyzer`, then follow the minimum flow required 
 Flow rules:
 - Frontend and fullstack flows add UI Spec before Design Doc creation
 - Create ADR only when architecture, technology, or data-flow changes require it
-- Pass requirement-analyzer output and original requirements to `codebase-analyzer`
+- Pass requirement-analyzer routing output and original requirements to `codebase-analyzer`; include `convergence` only until a PRD or Design Doc persists it
+- For Small flows with no durable requirement document, include the compact convergence record in the simplified plan and its implementation handoff
 - Pass `codebase-analyzer` output to the designer as `Codebase Analysis`
 - Pass Design Doc path to `code-verifier`, then pass `code_verification` to `document-reviewer`
 - Fullstack layer sequencing is defined in `references/monorepo-flow.md`
@@ -372,7 +380,9 @@ If any verifier still fails after the re-run, apply Orchestrator Escalation Reso
 
 | From | To | Required pass-through |
 |------|----|-----------------------|
-| `requirement-analyzer` | `codebase-analyzer` | requirement analysis JSON, original requirements, PRD path when available |
+| `requirement-analyzer` | `codebase-analyzer` | requirement analysis routing fields and original requirements; include `convergence` before persistence, otherwise pass its PRD path |
+| convergence record | document owner | `prd-creator` persists it to PRD fields; `technical-designer*` persists it to Design Doc when no PRD exists and always records `weak-but-explicit` fields |
+| convergence record | Small-flow implementation | compact record through the simplified plan when no PRD or Design Doc exists |
 | `codebase-analyzer` | `technical-designer*` | `Codebase Analysis`, including `focusAreas`, `dataModel`, `qualityAssurance`, `dataTransformationPipelines`, `limitations` |
 | `technical-designer*` | `code-verifier` | Design Doc path |
 | `code-verifier` | `document-reviewer` | `code_verification` JSON |
@@ -382,6 +392,8 @@ If any verifier still fails after the re-run, apply Orchestrator Escalation Reso
 | Design Doc | `work-planner` | Verification Strategy summary, Output Comparison details, implementation-relevant technical requirements, protected no-change boundaries |
 
 Handoff rules:
+- Until persistence, pass the compact convergence object only to the next consumer that needs it. After persistence, pass its PRD or Design Doc path
+- Downstream consumers exclude `nonGoals` and `speculative` requirements from current work
 - Verify generated integration, fixture-e2e, and service-integration-e2e file paths exist before passing them onward
 - Apply Orchestrator Escalation Resolution only when required outputs are missing without a valid absence reason
 - Require work-planner to map every carried-forward technical requirement to a covering task or a justified `gap`

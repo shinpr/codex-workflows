@@ -8,9 +8,10 @@ description: "Execute from codebase-scoped analysis to frontend design document 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
 1. [LOAD IF NOT ACTIVE] `documentation-criteria` -- document quality standards
-2. [LOAD IF NOT ACTIVE] `implementation-approach` -- implementation methodology
-3. [LOAD IF NOT ACTIVE] `external-resource-context` -- external resource hearing and lookup
-4. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
+2. [LOAD IF NOT ACTIVE] `requirement-convergence` -- outcome, exclusion, and rough-cost convergence before design
+3. [LOAD IF NOT ACTIVE] `implementation-approach` -- implementation methodology
+4. [LOAD IF NOT ACTIVE] `external-resource-context` -- external resource hearing and lookup
+5. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
@@ -65,7 +66,7 @@ Build a lightweight seed for codebase-analyzer. This is a file-location pass onl
 Construct `requirement_analysis` with:
 - `affectedFiles`: the Step 1 seed
 - `affectedLayers`: `["frontend"]` plus `shared` when shared files are included
-- `scale`: provisional scale from file count (`small` 1-2, `medium` 3-5, `large` 6+)
+- `scale`: provisional Structural Scale from the apparent outcomes, responsibility boundaries, and migration needs; file count is supporting evidence
 - `purpose`: the user requirements
 - `confidence`: `confirmed` when target files are explicit or the ranked seed is focused; otherwise `provisional`
 - `adrRequired`: `true` when the request changes component architecture, state ownership, routing architecture, data flow, external dependencies, or shared cross-boundary contracts; otherwise `false`
@@ -81,7 +82,9 @@ Construct `requirement_analysis` with:
 Spawn codebase-analyzer agent: "Analyze the existing codebase to provide evidence for frontend Design Doc creation. Focus on existing implementations, state paths, API integrations, and constraints the design should respect. requirement_analysis: [Step 1 requirement_analysis]. requirements: [original user requirements]. layer: frontend. target_paths: [Step 1 affectedFiles]. focus_areas: component hierarchy, state management, UI interactions, data fetching."
 
 ### Step 3: Scope Confirmation
-After codebase-analyzer returns, present the frontend design scope to the user before UI or design work:
+After codebase-analyzer returns, build and judge the requirement-convergence record from the user request and returned scope facts. Estimate rough cost from those facts, then run the hearing on fields below `ready` before UI or design work.
+
+Present the frontend design scope to the user:
 - Target files/modules: `analysisScope.filesAnalyzed` and directly relevant components, routes, or modules
 - Affected layers: inferred from `analysisScope.categoriesDetected`, `focusAreas`, and paths
 - Recommended document path: ADR, Design Doc, or both, with `documentTypeRationale`, `adrRequired`, and `adrReason`
@@ -98,7 +101,7 @@ Ask the user to choose one:
 
 If `prdRequired` is true and the user neither provides a PRD path nor explicitly approves proceeding without a PRD, stop. This recipe does not create PRDs.
 
-After confirmation, set the final scale from the confirmed target file count (`small` 1-2, `medium` 3-5, `large` 6+), recompute `adrRequired`, `adrReason`, `prdRequired`, `confidence`, and `documentTypeRationale`, then carry the complete confirmed requirement context, including confirmed scope and user answers, into UI and design creation.
+After confirmation, set the final scale from documentation-criteria Structural Scale, recompute `adrRequired`, `adrReason`, `prdRequired`, `confidence`, and `documentTypeRationale`, then carry the complete confirmed requirement context and compact `convergence` object into UI and design creation.
 
 ADR-only path: run Steps 1, 2, 3, and 8. Also run Step 4 only when the ADR depends on external frontend resources, and Step 6 only when the ADR depends on existing UI facts beyond Step 2. Skip Steps 5 and 7.
 
@@ -139,7 +142,7 @@ Spawn ui-analyzer agent: "Gather UI facts for frontend design. requirement_analy
 For Design Doc output only. Skip this step for ADR-only output.
 
 After UI fact gathering completes, create the UI Specification:
-- Spawn ui-spec-designer agent: "Create UI Spec [from PRD at [path] if PRD exists]. Requirements: [original user requirements]. Confirmed scope: [Step 3 confirmed scope]. Codebase analysis: [JSON from codebase-analyzer]. UI analysis: [JSON from ui-analyzer]. [Prototype code is at [user-provided path]. Place prototype in docs/ui-spec/assets/{feature-name}/ | Prototype path unavailable; proceed from PRD/requirements and UI analysis.] Fill External Resources Used from docs/project-context/external-resources.md and feature identifiers."
+- Spawn ui-spec-designer agent: "Create UI Spec [from PRD at [path] if PRD exists]. Requirements: [original user requirements]. Confirmed scope and convergence exclusions: [Step 3 confirmed scope, nonGoals, and speculative requirements]. Codebase analysis: [JSON from codebase-analyzer]. UI analysis: [JSON from ui-analyzer]. [Prototype code is at [user-provided path]. Place prototype in docs/ui-spec/assets/{feature-name}/ | Prototype path unavailable; proceed from PRD/requirements and UI analysis.] Fill External Resources Used from docs/project-context/external-resources.md and feature identifiers."
 - Spawn document-reviewer agent: "doc_type: UISpec target: [ui-spec path] Review for consistency and completeness"
 
 **[STOP -- BLOCKING]** Present UI Spec for user approval.
@@ -148,7 +151,7 @@ After UI fact gathering completes, create the UI Specification:
 ### Step 8: Design Document Creation Phase
 Create appropriate design documents according to confirmed scope and scale:
 - For ADR: Spawn technical-designer-frontend agent: "document_to_create: ADR. Create ADR for [technical decision]. Requirements: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Codebase Analysis: [JSON from codebase-analyzer]. UI Analysis: [JSON from ui-analyzer, only if Step 6 ran]. Present at least two alternatives with trade-offs."
-- For Design Doc: Spawn technical-designer-frontend agent: "document_to_create: DesignDoc. Create Design Doc based on requirements. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, user answers, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Codebase Analysis: [JSON from codebase-analyzer]. UI Analysis: [JSON from ui-analyzer]. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec. Fill External Resources Used from docs/project-context/external-resources.md and feature identifiers. Record only alternatives actually considered by Design Convergence; `None` is valid."
+- For Design Doc: Spawn technical-designer-frontend agent: "document_to_create: DesignDoc. Create Design Doc based on requirements. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including convergence, confirmed scope, user answers, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Codebase Analysis: [JSON from codebase-analyzer]. UI Analysis: [JSON from ui-analyzer]. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec. Fill External Resources Used from docs/project-context/external-resources.md and feature identifiers. Record only alternatives actually considered by Design Convergence; `None` is valid."
   - When both ADR and Design Doc are required, create the ADR first. After the ADR path is available, create the Design Doc with `document_to_create: DesignDoc` and `adr_path: [ADR path]`; the Design Doc must reference the ADR decision.
 - For Design Docs only, spawn code-verifier agent: "Verify Design Doc against code. doc_type: design-doc. document_path: [document path]. verbose: false."
 - Review each created document:
@@ -164,6 +167,7 @@ ENFORCEMENT: Every stop point MUST be respected. Skipping user approval invalida
 
 - [ ] Built the Step 1 scope bootstrap seed or obtained target files/modules from the user
 - [ ] Codebase analysis completed before UI and design work
+- [ ] Converged the requirement and carried exclusions into UI/design creation
 - [ ] Confirmed the frontend design scope with the user before UI and design work
 - [ ] External resource hearing completed when applicable
 - [ ] UI analysis completed before Design Doc creation when applicable

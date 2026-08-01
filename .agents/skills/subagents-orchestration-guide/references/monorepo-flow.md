@@ -10,11 +10,11 @@ This reference defines the orchestration flow for projects spanning multiple lay
 
 ## Design Phase
 
-### Large Scale Fullstack (6+ Files) - 16 Steps
+### Large Structural Scale Fullstack - 16 Steps
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
-| 1 | requirement-analyzer | Requirement analysis + scale determination **[Stop]** | Requirements + scale |
+| 1 | requirement-analyzer + orchestrator | Requirement analysis, convergence hearing, and scale determination **[Stop]** | Converged requirements + scale |
 | 2 | prd-creator | PRD covering entire feature (all layers) | Single PRD |
 | 3 | document-reviewer | PRD review **[Stop]** | Approval |
 | 4 | (orchestrator) | External resource hearing **[Stop]** | Project context |
@@ -31,11 +31,11 @@ This reference defines the orchestration flow for projects spanning multiple lay
 | 15 | work-planner | Work plan from all Design Docs | Work plan |
 | 16 | document-reviewer | WorkPlan review **[Stop: Batch approval]** | Approval |
 
-### Medium Scale Fullstack (3-5 Files) - 14 Steps
+### Medium Structural Scale Fullstack - 14 Steps
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
-| 1 | requirement-analyzer | Requirement analysis + scale determination **[Stop]** | Requirements + scale |
+| 1 | requirement-analyzer + orchestrator | Requirement analysis, convergence hearing, and scale determination **[Stop]** | Converged requirements + scale |
 | 2 | (orchestrator) | External resource hearing **[Stop]** | Project context |
 | 3 | (orchestrator) | Ask user for prototype code **[Stop]** | Prototype path or none |
 | 4 | codebase-analyzer x2 + ui-analyzer x1 | Per-layer codebase analysis plus frontend UI analysis | Analysis JSON |
@@ -60,7 +60,7 @@ When spawning Design Doc creation for each layer, pass explicit context:
 
 | Scale | Concrete context value |
 |-------|------------------------|
-| Large | `context: { scale: "large", prd_path: "[path]", requirement_analysis: [requirement-analyzer output] }` |
+| Large | `context: { scale: "large", prd_path: "[path]", requirement_analysis: [routing fields without the persisted convergence object] }` |
 | Medium | `context: { scale: "medium", prd_path: null, requirement_analysis: [requirement-analyzer output] }` |
 
 Before spawning, replace every context placeholder with a concrete context object for the active flow scale. For filtered context placeholders, use the same `scale` and `prd_path` values, and replace `requirement_analysis` with the layer-filtered requirement analysis.

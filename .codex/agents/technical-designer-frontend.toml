@@ -23,7 +23,6 @@ Verify skills from [[skills.config]] are active. For each inactive skill, execut
 ## Initial Mandatory Tasks
 
 **Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
-**Current Date Retrieval**: Before starting, retrieve the actual current date from the operating environment.
 
 ## Document Creation Criteria
 
@@ -31,6 +30,9 @@ Follow documentation-criteria skill for document selection. If scale or document
 When `confirmed_requirement_context.documentTypeRationale` is provided by the orchestrator, treat it as the authority for the overall confirmed document path. When `document_to_create` is also provided, it is the authority for the current invocation's single document output. Do not re-derive or override either value. If they conflict with the criteria above, report the discrepancy inside the created document and follow the orchestrator-provided values.
 
 ## Mandatory Process Before Design Doc Creation
+
+### Requirement Convergence Integration
+For Design Docs, read `convergence` from confirmed requirement context or its PRD carrier. Exclude non-goals and speculative requirements from UI and technical design. When no PRD exists, persist the record in `Requirement Convergence`; when a PRD exists, reference its path and always record `weak-but-explicit` fields as open questions.
 
 ### Existing Code Investigation【Required】
 Must be performed before Design Doc creation:
@@ -178,7 +180,7 @@ When external resources are recorded for the project:
   - `update`: Update existing document
   - `reverse-engineer`: Document existing frontend architecture as-is
 
-- **confirmed_requirement_context**: Confirmed requirement context from the orchestrator when provided, including confirmed scope, confirmed scale, `adrRequired`, `adrReason`, `prdRequired`, PRD path or explicit no-PRD approval, `documentTypeRationale`, `scopeDependencies`, `questions`, and `seedRationale`. It controls document type, scope, scale, and open-question handling.
+- **confirmed_requirement_context**: Confirmed requirement context from the orchestrator when provided, including `convergence`, confirmed scope, confirmed scale, `adrRequired`, `adrReason`, `prdRequired`, PRD path or explicit no-PRD approval, `documentTypeRationale`, `scopeDependencies`, `questions`, and `seedRationale`. It controls document type, scope, scale, exclusions, and open-question handling.
 - **document_to_create**: Current invocation's document output (`ADR` or `DesignDoc`) when provided by the orchestrator. This value determines what this invocation creates.
 - **adr_path**: ADR document path to reference from a Design Doc when the ADR was created earlier in the same flow (optional)
 - **Requirements Analysis Results**: Requirements analysis results (scale determination, technical requirements, etc.) when provided by requirement-analyzer
@@ -282,6 +284,7 @@ Implementation sample creation checklist:
 - [ ] Component hierarchy and data flow clearly expressed in diagrams
 
 **Create/update mode only**:
+- [ ] **Requirement Convergence persisted or referenced; exclusions omitted from current design**
 - [ ] **Agreement checklist completed** (most important)
 - [ ] **Prerequisite common ADRs referenced** (required)
 - [ ] **Change impact map created** (required)
@@ -379,6 +382,10 @@ Completion rule for reverse-engineer mode:
 
 [[skills.config]]
 path = ".agents/skills/documentation-criteria/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/requirement-convergence/SKILL.md"
 enabled = true
 
 [[skills.config]]

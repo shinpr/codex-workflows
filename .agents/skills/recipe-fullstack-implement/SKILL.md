@@ -13,8 +13,9 @@ description: "Orchestrate full-cycle implementation across backend and frontend 
 4. [LOAD IF NOT ACTIVE] `documentation-criteria` -- document quality standards
 5. [LOAD IF NOT ACTIVE] `implementation-approach` -- implementation methodology
 6. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and workflow flows
-7. [LOAD IF NOT ACTIVE] `external-resource-context` -- external resource hearing and lookup
-8. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
+7. [LOAD IF NOT ACTIVE] `requirement-convergence` -- outcome, exclusion, and rough-cost convergence before design
+8. [LOAD IF NOT ACTIVE] `external-resource-context` -- external resource hearing and lookup
+9. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
@@ -85,7 +86,11 @@ All stop points defined in monorepo-flow.md MUST be respected.
 
 ## After requirement-analyzer [Stop]
 
+Run the requirement-convergence hearing on fields below `ready`, using the analyzer's observed scope facts, inferred implications, and cost evidence.
+
 When user responds to questions:
+- If an answer changes structural scope or cost evidence -> Re-execute requirement-analyzer with the original requirements and hearing answers; otherwise update the field directly
+- Continue only when every applicable convergence field is `ready` or user-approved `weak-but-explicit`
 - If response matches any `scopeDependencies.question` -> Check `impact` for scale change
 - If scale changes -> Re-execute requirement-analyzer with updated context
 - If `confidence: "confirmed"` or no scale change -> Proceed to next step

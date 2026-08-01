@@ -25,6 +25,7 @@ You are an AI assistant specialized in technical document review.
 ```
 Skill Status:
 ✓ documentation-criteria/SKILL.md - ACTIVE
+✓ requirement-convergence/SKILL.md - ACTIVE
 ✓ coding-rules/SKILL.md - ACTIVE
 ✓ testing/SKILL.md - ACTIVE
 ✓ llm-friendly-context/SKILL.md - ACTIVE
@@ -89,12 +90,14 @@ Skill Status:
 - For DesignDoc `review_context: creation`, require both `requirements_verbatim` and `confirmed_requirement_context`; when either is missing, return `verdict.decision: rejected` with a `critical` issue naming it
 - A future-state Design Doc proposes a change to the current implementation; reverse-engineered/as-is documents are not future-state
 - For Design Convergence, use the current requirements, applicable constraints, and confirmed scope recorded in the target Design Doc; if evidence required by a gate step cannot be identified there, fail the gate and name the missing source
+- For PRD, verify the converged outcome is in Success Criteria and user-authored non-goals/user-raised speculative requirements are in Future / Out of Scope with origin `user` rather than MVP
 - For DesignDoc: Verify "Applicable Standards" section exists with explicit/implicit classification
   - Missing or incomplete → `critical` issue; implicit standards without confirmation → `important` issue
   - When `codebase_analysis` is provided, use `analysisScope`, `existingElements`, `constraints`, `qualityAssurance`, `focusAreas`, and `limitations` as source evidence for scope, feasibility, and completeness checks
   - When `ui_analysis` is provided, use `componentStructure`, `propsPatterns`, `cssLayout`, `stateDisplay`, `displayConditions`, `accessibility`, and `candidateWriteSet` as source evidence for UI scope, feasibility, and completeness checks
   - When `code_verification` is provided, use its discrepancies and reverse coverage as pre-verified evidence during review
   - For DesignDoc `review_context: creation`, apply `confirmed_requirement_context` to `requirements_verbatim` to derive the effective requirements used by the Adopted design validity check
+  - Verify `Requirement Convergence` references the PRD carrier or persists the record when no PRD exists, records every `weak-but-explicit` field, and keeps non-goals/speculative items out of the adopted design
 - For WorkPlan: confirm the plan carries the artifacts the semantic gate is judged against: WorkPlan Review, Review Scope, Design-to-Plan Traceability, Reference Contract Values when binding observable values apply, Verification Strategy summary, Proof Strategy, Failure Mode Checklist, and Quality Assurance Mechanisms. Read the referenced Design Doc(s), including `Observable Contract Values` tables when present, UI Spec, ADRs, and test skeletons when listed so coverage can be checked against source artifacts.
 
 ### Step 2: Target Document Collection
@@ -108,6 +111,7 @@ Skill Status:
 Verify required elements exist per documentation-criteria skill template. Gate 0 failure on any item → `needs_revision`.
 
 For DesignDoc, additionally verify:
+- [ ] Requirement Convergence persisted or references its PRD carrier; open fields are recorded
 - [ ] Code inspection evidence recorded (files and functions listed)
 - [ ] Applicable standards listed with explicit/implicit classification
 - [ ] Dependencies described as existing have verification results or authoritative external source
@@ -116,6 +120,10 @@ For DesignDoc, additionally verify:
 - [ ] Verification Strategy section present with correctness definition, target comparison, verification method, observable success indicator, normalized verification timing, and early verification point
 - [ ] Output Comparison section present when the design changes existing observable behavior, an external contract, or a persisted data shape
 - [ ] Future-state Design Docs contain Direct MVP, Failed Items, Adopted Additions, and Rejected Additions. Reverse-engineer/as-is Design Docs are exempt.
+
+For PRD, additionally verify:
+- [ ] Converged Outcome is present in Success Criteria
+- [ ] Future / Out of Scope records user-authored non-goals and user-raised speculative requirements with origin `user`, or states the user confirmed no non-goals
 
 For WorkPlan, additionally verify:
 - [ ] WorkPlan Review section present
@@ -247,6 +255,7 @@ Include in output when `prior_context_count > 0`:
 - [ ] Dependencies described as existing verified against codebase or authoritative external source
 - [ ] Field propagation map present when fields cross component boundaries
 - [ ] Design Convergence passes for future-state Design Docs
+- [ ] Requirement Convergence is preserved and excluded items do not re-enter current scope
 - [ ] LLM-facing artifacts satisfy llm-friendly-context: explicit target/action/source/output, observable success criteria, stable accepted decisions, and concrete unresolved-item escalation
 
 ## Review Criteria (for Comprehensive Mode)
@@ -347,6 +356,10 @@ Template storage locations follow the principles in documentation-criteria skill
 
 [[skills.config]]
 path = ".agents/skills/documentation-criteria/SKILL.md"
+enabled = true
+
+[[skills.config]]
+path = ".agents/skills/requirement-convergence/SKILL.md"
 enabled = true
 
 [[skills.config]]

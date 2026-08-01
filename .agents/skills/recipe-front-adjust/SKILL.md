@@ -45,19 +45,20 @@ Spawn `ui-analyzer`:
 2. Ask the user to confirm high-confidence entries, confirm all entries, or provide an edited file list.
 3. Apply documentation-criteria Creation Decision Matrix to the confirmed write set:
    - `0 files`: ask the user for the component or path that owns the change, then pause this recipe.
-   - `1-2 files`: proceed with direct adjustment.
-   - `3-5 files`: create a focused work plan.
-   - `6+ files` or ADR conditions: route to the frontend design flow.
+   - Small structural scale: proceed with direct adjustment.
+   - Medium structural scale: create a focused work plan.
+   - Large structural scale: route to the frontend design flow.
+   - Any ADR condition: route to the frontend design flow even when the scale is Medium.
 
 ### Step 4: Plan Creation When Needed
 
-For `3-5 files`, spawn `work-planner`:
+For Medium structural scale, spawn `work-planner`:
 
 `Create a focused UI adjustment plan. Adjustment request: [verbatim]. ui_analysis: [ui-analyzer JSON]. External resources: docs/project-context/external-resources.md. Confirmed write set: [files]. Each phase should be implementable as 1-3 commits. Include visual verification, accessibility, i18n parity, and generated artifact checks when relevant. Output path: docs/plans/[YYYYMMDD]-adjust-[short-description].md.`
 
 **[STOP]** Present the plan and wait for approval.
 
-For `1-2 files`, present a concise adjustment context:
+For Small structural scale, present a concise adjustment context:
 - request
 - confirmed write set
 - relevant `focusAreas[]`
@@ -109,7 +110,7 @@ Commit each approved adjustment unit with affected files and relevant generated 
 Frontend adjustment completed.
 - External resources: docs/project-context/external-resources.md (updated|unchanged)
 - UI analysis: [N] components, [M] focus areas
-- Scale: 1-2 files | 3-5 files
+- Scale: small | medium | large (structural)
 - Work plan: path | N/A
 - Adjustment units committed: [count]
 - Quality status: approved

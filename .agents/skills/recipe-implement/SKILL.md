@@ -7,7 +7,8 @@ description: "Orchestrate the complete implementation lifecycle from requirement
 
 1. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and workflow flows
 2. [LOAD IF NOT ACTIVE] `documentation-criteria` — document creation rules and templates
-3. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
+3. [LOAD IF NOT ACTIVE] `requirement-convergence` — outcome, exclusion, and rough-cost convergence before design
+4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
@@ -35,9 +36,13 @@ ENFORCEMENT: Sub-agent prompts missing the constraint suffix MUST be re-issued w
 
 Spawn requirement-analyzer agent to determine scale and affected layers.
 
-**[STOP — BLOCKING]** Present requirement-analyzer output (scale, affectedLayers, scope) to user for confirmation. **CANNOT proceed until user explicitly confirms.**
+At the requirements stop, run the requirement-convergence hearing on fields below `ready`. Present the analyzer's observed scope facts, inferred implications, and cost evidence before questions.
+
+**[STOP — BLOCKING]** Present the converged requirement record, scale, affectedLayers, and scope to the user for confirmation. **CANNOT proceed until user explicitly confirms.**
 
 When user responds to questions:
+- If an answer changes structural scope or cost evidence -> Re-execute requirement-analyzer with the original requirements and hearing answers; otherwise update the field directly
+- Continue only when every applicable convergence field is `ready` or user-approved `weak-but-explicit`
 - If response matches any `scopeDependencies.question` -> Check `impact` for scale change
 - If scale changes -> Re-execute requirement-analyzer with updated context
 - If `confidence: "confirmed"` or no scale change -> Proceed to Step 2

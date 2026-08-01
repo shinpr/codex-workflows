@@ -42,6 +42,14 @@ unknowns:
 | api-schema-source | [endpoint / operation id / schema name] | [why this feature uses it] |
 | infra-iac-source | [service / module / environment] | [why this feature uses it] |
 
+### Requirement Convergence
+
+- PRD path: [docs/prd/xxx-prd.md | N/A]
+- Outcome: [observable result | N/A — stored in PRD]
+- Non-goals: [user-authored exclusions | user confirmed none | N/A — stored in PRD]
+- Speculative requirements: [deferred items with reason | None | N/A — stored in PRD]
+- Open fields (`weak-but-explicit`): [field, recorded value, and why it remains open | None]
+
 ### Agreement Checklist
 
 #### Scope
@@ -267,7 +275,7 @@ For serialized boundaries -- a value encoded on one side and parsed on the other
 ## Verification Strategy
 
 Define correctness and how to prove it at design time. Use task-level verification depth matching the exercised boundary: L1 for unit or local in-process behavior, L2 for interaction across a named component, persistence, process, or contract boundary, and L3 for a complete user, browser, process, or service journey.
-Use the minimal form only for low-risk changes (1-2 files, no external contract/integration/data-flow change) or self-evident internal refactors with identical observable inputs/outputs.
+Use the minimal form only for a small structural change (one reversible outcome following an existing pattern, with no external contract/integration/data-flow change) or a self-evident internal refactor with identical observable inputs/outputs.
 
 ### Correctness Proof Method
 
