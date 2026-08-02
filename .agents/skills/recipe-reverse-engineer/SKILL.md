@@ -25,7 +25,7 @@ Target: $ARGUMENTS
 2. **Process one step at a time**: Execute steps sequentially within each unit (2 -> 3 -> 4 -> 5). Each step's output is the required input for the next step. Complete all steps for one unit before starting the next
 3. **Pass `$STEP_N_OUTPUT` as-is** to sub-agents -- the orchestrator bridges data without processing or filtering it, except for steps that explicitly define a deterministic transformation with an input schema, output schema, and mapping rules
 
-**Execution Plan Gate**: After scope confirmation, use the active execution plan when one exists. When none exists, create one with first "Map active rules to this task", all applicable workflow steps across both phases, and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+**Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
 ## Step 0: Initial Configuration
 
@@ -83,7 +83,9 @@ Spawn scope-discoverer agent: "Discover functional scope targets in the codebase
 
 #### Step 2: PRD Generation
 
-Spawn prd-creator agent: "Create reverse-engineered PRD for the following feature. Operation Mode: reverse-engineer. External Scope Provided: true. Feature: $PRD_UNIT_NAME. Description: $PRD_UNIT_DESCRIPTION. Related Files: $PRD_UNIT_COMBINED_RELATED_FILES. Entry Points: $PRD_UNIT_COMBINED_ENTRY_POINTS. Source Units: $PRD_UNIT_SOURCE_UNITS. Use provided scope as an investigation starting point. If tracing entry points reveals directly connected files outside this scope, include them. Create final version PRD based on thorough code investigation."
+Set `$PRD_UNIT_INVENTORY` to the category-wise deduplicated union of `unitInventory` from the `$STEP_1_OUTPUT.discoveredUnits` named by `$PRD_UNIT_SOURCE_UNITS`, preserving its `routes`, `testFiles`, and `publicExports` arrays.
+
+Spawn prd-creator agent: "Create reverse-engineered PRD for the following feature. Operation Mode: reverse-engineer. External Scope Provided: true. Feature: $PRD_UNIT_NAME. Description: $PRD_UNIT_DESCRIPTION. Related Files: $PRD_UNIT_COMBINED_RELATED_FILES. Entry Points: $PRD_UNIT_COMBINED_ENTRY_POINTS. Source Units: $PRD_UNIT_SOURCE_UNITS. Unit Inventory: $PRD_UNIT_INVENTORY. Use provided scope as an investigation starting point. If tracing entry points reveals directly connected files outside this scope, include them. Create final version PRD based on thorough code investigation."
 
 **Store output as**: `$STEP_2_OUTPUT` (PRD path)
 
@@ -91,7 +93,7 @@ Spawn prd-creator agent: "Create reverse-engineered PRD for the following featur
 
 **Prerequisite**: $STEP_2_OUTPUT (PRD path from Step 2)
 
-Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. verbose: false."
+Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. code_paths: $PRD_UNIT_COMBINED_RELATED_FILES. unit_inventory: $PRD_UNIT_INVENTORY. verbose: false."
 
 **Store output as**: `$STEP_3_OUTPUT`
 
@@ -151,7 +153,7 @@ Map PRD units to Design Doc generation targets by resolving each PRD unit's `sou
 - `technicalProfile.publicInterfaces` -> Public Interfaces
 - `dependencies` -> Dependencies
 - `relatedFiles` -> Scope boundary
-- `unitInventory` -> Unit Inventory
+- the category-wise deduplicated union of `unitInventory` from all resolved `sourceUnits` -> Unit Inventory
 
 **Store output as**: `$STEP_6_OUTPUT`
 
@@ -182,6 +184,7 @@ Map PRD units to Design Doc generation targets by resolving each PRD unit's `sou
 **Quality Gate**:
 - Every PRD unit appears in at least one `$STEP_6_OUTPUT` item
 - Every `$STEP_6_OUTPUT` item references only discovered units from its parent PRD unit
+- Every `$STEP_6_OUTPUT.unitInventory` is the union of `routes`, `testFiles`, and `publicExports` from all of its `sourceUnits`
 - `mappingRationale` explicitly states whether the mapping is default 1:1 or an intentional split
 
 ### Step 7-10: Per-Unit Processing
@@ -198,7 +201,7 @@ Spawn technical-designer agent: "Create Design Doc for the following feature bas
 
 #### Step 8: Code Verification
 
-Spawn code-verifier agent: "Verify consistency between Design Doc and code implementation. doc_type: design-doc. document_path: $STEP_7_OUTPUT. verbose: false."
+Spawn code-verifier agent: "Verify consistency between Design Doc and code implementation. doc_type: design-doc. document_path: $STEP_7_OUTPUT. code_paths: $UNIT_SCOPE_BOUNDARY. unit_inventory: $UNIT_INVENTORY. verbose: false."
 
 **Store output as**: `$STEP_8_OUTPUT`
 

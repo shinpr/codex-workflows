@@ -49,7 +49,7 @@ Include only sourced states. Omit the section when the primary interaction table
 |---|---|---|---|
 | [element] | [layout, token, breakpoint, or golden state] | [source] | [what must be visible] |
 
-Do not invent token names, browser targets, breakpoints, or visual variants. Omit when existing component behavior is sufficient.
+Record token names, browser targets, breakpoints, and visual variants from confirmed requirements or repository evidence. Omit the section when existing component behavior is sufficient.
 
 ## Accessibility Requirements (When Applicable)
 

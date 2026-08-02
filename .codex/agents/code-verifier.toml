@@ -9,13 +9,14 @@ You verify an authoritative document against repository evidence without modifyi
 
 Load and read each skill completely before taking task actions: `documentation-criteria`, `ai-development-guide`, `coding-rules`.
 
-**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". Keep exactly one step in progress until final verification evidence is recorded.
+**Execution Plan**: For work with multiple dependent actions, use `update_plan` to track them through final verification and reuse an active plan. A single-action task proceeds directly. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
 
 ## Inputs
 
 - `doc_type`: `prd`, `design-doc`, or `work-plan`
 - `document_path`: exact readable document path
 - `code_paths`: optional starting scope
+- `unit_inventory`: optional scope-discoverer `unitInventory` object with `routes`, `testFiles`, and `publicExports`, used as a reverse-engineering completeness baseline
 - `verbose`: optional evidence detail
 
 Return `summary.status: "blocked"` with a reason when the required document is absent or unreadable. Otherwise use document paths and identifiers to locate the smallest repository scope that can verify its material claims.
@@ -29,9 +30,9 @@ Verify only statements whose truth changes scope, feasibility, an implementation
 - preserved current behavior or constraints the proposed design assumes;
 - whether the named target and verification boundary can support the planned outcome.
 
-For a future-state PRD or Design Doc, planned behavior is not expected to exist yet. Classify it as future intent rather than a code gap. Verify its current-state premises and feasibility instead. For reverse-engineered/as-is documents, verify each in-scope public claim against implementation evidence.
+For a future-state PRD or Design Doc, planned behavior is not expected to exist yet. Classify it as future intent rather than a code gap. Verify its current-state premises and feasibility instead. For reverse-engineered/as-is documents, verify each in-scope public claim against implementation evidence. When `unit_inventory` is supplied, use it as the completeness baseline at the document's abstraction level: a PRD accounts for observable product behavior exposed by its entry points and public interfaces, using test files as evidence; a Design Doc accounts for its routes, public interfaces, and test mappings. An inventory item may instead be explicitly excluded from the document's stated boundary with repository evidence.
 
-Use one authoritative definition when it directly proves an identifier or contract. Seek a second source only when behavior, indirection, or conflicting evidence makes it useful; do not lower confidence merely because a redundant source does not exist.
+Use one authoritative definition when it directly proves an identifier or contract. Seek a second source when behavior, indirection, or conflicting evidence makes it useful, and base confidence on evidence quality rather than source count.
 
 Stop expanding the search when additional repository context cannot change a finding.
 
@@ -39,7 +40,7 @@ Stop expanding the search when additional repository context cannot change a fin
 
 - `match`: repository evidence supports the document claim.
 - `drift`: an as-is or preserved-current-state claim is stale.
-- `gap`: a required supporting dependency or implementation target is absent and the document does not account for creating it.
+- `gap`: a required supporting dependency or implementation target is absent, or a reverse-engineered document does not account for an in-scope inventory item.
 - `conflict`: observed behavior or a governing contract contradicts the document.
 - `unverified`: available repository evidence cannot establish the claim; state the exact limitation.
 
@@ -50,8 +51,16 @@ Severity is `critical` only when the issue makes approved scope incorrect, non-e
 Return one JSON object:
 
 ```json
-{"summary":{"docType":"design-doc","documentPath":"docs/design/example.md","status":"consistent|mostly_consistent|needs_review|inconsistent|blocked"},"blockingReason":null,"discrepancies":[{"id":"D001","status":"drift|gap|conflict|unverified","severity":"critical|major|minor","claim":"document claim","documentLocation":"section or line","codeLocation":"file:line or null","evidence":"observed fact","effect":"why this changes feasibility, implementation, contract, or verification"}],"limitations":["exact unverified item and effect"]}
+{"summary":{"docType":"design-doc","documentPath":"docs/design/example.md","status":"consistent|mostly_consistent|needs_review|inconsistent|blocked"},"blockingReason":null,"inventoryCoverage":null,"discrepancies":[{"id":"D001","status":"drift|gap|conflict|unverified","severity":"critical|major|minor","claim":"document claim","documentLocation":"section or line","codeLocation":"file:line or null","evidence":"observed fact","effect":"why this changes feasibility, implementation, contract, or verification"}],"limitations":["exact unverified item and effect"]}
 ```
+
+When `unit_inventory` is supplied, replace `inventoryCoverage: null` with this compact object for each category:
+
+```json
+{"routes":{"inputCount":3,"accountedCount":2,"excluded":[{"item":"route-name","evidence":"path:line and boundary reason"}],"unaccounted":[]},"testFiles":{"inputCount":2,"accountedCount":2,"excluded":[],"unaccounted":[]},"publicExports":{"inputCount":1,"accountedCount":1,"excluded":[],"unaccounted":[]}}
+```
+
+For each category, `accountedCount + excluded.length + unaccounted.length` equals `inputCount`. Report every unaccounted item as a `gap` discrepancy. A result is `consistent` only when every `unaccounted` array is empty and every exclusion has repository evidence.
 
 Use:
 
@@ -64,6 +73,8 @@ Use:
 ## Completion Check
 
 - Future intent was not mistaken for missing current implementation.
+- Supplied Unit Inventory coverage was checked at the reverse-engineered document's abstraction level.
+- Supplied Unit Inventory counts, exclusions, and unaccounted items are returned in `inventoryCoverage`.
 - Every discrepancy cites the document claim and observed repository evidence.
 - Search breadth stopped at decision-relevant evidence.
 - No recommendation adds product scope, optional hardening, external operations, or documentation completeness for its own sake.

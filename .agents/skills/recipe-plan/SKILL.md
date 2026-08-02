@@ -18,7 +18,7 @@ description: "Creates a reviewed Work Plan with value-filtered integration/E2E t
 
 **Core Identity**: Coordinate the planning workflow and complete lightweight routing, file selection, approval recording, and status updates directly.
 
-**Execution Plan Gate**: Use the active execution plan when one exists. When none exists, call `update_plan` once with the planning steps before document selection and update that plan through completion.
+**Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
 **Execution Protocol**:
 1. Invoke the named specialist for test generation, Work Plan creation, and semantic review. The orchestrator owns deterministic coordination and status changes.

@@ -8,7 +8,7 @@ You create one ADR or Design Doc per invocation.
 
 Load and read each skill completely before taking task actions: `documentation-criteria`, `requirement-convergence`, `coding-rules`, `testing`, `ai-development-guide`, `implementation-approach`, `llm-friendly-context`.
 
-**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". Keep exactly one step in progress until final verification evidence is recorded.
+**Execution Plan**: For work with multiple dependent actions, use `update_plan` to track them through final verification and reuse an active plan. A single-action task proceeds directly. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
 
 ## Inputs
 
@@ -19,7 +19,7 @@ Load and read each skill completely before taking task actions: `documentation-c
 - existing document path in update mode
 - `adr_path` when the Design Doc implements an accepted decision created earlier in the flow
 
-Use the orchestrator-confirmed document type, scale, outcome, scope, exclusions, and carrier. Report a contradiction with a governing source; do not silently reclassify the workflow.
+Use the orchestrator-confirmed document type, scale, outcome, scope, exclusions, and carrier. Preserve that classification and report any contradiction with a governing source.
 
 Create/update mode requires a current PRD carrier or convergence record. A scope-preserving update may preserve its existing carrier or eligible N/A. Reverse-engineer mode records the Requirement Boundary carrier as `N/A — reverse-engineered as-is document`.
 
@@ -27,14 +27,14 @@ Create/update mode requires a current PRD carrier or convergence record. A scope
 
 Use Codebase Analysis as the primary repository evidence. Inspect only gaps that can change a design decision, contract, implementation target, or verification method. For each material claim, cite a repository path/symbol, executed command, accepted document, or supplied authoritative source.
 
-Identify applicable project standards and quality commands from the supplied analysis and changed responsibility. Do not enumerate unrelated rules, tools, public methods, call sites, dependencies, or files. A missing live external connection or external-owner approval is context, not a design or implementation gate; use recorded contract evidence when sufficient.
+Identify applicable project standards and quality commands from the supplied analysis and changed responsibility. Limit the inventory to rules, tools, public methods, call sites, dependencies, and files that can change implementation or verification. Treat a missing live external connection or external-owner approval as context when recorded contract evidence is sufficient.
 
 ## ADR
 
 Create an ADR only for the durable decision selected by the caller.
 
 - State the decision and why it is needed now.
-- Compare credible, materially distinct alternatives supported by requirements or evidence; do not invent options to fill a table.
+- Compare the credible, materially distinct alternatives supported by requirements or evidence; one option is valid when evidence rules out a meaningful alternative.
 - Explain trade-offs, consequences, reversibility, and the condition that would justify revisiting the decision.
 - Keep implementation procedures, task phases, release work, and code samples outside the ADR unless a tiny example is necessary to disambiguate the contract.
 
@@ -50,7 +50,7 @@ Design the simplest end-to-end implementation that satisfies the confirmed outco
 4. Define applicable implementation targets, responsibility boundaries, interfaces, data contracts, state transitions, persistence behavior, and error behavior. Omit sections that have no bearing on the change instead of manufacturing content.
 5. Trace new or changed cross-boundary fields only across boundaries they actually cross. Record exact serialized values or compatibility behavior when implementation must reproduce them.
 6. Describe repository-owned migration, feature-flag, deployment configuration, or measurement behavior only when it changes implementation or an acceptance criterion. Exclude release execution, production access, external account setup, and organizational approval.
-7. Define the earliest useful verification plus the narrowest operation or test boundary that proves each material behavior. Reuse repository commands and existing test boundaries; do not add a lane or environment merely for completeness.
+7. Define the earliest useful verification plus the narrowest operation or test boundary that proves each material behavior. Reuse repository commands and limit added lanes or environments to proofs that require them.
 8. Write the smallest representative acceptance-criteria set that proves the approved outcome and material failure boundaries. External live connections and non-binding performance goals are not acceptance criteria.
 
 When a premise can change implementation or verification but available evidence cannot confirm it before design, record it as a Material Risk only when implementation can safely resolve it with an in-scope verification or guard. State the evidence limitation and exact response.
@@ -59,11 +59,11 @@ Use diagrams only when they make a material relationship easier to judge than pr
 
 ## Update Mode
 
-Update only the requested sections and dependent statements. Preserve unaffected decisions and change history. Re-check identifiers or contracts whose meaning the update changes; do not rebuild an inventory for unrelated content.
+Update the requested sections and dependent statements. Preserve unaffected decisions and change history. Re-check identifiers or contracts whose meaning the update changes, keeping the inventory limited to affected content.
 
 ## Reverse-Engineer Mode
 
-Document the supplied Unit Inventory and existing behavior as-is. Trace each in-scope entry point through the directly relevant control/data path, record public contracts and error behavior exactly, cite file:line evidence for architectural claims, and map existing tests. Do not add future-state recommendations, ADRs, convergence, implementation approach, or change-impact sections.
+Document the supplied Unit Inventory and existing behavior as-is. Trace each in-scope entry point through the directly relevant control/data path, record public contracts and error behavior exactly, cite file:line evidence for architectural claims, and map existing tests. Produce current-state architecture and contract sections; omit future-state recommendations, ADR proposals, convergence, implementation approach, and change-impact sections.
 
 ## Output
 

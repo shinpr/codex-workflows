@@ -18,7 +18,7 @@ description: "Add integration/E2E tests to existing codebase using Design Docs."
 
 **Core Identity**: Coordinate test addition, perform lightweight evidence collection and routing directly, and invoke specialists for generation, implementation, and review judgment.
 
-**Execution Plan Gate**: Use the active execution plan when one exists. When none exists, create one with first "Map active rules to this task", Steps 0-8, and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+**Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
 **Why Spawn**: Orchestrator's context is shared across all steps. Direct implementation consumes context needed for review and quality check phases. Task files create context boundaries. Subagents work in isolated context.
 
@@ -52,7 +52,7 @@ test -n "$ARGUMENTS" || { echo "ERROR: No document paths provided"; exit 1; }
 ls $ARGUMENTS
 ```
 
-Use only the user-provided paths in `$ARGUMENTS`. Do not auto-discover additional Design Docs or UI Specs.
+Treat the user-provided paths in `$ARGUMENTS` as the complete document selection.
 
 Treat paths under `docs/ui-spec/` as UI Specs and the supplied `docs/design/` paths as Design Docs. When a filename is unclear, use the document title and content; layer classification is not an execution gate because the generator returns each artifact's implementation kind.
 
@@ -143,4 +143,4 @@ On quality approval, add its `filesModified`, reconcile and commit the Per-Task 
 
 Before the completion report, delete only the integration-test task files this recipe created for the current run. Their work is committed; `docs/plans/` is ephemeral working state.
 
-If cleanup fails, report the failed path but do not invalidate completed test work.
+If cleanup fails, preserve completed test work and report the failed path.

@@ -8,7 +8,7 @@ You convert an approved Work Plan into executable task files while preserving it
 
 Load and read each skill completely before taking task actions: `ai-development-guide`, `testing`, `coding-rules`, `implementation-approach`, `llm-friendly-context`.
 
-**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
+**Execution Plan**: For work with multiple dependent actions, use `update_plan` to track them through final verification and reuse an active plan. A single-action task proceeds directly. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
 
 ## Input
 
@@ -55,6 +55,8 @@ For each task:
 2. Select concrete Target Files when repository evidence makes them known.
 3. Copy every governing-source citation from the Work Plan task unchanged into `Governing Sources`, and add those sections, the target implementation, and one representative adjacent test to Investigation Targets.
 4. Keep investigation context to files that change implementation or verification decisions.
+
+An existing generated test skeleton named by the Work Plan is a fixed Target File. Copy its path unchanged and preserve completion of that same file in the task's Implementation Outcome and Completion Criteria.
 
 When an exact target file is not yet knowable, name the smallest directory or owner module and the search criterion the executor can resolve. This is an investigation target, not a separate research task.
 
@@ -108,6 +110,7 @@ Blocked by contradictory governing sources:
 - Generated implementation outcomes are a subset of the approved Work Plan.
 - Each split is required by dependency, executor route, or independent outcome.
 - Target and investigation context is concrete enough for the executor to start.
+- Every Work Plan-declared generated test skeleton path is preserved unchanged as a Target File, and the task completes that same file.
 - Verification Focus is copied only when present in the Work Plan.
 - Every generated task produces a repository implementation outcome.
 """

@@ -12,7 +12,7 @@ Map the selected claim to the smallest UI journey that exercises its required br
 | UI Spec flow or interaction | Entry, action, and visible states needed by that result |
 | Existing browser tests and harness | Repository setup, fixture, locator, and cleanup conventions |
 
-Do not turn every screen transition, UI state, responsive row, or accessibility row into a candidate. It becomes part of the selected E2E only when the binding claim cannot be proven at a cheaper boundary.
+Select a screen transition, UI state, responsive row, or accessibility row as an E2E candidate only when the binding claim cannot be proven at a cheaper boundary.
 
 ## Lane
 

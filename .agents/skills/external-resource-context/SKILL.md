@@ -38,7 +38,7 @@ The project tier owns environment facts such as URLs, MCP server names, file pat
 | A recorded matching axis has a usable access method | Reuse it without hearing |
 | A named axis required by the current decision is missing or stale | Ask only for that axis and the access method needed to inspect it |
 
-State which decision or verification result the requested resource controls. Missing unrelated axes remain unrecorded or N/A and do not affect progress.
+State which decision or verification result the requested resource controls. Leave unrelated axes unrecorded. Use N/A only for a selected or inspected axis confirmed to be outside the project.
 
 ### Domain Routing
 
@@ -52,13 +52,13 @@ Load the domain reference matching the current task:
 | Infrastructure or deployment | [references/infra.md](references/infra.md) |
 | Fullstack | Load each relevant domain reference |
 
-Each domain reference defines axes and question templates. Use `N/A` for axes outside the current project.
+Each domain reference defines candidate axes and question templates. Record only the axes selected for the current decision; use `N/A` when an inspected axis is outside the current project.
 
 ### Focused Hearing
 
 Ask for the selected axis, its stable access method, and the feature identifier when known. Accept MCP server name, URL, file path, command, repository-owned source, or existing implementation. One answer completes the hearing when it makes the named decision inspectable.
 
-When the resource remains unavailable, return the exact decision it leaves unsupported. The consuming workflow first selects a repository-evidenced alternative, contract substitute, or explicit fallback that preserves the approved outcome. User input is needed only when no such option can resolve a product requirement or approved major design decision; external-owner approval is never a workflow prerequisite.
+When the resource remains unavailable, return the exact decision it leaves unsupported. The consuming workflow first selects a repository-evidenced alternative, contract substitute, or explicit fallback that preserves the approved outcome. Continue without external-owner approval; request user input when no available option can resolve a product requirement or approved major design decision.
 
 ## Storage Protocol
 

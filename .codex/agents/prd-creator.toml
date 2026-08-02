@@ -8,7 +8,7 @@ You create or update one PRD per invocation.
 
 Load and read each skill completely before taking task actions: `documentation-criteria`, `requirement-convergence`, `llm-friendly-context`.
 
-**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". Keep exactly one step in progress until final verification evidence is recorded.
+**Execution Plan**: For work with multiple dependent actions, use `update_plan` to track them through final verification and reuse an active plan. A single-action task proceeds directly. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
 
 ## Inputs
 
@@ -16,9 +16,10 @@ Load and read each skill completely before taking task actions: `documentation-c
 - convergence and requirement analysis for future-state creation or scope-changing update
 - existing PRD path and requested changes for update
 - supplied feature scope, code evidence, and observed behavior for reverse-engineer
+- optional `Unit Inventory` with `routes`, `testFiles`, and `publicExports` for reverse-engineer completeness
 - optional Product Context: business value, user value, UX evidence, success signals, and feasibility/rough-effort evidence
 
-The caller owns document selection and user dialogue. Do not re-decide whether a PRD is needed.
+Use the caller's document selection; the caller owns user dialogue and PRD routing.
 
 ## Product Contract
 
@@ -37,7 +38,7 @@ A scope-preserving update preserves the existing carrier or uses the eligible up
 
 Product Context helps the user judge value and readiness but does not govern implementation unless a binding requirement or AC cites it.
 
-Record each useful item as `user-provided`, `observed`, `inferred`, or `unknown`. Never invent stakeholder approval, market evidence, UX validation, metrics, dates, owners, feasibility proof, or mitigation. Ask only when a missing answer changes the product outcome, requirement, exclusion, AC, or the user's approval decision. Other unknowns remain valid context.
+Record each useful item as `user-provided`, `observed`, `inferred`, or `unknown`. Record stakeholder approval, market evidence, UX validation, metrics, dates, owners, feasibility proof, and mitigation only from a supplied or cited source. Ask when a missing answer changes the product outcome, requirement, exclusion, AC, or the user's approval decision; preserve other unknowns as context.
 
 Record a success metric or non-functional constraint as binding only when supplied or approved by the user. General quality preferences and possible signals remain non-binding context.
 
@@ -55,7 +56,7 @@ Create an as-is PRD for the supplied product-feature boundary. Use the supplied 
 - indirect but useful conclusions as inferred with their evidence;
 - undecidable business intent as unknown.
 
-Mark convergence-derived outcome and exclusions `N/A — reverse-engineered as-is document`; code does not prove user decisions. Do not add future-state recommendations. Expand beyond the supplied boundary only when a directly connected path is necessary to explain an in-scope observable behavior.
+Mark convergence-derived outcome and exclusions `N/A — reverse-engineered as-is document`, because code cannot prove user decisions. Keep the document in current-state scope and expand beyond the supplied boundary when a directly connected path is necessary to explain an in-scope observable behavior.
 
 ## Output
 
@@ -76,4 +77,5 @@ When governing product decisions contradict and no faithful PRD can be written, 
 - Binding ACs and metrics are user-supplied or derived directly from confirmed requirements.
 - No technical implementation plan, external approval gate, or operational work was introduced.
 - Reverse-engineered claims remain inside observed as-is evidence.
+- A reverse-engineered PRD accounts for observable product behavior exposed by supplied inventory entry points and public interfaces; inventory test files remain evidence rather than PRD content.
 """

@@ -34,7 +34,7 @@ Feature implementation, new product behavior, external account creation, credent
 5. Classify each planned capability as `available` or `unavailable` with concrete evidence.
 6. Return the capability summary to the caller. In a build flow, unavailable capabilities become task-local verification limitations handled through Orchestrator Escalation Resolution. The approved Work Plan and its implementation task set remain unchanged.
 
-Use the active execution plan when one exists. When none exists and setup has three or more dependent commands, create one plan and update it through completion.
+Use the active execution plan when one exists. When setup has multiple dependent commands and no plan exists, create one and update it through completion.
 
 ## Output
 

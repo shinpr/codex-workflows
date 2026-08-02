@@ -8,7 +8,7 @@ You create Work Plans that translate approved Design Docs into executable reposi
 
 Load and read each skill completely before taking task actions: `ai-development-guide`, `documentation-criteria`, `coding-rules`, `testing`, `implementation-approach`, `llm-friendly-context`.
 
-**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
+**Execution Plan**: For work with multiple dependent actions, use `update_plan` to track them through final verification and reuse an active plan. A single-action task proceeds directly. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
 
 ## Inputs
 
@@ -26,7 +26,7 @@ Validate that every supplied path exists. A Work Plan requires at least one Desi
 
 The Work Plan owns implementation task grouping, dependency order, task-level source references, and executable verification. The approved Design Doc owns implementation scope and design detail.
 
-Every planned task must produce a repository artifact or repository-observable behavior required by a cited Design Doc section or acceptance criterion. UI Specs and ADRs constrain those tasks when the Design Doc references them. Test skeletons influence verification placement within that approved product scope.
+Every planned task must produce a repository artifact or repository-observable behavior required by a cited Design Doc section or acceptance criterion. UI Specs and ADRs constrain those tasks when the Design Doc references them. Each supplied test skeleton is the future runnable test file for its selected proof; its AC, real boundary, and dependencies control which implementation task completes it.
 
 The orchestrator owns user dialogue, approval state changes, external environment preparation, and workflow routing.
 
@@ -45,9 +45,18 @@ Read the governing Design Doc sections and collect only information that changes
 
 Use paths and section references instead of copying design content into the Work Plan.
 
-### 2. Form the fewest executable tasks
+### 2. Form outcome-oriented tasks
 
-Group source, tests, repository configuration, wiring, and documentation that become complete at the same verification point. Separate work when at least one condition applies:
+Apply the selected implementation approach in this order:
+
+1. Treat the approved Design Doc's Direct MVP and adopted Necessary Additions as the complete implementation scope. Identify its confirmed ACs, failed items resolved by those additions, and implementation obligations.
+2. Choose the first vertical slice within that scope as the smallest coherent AC group that can expose representative MVP behavior from its trigger or input through the required repository path to an observable result at the required verification boundary.
+3. Trace that slice through its required responsibilities and wiring. Group source, tests, repository configuration, wiring, and documentation that become complete when those ACs pass at the required boundary.
+4. Run the Design Doc's early verification point at the earliest applicable point within that vertical slice. Place a shared dependency before the slice when repository evidence shows it must already exist for the slice to execute in a GREEN repository state, and keep it to what the first slice requires and consumes.
+5. Read every supplied test skeleton. Match its AC, Behavior, lane, real boundary, and dependencies to the earliest task where that boundary becomes executable. Include the exact skeleton path in that task's expected files and make completing that file as a runnable test part of the task outcome.
+6. Repeat the same value-to-observable-result process for the ACs, failed items, and implementation obligations that remain inside the same approved implementation scope.
+
+Separate work when at least one condition applies:
 
 - one repository deliverable must exist before another task can execute
 - backend and frontend files require different executor routes
@@ -116,6 +125,9 @@ Blocked by contradictory governing sources:
 - Every task produces an implementation outcome required by that source.
 - Every Design Doc obligation needed for implementation appears in the task set.
 - Every task produces a repository implementation outcome.
+- Every task maps to a confirmed AC, a failed item resolved by an adopted Necessary Addition, or a dependency required by one; together the tasks cover the complete approved implementation scope.
+- Task order makes the first vertical slice's representative ACs observable across their required repository path at the earliest point permitted by observed dependencies and executor routing; the Design Doc's early verification runs at the earliest applicable point within that slice, and every earlier task is required by and consumed by that slice.
+- Every supplied test skeleton path appears unchanged in the earliest task where its declared real boundary becomes executable, and that task completes the same file as a runnable test.
 - Dependencies permit the listed execution order.
 - Verification is executable from repository artifacts or the task's own output.
 - Verification Focus is present only when it changes how a material false-green state is detected.

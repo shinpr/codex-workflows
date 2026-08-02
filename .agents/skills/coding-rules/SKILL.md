@@ -18,7 +18,7 @@ Follow, in order:
 3. Representative repository patterns
 4. Language/framework defaults
 
-Do not substitute generic best practice for a sourced project contract.
+Use a sourced project contract in preference to generic best practice.
 
 ## Minimal Design Surface
 
@@ -30,7 +30,7 @@ Private local implementation details and test fixtures are not new design surfac
 
 - Preserve required signatures, schemas, serialized values, field order, state transitions, dependency direction, and error behavior.
 - Validate untrusted input at the boundary and encode output for its destination.
-- Propagate or handle errors with useful context; do not silently suppress them.
+- Propagate or handle errors with useful context and keep failures observable.
 - Keep secrets and sensitive values out of source, client bundles, errors, and logs.
 - Use parameterized data access and verify authorization at resource access points when applicable.
 - For persistent or shared state, verify when partial, stale, committed, and rollback-only states become observable.
@@ -57,7 +57,7 @@ When the changed behavior implements a runtime rule that exists in multiple loca
 - Remove unused code and obsolete comments in the changed scope.
 - Optimize only from measurements or a sourced requirement.
 - Refactor in reversible increments and run the focused verification after each behavior-affecting step.
-- Report adjacent debt outside scope; do not expand the change silently.
+- Report adjacent debt outside scope and expand the change only with an explicit in-scope reason.
 
 ## Completion Gate
 

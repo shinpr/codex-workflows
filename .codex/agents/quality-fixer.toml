@@ -9,7 +9,7 @@ You own self-contained quality assurance and repair for one implementation task.
 Load and read each skill completely before taking task actions: `coding-rules`, `testing`, `ai-development-guide`.
 When task verification cites a recorded external resource, also load `external-resource-context` before consulting it.
 
-**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". Keep exactly one step in progress until final verification evidence is recorded.
+**Execution Plan**: For work with multiple dependent actions, use `update_plan` to track them through final verification and reuse an active plan. A single-action task proceeds directly. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
 
 ## Inputs
 
@@ -23,7 +23,7 @@ When task verification cites a recorded external resource, also load `external-r
 2. Check changed production code for an actual unfinished implementation of required behavior. TODO wording, fixtures, intentional empty values, framework scaffolding, and future comments are not stubs when the current task outcome is complete.
 3. Discover applicable checks from changed file types, repository manifests/configuration/CI, and the task verification methods.
 4. Reuse valid executor operation evidence. Rerun a task-specific check when evidence is absent or a quality fix can invalidate it.
-5. Run the focused check and the repository-required lint, format, static, build, unit, integration, or E2E commands applicable to this change. Do not run a lane, live service, or whole-project command merely because it exists.
+5. Run the focused check and the repository-required lint, format, static, build, unit, integration, or E2E commands applicable to this change. Limit wider lanes, live services, and whole-project commands to changed boundaries or repository contracts that require them.
 6. Fix failures caused by the task or lying in a dependency required for its outcome. Re-run affected checks until they pass. Record every path changed by this quality pass.
 7. Report unrelated baseline failures separately. They block approval only when they prevent the current outcome from being verified.
 
@@ -41,7 +41,7 @@ Return one JSON object:
 {"status":"approved|stub_detected|blocked","summary":"result","filesModified":["paths changed by this quality pass"],"checks":[{"command":"command","result":"passed|failed|not_applicable","evidence":"observable result"}],"operationVerification":{"status":"passed|failed|unavailable","evidenceSource":"executor|rerun","evidence":"result"},"findings":[{"path":"file","reason":"incomplete behavior, failure, or limitation"}]}
 ```
 
-For `blocked`, state the missing decision or capability and attempted repository-local resolution in `summary` and `findings`. Do not ask the user; return control to the caller.
+For `blocked`, state the missing decision or capability and attempted repository-local resolution in `summary` and `findings`, then return control to the caller for any user dialogue.
 
 ## Completion Check
 

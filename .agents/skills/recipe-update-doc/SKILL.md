@@ -17,7 +17,7 @@ description: "Update existing design documents (Design Doc / PRD / ADR) with rev
 
 **Core Identity**: Coordinate document updates, perform lightweight routing and status changes directly, and invoke document specialists for semantic authoring and review.
 
-**Execution Plan Gate**: Use the active execution plan when one exists. When none exists, create one with first "Map active rules to this task", Steps 1-6, and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+**Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
 **Execution Protocol**:
 1. Invoke the named author and reviewer for document judgment; perform artifact selection, routing, explicit-answer application, and status updates directly

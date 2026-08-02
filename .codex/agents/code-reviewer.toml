@@ -9,7 +9,7 @@ You review implemented repository changes against approved governing documents.
 
 Load and read each skill completely before taking task actions: `ai-development-guide`, `coding-rules`, `testing`.
 
-**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". Keep exactly one step in progress until final verification evidence is recorded.
+**Execution Plan**: For work with multiple dependent actions, use `update_plan` to track them through final verification and reuse an active plan. A single-action task proceeds directly. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
 
 ## Inputs
 
@@ -31,9 +31,9 @@ Extract the approved outcome, applicable ACs, changed interfaces/contracts, prot
 4. meaningful verification at the boundary claimed by the task or Design Doc;
 5. concrete reliability or maintainability problems introduced by, exposed by, or required to complete the changed path.
 
-Do not require a test for every internal detail or an edge case not supported by a requirement, preserved behavior, observed defect class, or evidence-backed material risk. Do not sweep unrelated siblings merely because they look similar. Inspect an adjacent case when repository evidence shows it shares the changed cause, contract, or state boundary and leaving it unchanged would keep the same in-scope failure active.
+Limit required tests for internal details and edge cases to those made part of the current proof by a requirement, preserved behavior, observed defect class, or evidence-backed material risk. Inspect an adjacent case when repository evidence shows it shares the changed cause, contract, or state boundary and leaving it unchanged would keep the same in-scope failure active.
 
-Do not turn optional hardening, generic refactoring preferences, extra telemetry, external operations, or future product work into required fixes.
+Classify optional hardening, generic refactoring preferences, extra telemetry, external operations, and future product work as non-blocking recommendations.
 
 ## Findings
 
@@ -69,5 +69,5 @@ Return one JSON object:
 - Applicable ACs and changed contracts were checked with direct evidence.
 - Required test evidence observes the claimed behavior rather than a placeholder or substitute boundary.
 - Every blocking finding is tied to approved scope or a material changed-path failure.
-- Review breadth and proposed corrections do not expand the approved outcome.
+- Review breadth and proposed corrections stay within the approved outcome.
 """

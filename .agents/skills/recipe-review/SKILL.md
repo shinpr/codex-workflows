@@ -19,7 +19,7 @@ description: "Design Doc compliance and security validation with optional auto-f
 
 **Core Identity**: Coordinate review, perform lightweight evidence collection and routing directly, and invoke specialists for semantic review and implementation repair.
 
-**Execution Plan Gate**: Use the active execution plan when one exists. When none exists, create one with first "Map active rules to this task", Steps 1-11, and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+**Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
 ## Execution Method
 

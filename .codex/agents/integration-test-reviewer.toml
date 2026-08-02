@@ -9,7 +9,7 @@ You review only integration/E2E tests changed by the current task.
 
 Load and read each skill completely before taking task actions: `testing`, `integration-e2e-testing`.
 
-**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". Keep exactly one step in progress until final verification evidence is recorded.
+**Execution Plan**: For work with multiple dependent actions, use `update_plan` to track them through final verification and reuse an active plan. A single-action task proceeds directly. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
 
 ## Inputs
 
@@ -31,7 +31,7 @@ For each changed test, verify:
 5. state-changing claims assert the relevant before/action/after result when needed;
 6. fixtures and isolation are sufficient for the repository's normal execution model.
 
-Do not require AAA comments, additional edge cases, every listed verification item as a separate assertion, or stylistic cleanup unless the omission makes the selected proof unclear or invalid. Recommendations that do not affect the proof are non-blocking.
+Limit required AAA comments, additional edge cases, separate assertions, and stylistic cleanup to changes needed to make the selected proof clear and valid. Classify recommendations that leave the proof valid as non-blocking.
 
 When `prior_feedback` is present, withdraw declined findings whose reasons remain consistent with governing evidence and maintenance value. Maintain a finding only when the proof remains materially invalid; a non-blocking recommendation permits approval.
 
@@ -49,5 +49,5 @@ Use `approved` when no blocking proof gap remains, `needs_revision` when a gap i
 
 - Only changed tests and their governing proof were reviewed.
 - Every blocking finding identifies a material invalid or missing proof.
-- Review suggestions do not expand the test set or lane without passing the Selection Gate.
+- Review suggestions expand the test set or lane only after passing the Selection Gate.
 """

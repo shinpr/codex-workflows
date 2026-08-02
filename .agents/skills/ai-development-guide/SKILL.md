@@ -18,7 +18,7 @@ Deliver the confirmed outcome and keep the changed system correct. Investigate, 
 - an observed failure or contradiction in the changed path;
 - an evidence-backed material risk created or exposed by the change.
 
-Report unrelated debt separately. Do not turn generic best practice, possible future reuse, speculative edge cases, or optional hardening into implementation scope.
+Keep implementation scope within those evidence-backed reasons and report unrelated debt separately.
 
 ## Root-Cause Discipline
 
@@ -29,7 +29,7 @@ When an observed failure exists:
 3. Correct the cause at the smallest responsibility boundary that preserves the governing contract.
 4. Verify the original failure and the affected contract.
 
-Do not require a fixed number of “why” questions or a separate root-cause artifact. A direct correction is valid when the cause and proof are already evident. Avoid suppressing errors, weakening tests, adding unconditional fallbacks, or patching symptoms that leave the observed cause active.
+Stop causal questioning when the evidence supports the responsible path and its verification. Apply a direct correction when the cause and proof are already evident. Keep root-cause reasoning in the active task or response; create a separate artifact only for a named downstream consumer. Preserve error visibility and test strength, and correct the observed cause rather than masking it with an unconditional fallback or symptom patch.
 
 ## Proportionate Impact Analysis
 
@@ -42,6 +42,8 @@ Before changing code, inspect the target and enough representative callers, cons
 
 When the change alters a public, shared, serialized, or persistent contract and its consumers are enumerable, account for every known consumer. For other changes, representative inspection is sufficient. Stop expanding the search when additional context cannot change the implementation or verification decision. Record findings in the active task or response only when another worker needs them.
 
+For an observed bug or regression, inspect adjacent cases that share its supported cause, contract, or state boundary. Include an adjacent case in the change only when leaving it unchanged would keep the same in-scope failure active.
+
 ## Design and Reuse Judgment
 
 - Prefer the lowest-lifecycle-cost implementation that satisfies the current outcome.
@@ -52,7 +54,7 @@ When the change alters a public, shared, serialized, or persistent contract and 
 
 ## Error and Fallback Safety
 
-Preserve useful error context and do not silently convert failures into success. Use a fallback only when a requirement, accepted design, or representative repository contract defines the degraded behavior. Add logging, metrics, or operational machinery only when the current requirement or repository practice needs it.
+Preserve useful error context and keep failures observable. Limit fallbacks to degraded behavior defined by a requirement, accepted design, or representative repository contract. Limit logging, metrics, and operational machinery to those supported by the current outcome or representative repository practice.
 
 ## Quality Assurance
 
@@ -62,7 +64,7 @@ Discover applicable checks from the changed file types, task verification method
 2. static analysis, formatting, build, unit, integration, or E2E commands that the repository or governing task requires for this change;
 3. any wider check needed because the change crosses that boundary.
 
-Do not manufacture a command, coverage threshold, environment, live external connection, or test lane when the repository and governing artifacts do not require it. A task-specific check already run by the implementation owner may be reused unless later fixes can invalidate it.
+Limit checks, thresholds, environments, external connections, and test lanes to those required by the repository or governing artifact. Reuse valid task-specific evidence; rerun it after a later fix that can invalidate it.
 
 Fix failures caused by the current change and failures within required dependencies. Report unrelated baseline failures with evidence; they block completion only when they prevent the changed outcome from being verified.
 
@@ -70,6 +72,7 @@ Fix failures caused by the current change and failures within required dependenc
 
 - [ ] The implementation maps to the confirmed outcome or an evidence-backed required dependency or risk.
 - [ ] An observed defect was corrected at its supported cause rather than hidden.
+- [ ] An observed failure does not remain active in an adjacent in-scope case that shares the same supported cause.
 - [ ] Public, persistent, security, and error boundaries affected by the change remain correct.
-- [ ] Applicable focused and repository-required checks pass, or an exact environmental limitation is reported without inventing external work.
-- [ ] No speculative mechanism or unrelated cleanup was added to the task.
+- [ ] Applicable focused and repository-required checks pass, or an exact environmental limitation is reported.
+- [ ] Every added mechanism or cleanup item is required by the confirmed outcome or its evidence-backed dependency or risk.

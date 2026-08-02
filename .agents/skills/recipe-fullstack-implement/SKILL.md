@@ -17,7 +17,7 @@ Requirements or continuation instruction: $ARGUMENTS
 ## Entry
 
 - New or scope-changing requirements: invoke requirement-analyzer, complete Requirement Convergence, and obtain requirement confirmation.
-- Existing PRD, UI Spec, Design Docs, Work Plan, or tasks: resume at the next incomplete Fullstack Flow phase. Do not restart requirement analysis unless the approved outcome, requirement, or exclusion changes.
+- Existing PRD, UI Spec, Design Docs, Work Plan, or tasks: resume at the next incomplete Fullstack Flow phase. Restart requirement analysis when the approved outcome, requirement, or exclusion changes.
 - Quality failure during an existing implementation: resume its task cycle and Orchestrator Escalation Resolution.
 
 Resolve the entry from supplied artifacts and repository state. Ask only when different interpretations require a user-owned product or approved-design decision.

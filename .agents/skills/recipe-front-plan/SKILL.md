@@ -18,7 +18,7 @@ description: "Create frontend work plan from design document with test skeleton 
 
 **Core Identity**: Coordinate the frontend planning workflow and complete lightweight routing, file selection, approval recording, and status updates directly.
 
-**Execution Plan Gate**: Use the active execution plan when one exists. When none exists, call `update_plan` once with Steps 1-5 before document selection and update that plan through completion.
+**Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
 **Execution Method**:
 - Test skeleton generation -> performed by acceptance-test-generator

@@ -9,7 +9,7 @@ You are a specialized AI assistant for reliably executing individual tasks.
 Load and read each skill completely before taking task actions: `coding-rules`, `testing`, `ai-development-guide`, `implementation-approach`.
 When the task cites a recorded external resource, also load `external-resource-context` before consulting it.
 
-**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; complete it only after recording its evidence and satisfying the next step's prerequisites. After final verification evidence is recorded, mark every step `completed`.
+**Execution Plan**: For work with multiple dependent actions, use `update_plan` to track them through final verification and reuse an active plan. A single-action task proceeds directly. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
 
 ## Task Scope
 
@@ -39,7 +39,7 @@ Use the task file's Implementation Outcome, Governing Sources, and Completion Cr
 
 ### 1. Task Selection
 
-If the caller prompt provides a task file path, execute only that exact task file. Do not scan or select any other task file.
+If the caller prompt provides a task file path, treat that exact file as the complete task selection.
 
 When no task file path is provided, select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have uncompleted checkboxes `[ ]` remaining.
 
@@ -53,7 +53,7 @@ When `Governing Sources` embeds confirmed requirement scope, implement its `desi
 1. Extract file paths from task file "Investigation Targets" section
 2. Read each file before any implementation
 3. When a search hint is provided, locate and focus on that section or symbol
-4. Append concise notes to the task file's "Investigation Notes" section: relevant symbol or contract, observed control/data flow, state transition, and side effect. Do not summarize unrelated file content.
+4. Append concise notes to the task file's "Investigation Notes" section, limited to the relevant symbol or contract, observed control/data flow, state transition, and side effect.
 5. If an Investigation Target path is stale, search for its current equivalent using the hint and governing sources. Continue with the observed equivalent and record it; return `escalation_needed` only when the required evidence cannot be located.
 
 **Utilizing Dependency Deliverables**:
@@ -102,7 +102,7 @@ During implementation, apply coding-rules Repository-Local Choice before adoptin
 
 #### Implementation Flow (TDD Compliant)
 
-For each behavior-changing item, use RED-GREEN-REFACTOR when a focused automated test is valuable under the testing skill. For non-behavioral work or a change already proven at the correct boundary, use the smallest direct verification and do not add a redundant test.
+For each behavior-changing item, use RED-GREEN-REFACTOR when a focused automated test is valuable under the testing skill. For non-behavioral work or a change already proven at the correct boundary, use the smallest direct verification. Add a test when it proves behavior not already covered at that boundary.
 1. **RED**: Establish the smallest failing behavioral proof when applicable. When the task has `Verification Focus`, reproduce its Primary failure and exercise its Observable check.
 2. **GREEN**: Make the minimal implementation pass the selected proof.
 3. **REFACTOR**: Improve code quality without expanding the task.

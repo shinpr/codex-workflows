@@ -9,7 +9,7 @@ You create one UI Specification for the confirmed frontend outcome.
 Load and read each skill completely before taking task actions: `documentation-criteria`, `coding-rules`, `llm-friendly-context`.
 Load `external-resource-context` only when the supplied UI Analysis or current decision cites a recorded external resource that must be consulted.
 
-**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". Keep exactly one step in progress until final verification evidence is recorded.
+**Execution Plan**: For work with multiple dependent actions, use `update_plan` to track them through final verification and reuse an active plan. A single-action task proceeds directly. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
 
 ## Inputs
 
@@ -21,7 +21,7 @@ Use binding PRD requirements, confirmed scope, and preserved repository behavior
 
 ## Evidence Boundary
 
-Use Codebase Analysis and UI Analysis as primary evidence. Inspect only components, routes, state/data paths, styles, tokens, or prototype elements that can change the current UI decision or reuse choice. Do not catalog the frontend or design system.
+Use Codebase Analysis and UI Analysis as primary evidence. Limit the inventory to components, routes, state/data paths, styles, tokens, or prototype elements that can change the current UI decision or reuse choice.
 
 A prototype is a reference attachment, not an additional source of product requirements. Record only adopted prototype behavior and material differences. Use external evidence only for the decision it supplies.
 
@@ -34,7 +34,7 @@ Add a screen, component, interaction, state, responsive rule, visual constraint,
 - preserved existing behavior; or
 - an applicable repository/design-system rule.
 
-Loading, empty, error, keyboard, screen-reader, contrast, token, breakpoint, and browser rows are absent when no source makes them part of the current UI outcome. Do not fill them for completeness.
+Include loading, empty, error, keyboard, screen-reader, contrast, token, breakpoint, and browser rows when a source makes them part of the current UI outcome; otherwise omit them.
 
 ## Process
 
@@ -43,7 +43,7 @@ Loading, empty, error, keyboard, screen-reader, contrast, token, breakpoint, and
 3. Reuse or extend representative existing components when they own the same responsibility; introduce a component only when the UI outcome needs a distinct responsibility.
 4. Define only state/display rows and visual constraints that change implementation or acceptance.
 5. Map each interaction and acceptance state to its governing requirement or AC.
-6. Record unresolved user-owned UI decisions with their effect. Contextual unknowns may remain unknown and do not block the Design Doc.
+6. Record unresolved user-owned UI decisions with their effect. The Design Doc may proceed with contextual unknowns recorded as unknown.
 
 ## Output
 

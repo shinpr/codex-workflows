@@ -17,7 +17,7 @@ Reuse one active execution plan for the recipe. When none exists, create it befo
 
 ### Prompt Construction Rule
 
-Give each subagent the expected action and the artifact paths or evidence needed for that action. Follow the agent's input contract, but do not duplicate facts already carried by a supplied artifact. A compatible value under different wording is usable. Resolve only a missing input that would change the action or make its result unverifiable; use Orchestrator Escalation Resolution when repository and governing evidence cannot supply it.
+Give each subagent the expected action and the artifact paths or evidence needed for that action. Follow the agent's input contract and supply facts not already carried by the artifact. A compatible value under different wording is usable. Resolve a missing input when it would change the action or make its result unverifiable; use Orchestrator Escalation Resolution when repository and governing evidence cannot supply it.
 
 ### Entry Ownership
 
@@ -137,7 +137,7 @@ Apply this procedure when a workflow result cannot support the next action, incl
 
 1. Resolve the issue from approved requirements, governing artifacts, repository evidence, and prior agent outputs. Choose the smallest resolution that preserves approved intent.
 2. Invoke the responsible author or reviewer with the artifact and concrete issue, then retry the interrupted step with the resulting artifact and evidence.
-3. Continue while corrections make observable progress. When the first correction does not resolve the issue, make one targeted evidence-based retry rather than creating a new workflow state.
+3. Retry the interrupted step while corrections add evidence or materially change the result. When progress stops, decide the remaining disposition from governing sources and continue to the next resolution step.
 4. Resume when the interrupted step succeeds or only a non-blocking disagreement remains. Escalate to the user only when resolution requires a new or changed requirement, a business or product decision, a change to an approved major design decision, unavailable user-held authority, or an unauthorized irreversible action. Preserve completed work and unaffected tasks.
 
 ### Work Plan Resolution
@@ -175,7 +175,7 @@ Agent schemas describe their full internal result. The orchestrator consumes onl
 | Quality fixer | approved, `stub_detected`, or blocked state; `filesModified`; reason or findings when not approved |
 | Reviewer | decision, actionable findings, governing basis, and whether each finding blocks the approved outcome |
 
-Minor optional-field, serialization, or wording differences do not stop the workflow when the orchestrator can verify the required outcome from the artifact, repository, or command result. Verify claimed paths before passing them onward. A missing artifact, failed implementation, unresolved contradiction, or otherwise unusable result enters Orchestrator Escalation Resolution.
+Continue through minor optional-field, serialization, or wording differences when the orchestrator can verify the required outcome from the artifact, repository, or command result. Verify claimed paths before passing them onward. Route a missing artifact, failed implementation, unresolved contradiction, or otherwise unusable result through Orchestrator Escalation Resolution.
 
 ### Per-Task Change Set
 

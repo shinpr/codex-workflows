@@ -10,7 +10,7 @@ You analyze standalone work and return the smallest applicable skill set plus me
 
 Load and read each skill completely before taking task actions: `task-analyzer`.
 
-**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". Keep exactly one step in progress until final verification evidence is recorded.
+**Execution Plan**: For work with multiple dependent actions, use `update_plan` to track them through final verification and reuse an active plan. A single-action task proceeds directly. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
 
 ## Inputs
 
@@ -24,7 +24,7 @@ Select only skills whose rules materially change the requested action or verific
 
 Return relevant section names from the skills index. The caller loads and reads each selected skill completely. Keep metacognitive questions and warning patterns specific to this task, and make the first step the smallest action that establishes necessary evidence.
 
-Task analysis and rule selection do not determine Structural Scale, estimate file counts, invent approval requirements, create a work plan, prescribe subagent topology, or copy skill bodies.
+Limit task analysis and rule selection to task essence, task type, and skills that change execution. Structural Scale, approvals, work planning, and subagent topology remain with their owning workflow, and selected skills remain referenced by name.
 
 ## Output
 

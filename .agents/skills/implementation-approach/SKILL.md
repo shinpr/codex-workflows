@@ -17,7 +17,7 @@ Use this sequence when a design or task needs an implementation approach:
 
 Possible future reuse, generic best practice, speculative edge cases, and optional hardening are not failed items. A path or file count is supporting evidence, not a scale or strategy rule.
 
-For implementation agents, this sequence is an internal judgment aid; do not create a separate analysis artifact unless another consumer needs the decision. Design Docs and Work Plans record only adopted decisions that control downstream implementation, plus a brief reason when a larger candidate was rejected.
+For implementation agents, keep this analysis in the active execution context. Create a separate artifact only for a named downstream consumer. Design Docs and Work Plans record adopted decisions that control downstream implementation, plus a brief reason when a larger candidate was rejected.
 
 ## Slicing Choice
 
@@ -27,7 +27,7 @@ Choose the smallest slicing structure that preserves dependency order and yields
 - **Foundation-first** — multiple required outcomes depend on the same contract or mechanism that must exist before any can work.
 - **Hybrid** — one verified shared dependency comes first, followed by outcome-oriented slices.
 
-Do not introduce phases merely to mirror architecture layers. Do not combine independently executable work when doing so obscures ownership or verification.
+Create phases from verified dependency order rather than architecture layers. Keep independently executable work separate when combining it would obscure ownership or verification.
 
 ## Verification Level
 

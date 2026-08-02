@@ -18,7 +18,7 @@ Load `external-resource-context` in Step 1 only when a named external source is 
 
 **Core Identity**: "I am a guided executor. I run the UI adjustment and verification loop in the parent session."
 
-**Execution Plan Gate**: Use the active execution plan when one exists. Create one only when this adjustment has three or more dependent objectives.
+**Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
 **Execution Protocol**:
 1. Delegate bounded one-shot work to `ui-analyzer` and `quality-fixer-frontend`.

@@ -50,7 +50,7 @@ Create an ADR when implementation depends on a durable technical choice that fut
 - reversing or superseding an accepted architecture decision;
 - choosing an irreversible or high-cost-to-reverse data or compatibility strategy.
 
-A local contract, data-flow, state, or component change that follows an accepted design and has no material alternative belongs in the Design Doc, not a separate ADR. Counts of files, consumers, nesting levels, states, or steps are evidence only and never create an ADR by themselves.
+A local contract, data-flow, state, or component change that follows an accepted design and has no material alternative belongs in the Design Doc. Create an ADR for a durable decision with materially distinct alternatives; counts of files, consumers, nesting levels, states, or steps remain supporting evidence rather than decision criteria.
 
 ## Detailed Document Definitions
 
@@ -126,7 +126,7 @@ A local contract, data-flow, state, or component change that follows an accepted
 |----------|------------------|---------|
 | PRD | User journey or scope boundary when prose does not make the relationship clear | Clarify a material experience or scope relationship |
 | ADR | Option comparison when option relationships are not clear in the table | Visualize trade-offs |
-| UI Spec | Screen transition or component tree when prose/tables do not expose the material interaction or hierarchy | Clarify screen flow and structure |
+| UI Spec | Screen transition or component tree when the material interaction or hierarchy remains unclear in prose/tables | Clarify screen flow and structure |
 | Design Doc | Architecture or data flow when the changed relationships are not clear in prose/tables | Understand technical structure |
 | Work Plan | Task dependency when order is not evident | Clarify implementation order |
 

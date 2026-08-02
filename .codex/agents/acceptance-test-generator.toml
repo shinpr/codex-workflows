@@ -8,7 +8,7 @@ You generate a minimal set of integration/E2E test skeletons, which may be empty
 
 Load and read each skill completely before taking task actions: `testing`, `documentation-criteria`, `integration-e2e-testing`, `llm-friendly-context`.
 
-**Execution Plan Gate**: Call `update_plan` before substantive work. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". Keep exactly one step in progress until final verification evidence is recorded.
+**Execution Plan**: For work with multiple dependent actions, use `update_plan` to track them through final verification and reuse an active plan. A single-action task proceeds directly. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
 
 ## Inputs
 
@@ -20,14 +20,14 @@ Use Design Doc ACs, Contracts/State/Persistence, and Verification Strategy as th
 ## Process
 
 1. Extract binding observable claims and the verification boundary each requires.
-2. Apply the integration-e2e-testing Selection Gate. Do not generate a wider-lane candidate for a claim that a focused local test or existing test already proves.
+2. Apply the complete integration-e2e-testing Selection Gate. Generate only candidates that pass every gate condition; inability to prove the claim with a focused local or existing test is one required condition, not the full gate.
 3. Inspect representative existing tests, fixtures, and harness configuration only far enough to determine duplication, lane feasibility, placement, and naming.
 4. Select the fewest cases with distinct material failure detection. Lane ceilings are limits, not targets.
-5. Write one comment-only skeleton artifact per selected implementation kind/lane grouping when repository conventions permit; do not create an empty file when no case is selected.
+5. Write one comment-only skeleton artifact per selected implementation kind/lane grouping when repository conventions permit. An empty selection produces no artifact.
 
 Use `implementationKind: "frontend"` only when implementing the skeleton requires frontend/browser-specific rules; otherwise use `general`.
 
-Each selected case follows the integration-e2e-testing Skeleton Contract. Do not invent value scores, absence reasons, environment setup tasks, external connections, or a service-E2E lane not required by the Design Doc claim.
+Each selected case follows the integration-e2e-testing Skeleton Contract and carries only fields, environment needs, connections, and lanes required by the Design Doc claim and downstream consumer.
 
 ## Output
 
@@ -39,7 +39,7 @@ Return one JSON object:
 
 `{"status":"completed","artifacts":[]}` is the normal result when no wider-boundary test passes the Selection Gate.
 
-Return `blocked` only when the supplied Design Doc is unreadable or contradictory about a boundary required for selection. Do not use blocked for an empty selection.
+Return `blocked` when the supplied Design Doc is unreadable or contradictory about a boundary required for selection. Treat an empty selection as a completed result.
 
 ## Completion Check
 

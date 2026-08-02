@@ -93,7 +93,7 @@ For a value crossing multiple serialization boundaries, add its actual propagati
 - Data/persistence boundary: [real boundary used or N/A]
 - Existing observable-output comparison: [representative input and comparison method when behavior, external contract, or persisted shape changes; otherwise omit]
 
-Do not require a live external service, production access, new dashboard, or new test lane unless a confirmed requirement makes it part of repository implementation.
+Limit live external services, production access, new dashboards, and new test lanes to confirmed requirements that make them part of repository implementation.
 
 ## Material Risks
 

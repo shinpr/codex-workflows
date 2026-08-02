@@ -15,7 +15,7 @@ Select an integration or E2E test only when all conditions hold:
 
 1. a confirmed AC, preserved behavior, or task Verification Focus names an observable claim;
 2. correctness depends on a component, persistence, process, browser, or service boundary that a local/unit proof cannot exercise;
-3. existing tests do not already prove the same failure mode at that boundary;
+3. existing tests leave that failure mode unproven at the boundary;
 4. the expected regression-detection value justifies the fixture, environment, runtime, and maintenance cost.
 
 When any condition fails, leave the claim to its focused local or task verification. An empty integration/E2E selection is a successful result and needs no absence artifact.
@@ -40,7 +40,7 @@ For each boundary-dependent claim:
 4. select the candidate only when it adds distinct material detection value;
 5. combine claims that share setup, boundary, and observable outcome when one test can prove them clearly.
 
-Do not invent revenue, frequency, legal, or probability scores. Use supplied product evidence and observed repository/test cost; when that evidence is weak, prefer no new wider-lane test unless the boundary is the only proof of a binding claim.
+Use supplied product evidence and observed repository/test cost rather than invented revenue, frequency, legal, or probability scores. When that evidence is weak, add a wider-lane test only when the boundary is the sole available proof of a binding claim.
 
 ## Skeleton Contract
 
@@ -58,7 +58,7 @@ Primary failure mode: [regression this test must detect]
 Proof obligation: [assertions and permitted controlled boundaries]
 ```
 
-Add verification items only when the proof cannot be stated clearly in the obligation. Do not add complexity scores, category taxonomies, or metadata without a downstream consumer.
+Limit additional verification items to cases where the obligation alone cannot state the proof clearly. Include complexity scores, category taxonomies, or metadata only for a named downstream consumer.
 
 ## Review Criteria
 
