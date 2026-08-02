@@ -10,15 +10,15 @@ This reference defines the orchestration flow for projects spanning multiple lay
 
 ## Design Phase
 
-### Large Scale Fullstack (6+ Files) - 16 Steps
+### Large Structural Scale Fullstack - 16 Steps
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
-| 1 | requirement-analyzer | Requirement analysis + scale determination **[Stop]** | Requirements + scale |
+| 1 | requirement-analyzer + orchestrator | Requirement analysis, convergence hearing, and scale determination **[Stop]** | Converged requirements + scale |
 | 2 | prd-creator | PRD covering entire feature (all layers) | Single PRD |
 | 3 | document-reviewer | PRD review **[Stop]** | Approval |
-| 4 | (orchestrator) | External resource hearing **[Stop]** | Project context |
-| 5 | (orchestrator) | Ask user for prototype code **[Stop]** | Prototype path or none |
+| 4 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
+| 5 | (orchestrator) | Resolve prototype input only when the UI target cannot otherwise be determined | Prototype path or none |
 | 6 | codebase-analyzer x2 + ui-analyzer x1 | Per-layer codebase analysis plus frontend UI analysis | Analysis JSON |
 | 7 | ui-spec-designer | UI Spec from PRD + UI analysis + optional prototype | UI Spec |
 | 8 | document-reviewer | UI Spec review **[Stop]** | Approval |
@@ -31,13 +31,13 @@ This reference defines the orchestration flow for projects spanning multiple lay
 | 15 | work-planner | Work plan from all Design Docs | Work plan |
 | 16 | document-reviewer | WorkPlan review **[Stop: Batch approval]** | Approval |
 
-### Medium Scale Fullstack (3-5 Files) - 14 Steps
+### Medium Structural Scale Fullstack - 14 Steps
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
-| 1 | requirement-analyzer | Requirement analysis + scale determination **[Stop]** | Requirements + scale |
-| 2 | (orchestrator) | External resource hearing **[Stop]** | Project context |
-| 3 | (orchestrator) | Ask user for prototype code **[Stop]** | Prototype path or none |
+| 1 | requirement-analyzer + orchestrator | Requirement analysis, convergence hearing, and scale determination **[Stop]** | Converged requirements + scale |
+| 2 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
+| 3 | (orchestrator) | Resolve prototype input only when the UI target cannot otherwise be determined | Prototype path or none |
 | 4 | codebase-analyzer x2 + ui-analyzer x1 | Per-layer codebase analysis plus frontend UI analysis | Analysis JSON |
 | 5 | ui-spec-designer | UI Spec from requirements + UI analysis + optional prototype | UI Spec |
 | 6 | document-reviewer | UI Spec review **[Stop]** | Approval |
@@ -52,7 +52,9 @@ This reference defines the orchestration flow for projects spanning multiple lay
 
 ### Parallelization in Multi-Agent Steps
 
-Steps marked `x2` run independently per layer and can execute in parallel when supported. `ui-analyzer x1` runs once for the frontend layer alongside frontend codebase analysis and consumes the saved external resource context.
+Steps marked `x2` run independently per layer and can execute in parallel when supported. `ui-analyzer x1` runs once for the frontend layer alongside frontend codebase analysis and consumes the selected `externalResourceRefs`.
+
+External evidence and prototype inputs are conditional. Load `external-resource-context` when external evidence changes the current UI or verification decision; otherwise continue with `none`. Ask the user only when a missing user-held access method or prototype is necessary to determine that decision.
 
 ### Layer Context in Design Doc Creation
 
@@ -60,7 +62,7 @@ When spawning Design Doc creation for each layer, pass explicit context:
 
 | Scale | Concrete context value |
 |-------|------------------------|
-| Large | `context: { scale: "large", prd_path: "[path]", requirement_analysis: [requirement-analyzer output] }` |
+| Large | `context: { scale: "large", prd_path: "[path]", requirement_analysis: [routing fields without the persisted convergence object] }` |
 | Medium | `context: { scale: "medium", prd_path: null, requirement_analysis: [requirement-analyzer output] }` |
 
 Before spawning, replace every context placeholder with a concrete context object for the active flow scale. For filtered context placeholders, use the same `scale` and `prd_path` values, and replace `requirement_analysis` with the layer-filtered requirement analysis.
@@ -83,7 +85,7 @@ Before spawning, replace every context placeholder with a concrete context objec
 
 **Frontend UI Analysis**:
 **Agent**: Spawn ui-analyzer
-> "Gather UI facts for frontend design. context: [context with requirement_analysis filtered to frontend files]. requirements: [original user requirements]. target_paths: [frontend file and directory scope]. target_components: [frontend target components]. prototype_path: [path if provided]. Read docs/project-context/external-resources.md, resolve relevant UI external resources through declared access methods, and analyze component structure, props patterns, CSS layout, state displays, accessibility, generated artifacts, and candidate write set."
+> "Gather UI facts for frontend design. context: [context with requirement_analysis filtered to frontend files]. requirements: [original user requirements]. target_paths: [frontend file and directory scope]. target_components: [frontend target components]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected by the external-evidence step, or []]. Analyze component structure, props patterns, CSS layout, sourced state displays, accessibility, generated artifacts, and candidate write set."
 
 ### design-sync for Cross-Layer Verification
 
@@ -95,59 +97,40 @@ Spawn acceptance-test-generator with all Design Docs and UI Spec:
 
 > "Generate test skeletons from the following documents: Design Doc (backend): [path], Design Doc (frontend): [path], UI Spec: [path] (if exists)"
 
+Verify generated artifact paths and continue with them; an empty selection is valid.
+
 ## Work Planning Phase
 
 Spawn work-planner with all Design Docs:
 
-> "Create a work plan from the following documents: PRD: [path] (Large Scale only), Design Doc (backend): [path], Design Doc (frontend): [path], UI Spec: [path] (if exists). Test skeletons from acceptance-test-generator: integration: [path or null], fixtureE2e: [path or null], serviceE2e: [path or null], e2eAbsenceReason: { fixtureE2e: [value or null], serviceE2e: [value or null] }. Compose phases as vertical feature slices where possible -- each phase should contain both backend and frontend work for the same feature area, enabling early integration verification per phase. Include `Implementation Readiness: pending` in the work plan header."
+> "Create an implementation-focused work plan from the following documents: PRD: [path] (Large Scale only), Design Doc (backend): [path], Design Doc (frontend): [path], UI Spec: [path] (if exists). Test skeleton artifact paths from acceptance-test-generator: [artifacts[].path]. Compose phases around shared backend/frontend verification points and plan only repository implementation outcomes required by the Design Docs."
 
-work-planner's existing Integration Complete criteria naturally covers cross-layer verification when given multiple Design Docs.
+Verify the returned Work Plan path and use it as the document-reviewer target. Work-planner's existing Integration Complete criteria naturally covers cross-layer verification when given multiple Design Docs.
 
 After work-planner creates or updates the plan, spawn document-reviewer:
 
-> "Review the fullstack work plan. doc_type: WorkPlan. target: [work plan path]. mode: composite. Review semantic traceability to all Design Docs, UI Spec when present, Reference Contract Values fidelity, cross-layer boundary coverage, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
+> "Review the fullstack work plan. doc_type: WorkPlan. target: [work plan path]. mode: composite. Verify Design Doc and UI Spec implementation coverage, repository-only scope, cross-layer dependency order, executable verification, optional Verification Focus, and Review Scope."
 
-On `needs_revision` or `approved_with_conditions`, apply Review Revision Convergence (`author`: work-planner; `artifact`: work plan); on `progression`, follow the `approved` branch. On `rejected`, halt and escalate to the user. Stop for batch approval only after WorkPlan review returns `approved` and the plan's `WorkPlan Review` section records `Status: approved` with `Conditions: none`.
+On `needs_revision` or `approved_with_conditions`, apply Review Resolution with work-planner and review the updated plan. Route governing-source contradictions through Orchestrator Escalation Resolution. Stop for batch approval after WorkPlan review succeeds; after explicit user approval, record the plan-level status as approved.
 
 ## Task Decomposition Phase
 
-task-decomposer follows standard decomposition from the work plan. The key addition is the **layer-aware naming convention**:
-
-| Filename Pattern | Meaning |
-|-----------------|---------|
-| `{plan}-backend-task-{n}.md` | Backend only |
-| `{plan}-frontend-task-{n}.md` | Frontend only |
-
-Layer is determined from the task's **Target files** paths -- this is a factual determination, not inference.
+task-decomposer follows standard decomposition from the work plan and the llm-friendly-context Task File Contract. The task's **Target Files** provide the layer evidence used by that filename contract.
 
 ## Task Cycle
 
-Each task uses the standard 4-step cycle with layer-appropriate agents:
+Route each task by filename:
 
-### backend-task
-1. Capture `diffBase`; task-executor: Implementation
-2. Escalation check
-3. quality-fixer: Quality check and fixes with `task_file` and `filesModified`
-4. git commit (on status: "approved")
+| Filename Pattern | Executor | Quality fixer |
+|---|---|---|
+| `*-backend-task-*` | task-executor | quality-fixer |
+| `*-frontend-task-*` | task-executor-frontend | quality-fixer-frontend |
+| Otherwise, shared `*-task-*` | task-executor | quality-fixer |
 
-### frontend-task
-1. Capture `diffBase`; task-executor-frontend: Implementation
-2. Escalation check
-3. quality-fixer-frontend: Quality check and fixes with `task_file` and `filesModified`
-4. git commit (on status: "approved")
+For each task, use the subagents-orchestration-guide autonomous task cycle with the executor and quality fixer selected above.
 
 ### integration-test-reviewer Placement
 
-When `requiresTestReview` is `true`:
-- Standard flow: integration-test-reviewer after executor and before quality-fixer, with changed integration/E2E paths from `filesModified`, `diffBase`, `taskFile`, and only matching `skeletonFiles` when available from acceptance-test-generator output or task/work-plan references
+When changed integration/E2E tests need review, run integration-test-reviewer after the executor and before quality-fixer with the changed paths, `diffBase`, task file, and matching skeletons when available.
 
-## Agent Routing Summary
-
-The orchestrator selects agents by **filename pattern matching** -- no conditional inference required:
-
-```
-*-backend-task-*   -> task-executor + quality-fixer
-*-frontend-task-*  -> task-executor-frontend + quality-fixer-frontend
-```
-
-All other orchestration rules (stop points, structured responses, escalation handling, task management) follow the standard subagents-orchestration-guide.
+All other orchestration rules follow the standard subagents-orchestration-guide.

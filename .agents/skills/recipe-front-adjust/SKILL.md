@@ -1,16 +1,16 @@
 ---
 name: recipe-front-adjust
-description: "Adjust an implemented UI with external resource context, focused write-set confirmation, verification, and quality checks."
+description: "Adjust an implemented UI with focused evidence, verification, and quality checks."
 ---
 
 **Context**: UI adjustment for implemented frontend features. The parent session owns the edit and verification loop; subagents handle bounded fact gathering, planning, and quality checks.
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
-1. [LOAD IF NOT ACTIVE] `documentation-criteria` -- scale and planning criteria
-2. [LOAD IF NOT ACTIVE] `external-resource-context` -- external resource hearing and lookup
-3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination rules
-4. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
+1. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination rules
+2. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- adjustment handoff and verification context
+
+Load `external-resource-context` in Step 1 only when a named external source is required for the requested adjustment.
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
@@ -18,12 +18,11 @@ description: "Adjust an implemented UI with external resource context, focused w
 
 **Core Identity**: "I am a guided executor. I run the UI adjustment and verification loop in the parent session."
 
-**Execution Plan Gate**: Call `update_plan` with first "Map active rules to this task", the applicable adjustment steps, and final "Verify outputs and rule adherence" before external-resource hearing. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+**Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
 **Execution Protocol**:
-1. Delegate bounded one-shot work to `ui-analyzer`, `work-planner`, and `quality-fixer-frontend`.
-2. Run user dialogue, write-set confirmation, edits, and verification in the parent session.
-3. Respect every `[STOP]` marker before moving to the next phase.
+1. Delegate bounded one-shot work to `ui-analyzer` and `quality-fixer-frontend`.
+2. Run evidence resolution, edits, and verification in the parent session.
 
 Adjustment request: $ARGUMENTS
 
@@ -31,86 +30,56 @@ Adjustment request: $ARGUMENTS
 
 ### Step 1: External Resource Hearing
 
-Run the frontend domain hearing protocol from `external-resource-context`.
+Identify whether the requested adjustment depends on an external design or verification source unavailable from the repository or supplied input. Reuse a matching recorded resource when available. Otherwise run the focused `external-resource-context` hearing for that exact source. When repository or user-supplied evidence defines the target, continue with no external resource.
 
 ### Step 2: UI Fact Gathering
 
 Spawn `ui-analyzer`:
 
-`requirement_analysis: { affectedFiles: [files inferred from request], purpose: "UI adjustment", technicalConsiderations: [] }. requirements: [adjustment request]. target_paths: [paths named or inferred from request]. target_components: [components named in request]. ui_spec_path: [path if available]. Read docs/project-context/external-resources.md, resolve relevant UI sources through declared access methods, analyze existing UI code, and populate candidateWriteSet[].`
+`requirement_analysis: { affectedFiles: [files inferred from request], purpose: "UI adjustment", technicalConsiderations: [] }. requirements: [adjustment request]. target_paths: [paths named or inferred from request]. target_components: [components named in request]. ui_spec_path: [path if available]. externalResourceRefs: [{label, featureIdentifier} selected in Step 1, or []]. Analyze existing UI code and populate candidateWriteSet[].`
 
-### Step 3: Confirm Write Set and Scale
+### Step 3: Resolve Write Set and Route
 
-1. Present `candidateWriteSet[]` to the user.
-2. Ask the user to confirm high-confidence entries, confirm all entries, or provide an edited file list.
-3. Apply documentation-criteria Creation Decision Matrix to the confirmed write set:
-   - `0 files`: ask the user for the component or path that owns the change, then pause this recipe.
-   - `1-2 files`: proceed with direct adjustment.
-   - `3-5 files`: create a focused work plan.
-   - `6+ files` or ADR conditions: route to the frontend design flow.
+Resolve the smallest write set supported by the request, `candidateWriteSet[]`, and repository evidence. Search by component ownership and call sites when the first candidates are incomplete; ask the user only when the requested UI target still cannot be identified.
 
-### Step 4: Plan Creation When Needed
+- Existing component architecture, state ownership, routing, and API contracts remain unchanged: proceed to Step 4.
+- Any of those design contracts changes: hand the request, resolved write set, and relevant `focusAreas[]` to `recipe-front-design`, then end this recipe.
 
-For `3-5 files`, spawn `work-planner`:
-
-`Create a focused UI adjustment plan. Adjustment request: [verbatim]. ui_analysis: [ui-analyzer JSON]. External resources: docs/project-context/external-resources.md. Confirmed write set: [files]. Each phase should be implementable as 1-3 commits. Include visual verification, accessibility, i18n parity, and generated artifact checks when relevant. Output path: docs/plans/[YYYYMMDD]-adjust-[short-description].md.`
-
-**[STOP]** Present the plan and wait for approval.
-
-For `1-2 files`, present a concise adjustment context:
+Concise adjustment context:
 - request
-- confirmed write set
+- resolved write set
 - relevant `focusAreas[]`
 - relevant external resource summaries and access methods
 
-**[STOP]** Wait for user confirmation that the context covers the work.
-
-### Step 5: Adjustment and Verification
+### Step 4: Adjustment and Verification
 
 For each adjustment unit:
-1. Plan the edit from `focusAreas[]`, confirmed write set, and relevant external resource summaries.
-2. Apply the edit in the parent session.
+1. Start the Per-Task Change Set and plan the edit from `focusAreas[]`, resolved write set, and relevant external resource summaries.
+2. Apply the edit in the parent session and add its paths and generated artifacts to `taskWriteSet`.
 3. Verify against declared access methods:
    - design origin: compare implementation target to the recorded design source
    - visual verification: use the recorded browser, test runner, Storybook, dev server, or manual confirmation path
    - design system: confirm tokens, variants, and usage rules through the recorded source
 4. Refine until the implemented UI matches the design source or the user-confirmed adjustment target.
 
-### Step 6: Quality Verification
+### Step 5: Quality Verification
 
-Spawn `quality-fixer-frontend` for each unit:
-
-- Direct adjustment: pass `filesModified: [edited files]`
-- Planned adjustment: pass `task_file: [work plan path]` and `filesModified: [edited files]`
-
-Route `quality-fixer-frontend` results:
-- `approved`: proceed to commit
-- `stub_detected`: complete the implementation gap and rerun quality verification
-- `blocked`: surface missing prerequisites or unclear specification points to the user
-
-### Step 7: Commit
-
-Commit each approved adjustment unit with affected files and relevant generated artifacts.
+For each unit, spawn `quality-fixer-frontend` with `filesModified: taskWriteSet` and the Step 4 verification evidence. Repair reported stubs in the parent session, accumulate every repair and quality-fixer path, and rerun quality-fixer. On approval, reconcile and commit the Per-Task Change Set; resolve blocked results through Orchestrator Escalation Resolution.
 
 ## Completion Criteria
 
-- [ ] External resource hearing completed or update explicitly skipped
+- [ ] The UI target is grounded in repository, supplied, or focused external evidence
 - [ ] `ui-analyzer` returned JSON with external resource status and `candidateWriteSet`
-- [ ] User confirmed write set before scale judgment
-- [ ] Scale judgment completed with matching branch
-- [ ] Direct context or work plan approved
-- [ ] Adjustment units edited and verified through declared resource paths
-- [ ] Each unit passed `quality-fixer-frontend`
-- [ ] Each approved unit committed
+- [ ] The write set is supported by the request and repository evidence
+- [ ] Route completed:
+  - Direct adjustment: edits verified, quality-fixer approved, and units committed
+  - Frontend design: request, resolved write set, and relevant `focusAreas[]` handed to `recipe-front-design`
 
 ## Output Example
 
 ```
 Frontend adjustment completed.
 - External resources: docs/project-context/external-resources.md (updated|unchanged)
-- UI analysis: [N] components, [M] focus areas
-- Scale: 1-2 files | 3-5 files
-- Work plan: path | N/A
-- Adjustment units committed: [count]
-- Quality status: approved
+- Route: direct adjustment | frontend design
+- Result: [committed adjustment count | frontend design handoff]
 ```

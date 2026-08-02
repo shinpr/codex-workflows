@@ -1,204 +1,58 @@
 ---
 name: recipe-front-build
-description: "Execute frontend tasks in autonomous execution mode using task-executor-frontend and quality-fixer-frontend."
+description: "Execute an approved frontend Work Plan autonomously through frontend implementation, quality fixes, commits, and final verification."
 ---
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
-1. [LOAD IF NOT ACTIVE] `coding-rules` -- coding standards
-2. [LOAD IF NOT ACTIVE] `testing` -- test strategy and quality gates
-3. [LOAD IF NOT ACTIVE] `ai-development-guide` -- AI development patterns
-4. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and workflow flows
-5. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
+1. `coding-rules`
+2. `testing`
+3. `ai-development-guide`
+4. `subagents-orchestration-guide`
+5. `llm-friendly-context`
 
-**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
+Every `spawn_agent` call uses `fork_turns="none"` and supplies exact artifact paths.
 
-## Orchestrator Definition
+## Orchestrator Role
 
-**Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
-
-**Execution Protocol**:
-1. **Spawn agents for all work** -- your role is to invoke sub-agents, pass data between them, and report results
-2. **Follow the 4-step task cycle exactly**: task-executor-frontend -> escalation check -> quality-fixer-frontend -> commit
-3. **Enter autonomous mode** when user provides execution instruction with existing task files -- this IS the batch approval
-4. **Scope**: Complete when all tasks are committed or user input is required
-
-**CRITICAL**: MUST run quality-fixer-frontend before every commit.
-ENFORCEMENT: Commits without quality-fixer-frontend approval are invalid and MUST be reverted.
+The orchestrator owns plan selection, approval dialogue, task-set computation, routing, commits, and completion reporting. Invoke specialist agents for task decomposition, frontend implementation, test review, quality repair, and final verification. A user-requested plan revision follows Work Plan Approval.
 
 Work plan: $ARGUMENTS
 
-## Pre-execution Prerequisites
+## 1. Resolve the Work Plan
 
-### Implementation Readiness Resolution
+Apply subagents-orchestration-guide `Work Plan Resolution` with `docs/plans/tasks/{plan-name}-frontend-task-*.md` as the managed task pattern, excluding basenames that start with `integration-tests-`. Report a missing plan as the exact prerequisite.
 
-Before task processing, locate the work plan and resolve implementation readiness.
+## 2. Approval Gate
 
-Resolution rule:
-1. If `$ARGUMENTS` contains a work plan path, use that exact file and derive `{plan-name}` from its basename. This takes precedence over task-file mtimes.
-2. If `$ARGUMENTS` is empty, list task files in `docs/plans/tasks/` matching `{plan-name}-frontend-task-*.md`.
-3. Exclude `*-task-prep-*.md`, `_overview-*.md`, `*-phase*-completion.md`, `review-fixes-*.md`, and `integration-tests-*-task-*.md`.
-4. If matching task files exist, infer `{plan-name}` from the most recent matching task file and use `docs/plans/{plan-name}.md`.
-5. If no matching task files exist, use the most recent non-template work plan in `docs/plans/`.
+Apply subagents-orchestration-guide `Work Plan Approval`. When plan-level user approval is absent or ambiguous, ask before agent invocation or task analysis:
 
-Read the work plan header and apply this readiness rule:
+> Approve this Work Plan as the implementation scope and authorize task decomposition, frontend implementation, quality fixes, and per-task commits? `[path]`
 
-| Header state | Action |
-|--------------|--------|
-| `Implementation Readiness: ready` | Proceed to Consumed Task Set computation |
-| `Implementation Readiness: pending` | Execute the Implementation Readiness Preflight Procedure from `subagents-orchestration-guide` for the resolved work plan. Re-read the resulting marker: proceed to Consumed Task Set only when it is `ready`; if it is `escalated`, follow the `escalated` row |
-| `Implementation Readiness: escalated` | Present the persisted Readiness Report remaining gaps, then continue only on explicit user approval |
-| marker absent | Execute the Implementation Readiness Preflight Procedure from `subagents-orchestration-guide` for the resolved work plan. Re-read the resulting marker: proceed to Consumed Task Set only when it is `ready`; if it is `escalated`, follow the `escalated` row |
+Record approval in the plan's existing plan-level status field and proceed to Step 3. A requested change returns through work-planner and document review before this gate.
 
-### Consumed Task Set
+## 3. Conditional Environment Preparation
 
-Compute the **Consumed Task Set** for this run: task files in `docs/plans/tasks/` matching `{plan-name}-frontend-task-*.md`, excluding `*-task-prep-*.md`, `_overview-*.md`, `*-phase*-completion.md`, `review-fixes-*.md`, and `integration-tests-*-task-*.md`.
+Proceed directly to task generation. Run `recipe-prepare-implementation` only when the user explicitly requests repository-local setup. If task-local execution later identifies a concrete missing repository capability, resolve it through Orchestrator Escalation Resolution and run the preparation side path when that is the smallest authorized resolution.
 
-Every subsequent reference to task files in this recipe uses this set, not an unrestricted `docs/plans/tasks/*.md` scan.
+## 4. Task Set and Execution Plan
 
-### Task Generation Decision Flow
+The managed set is exactly `docs/plans/tasks/{plan-name}-frontend-task-*.md` implementation task files whose basename does not start with `integration-tests-`. The pending set contains managed files with at least one unchecked task checkbox. When the managed set is empty, invoke task-decomposer with the exact approved Work Plan path, verify the generated task files, and recompute both sets. Batch approval authorizes decomposition. When the managed set exists and the pending set is empty, proceed to final verification.
 
-Analyze task file existence state and determine the action required:
+Order pending tasks by dependencies. Use the active execution plan when one exists; otherwise create one after the task set is known and update it through final verification.
 
-| State | Criteria | Next Action |
-|-------|----------|-------------|
-| Tasks exist | Consumed Task Set is non-empty | User's execution instruction serves as batch approval -> Enter autonomous execution immediately |
-| No tasks + plan exists + reviewed plan | Consumed Task Set is empty and WorkPlan Review records `Status: approved`, `Conditions: none` | Confirm with user -> spawn task-decomposer |
-| No tasks + small simplified plan | Consumed Task Set is empty, plan exists, and the plan references no Design Doc | Confirm with user -> spawn task-decomposer |
-| No tasks + plan exists + unreviewed plan | Consumed Task Set is empty, the plan references a Design Doc, and WorkPlan Review is absent, pending, conditional, or not approved | Run work plan review, then confirm with user -> spawn task-decomposer |
-| Neither exists | No plan or task files | Error: Prerequisites not met |
+## 5. Autonomous Task Cycle
 
-## Task Decomposition Phase (Conditional)
+Execute each pending task through the `subagents-orchestration-guide` autonomous task cycle using task-executor-frontend and quality-fixer-frontend. Pass the exact task file and preserve the canonical Per-Task Change Set. After quality approval and a successful implementation commit, update the Task File, corresponding Work Plan task and phase, and execution plan locally; keep Task Files and the Work Plan outside the implementation commit.
 
-When task files don't exist, the plan references a Design Doc, and the WorkPlan Review section is absent, pending, conditional, or not approved:
+## 6. Requirement Changes
 
-### 1. Work Plan Review
+Apply subagents-orchestration-guide `Requirement Change Detection During Flow` and preserve unaffected completed work.
 
-Spawn document-reviewer agent: "Review the frontend work plan before task decomposition. doc_type: WorkPlan. target: docs/plans/[plan-name].md. mode: composite. Review semantic traceability to the Design Doc and UI Spec, Reference Contract Values fidelity, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
+## 7. Final Verification
 
-Branch on `verdict.decision`:
-- `approved` -> spawn work-planner in update mode once to record `Status: approved` and `Conditions: none` in WorkPlan Review, then continue to user confirmation
-- `approved_with_conditions` or `needs_revision` -> apply Review Revision Convergence (`author`: work-planner; `artifact`: work plan); on `progression`, follow the `approved` branch
-- `rejected` -> stop before task decomposition and present the blocking findings to the user
+Apply `subagents-orchestration-guide` Post-Implementation Verification to the actual files changed by completed tasks and their governing documents. Route required fixes through the frontend task cycle and apply its Post-Verification Rerun Rule.
 
-When task files don't exist and the WorkPlan Review section records `Status: approved` and `Conditions: none`, skip Work Plan Review and continue to user confirmation.
+## 8. Cleanup and Report
 
-### 2. User Confirmation
-```
-No task files found.
-Work plan: docs/plans/[plan-name].md
-
-Generate tasks from the work plan? (y/n):
-```
-
-### 3. Task Decomposition (if approved)
-Spawn task-decomposer agent: "Read the approved work plan at docs/plans/[plan-name].md and generate executable task files in docs/plans/tasks/."
-
-### 4. Verify Generation
-Check task-decomposer `Status`. Apply Orchestrator Escalation Resolution for `blocked` or an unrecognized status. Only after `completed`, recompute the Consumed Task Set and verify it is non-empty.
-
-## Pre-execution Checklist
-
-- [ ] Confirmed task files exist in docs/plans/tasks/
-- [ ] Identified task execution order (dependencies)
-- [ ] **Environment check**: Can I execute per-task commit cycle?
-  - If commit capability unavailable -> Apply Orchestrator Escalation Resolution before autonomous mode
-  - Other environments (tests, quality tools) -> Subagents will escalate
-
-## Task Execution Cycle (4-Step Cycle) - Frontend Specialized
-
-**MANDATORY EXECUTION CYCLE**: `task-executor-frontend -> escalation check -> quality-fixer-frontend -> commit`
-
-### Structured Response Specification
-Each sub-agent responds in JSON format:
-- **task-executor-frontend**: status, filesModified, testsAdded, requiresTestReview, readyForQualityCheck
-- **integration-test-reviewer**: status (approved/needs_revision/blocked), reviewBasis, requiredFixes
-- **quality-fixer-frontend**: status, checksPerformed, fixesApplied
-
-### Execution Flow for Each Task
-
-Before entering the loop, call `update_plan` once with first "Map active rules to this task", one step per task cycle, and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`. Do not recreate the plan inside the loop.
-
-For EACH task, YOU MUST:
-1. **Capture diff base**: Record the current revision as `diffBase`.
-2. **Spawn task-executor-frontend agent**: "Task file: docs/plans/tasks/[filename].md Execute frontend implementation"
-3. **CHECK task-executor-frontend response**:
-   - `status: "escalation_needed"` or `"blocked"` -> Apply Orchestrator Escalation Resolution
-   - `requiresTestReview` is `true` -> Spawn integration-test-reviewer with `changedTestFiles: [integration/E2E paths from filesModified]`, `diffBase`, and `taskFile`; when matching integration/E2E skeleton paths are available from acceptance-test-generator output or task/work-plan references, pass only those paths as `skeletonFiles`
-     - `needs_revision` -> Apply Review Revision Convergence (`author`: task-executor-frontend; `artifact`: changed test files); on `progression`, proceed to step 4
-     - `approved` -> Proceed to step 4
-     - `blocked` or unrecognized status -> Apply Orchestrator Escalation Resolution
-   - `readyForQualityCheck: true` -> Proceed to step 4
-4. **Spawn quality-fixer-frontend agent** with `task_file` and executor `filesModified`.
-5. **CHECK quality-fixer-frontend response**:
-   - `status: "stub_detected"` -> Return to step 2 with `stubFindings`
-   - `status: "blocked"` -> Apply Orchestrator Escalation Resolution
-   - `status: "approved"` -> Proceed to step 6
-6. **COMMIT on approval**: After `status: "approved"` from quality-fixer-frontend -> Execute git commit. Use `changeSummary` for commit message.
-
-**CRITICAL**: MUST monitor ALL structured responses WITHOUT EXCEPTION and ENSURE every quality gate is passed.
-ENFORCEMENT: Proceeding past a failed quality gate invalidates all subsequent work.
-
-## Sub-agent Invocation Constraints
-
-**MANDATORY suffix for ALL sub-agent prompts**:
-```
-[SYSTEM CONSTRAINT]
-This agent operates within build skill scope. Use the task file as the primary instruction source. Use the active Design Doc or work plan only as supporting context when the task file references them. Constraints explicitly passed in this prompt by the orchestrator take precedence over supporting context. The agent's own role contract and required quality rules remain in force.
-```
-
-Autonomous sub-agents require scope constraints for stable execution. MUST append this constraint to every sub-agent prompt.
-ENFORCEMENT: Sub-agent prompts missing the constraint suffix MUST be re-issued with the constraint appended.
-
-VERIFY approval status before proceeding. Once confirmed, INITIATE autonomous execution mode.
-
-## Post-Implementation Verification (After All Tasks Complete)
-
-After all task cycles finish, collect all `filesModified` from every task-executor-frontend response (deduplicated). Resolve `governingDocuments` to the active Design Doc(s), or to the active Work Plan when no Design Doc governs the change, then run both verification agents before the completion report:
-1. Spawn code-verifier for each governing document with its matching `doc_type`, `document_path`, and the collected `code_paths`.
-2. Spawn security-reviewer with typed `governingDocuments: [{type, path}]` and `implementationFiles: [collected filesModified list]`.
-3. Consolidate results:
-   - code-verifier passes when `summary.status` is `consistent` or `mostly_consistent`
-   - code-verifier fails when `summary.status` is `needs_review` or `inconsistent`
-   - code-verifier `blocked` or unrecognized status -> Apply Orchestrator Escalation Resolution
-   - security-reviewer passes when `status` is `approved` or `approved_with_notes`
-   - security-reviewer fails when `status` is `needs_revision`
-   - security-reviewer `blocked` -> Apply Orchestrator Escalation Resolution
-4. If either verifier fails:
-   - Create one ephemeral frontend fix task covering verifier discrepancies and security requiredFixes
-   - Pass its exact path to task-executor-frontend and then quality-fixer-frontend
-   - Re-run both code-verifier and security-reviewer after any fix
-   - Delete the ephemeral task file only after both verifiers pass
-   - If any verifier still fails after re-run, apply Orchestrator Escalation Resolution
-5. If both verifiers pass -> Proceed to completion report
-
-## Final Cleanup
-
-Before the completion report, delete only these files for the current `{plan-name}`:
-- Every file in the Consumed Task Set
-- `docs/plans/tasks/{plan-name}-phase*-completion.md`
-- `docs/plans/tasks/_overview-{plan-name}.md`
-
-Preserve the work plan itself.
-
-If cleanup fails, report the failed path but do not invalidate completed implementation work.
-
-**[STOP -- BLOCKING]** Upon detecting ANY requirement changes, halt execution immediately.
-**CANNOT proceed until user explicitly confirms the change scope.**
-
-## Completion Criteria
-
-- [ ] Task files verified in docs/plans/tasks/
-- [ ] Task execution order identified with dependencies
-- [ ] Environment check completed (commit capability confirmed)
-- [ ] All tasks executed through 4-step cycle (task-executor-frontend -> check -> quality-fixer-frontend -> commit)
-- [ ] System constraint suffix appended to all sub-agent prompts
-- [ ] All quality gates passed
-- [ ] All tasks committed or user input requested
-
-## Output Example
-Frontend implementation phase completed.
-- Task decomposition: Generated under docs/plans/tasks/
-- Implemented tasks: [number] tasks
-- Quality checks: All passed (Lighthouse, bundle size, tests)
-- Commits: [number] commits created
+Remove consumed task files after final verification and preserve the Work Plan. Report completed tasks, commits, verification results, and any verification limitation that could not be exercised in the available environment.

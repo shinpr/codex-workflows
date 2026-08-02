@@ -7,25 +7,25 @@ description: "Create frontend work plan from design document with test skeleton 
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
-1. [LOAD IF NOT ACTIVE] `documentation-criteria` -- document quality standards
-2. [LOAD IF NOT ACTIVE] `implementation-approach` -- implementation methodology
-3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and workflow flows
-4. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
+1. [LOAD IF NOT ACTIVE] `documentation-criteria` -- Work Plan scope and template
+2. [LOAD IF NOT ACTIVE] `implementation-approach` -- implementation ordering and verification strategy
+3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and workflow flow
+4. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- planning handoffs and artifact contract
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
 ## Orchestrator Definition
 
-**Core Identity**: "I am not a worker. I am an orchestrator."
+**Core Identity**: Coordinate the frontend planning workflow and complete lightweight routing, file selection, approval recording, and status updates directly.
 
-**Execution Plan Gate**: Call `update_plan` with first "Map active rules to this task", Steps 1-5, and final "Verify outputs and rule adherence" before document selection. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+**Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
 **Execution Method**:
 - Test skeleton generation -> performed by acceptance-test-generator
 - Work plan creation -> performed by work-planner
 - Work plan review -> performed by document-reviewer
 
-Orchestrator spawns agents and passes structured data between them.
+The orchestrator invokes these specialists and directly handles deterministic coordination and status changes.
 
 ## Scope Boundaries
 
@@ -51,21 +51,25 @@ Check for existence of design documents in docs/design/.
 
 ### Step 2: Test Skeleton Generation
 Spawn acceptance-test-generator agent: "Generate test skeletons from Design Doc at [path]. [UI Spec at [ui-spec path] if exists.]"
+Verify generated artifact paths and pass them to Step 3; an empty selection is valid.
 
 ### Step 3: Work Plan Creation
-Spawn work-planner agent: "Create work plan from Design Doc at [path]. Integration test file: [path from step 2]. fixture-e2e test file: [path from step 2 or null]. service-integration-e2e test file: [path from step 2 or null]. E2E absence reasons by lane: [values from step 2 when an E2E lane is null]. Integration tests are created with each phase implementation, fixture-e2e runs alongside UI implementation, service-integration-e2e runs only in the final phase when a service E2E file exists. Include `Implementation Readiness: pending` in the work plan header."
+Spawn work-planner agent: "Create an implementation-focused work plan from Design Doc at [path]. Include generated test skeleton artifact paths from Step 2 when present. Plan only repository implementation outcomes required by the Design Doc and UI Spec."
+Verify the returned Work Plan path and use it as the Step 4 review target.
 
 ### Step 4: Work Plan Review
-Spawn document-reviewer agent: "Review the frontend work plan. doc_type: WorkPlan. target: docs/plans/[plan-name].md. mode: composite. Review semantic traceability to the Design Doc and UI Spec, Reference Contract Values fidelity, early verification placement, real-boundary verification coverage, Proof Strategy, Failure Mode Checklist, Review Scope, and Quality Assurance coverage."
+Spawn document-reviewer agent: "Review the frontend work plan. doc_type: WorkPlan. target: [work-planner completed path]. mode: composite. Verify Design Doc and UI Spec implementation coverage, absence of added operational scope, dependency order, executable verification, optional Verification Focus, and Review Scope."
 
 Branch on `verdict.decision`:
-- `approved` -> spawn work-planner in update mode once to record `Status: approved` and `Conditions: none` in WorkPlan Review, then proceed to Step 5
-- `approved_with_conditions` or `needs_revision` -> apply Review Revision Convergence (`author`: work-planner; `artifact`: work plan); on `progression`, follow the `approved` branch
-- `rejected` -> stop and present the blocking findings to the user.
+- `approved` -> proceed to Step 5 with the plan-level status pending
+- `approved_with_conditions` or `needs_revision` -> apply Review Resolution with work-planner, then review the updated plan
+- `rejected` -> apply Orchestrator Escalation Resolution using the cited governing sources
 
 ### Step 5: Plan Approval
-**[STOP -- BLOCKING]** Interact with user to complete plan and obtain approval for plan content. Clarify specific implementation steps and risks.
+**[STOP -- BLOCKING]** Present the implementation task set and any material choice, then obtain approval for the plan content.
 **CANNOT proceed until user explicitly approves the work plan.**
+
+After explicit approval, record the plan-level status as approved.
 
 ENFORCEMENT: Plan content MUST be approved before declaring completion. Unapproved plans are invalid.
 

@@ -42,13 +42,13 @@ Use locators in this priority order:
 |-----------|-------|-------------|
 | Mobile | 375px | UI Spec defines mobile-specific interactions |
 | Tablet | 768px | UI Spec defines tablet layout differences |
-| Desktop | 1280px | Default browser journey |
+| Desktop | 1280px | The selected UI claim requires a desktop journey |
 
 ### E2E Budget
 
 - Limit fixture-e2e to 3 tests and service-integration-e2e to 1-2 tests per feature
-- Generate the reserved fixture-e2e user journey when eligible
-- Generate additional non-reserved E2E tests only when the lane threshold is met (`Value Score >= 20` for fixture-e2e, `Value Score > 50` for service-integration-e2e)
+- Treat limits as ceilings, not reserved slots or targets
+- Apply the integration-e2e-testing Selection Gate before generating any browser test
 - Prefer fewer comprehensive journey tests over many granular tests
 
 ### Test Isolation

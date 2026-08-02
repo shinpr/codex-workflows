@@ -4,15 +4,56 @@
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Spec%20Compliant-blue)](https://developers.openai.com/codex/skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Repeatable software development workflows for [OpenAI Codex CLI](https://developers.openai.com/codex/cli) that keep scope and design decisions traceable through implementation, tests, and review.
+Make Codex deliver the smallest outcome you approve—not a larger, technically defensible version of it—without giving up the autonomy that makes Codex useful.
 
-Codex can implement a well-scoped task directly. codex-workflows is for changes where the harder problem is keeping analysis, design, implementation, and final verification aligned after the first answer.
+Codex usually has enough capability to implement the request. On non-trivial work, the risk is literal success: it can build every requested detail and justify a larger solution even when the product outcome does not need one.
 
-Each phase delegates to task-specific subagents and hands off through explicit repository artifacts. The workflow inspects the existing codebase, selects the smallest sufficient process, pauses at decision boundaries, implements one task at a time, and checks whether the finished work still matches the agreed requirements.
+codex-workflows is a repository-installed set of Agent Skills and custom agents for [OpenAI Codex CLI](https://developers.openai.com/codex/cli). It challenges the scope before design, then carries the approved outcome through implementation and review. The main Codex session acts as the orchestrator: it keeps that outcome in view, delegates specialist work, and resolves implementation details from repository evidence. The workflow controls product and design boundaries without trying to prescribe every internal choice.
+
+---
+
+## Why not use Codex directly?
+
+For a well-scoped fix, a disposable experiment, or a one-shot script, you should. Direct Codex execution is faster and cheaper when the intended outcome and safe implementation boundary are already obvious.
+
+Use codex-workflows when doing too much can be as costly as doing the wrong thing.
+
+You ask Codex to extend the existing authentication path. Halfway through, a second mechanism looks cleaner. The response contract shifts to match it. The frontend adapts. Every diff is defensible. Every test passes. And the result is no longer what your team approved.
+
+codex-workflows controls that expansion at three points:
+
+| When | What changes |
+|---|---|
+| Before approval | The workflow compares the request with the desired outcome, explicit exclusions, the existing code, and rough implementation cost. It removes work that does not earn its cost and chooses only the documents and tests the change needs. |
+| Across agent handoffs | Approved requirements and design decisions live in repository documents and task files. A new agent reads those decisions instead of reconstructing intent from a long conversation. |
+| After approval | The orchestrator evaluates agent results and review findings against the approved outcome. It applies useful corrections, declines scope-expanding suggestions with evidence, and lets Codex resolve implementation details autonomously. |
+
+This workflow uses more agent calls and tokens than direct execution. Use it when protecting the approved outcome is worth that cost.
+
+### A real workflow run
+
+[The BytePlus Seedream provider integration in mcp-image](https://github.com/shinpr/mcp-image/pull/114) added a third external image provider across 18 files. Eight planned tasks kept the public MCP request, client, file-save, and file-URI contracts unchanged while the provider-specific implementation evolved.
+
+Before merge, live evaluation established the final model routing, prompt limits, timeout, and response handling. Independent reviews also caught an unbounded file read, a validation bypass, a blocking FIFO path, and inconsistent API-key normalization. All four were fixed, and the PR passed 303 tests across 19 files plus a no-retry live provider call. Across the eight tasks and four fixes, the approved public contracts stayed unchanged.
 
 ---
 
 ## Quick Start
+
+### Install and run
+
+```bash
+cd your-project
+npx codex-workflows install
+```
+
+Then invoke a recipe in Codex CLI:
+
+```
+$recipe-implement Add user authentication with JWT
+```
+
+`$` invokes a skill explicitly. Type `$recipe-` to see the available workflows.
 
 ### Choose a path
 
@@ -27,84 +68,56 @@ Each phase delegates to task-specific subagents and hands off through explicit r
 | Investigate a problem without changing code | `$recipe-diagnose` |
 | Run a throwaway experiment or one-shot script | Use Codex directly |
 
-### Install and run
-
-```bash
-cd your-project
-npx codex-workflows install
-```
-
-Then in Codex CLI:
-
-```
-$recipe-implement Add user authentication with JWT
-```
-
-`$` is Codex CLI's syntax for invoking a skill explicitly. Type `$recipe-` to see all available recipes via tab completion.
-
----
-
-## Why use a development workflow?
-
-Codex can carry a large plan to completion. The harder problem is keeping a larger change coherent after the first answer.
-
-Consider a hypothetical authentication change. Analysis finds that the existing authentication path should be extended. During implementation, a second mechanism looks convenient, the response contract changes with it, and the frontend adapts to the new shape. Every local edit may look reasonable and every test may pass, while the result no longer matches the approach the team approved.
-
-codex-workflows keeps the existing path as the default, requires evidence for new design surface, and carries the agreed contract into tasks, tests, and final review. If implementation discovers that the contract must change, the workflow returns to the relevant decision instead of silently expanding the change.
-
-This costs more agent calls and tokens than direct execution. Use it when scope drift, lost decisions, or an unreviewed contract change would cost more than the workflow. For a throwaway experiment, one-shot script, or other work where traceability is not valuable, use Codex directly.
-
-Because the workflows are installed into the repository, contributors can use the same recipes, agents, and review boundaries without rebuilding them in each prompt.
-
 ---
 
 ## How It Works
 
 ```mermaid
 flowchart LR
-    A[Request] --> B[Scope the change]
-    B -->|Needs design| C[Inspect and design]
-    C --> D{Approve}
-    D -->|Revise| C
-    D -->|Proceed| E[Write task handoffs]
-    B -->|Focused task| F[Implement]
-    E --> F
-    F --> G[Verify]
-    G -->|Fix a gap| F
-    G -->|Decision changed| C
-    G -->|Passed| H[Complete]
+    A[Request] --> B[Agree on the smallest useful outcome]
+    B --> C{Design needed?}
+    C -->|No| H[Execute autonomously]
+    C -->|Yes| D[Inspect and design]
+    D --> E[Approve product and design decisions]
+    E --> F[Create implementation plan]
+    F --> G[Approve implementation scope]
+    G --> H
+    H --> I[Verify approved outcome]
+    I -->|Fixable implementation gap| H
+    I -->|Requirement or major design changed| B
+    I -->|Passed| J[Complete]
 ```
 
-The requirement and affected layers decide the route. The workflow does not create a full document set by default:
+The number of independent product and design decisions determines the route. File count does not:
 
-| Scale | Expected file count | What happens |
-|-------|------------|-------------|
-| Small | 1-2 | Simplified plan → direct implementation |
-| Medium | 3-5 | Design Doc → work plan → task execution |
-| Large | 6+ | PRD when required → ADR when required → Design Doc → test skeletons when required → work plan → task execution |
+| Scale | What the change needs | What happens |
+|-------|-----------------------|--------------|
+| Small | One outcome that follows an existing pattern in one part of the system | One task file → implementation |
+| Medium | One outcome that needs coordination across parts of the system or a lasting design decision | UI Spec / ADR when required → Design Doc → select useful integration/E2E tests → Work Plan → implementation |
+| Large | Multiple outcomes that need separate design decisions | PRD → UI Spec / ADR when required → Design Doc → select useful integration/E2E tests → Work Plan → implementation |
 
-After work plan approval, Codex tracks the execution steps, implements each task with focused verification, runs repository quality checks, and creates one commit per task. A design deviation, unresolved contract, or out-of-scope write pauses execution for a decision.
+For Medium and Large work, an integration or E2E test is selected only when it proves a component, process, browser, or service interaction that a cheaper test cannot. Selecting none is valid.
 
-Recipes pass explicit inputs and repository artifacts to subagents instead of relying on the accumulated implementation conversation. Generation and review therefore use separate task-specific contexts, while the governing decisions remain inspectable in the repository.
+The documents record only decisions that affect the product or repository implementation. Third-party approval, production access, release execution, and unrelated operational work do not become implementation gates.
+
+After the implementation scope is approved, the orchestrator runs the tasks, focused verification, applicable repository checks, and one implementation commit per task. It resolves problems from the approved documents and repository evidence first. It asks you only when progress requires a new product requirement, a change to a major approved design decision, authority only you hold, or an irreversible action you did not authorize.
+
+Specialist agents receive the exact documents and paths needed for their work. They do not depend on the accumulated implementation conversation.
 
 ### A handoff you can inspect
 
-The included [Work Plan template](.agents/skills/documentation-criteria/references/plan-template.md) requires every implementation-relevant Design Doc item to have a covering task or an explicit gap:
+The included [Work Plan template](.agents/skills/documentation-criteria/references/plan-template.md) ties each implementation task to its Design Doc section and acceptance criteria:
 
 ```markdown
-| Source Design Doc | DD Section | DD Item | Category | Covered By Task(s) | Gap Status | Notes |
-|---|---|---|---|---|---|---|
-| docs/design/example-design.md | API contract | Preserve the error response shape | contract-change | P2-T1 | covered | |
-| docs/design/example-design.md | Verification | Exercise cache invalidation | verification | - | gap | Add a covering task before approval |
+### P1-T1: Preserve the error response contract
+
+- **Source**: `docs/design/example-design.md` — API contract, AC-2
+- **Scope**: Update the repository implementation and its focused tests
+- **Depends on**: none
+- **Verification**: Run the contract test and observe the documented response shape
 ```
 
-The [Task template](.agents/skills/documentation-criteria/references/task-template.md) then carries protected conditions, allowed actions, binding decisions, observable contract values, proof obligations, and yes-or-no completion checks into implementation. Final review reads the governing documents and completed diff rather than relying on the implementation conversation.
-
-### A real workflow run
-
-[The BytePlus Seedream provider integration in mcp-image](https://github.com/shinpr/mcp-image/pull/114) was an 18-file change that added a third external image provider while preserving the provider-neutral MCP request, client, file-save, and file-URI contracts. The workflow divided the implementation into eight planned tasks and carried provider routing, capability differences, external-call boundaries, and verification obligations through design, implementation, and review.
-
-The resulting integration could move directly into live evaluation through the production MCP path. That evaluation established the final model routing, prompt-generation limit, timeout, and response handling without changing the public MCP contract. Independent reviews also returned the implementation for an unbounded file read, a runtime validation bypass, a blocking FIFO path, and inconsistent API-key normalization. All four findings were fixed before merge, and the PR passed all 303 tests across 19 files plus a no-retry live provider call.
+The [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) carries the source, intended result, target files, and executable verification into implementation. It adds a `Verification Focus` only when a test could pass without proving one important behavior. Final review checks the approved documents against the completed diff.
 
 ---
 
@@ -152,7 +165,7 @@ npx codex-workflows update
 npx codex-workflows update --user
 ```
 
-Files you've modified locally are preserved — the updater compares each file against its hash at install time and skips any file you've changed. New files from the update are added automatically.
+Files you've modified locally are preserved — the updater compares each file against its hash at install time and skips any file you've changed. Versioned update history applies file moves and deletions in order, so local changes follow a moved file to its current path. Modified files retired without a replacement are moved to `.codex-workflows-preserved/<version>/`. New files from the update are added automatically.
 
 ```bash
 # Check installed version
@@ -177,11 +190,11 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 |--------|-------------|-------------|
 | `$recipe-implement` | Full lifecycle with layer routing (backend/frontend/fullstack) | New features — universal entry point |
 | `$recipe-task` | Single task with rule selection | Bug fixes, small changes |
-| `$recipe-design` | Requirements → ADR/Design Doc | Architecture planning |
-| `$recipe-plan` | Design Doc → test skeletons → work plan | Planning phase, including nullable E2E skeleton handling |
-| `$recipe-prepare-implementation` | Verify work plan readiness and resolve prep gaps | Pre-build check that the plan is implementable |
+| `$recipe-design` | Requirements → scale-selected product and design documents | Product and architecture design |
+| `$recipe-plan` | Design Doc → selective integration/E2E skeletons → work plan | Planning phase from an approved Design Doc |
+| `$recipe-prepare-implementation` | Set up dependencies, local services, and test tools using existing project commands | Explicit setup request or a required local tool is unavailable |
 | `$recipe-build` | Execute backend tasks with validation between steps | Resume backend implementation |
-| `$recipe-review` | Design Doc compliance and security validation with auto-fixes | Post-implementation check |
+| `$recipe-review` | Design Doc compliance and security validation with optional approved corrections | Post-implementation check |
 | `$recipe-diagnose` | Problem investigation → failure-point verification → solution | Bug investigation |
 | `$recipe-reverse-engineer` | Generate PRD + Design Docs from existing code | Legacy system documentation |
 | `$recipe-add-integration-tests` | Add integration/E2E tests from Design Doc | Test coverage for existing code |
@@ -191,11 +204,11 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 
 | Recipe | What it does | When to use |
 |--------|-------------|-------------|
-| `$recipe-front-design` | Requirements → UI Spec → frontend Design Doc | Frontend architecture planning |
-| `$recipe-front-adjust` | Implemented UI adjustment with external context and verification | Focused UI changes after implementation |
-| `$recipe-front-plan` | Frontend Design Doc → test skeletons → work plan | Frontend planning phase |
-| `$recipe-front-build` | Execute frontend tasks with RTL + quality checks | Resume frontend implementation |
-| `$recipe-front-review` | Frontend compliance and security validation with React-specific fixes | Frontend post-implementation check |
+| `$recipe-front-design` | Requirements → scale-selected UI and design documents | Frontend product and architecture design |
+| `$recipe-front-adjust` | Focused UI adjustment using repository, supplied, or required external evidence | Focused UI changes after implementation |
+| `$recipe-front-plan` | Frontend Design Doc → selective integration/E2E skeletons → work plan | Frontend planning phase |
+| `$recipe-front-build` | Execute frontend tasks with focused verification and quality checks | Resume frontend implementation |
+| `$recipe-front-review` | Frontend compliance and security validation with optional approved React corrections | Frontend post-implementation check |
 
 ### Fullstack (Cross-Layer)
 
@@ -208,7 +221,7 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 
 ## Working State
 
-Recipes use `docs/plans/` as ephemeral working state for work plans, decomposed task files, prep tasks, review-fix tasks, and intermediate analysis files. Add it to your project's `.gitignore` unless your team intentionally wants to review those transient files:
+Recipes use `docs/plans/` as ephemeral working state for Work Plans, implementation Task Files, and temporary review-fix or test-addition Task Files. Task and phase progress is updated there after each quality-approved implementation commit, while those progress files stay outside that commit. Add the directory to your project's `.gitignore` unless your team intentionally wants to review those transient files:
 
 ```gitignore
 docs/plans/
@@ -228,14 +241,15 @@ Recipes load the repository-aware guidance required for the current task. You ra
 | Skill | What it provides |
 |-------|-----------------|
 | `coding-rules` | Code quality, function design, error handling, refactoring |
-| `testing` | TDD Red-Green-Refactor, test types, AAA pattern, mocking |
-| `ai-development-guide` | Anti-patterns, debugging (5 Whys), quality check workflow |
+| `testing` | Proportionate TDD, observable proof selection, test integrity, and repository-required verification |
+| `ai-development-guide` | Evidence-backed root cause, proportionate impact analysis, and applicable quality assurance |
 | `documentation-criteria` | Document creation rules and templates (PRD, ADR, Design Doc, Work Plan) |
-| `implementation-approach` | Strategy selection: vertical / horizontal / hybrid slicing |
-| `integration-e2e-testing` | Integration/E2E test design, value-based selection, review criteria |
-| `external-resource-context` | Access methods for design sources, design systems, API schemas, and verification environments |
+| `requirement-convergence` | Outcome, requirement layers, user-decided exclusions, and rough cost before design |
+| `implementation-approach` | Direct MVP, evidence-backed expansion, subtraction, slicing, and verification boundary |
+| `integration-e2e-testing` | Selecting and designing only integration/E2E tests that prove a necessary real interaction |
+| `external-resource-context` | Focused resolution of one external evidence source required by a current decision |
 | `llm-friendly-context` | Clear prompts, handoffs, generated artifacts, task files, and review findings for downstream agents |
-| `task-analyzer` | Task analysis, scale estimation, skill selection |
+| `task-analyzer` | Task intent analysis, task type classification, skill selection |
 | `subagents-orchestration-guide` | Multi-agent coordination, workflow flows, guided autonomous execution |
 
 Web-frontend references are included for TypeScript used in web frontend work, including React applications (`coding-rules/references/typescript.md`, `testing/references/typescript.md`). They do not apply to backend TypeScript.
@@ -246,7 +260,7 @@ Web-frontend references are included for TypeScript used in web frontend work, i
 
 ## Specialized Agents
 
-Codex spawns these as needed during recipe execution. You do not need to learn them first; recipes route work to the right agents automatically. Each agent runs in its own context with specialized instructions and skill configurations.
+Codex spawns these as needed during recipe execution. You do not need to learn them first; recipes route domain work to the relevant agents while the orchestrator retains workflow control. Each agent runs in its own context with specialized instructions and explicitly named required skills.
 
 <details>
 <summary>View all specialized agent roles</summary>
@@ -255,7 +269,7 @@ Codex spawns these as needed during recipe execution. You do not need to learn t
 
 | Agent | Role |
 |-------|------|
-| `requirement-analyzer` | Requirements analysis and work scale determination |
+| `requirement-analyzer` | Requirement convergence, rough cost, and structural work scale determination |
 | `prd-creator` | PRD creation and structuring |
 | `technical-designer` | ADR and Design Doc creation (backend) |
 | `technical-designer-frontend` | Frontend ADR and Design Doc creation (React) |
@@ -263,19 +277,19 @@ Codex spawns these as needed during recipe execution. You do not need to learn t
 | `codebase-analyzer` | Existing codebase analysis before Design Doc creation |
 | `ui-analyzer` | UI facts from external resources (design tools, design-system docs, deployed UI) and frontend code |
 | `work-planner` | Work plan creation from Design Docs |
-| `document-reviewer` | Document consistency and approval |
+| `document-reviewer` | Document review against governing requirements and design decisions |
 | `design-sync` | Cross-document consistency verification |
 
 ### Implementation Agents
 
 | Agent | Role |
 |-------|------|
-| `task-decomposer` | Work plan → atomic task files |
-| `task-executor` | TDD implementation following task files (backend) |
-| `task-executor-frontend` | React implementation with Testing Library |
-| `quality-fixer` | Quality checks and fixes until all pass (backend) |
-| `quality-fixer-frontend` | React-specific quality checks (TypeScript, RTL, bundle) |
-| `acceptance-test-generator` | Test skeleton generation from acceptance criteria |
+| `task-decomposer` | Work plan → the fewest executable implementation task files |
+| `task-executor` | Task-file implementation with focused verification (backend) |
+| `task-executor-frontend` | React implementation with applicable behavior-focused RTL verification |
+| `quality-fixer` | Applicable repository checks and in-scope quality repair (backend) |
+| `quality-fixer-frontend` | Applicable React, TypeScript, RTL, and bundle checks and repair |
+| `acceptance-test-generator` | Selected integration/E2E test skeleton generation |
 | `integration-test-reviewer` | Test quality review |
 
 ### Analysis Agents
@@ -285,7 +299,7 @@ Codex spawns these as needed during recipe execution. You do not need to learn t
 | `code-reviewer` | Design Doc compliance validation |
 | `code-verifier` | Document-code consistency verification |
 | `security-reviewer` | Security compliance review after implementation |
-| `rule-advisor` | Skill selection via metacognitive analysis |
+| `rule-advisor` | Skill selection for standalone work not already governed by a recipe |
 | `scope-discoverer` | Codebase scope discovery for reverse docs, including PRD unit grouping |
 
 ### Diagnosis Agents
@@ -305,32 +319,23 @@ Codex spawns these as needed during recipe execution. You do not need to learn t
 After installation, your project gets:
 
 <details>
-<summary>View installed files</summary>
+<summary>View installed layout</summary>
 
 ```
 your-project/
 ├── .agents/skills/           # Codex skills
-│   ├── coding-rules/         # Foundational (auto-loaded)
+│   ├── coding-rules/         # Foundational guidance
 │   ├── testing/
 │   ├── ai-development-guide/
 │   ├── documentation-criteria/
+│   ├── requirement-convergence/
 │   ├── implementation-approach/
 │   ├── integration-e2e-testing/
 │   ├── external-resource-context/
+│   ├── llm-friendly-context/
 │   ├── task-analyzer/
 │   ├── subagents-orchestration-guide/
-│   ├── recipe-implement/     # Recipes ($recipe-*)
-│   ├── recipe-design/
-│   ├── recipe-build/
-│   ├── recipe-front-adjust/
-│   ├── recipe-plan/
-│   ├── recipe-prepare-implementation/
-│   ├── recipe-review/
-│   ├── recipe-diagnose/
-│   ├── recipe-task/
-│   ├── recipe-update-doc/
-│   ├── recipe-reverse-engineer/
-│   └── recipe-add-integration-tests/
+│   └── recipe-*/             # Workflow entry points ($recipe-*)
 ├── .codex/agents/            # Subagent TOML definitions
 │   ├── requirement-analyzer.toml
 │   ├── technical-designer.toml
@@ -362,11 +367,11 @@ Those tasks can then be passed into `$recipe-design` to enter the design phase w
 
 **Q: What models does this work with?**
 
-A: Designed for the latest GPT models. Lightweight subagents (e.g. rule-advisor) can use smaller models for faster analysis. Models are configurable per agent in the TOML files.
+A: Designed for current GPT models. Models are configurable per agent in the TOML files.
 
 **Q: Can I customize the agents?**
 
-A: Yes. Edit the TOML files in `.codex/agents/` — change model, sandbox_mode, developer_instructions, or skills.config. Files you modify locally are preserved during `npx codex-workflows update`.
+A: Yes. Edit the TOML files in `.codex/agents/` — change model, sandbox_mode, or developer_instructions. Each agent names its required skills in `developer_instructions`. Files you modify locally are preserved during `npx codex-workflows update`.
 
 For a user-level installation, edit the files in `$CODEX_HOME/agents/` and use
 `npx codex-workflows update --user`. User-level files modified after installation
@@ -374,7 +379,7 @@ are preserved in the same way.
 
 **Q: What's the difference between `$recipe-implement` and `$recipe-fullstack-implement`?**
 
-A: `$recipe-implement` is the universal entry point. It runs requirement-analyzer first, detects affected layers from the codebase, and automatically routes to backend, frontend, or fullstack flow. `$recipe-fullstack-implement` skips the detection and goes straight into the fullstack flow (separate Design Docs per layer, design-sync, layer-aware task execution). Use `$recipe-implement` when you're not sure; use `$recipe-fullstack-implement` when you know upfront that the feature spans both layers.
+A: `$recipe-implement` is the universal entry point. It runs requirement-analyzer first, uses the request and repository scope to identify affected layers, and automatically routes to backend, frontend, or fullstack flow. `$recipe-fullstack-implement` skips the detection and goes straight into the fullstack flow (separate Design Docs per layer, design-sync, layer-aware task execution). Use `$recipe-implement` when you're not sure; use `$recipe-fullstack-implement` when you know upfront that the feature spans both layers.
 
 **Q: Does this work with MCP servers?**
 
@@ -382,11 +387,11 @@ A: Yes. Codex skills and subagents work alongside [MCP](https://developers.opena
 
 **Q: How is this related to claude-code-workflows?**
 
-A: [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) is the Claude Code counterpart. The repositories share the same workflow philosophy, adapted to each tool's native extension points. They can coexist in the same project because Codex uses `.agents/skills/`, `.codex/agents/`, and `AGENTS.md`, while Claude Code uses its own `.claude/` files and `CLAUDE.md`.
+A: [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) is the Claude Code counterpart. The repositories share the same workflow philosophy, adapted to each tool's native extension points. They can coexist in the same project because codex-workflows installs its agent definitions under `.codex/agents/` and Claude Code uses its own `.claude/` files.
 
 **Q: What if a subagent seems stuck?**
 
-A: Long waits can be normal in this workflow because many subagents perform substantial multi-step work. The orchestrator keeps ownership of the pending deliverable, continues waiting for the required output, and uses diagnostics only to confirm missing inputs or restate the pending deliverable. User direction remains the boundary for interrupting that work.
+A: The main Codex session owns progress. It inspects the returned evidence, retries or repairs unusable results, and continues unaffected work. A subagent result does not stop the workflow by itself.
 
 ---
 

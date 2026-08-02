@@ -6,6 +6,8 @@ const os = require("os");
 const path = require("path");
 
 const MANIFEST_FILE = ".codex-workflows-manifest.json";
+const UPDATE_HISTORY_FILE = "bin/update-history.json";
+const PRESERVED_DIRECTORY = ".codex-workflows-preserved";
 const PROJECT_COPY_MAPPINGS = [
   { source: ".agents", destination: ".agents" },
   { source: ".codex", destination: ".codex" },
@@ -82,6 +84,94 @@ function getVersion(sourceDir) {
 function fileHash(filePath) {
   const content = fs.readFileSync(filePath);
   return crypto.createHash("sha256").update(content).digest("hex");
+}
+
+function compareVersions(left, right) {
+  const parse = version => {
+    const match = /^(\d+)\.(\d+)\.(\d+)$/.exec(version);
+    if (!match) throw new CliError(`Invalid version in update metadata: ${version}`, 2);
+    return match.slice(1).map(Number);
+  };
+  const leftParts = parse(left);
+  const rightParts = parse(right);
+  for (let index = 0; index < leftParts.length; index++) {
+    if (leftParts[index] !== rightParts[index]) {
+      return leftParts[index] - rightParts[index];
+    }
+  }
+  return 0;
+}
+
+function assertSafeRelativePath(relativePath, label) {
+  if (
+    typeof relativePath !== "string" ||
+    relativePath.length === 0 ||
+    path.posix.isAbsolute(relativePath) ||
+    path.posix.normalize(relativePath) !== relativePath ||
+    relativePath === ".." ||
+    relativePath.startsWith("../")
+  ) {
+    throw new CliError(`Invalid ${label} path in update history: ${relativePath}`, 2);
+  }
+}
+
+function readUpdateHistory(sourceDir, installedVersion, targetVersion) {
+  if (compareVersions(installedVersion, targetVersion) > 0) {
+    throw new CliError(
+      `Installed version v${installedVersion} is newer than package version v${targetVersion}.`
+    );
+  }
+
+  const historyPath = path.join(sourceDir, UPDATE_HISTORY_FILE);
+  if (!fs.existsSync(historyPath)) return [];
+
+  let history;
+  try {
+    history = JSON.parse(fs.readFileSync(historyPath, "utf8"));
+  } catch (error) {
+    throw new CliError(`Error reading ${UPDATE_HISTORY_FILE}: ${error.message}`, 2);
+  }
+  if (!history || !Array.isArray(history.changes)) {
+    throw new CliError(`${UPDATE_HISTORY_FILE} must contain a changes array.`, 2);
+  }
+
+  const versions = new Set();
+  for (const change of history.changes) {
+    compareVersions(change.version, change.version);
+    if (versions.has(change.version)) {
+      throw new CliError(`Duplicate update history version: ${change.version}`, 2);
+    }
+    versions.add(change.version);
+    if (!Array.isArray(change.operations)) {
+      throw new CliError(`Update history ${change.version}.operations must be an array.`, 2);
+    }
+    for (const operation of change.operations) {
+      if (!operation || typeof operation !== "object") {
+        throw new CliError(
+          `Update history ${change.version}.operations contains an invalid entry.`,
+          2
+        );
+      }
+      if (operation.type === "add" || operation.type === "delete") {
+        assertSafeRelativePath(operation.path, operation.type);
+      } else if (operation.type === "move") {
+        assertSafeRelativePath(operation.from, "move source");
+        assertSafeRelativePath(operation.to, "move destination");
+      } else {
+        throw new CliError(
+          `Unknown update operation in ${change.version}: ${operation.type}`,
+          2
+        );
+      }
+    }
+  }
+
+  return history.changes
+    .filter(change => (
+      compareVersions(change.version, installedVersion) > 0 &&
+      compareVersions(change.version, targetVersion) <= 0
+    ))
+    .sort((left, right) => compareVersions(left.version, right.version));
 }
 
 function copyDirRecursive(source, destination) {
@@ -213,40 +303,310 @@ function install(installation) {
   console.log(`\nDone. ${totalCopied} files installed.`);
 }
 
-function updateManagedFile({ file, installedHashes, dryRun, preservedFiles }) {
-  if (!fs.existsSync(file.destinationPath)) {
-    if (dryRun) console.log(`  + ${file.manifestPath} (new)`);
-    else {
-      fs.mkdirSync(path.dirname(file.destinationPath), { recursive: true });
-      fs.copyFileSync(file.sourcePath, file.destinationPath);
+function resolveHistoryPath(installation, sourcePath) {
+  for (const mapping of installation.copyMappings) {
+    const mappingSource = mapping.source.split(path.sep).join("/");
+    if (sourcePath !== mappingSource && !sourcePath.startsWith(`${mappingSource}/`)) {
+      continue;
     }
-    return "added";
+    const relativePath = sourcePath.slice(mappingSource.length).replace(/^\//, "");
+    const manifestPath = path.join(mapping.destination, ...relativePath.split("/"));
+    return {
+      destinationPath: path.join(installation.targetDir, manifestPath),
+      manifestPath,
+    };
   }
-
-  const sourceContent = fs.readFileSync(file.sourcePath);
-  const destinationContent = fs.readFileSync(file.destinationPath);
-  if (sourceContent.equals(destinationContent)) return "skipped";
-
-  const storedHash = installedHashes[file.manifestPath];
-  if (storedHash && fileHash(file.destinationPath) !== storedHash) {
-    console.log(`  ~ ${file.manifestPath} (modified locally, skipping)`);
-    preservedFiles.add(file.manifestPath);
-    return "preserved";
-  }
-
-  if (dryRun) console.log(`  * ${file.manifestPath} (updated)`);
-  else fs.copyFileSync(file.sourcePath, file.destinationPath);
-  return "updated";
+  return null;
 }
 
-function buildUpdatedHashes({ files, installedHashes, preservedFiles }) {
-  return Object.fromEntries(files.map(file => {
-    const storedHash = installedHashes[file.manifestPath];
-    const hash = preservedFiles.has(file.manifestPath) && storedHash
-      ? storedHash
-      : fileHash(file.destinationPath);
-    return [file.manifestPath, hash];
+function assertManagedManifestPath(installation, manifestPath) {
+  if (typeof manifestPath !== "string" || manifestPath.length === 0) {
+    throw new CliError(`Invalid managed path in ${MANIFEST_FILE}: ${manifestPath}`, 2);
+  }
+  const normalizedPath = path.normalize(manifestPath);
+  const managedRoots = installation.copyMappings.map(mapping => mapping.destination);
+  const managed = managedRoots.some(root => (
+    normalizedPath === root || normalizedPath.startsWith(`${root}${path.sep}`)
+  ));
+  if (
+    path.isAbsolute(manifestPath) ||
+    normalizedPath !== manifestPath ||
+    normalizedPath === ".." ||
+    normalizedPath.startsWith(`..${path.sep}`) ||
+    !managed
+  ) {
+    throw new CliError(`Invalid managed path in ${MANIFEST_FILE}: ${manifestPath}`, 2);
+  }
+}
+
+function readInstalledState(installation, installedHashes) {
+  return new Map(Object.entries(installedHashes).map(([manifestPath, baselineHash]) => {
+    assertManagedManifestPath(installation, manifestPath);
+    const destinationPath = path.join(installation.targetDir, manifestPath);
+    const exists = fs.existsSync(destinationPath);
+    return [manifestPath, {
+      baselineHash,
+      currentHash: exists ? fileHash(destinationPath) : null,
+      destinationPath,
+      exists,
+    }];
   }));
+}
+
+function preservedPath(installation, version, manifestPath) {
+  return path.join(
+    installation.targetDir,
+    PRESERVED_DIRECTORY,
+    version,
+    manifestPath
+  );
+}
+
+function addRetirementAction({ actions, entry, installation, manifestPath, version }) {
+  if (!entry.exists) return;
+  const modified = entry.baselineHash && entry.currentHash !== entry.baselineHash;
+  if (modified) {
+    const backupPath = preservedPath(installation, version, manifestPath);
+    if (fs.existsSync(backupPath)) {
+      throw new CliError(
+        `Update conflict: preservation path already exists:\n  ${backupPath}`
+      );
+    }
+    actions.push({
+      backupPath,
+      destinationPath: entry.destinationPath,
+      manifestPath,
+      type: "preserve-retired",
+    });
+    return;
+  }
+  actions.push({
+    destinationPath: entry.destinationPath,
+    manifestPath,
+    type: "remove",
+  });
+}
+
+function addUntrackedRetirementAction({ actions, installation, manifestPath, version }) {
+  const destinationPath = path.join(installation.targetDir, manifestPath);
+  if (!fs.existsSync(destinationPath)) return;
+  const backupPath = preservedPath(installation, version, manifestPath);
+  if (fs.existsSync(backupPath)) {
+    throw new CliError(
+      `Update conflict: preservation path already exists:\n  ${backupPath}`
+    );
+  }
+  actions.push({
+    backupPath,
+    destinationPath,
+    manifestPath,
+    type: "preserve-retired",
+  });
+}
+
+function planUpdate({ installation, installedHashes, version, files, changes }) {
+  const actions = [];
+  const state = readInstalledState(installation, installedHashes);
+  const vacatedPaths = new Set();
+
+  for (const change of changes) {
+    for (const operation of change.operations) {
+      if (operation.type === "add") {
+        continue;
+      }
+
+      if (operation.type === "delete") {
+        const deleted = resolveHistoryPath(installation, operation.path);
+        if (!deleted) continue;
+        const entry = state.get(deleted.manifestPath);
+        if (entry) {
+          addRetirementAction({
+            actions,
+            entry,
+            installation,
+            manifestPath: deleted.manifestPath,
+            version,
+          });
+          state.delete(deleted.manifestPath);
+        } else {
+          addUntrackedRetirementAction({
+            actions,
+            installation,
+            manifestPath: deleted.manifestPath,
+            version,
+          });
+        }
+        vacatedPaths.add(deleted.destinationPath);
+        continue;
+      }
+
+      const source = resolveHistoryPath(installation, operation.from);
+      const destination = resolveHistoryPath(installation, operation.to);
+      if (!source && !destination) continue;
+
+      if (source && !destination) {
+        const entry = state.get(source.manifestPath);
+        if (entry) {
+          addRetirementAction({
+            actions,
+            entry,
+            installation,
+            manifestPath: source.manifestPath,
+            version,
+          });
+          state.delete(source.manifestPath);
+        } else {
+          addUntrackedRetirementAction({
+            actions,
+            installation,
+            manifestPath: source.manifestPath,
+            version,
+          });
+        }
+        vacatedPaths.add(source.destinationPath);
+        continue;
+      }
+      if (!source) continue;
+
+      const entry = state.get(source.manifestPath);
+      if (!entry) {
+        addUntrackedRetirementAction({
+          actions,
+          installation,
+          manifestPath: source.manifestPath,
+          version,
+        });
+        vacatedPaths.add(source.destinationPath);
+        continue;
+      }
+      if (state.has(destination.manifestPath)) {
+        throw new CliError(
+          `Update conflict: move destination is already managed:\n  ${destination.manifestPath}`
+        );
+      }
+      if (fs.existsSync(destination.destinationPath) && !vacatedPaths.has(destination.destinationPath)) {
+        throw new CliError(
+          `Update conflict: move destination already exists:\n  ${destination.manifestPath}`
+        );
+      }
+
+      actions.push({
+        from: entry.destinationPath,
+        fromManifestPath: source.manifestPath,
+        to: destination.destinationPath,
+        toManifestPath: destination.manifestPath,
+        type: "move",
+      });
+      state.delete(source.manifestPath);
+      state.set(destination.manifestPath, {
+        ...entry,
+        destinationPath: destination.destinationPath,
+      });
+      vacatedPaths.add(source.destinationPath);
+    }
+  }
+
+  const currentPaths = new Set(files.map(file => file.manifestPath));
+  for (const [manifestPath, entry] of state) {
+    if (currentPaths.has(manifestPath)) continue;
+    addRetirementAction({ actions, entry, installation, manifestPath, version });
+    state.delete(manifestPath);
+    vacatedPaths.add(entry.destinationPath);
+  }
+
+  for (const file of files) {
+    const sourceHash = fileHash(file.sourcePath);
+    const entry = state.get(file.manifestPath);
+    if (entry) {
+      if (!entry.exists) {
+        actions.push({ ...file, type: "add" });
+      } else if (entry.currentHash === sourceHash) {
+        actions.push({ ...file, type: "skip" });
+      } else if (entry.baselineHash && entry.currentHash !== entry.baselineHash) {
+        actions.push({ ...file, type: "preserve" });
+      } else {
+        actions.push({ ...file, type: "update" });
+      }
+      continue;
+    }
+
+    const destinationExists = (
+      fs.existsSync(file.destinationPath) && !vacatedPaths.has(file.destinationPath)
+    );
+    if (!destinationExists) {
+      actions.push({ ...file, type: "add" });
+    } else if (fileHash(file.destinationPath) === sourceHash) {
+      actions.push({ ...file, type: "skip" });
+    } else {
+      throw new CliError(
+        `Update conflict: new managed path already contains a different file:\n  ${file.manifestPath}`
+      );
+    }
+  }
+
+  return actions;
+}
+
+function executeUpdateActions(actions, dryRun) {
+  const counts = {
+    added: 0,
+    moved: 0,
+    preserved: 0,
+    removed: 0,
+    skipped: 0,
+    updated: 0,
+  };
+
+  for (const action of actions) {
+    switch (action.type) {
+      case "move":
+        console.log(`  > ${action.fromManifestPath} -> ${action.toManifestPath} (moved)`);
+        if (!dryRun && fs.existsSync(action.from)) {
+          fs.mkdirSync(path.dirname(action.to), { recursive: true });
+          fs.renameSync(action.from, action.to);
+        }
+        counts.moved++;
+        break;
+      case "remove":
+        console.log(`  - ${action.manifestPath} (removed)`);
+        if (!dryRun && fs.existsSync(action.destinationPath)) {
+          fs.unlinkSync(action.destinationPath);
+        }
+        counts.removed++;
+        break;
+      case "preserve-retired":
+        console.log(
+          `  ~ ${action.manifestPath} (modified locally, preserved at ${action.backupPath})`
+        );
+        if (!dryRun) {
+          fs.mkdirSync(path.dirname(action.backupPath), { recursive: true });
+          fs.renameSync(action.destinationPath, action.backupPath);
+        }
+        counts.preserved++;
+        break;
+      case "add":
+        console.log(`  + ${action.manifestPath} (new)`);
+        if (!dryRun) {
+          fs.mkdirSync(path.dirname(action.destinationPath), { recursive: true });
+          fs.copyFileSync(action.sourcePath, action.destinationPath);
+        }
+        counts.added++;
+        break;
+      case "update":
+        console.log(`  * ${action.manifestPath} (updated)`);
+        if (!dryRun) fs.copyFileSync(action.sourcePath, action.destinationPath);
+        counts.updated++;
+        break;
+      case "preserve":
+        console.log(`  ~ ${action.manifestPath} (modified locally, preserving)`);
+        counts.preserved++;
+        break;
+      case "skip":
+        counts.skipped++;
+        break;
+    }
+  }
+  return counts;
 }
 
 function update(installation, dryRun) {
@@ -261,15 +621,14 @@ function update(installation, dryRun) {
   console.log(`${prefix}Updating codex-workflows v${manifest.version} → v${version}\n`);
 
   const files = collectManagedFiles(installation);
-  const preservedFiles = new Set();
-  const counts = { added: 0, updated: 0, skipped: 0, preserved: 0 };
-  for (const file of files) {
-    const result = updateManagedFile({ file, installedHashes, dryRun, preservedFiles });
-    counts[result]++;
-  }
+  const changes = readUpdateHistory(installation.sourceDir, manifest.version, version);
+  const actions = planUpdate({ installation, installedHashes, version, files, changes });
+  const counts = executeUpdateActions(actions, dryRun);
 
   if (!dryRun) {
-    const fileHashes = buildUpdatedHashes({ files, installedHashes, preservedFiles });
+    const fileHashes = Object.fromEntries(
+      files.map(file => [file.manifestPath, fileHash(file.sourcePath)])
+    );
     writeManifest({ installation, fileHashes, version });
   }
   printUpdateSummary(counts, dryRun);
@@ -281,6 +640,8 @@ function printUpdateSummary(counts, dryRun) {
     `${counts.updated} updated`,
     `${counts.skipped} unchanged`,
   ];
+  if (counts.moved > 0) parts.push(`${counts.moved} moved`);
+  if (counts.removed > 0) parts.push(`${counts.removed} removed`);
   if (counts.preserved > 0) {
     parts.push(`${counts.preserved} preserved (local changes)`);
   }

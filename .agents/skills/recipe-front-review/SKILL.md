@@ -7,10 +7,11 @@ description: "Frontend Design Doc compliance and security validation with option
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
-1. [LOAD IF NOT ACTIVE] `coding-rules` -- coding standards
-2. [LOAD IF NOT ACTIVE] `testing` -- test strategy and quality gates
-3. [LOAD IF NOT ACTIVE] `ai-development-guide` -- AI development patterns
-4. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
+1. [LOAD IF NOT ACTIVE] `coding-rules` -- repository implementation rules
+2. [LOAD IF NOT ACTIVE] `testing` -- verification and test quality rules
+3. [LOAD IF NOT ACTIVE] `ai-development-guide` -- review and repair discipline
+4. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- task file contract
+5. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and result handling
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
@@ -18,7 +19,6 @@ description: "Frontend Design Doc compliance and security validation with option
 
 - Compliance validation -> performed by code-reviewer
 - Security validation -> performed by security-reviewer
-- Rule analysis -> performed by rule-advisor
 - Code-side fix path -> performed by task-executor-frontend
 - Design-side update path -> performed by technical-designer-frontend in update mode, then document-reviewer, then design-sync when multiple Design Docs exist
 - Quality checks -> performed by quality-fixer-frontend
@@ -49,32 +49,22 @@ Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [p
 
 ### 4. Verdict and Response
 
-**If security-reviewer returned `blocked`**: Stop immediately. Report the blocked finding and escalate to user. Do not proceed to fix steps.
+If either reviewer returns a blocked or otherwise unusable result, apply Orchestrator Escalation Resolution before continuing.
 
 **Code compliance criteria (considering project stage)**:
 - `code-reviewer` verdict is `pass`
-- Coverage thresholds pass only when configured by the project, task file, work plan, or Design Doc
-- Determine pass/fail from the `code-reviewer` verdict and configured coverage thresholds; treat `complianceRate` as diagnostic context only
 
 **Security criteria**:
 - `approved` or `approved_with_notes` -> Pass
 - `needs_revision` -> Fail
 
-**Report both results independently using subagent output fields only** (do not add fields that are not in the subagent response):
+Report both results from their evidence, then apply Review Resolution before proposing corrections:
 
 ```
-Code Compliance: [complianceRate from code-reviewer]
-  Verdict: [verdict from code-reviewer]
-  Identifier Match Rate: [identifierMatchRate from code-reviewer]
-  Acceptance Criteria:
-  - [fulfilled] [item] (confidence: [high/medium/low])
-  - [partially_fulfilled] [item]: [gap] — [suggestion]
-  - [unfulfilled] [item]: [gap] — [suggestion]
-  Identifier Mismatches (show only mismatches; write `None` if all identifiers match):
-  - None
-  - [identifier]: DD=[designDocValue] Code=[codeValue] at [location] (confidence: [high/medium/low])
-  Quality Findings:
-  - [category] [location]: [description] — [rationale]
+Code Compliance: [verdict]
+  Acceptance Criteria: [fulfilled/partial/unfulfilled items with evidence]
+  Findings: [blocking findings with basis and effect]
+  Recommendations: [non-blocking items]
 
 Security Review: [status from security-reviewer]
   Findings by category:
@@ -84,39 +74,28 @@ Security Review: [status from security-reviewer]
   - [policy] [location]: [description] — [rationale]
   Notes: [notes from security-reviewer, if present]
 
-Resolve discrepancies by route:
+Proposed corrections:
   c) Code-side fix
   d) Design-side update
-  s) Skip
-
-Default: accept all recommended routes.
-
-Accepted response formats:
-- empty input -- accept every recommended route
-- `all-recommended` -- accept every recommended route
-- `all:c`, `all:d`, or `all:s` -- apply one route to every finding
-- Per-finding routes, e.g. `F1:c, F2:d, F3:s`
+Declined recommendations:
+  - [finding and evidence-backed reason]
 ```
 
-Before presenting results, recommend a route for each finding:
+Apply Review Resolution before presenting results. Recommend a correction route only for findings classified `apply` or `user_decision_required`:
 - Use `d` when implementation intent matches the requirement but the Design Doc is stale or too narrow.
 - Use `c` when code drifted from a still-correct Design Doc, or when the finding is reliability, security, or maintainability related.
-- Use `s` only when the user explicitly accepts the current state without changes.
 
-**[STOP -- BLOCKING]** Wait for user response on routes.
-**CANNOT proceed with fixes or document updates without user approval.**
+Present the review and internally declined recommendations. When no correction remains, proceed to Final Report. Because this recipe is a review request rather than prior implementation authority, ask once before applying the proposed code or document corrections.
 
-If all findings are skipped: Skip fix steps, proceed to Final Report.
+If the user declines corrections, skip fix steps and proceed to Final Report.
 
 ## Pre-fix Metacognition
 
-1. **Spawn rule-advisor agent**: "Analyze fixes needed. Code issues: $STEP_2_OUTPUT. Security findings: $STEP_3_OUTPUT. Determine root solutions vs symptomatic treatments."
-2. **Design-side update**: If any finding is routed to `d`, spawn technical-designer-frontend in update mode, then document-reviewer with `doc_type: DesignDoc` and `review_context: update`, then design-sync when multiple Design Docs exist. If both `d` and `c` routes exist, re-evaluate `c` findings against the updated Design Doc and drop any now satisfied.
-3. **Plan fixes**: Call `update_plan` once for the approved fix flow, with first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`. Create task file -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`. Include only code compliance issues and security requiredFixes routed to `c`.
-4. **Spawn task-executor-frontend agent**: "Execute staged auto-fixes for [task-file-path]. Stop at 5 files."
-5. **Spawn quality-fixer-frontend** with `task_file: [task-file-path]` and executor `filesModified`.
-6. **Re-validate code-reviewer**: Spawn code-reviewer agent: "Re-validate compliance for [design-doc-path]. Prior issues: $STEP_2_OUTPUT. Measure improvement."
-7. **Re-validate security-reviewer**: Spawn security-reviewer with prior findings, `governingDocuments: [{type: "design-doc", path: [path]}]`, and `implementationFiles: [union of $STEP_1_FILES and task-executor-frontend filesModified from step 4, deduplicated]`.
+1. **Design-side update**: If any accepted finding is routed to `d`, spawn technical-designer-frontend in update mode, then document-reviewer with `doc_type: DesignDoc` and `review_context: update`, then design-sync when multiple Design Docs exist. If both `d` and `c` routes exist, re-evaluate the `c` findings against the updated Design Doc and drop any now satisfied.
+2. **Plan fixes**: Use the active execution plan when one exists. When none exists, create one for the accepted fix flow. Create `docs/plans/tasks/review-fixes-YYYYMMDD.md` with only accepted code compliance issues and security required fixes routed to `c`.
+3. **Execute fixes**: Start the Per-Task Change Set, invoke task-executor-frontend with the task file, inspect its result and repository diff, and accumulate its paths.
+4. **Quality check**: Invoke quality-fixer-frontend with `task_file`, `filesModified: taskWriteSet`, and executor operation-verification evidence. On approval, add its paths and commit the reconciled set; repair stubs through task-executor-frontend, accumulate their paths, and resolve blocked results through Orchestrator Escalation Resolution.
+5. **Re-validate**: Run code-reviewer and security-reviewer against the updated Design Doc and actual implementation and fix files. Pass both `prior_feedback: [applied corrections and declined finding IDs with reasons and evidence]` and review the current result normally.
 
 After any code fix, both review agents must re-run. Delete the task file only after both pass.
 
@@ -127,8 +106,8 @@ Delete the review-fix task file this recipe created, if present. Its work is com
 
 ```
 Code Compliance:
-  Initial: [X]%
-  Final: [Y]% (if fixes executed)
+  Initial: [verdict]
+  Final: [verdict] (if fixes executed)
 
 Security Review:
   Initial: [status]
@@ -156,10 +135,10 @@ Remaining issues:
 
 - [ ] Design Doc compliance validated
 - [ ] Security review completed
-- [ ] Compliance percentage calculated
+- [ ] Compliance verdict is evidence-backed
 - [ ] User informed of results
 - [ ] Fixes executed if requested and approved
 - [ ] Quality gates passed for all fixes
-- [ ] Final compliance and security re-measured
+- [ ] Final compliance and security re-validated
 
 **Scope**: Design Doc compliance validation, security review, and auto-fixes.

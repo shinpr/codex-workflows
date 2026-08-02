@@ -11,7 +11,7 @@ Read [references/typescript.md](references/typescript.md) only for TypeScript te
 
 ## Governing Sources
 
-Use test commands, thresholds, boundaries, fixtures, and conventions from the repository, task, Work Plan, Design Doc, or test skeleton. Do not invent defaults when these sources are silent.
+Use test commands, thresholds, boundaries, fixtures, and conventions from the repository, task, Work Plan, Design Doc, or test skeleton. When these sources are silent, select the smallest repository-supported proof without introducing a new project-wide default.
 
 ## TDD Gate
 
@@ -44,8 +44,7 @@ Evidence is substantive only when an executed assertion observes the exact consu
 
 - Keep tests deterministic, isolated, and active.
 - Use meaningful assertions on results, state, or observable effects.
-- Do not weaken, skip, delete, or replace a test merely to make a run pass.
-- Change an existing expectation only when a cited governing source changed the expected behavior.
+- Keep each existing test active with its required behavior and failure sensitivity. Change an expectation only when a cited governing source changes that behavior; replace the test only when a stronger proof covers the same failure boundary.
 - Use project-scoped setup and guaranteed cleanup for mutated state or external resources.
 - Treat coverage as diagnostic unless a governing source defines a threshold.
 

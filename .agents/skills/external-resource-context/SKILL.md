@@ -1,19 +1,19 @@
 ---
 name: external-resource-context
-description: "Discovers, confirms, and records external resource access methods for project design and implementation work, including design sources, design systems, API schemas, database schemas, IaC sources, secret stores, environment config, and verification environments. Use when external resource context needs to be discovered or refreshed, recorded in docs/project-context/external-resources.md, or referenced from a Design Doc/UI Spec."
+description: "Resolves and records one external evidence source required by a current design or verification decision. Use when repository and supplied evidence cannot determine that decision."
 ---
 
 # External Resource Context
 
 ## Purpose
 
-This skill helps Codex discover required external resources, record stable access methods, and reuse recorded context during design, planning, implementation, and review work.
+This skill resolves a concrete external evidence dependency for a current design or verification decision, records its stable access method, and lets later consumers reuse that evidence.
 
-Covered resources include design origin, design system, guidelines, visual verification environment, database schema source, migration history, secret store location, API schema source, mock environment, IaC source, and environment configuration.
+Potential resources include design origin, design system, API or database schema sources, IaC, and verification environments. A workflow selects only the resource axis needed by its current decision.
 
 ## Scope Boundaries
 
-**In scope**: hearing protocol for unclear external resources, storage location, single-source ownership rule, and lookup protocol for known resources.
+**In scope**: resolving a named external evidence need, storage location, single-source ownership, and lookup of a known resource.
 
 **Freshness handling**: record access methods and feature identifiers here. The consuming workflow checks current resource content at use time.
 
@@ -34,10 +34,11 @@ The project tier owns environment facts such as URLs, MCP server names, file pat
 
 | Condition | Action |
 |-----------|--------|
-| `docs/project-context/external-resources.md` is absent | Run full hearing for the relevant domain |
-| File exists | Ask for one choice: keep current axes, refresh all axes, or refresh selected axes |
+| Repository or supplied evidence resolves the current decision | Continue without hearing |
+| A recorded matching axis has a usable access method | Reuse it without hearing |
+| A named axis required by the current decision is missing or stale | Ask only for that axis and the access method needed to inspect it |
 
-When the user chooses `refresh selected axes`, ask for the exact domain and axis labels before updating. Confirm the selected labels against the loaded domain reference, then hear only those axes.
+State which decision or verification result the requested resource controls. Leave unrelated axes unrecorded. Use N/A only for a selected or inspected axis confirmed to be outside the project.
 
 ### Domain Routing
 
@@ -51,18 +52,19 @@ Load the domain reference matching the current task:
 | Infrastructure or deployment | [references/infra.md](references/infra.md) |
 | Fullstack | Load each relevant domain reference |
 
-Each domain reference defines axes and question templates. Use `N/A` for axes outside the current project.
+Each domain reference defines candidate axes and question templates. Record only the axes selected for the current decision; use `N/A` when an inspected axis is outside the current project.
 
-### Two-Phase Hearing
+### Focused Hearing
 
-1. **Structured hearing**: ask each axis from the domain reference. For each non-N/A axis, collect the access or reference method: MCP server name, URL, file path, command, repository-owned source, project convention, manual confirmation path, or existing implementation.
-2. **Self-declaration**: ask for additional external resources outside the structured axes. Append any resources the user provides under `Additional Resources`.
+Ask for the selected axis, its stable access method, and the feature identifier when known. Accept MCP server name, URL, file path, command, repository-owned source, or existing implementation. One answer completes the hearing when it makes the named decision inspectable.
+
+When the resource remains unavailable, return the exact decision it leaves unsupported. The consuming workflow first selects a repository-evidenced alternative, contract substitute, or explicit fallback that preserves the approved outcome. Continue without external-owner approval; request user input when no available option can resolve a product requirement or approved major design decision.
 
 ## Storage Protocol
 
 After hearing completes:
 
-1. Build project-tier content from the answers using [references/template.md](references/template.md).
+1. Merge the selected axis into the project-tier content using [references/template.md](references/template.md); preserve unrelated existing entries.
 2. Write `docs/project-context/external-resources.md`, creating `docs/project-context/` as needed.
 3. When a target UI Spec or Design Doc exists, update its `External Resources Used` section with project-tier labels plus feature-specific identifiers.
 4. If a write fails, return the error with the intended path and leave completion status unresolved.
@@ -72,9 +74,9 @@ After hearing completes:
 
 Consumers resolve external context in this order:
 
-1. Read `docs/project-context/external-resources.md`.
-2. Read the target UI Spec or Design Doc `External Resources Used` section for feature-specific identifiers.
-3. Use the project-tier access method to fetch or inspect the resource.
+1. Read the matching label from `docs/project-context/external-resources.md`.
+2. Read the matching feature identifier from the target UI Spec or Design Doc when present.
+3. Fetch or inspect only the resource needed by the current decision.
 
 Codex custom agents inherit parent `mcp_servers` when the agent file omits `mcp_servers`. Preserve that inheritance for agents that may need project-specific MCP tools. Reserve MCP `enabled_tools` for a deliberately narrow server-level allow list.
 
@@ -84,11 +86,11 @@ The project-tier file follows [references/template.md](references/template.md). 
 
 ## Quality Checklist
 
-- [ ] Each relevant axis has a presence indicator and access method, or is marked `N/A`
-- [ ] Self-declaration phase completed
+- [ ] Every requested axis names the decision or verification result it controls
+- [ ] Each requested axis has a usable access method or records the exact unsupported decision for its consuming workflow
 - [ ] Project-tier file contains environment facts
 - [ ] Feature-tier sections contain feature identifiers and project-tier labels
-- [ ] Existing project-tier updates are confirmed before writes
+- [ ] Unrelated project-tier entries are preserved
 
 ## References
 

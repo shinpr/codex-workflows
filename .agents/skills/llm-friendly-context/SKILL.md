@@ -24,8 +24,8 @@ The goal is stable downstream execution. The next agent should know the target a
    - Terms that usually need clarification before handoff: `appropriate`, `proper`, `related`, `existing behavior`, `optional`, `as needed`, `if needed`, `per convention`, unresolved alternatives, `TBD`, and `placeholder`.
 
 3. **Specify output shape**
-   - Define required sections, fields, table columns, JSON keys, checklist items, or status values.
-   - For handoffs, include produced artifact paths and the exact status fields the caller must inspect.
+   - Define only the sections or fields the next consumer uses.
+   - For agent handoffs, name produced artifact paths and the result needed by the next action. Require exact serialization only when a program parses it.
 
 4. **Provide necessary context**
    - Include purpose, source artifacts, hard constraints, accepted decisions, and unresolved conditions.
@@ -33,13 +33,12 @@ The goal is stable downstream execution. The next agent should know the target a
    - Follow references only while they can change an in-scope decision, action, or verification result.
 
 5. **Decompose complex work into verifiable steps**
-   - Split work with 3+ objectives or sequential dependencies into ordered steps.
-   - Each step needs a checkpoint stating the evidence that proves completion.
-   - In Codex workflows, use `update_plan` as the state machine: keep one step `in_progress`, complete it only after its checkpoint evidence exists, then advance.
+   - Expose dependency order when a later action relies on an earlier result.
+   - Reuse one execution plan to retain all required steps and final verification during multi-step work. Simple, single-action work proceeds directly.
 
 6. **Permit uncertainty explicitly**
-   - If source material is missing, contradictory, or unverifiable, state the uncertainty and required escalation.
-   - Record unknown business, product, security, compatibility, or contract decisions as blocking unresolved items with the input needed to resolve them.
+   - State missing, contradictory, or unverifiable source material and its effect on the current action.
+   - Return unresolved decisions to the orchestrator with the evidence needed to resolve them; the orchestrator decides whether user input is necessary.
 
 7. **Keep constraints proportionate**
    - Add constraints that reduce ambiguity or preserve a real requirement.
@@ -52,7 +51,7 @@ Use these rewrites before treating a prompt, handoff, or artifact as complete.
 | Ambiguous form | Rewrite as |
 |---|---|
 | `optional` used as an unresolved choice | Required, omitted, or required only under a named condition |
-| Multiple alternatives that the next agent must choose between | The selected option, or a deterministic decision rule |
+| Multiple alternatives that the next agent must choose between | The selected option, or the evidence boundary within which the agent may choose |
 | `as needed` / `if needed` | The triggering condition and required action |
 | `per convention` | The file, function, test, or documented convention to follow |
 | `related files` | Specific paths, globs, or search hints |
@@ -68,12 +67,12 @@ Before sending a prompt or artifact to another agent, verify:
 - [ ] The target action is explicit.
 - [ ] Required input paths and source artifacts are named.
 - [ ] Accepted decisions and constraints are stated once with stable wording.
-- [ ] Output format or expected status fields are specified.
+- [ ] The next consumer can identify the artifact or result it needs.
 - [ ] Success criteria are observable.
 - [ ] Ambiguous expressions have been rewritten or marked as unresolved.
 - [ ] Every retained prohibition names the protected condition and allowed alternative.
-- [ ] Sequential work exposes one current state and does not advance without prerequisite evidence.
-- [ ] The next agent can complete its scope through explicit choices, decision rules, or blocking unresolved items.
+- [ ] Dependencies needed by the next action are visible.
+- [ ] The next agent can complete its scope or return the unresolved decision with evidence.
 
 ## Generated Artifact Checklist
 
@@ -85,3 +84,7 @@ Before writing or finalizing a generated document:
 - [ ] Every retained prohibition names the protected condition and allowed alternative.
 - [ ] Derived artifacts preserve copied decisions with the same wording and meaning as their source artifacts.
 - [ ] Blocking missing information records the missing input and escalation condition.
+
+## References
+
+- [Task File Contract](references/task-template.md) — execution-carrier fields and filename routing for task-decomposer, build recipes, and Small flows

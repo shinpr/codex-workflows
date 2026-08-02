@@ -1,77 +1,46 @@
 ---
 name: recipe-task
-description: "Execute tasks with metacognitive analysis and appropriate rule selection."
+description: "Execute standalone tasks with metacognitive analysis and applicable skill selection."
 ---
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
-1. [LOAD IF NOT ACTIVE] `task-analyzer` — task analysis and skill selection (rule-advisor handles remaining skill selection)
+1. [LOAD IF NOT ACTIVE] `task-analyzer` — task analysis and skill selection
 2. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
 
-**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
-
-# Task Execution with Metacognitive Analysis
+**Spawn rule**: invoke rule-advisor with `fork_turns="none"` so it receives only the task and explicit context.
 
 Task: $ARGUMENTS
 
 ## Mandatory Execution Process
 
-**Step 1: Rule Selection via rule-advisor (REQUIRED)**
+### 1. Select rules with rule-advisor
 
-Spawn rule-advisor agent: "Analyze the task and select appropriate rules for: $ARGUMENTS. Provide context about current situation and prerequisites."
+Invoke rule-advisor first with the standalone task, current context, and any explicit recipe or governing artifact. Its result supplies task essence, selected skill names and sections, warning patterns, and the first evidence-gathering action.
 
-ENFORCEMENT: Skipping rule-advisor produces unguided execution with high failure risk.
+### 2. Apply the result
 
-**Step 2: Utilize rule-advisor Output**
+1. Use `metaCognitiveGuidance.taskEssence` as the task's purpose.
+2. Load and read each skill in `selectedRules` completely by skill name, then apply the selected sections in context.
+3. Use `metaCognitiveGuidance.pastFailures`, `potentialPitfalls`, and `warningPatterns` to prevent a known failure that is applicable to this task.
+4. Begin with `metaCognitiveGuidance.firstStep` unless current evidence already satisfies it.
 
-After receiving rule-advisor's response, proceed with:
+### 3. Register multi-step work
 
-1. **Understand Task Essence** (from `metaCognitiveGuidance.taskEssence`)
-   - Focus on fundamental purpose, not surface-level work
-   - Distinguish between "quick fix" vs "proper solution"
+For multi-step work, reuse the active execution plan or create one from the material actions implied by the rule-advisor result. Keep one step in progress and finish with verification of the requested outcome and applicable rules. Simple work proceeds directly.
 
-2. **Follow Selected Rules** (from `selectedRules`)
-   - Review each selected rule section
-   - Apply concrete procedures and guidelines
+### 4. Execute and verify
 
-3. **Recognize Past Failures** (from `metaCognitiveGuidance.pastFailures`)
-   - Apply countermeasures for known failure patterns
-   - Use suggested alternative approaches
+Execute in the parent session unless an applicable recipe assigns domain work to a named specialist. Apply the selected skills and verify the requested observable outcome.
 
-4. **Execute First Action** (from `metaCognitiveGuidance.firstStep`)
-   - Start with recommended action and rationale
-   - Use suggested tools first
+## Boundaries
 
-**Step 3: Create Task List**
+- An explicitly invoked recipe or supplied governing artifact remains the workflow entry point.
+- rule-advisor selects standalone skills and metacognitive guidance; it does not determine requirement scope, documentation scale, approvals, or implementation routing.
+- Skill handoff uses skill names and section names. The executing session reads each selected skill completely.
 
-Call `update_plan` once for the work steps. Include first "Map active rules to this task" and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+## Completion Check
 
-Break down the task based on rule-advisor's guidance:
-- Reflect `metaCognitiveGuidance.taskEssence` in task descriptions
-- Apply `metaCognitiveGuidance.firstStep` to first task
-- Restructure tasks considering `warningPatterns`
-- Set appropriate priorities
-
-**Step 4: Execute Implementation**
-
-Proceed with task execution following:
-- Selected rules from rule-advisor
-- Task structure
-- Quality standards from applicable rules
-
-## Important Notes
-
-- **Spawn rule-advisor first**: MUST complete metacognitive step before implementation
-- **Update tasks after rule-advisor**: MUST reflect insights in task structure
-- **Follow metaCognitiveGuidance.firstStep**: MUST start with the recommended action
-- **Monitor warningPatterns**: MUST watch for failure patterns throughout execution
-
-## Completion Criteria
-
-- [ ] rule-advisor spawned and output received
-- [ ] Task essence understood from `metaCognitiveGuidance.taskEssence`
-- [ ] Selected rules reviewed and applied
-- [ ] Past failure patterns recognized and countermeasures applied
-- [ ] Task list created with skill constraint confirmation and fidelity verification
-- [ ] Implementation executed following rule-advisor guidance
-- [ ] Warning patterns monitored throughout execution
+- rule-advisor returned task essence, selected skills/sections, and metacognitive guidance.
+- The execution used the selected guidance where applicable.
+- The requested outcome and applicable verification are complete.

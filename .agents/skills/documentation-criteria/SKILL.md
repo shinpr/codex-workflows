@@ -12,52 +12,55 @@ description: "Documentation creation criteria for PRD, ADR, Design Doc, UI Spec,
 - **[ui-spec-template.md](references/ui-spec-template.md)** - UI Specification template (frontend/fullstack features)
 - **[design-template.md](references/design-template.md)** - Technical Design Document template
 - **[plan-template.md](references/plan-template.md)** - Work Plan template
-- **[task-template.md](references/task-template.md)** - Task file template for implementation tasks
 
 ## Creation Decision Matrix [MANDATORY]
 
-| Condition | Required Documents | Creation Order |
-|-----------|-------------------|----------------|
-| New Feature Addition (backend) | PRD -> [ADR] -> Design Doc -> Work Plan | After PRD approval |
-| New Feature Addition (frontend/fullstack) | PRD -> **UI Spec** -> [ADR] -> Design Doc -> Work Plan | UI Spec before Design Doc |
-| ADR Conditions Met (see below) | ADR -> Design Doc -> Work Plan | Start immediately |
-| 6+ Files | [ADR if conditions apply] -> Design Doc -> Work Plan (Design Doc + Work Plan REQUIRED) | Start immediately |
-| 3-5 Files | Design Doc -> Work Plan (REQUIRED) | Start immediately |
-| 1-2 Files | None | Direct implementation |
+| Structural Scale | Base Documents | Creation Order |
+|------------------|----------------|----------------|
+| Small | None | N/A |
+| Medium | Design Doc -> Work Plan | Start with Design Doc |
+| Large | PRD -> Design Doc -> Work Plan | Continue after PRD approval |
 
-**ENFORCEMENT**: EVALUATE file count and ADR conditions BEFORE starting implementation
+Build one path in this order:
 
-## ADR Creation Conditions [MANDATORY if Any Apply]
+1. An ADR condition sets the scale floor to Medium; select the resulting scale's base path.
+2. Frontend or fullstack scope inserts UI Spec immediately before the Design Doc.
+3. An ADR condition inserts ADR immediately before the Design Doc.
 
-### 1. Contract System Changes
-- **Adding nested contracts with 3+ levels**
-- **Changing/deleting contracts used in 3+ locations**
-- **Contract responsibility changes** (e.g., DTO to Entity, Request to Domain)
+**ENFORCEMENT**: EVALUATE structural scale and ADR conditions BEFORE starting implementation
 
-### 2. Data Flow Changes
-- **Storage location changes** (DB to File, Memory to Cache)
-- **Processing order changes with 3+ steps**
-- **Data passing method changes** (parameter passing to shared state, direct reference to event-based)
+## Structural Scale
 
-### 3. Architecture Changes
-- Layer addition, responsibility changes, component relocation
+Classify the decision burden, not repository layout. File count is supporting evidence only.
 
-### 4. External Dependency Changes
-- Library/framework/external API introduction or replacement
+| Scale | Structural condition |
+|-------|----------------------|
+| Small | One coherent outcome follows existing patterns within one responsibility boundary |
+| Medium | One coherent outcome coordinates across a boundary or requires a durable design decision |
+| Large | Multiple independently valuable outcomes require separate design decisions |
 
-### 5. Complex Implementation Logic (Regardless of Scale)
-- Managing 3+ states
-- Coordinating 5+ asynchronous processes
+An ADR condition sets the floor at Medium because it creates a durable decision. Large applies when multiple independently valuable outcomes require separate design decisions; one coherent outcome remains Medium across multiple layers.
+
+## ADR Creation Conditions
+
+Create an ADR when implementation depends on a durable technical choice that future work must understand or preserve, such as:
+
+- introducing or replacing a technology, library, platform, storage model, or external dependency;
+- changing ownership, dependency direction, trust boundary, or a shared public contract in a way with credible materially different alternatives;
+- reversing or superseding an accepted architecture decision;
+- choosing an irreversible or high-cost-to-reverse data or compatibility strategy.
+
+A local contract, data-flow, state, or component change that follows an accepted design and has no material alternative belongs in the Design Doc. Create an ADR for a durable decision with materially distinct alternatives; counts of files, consumers, nesting levels, states, or steps remain supporting evidence rather than decision criteria.
 
 ## Detailed Document Definitions
 
 ### PRD (Product Requirements Document)
 **Purpose**: Define business requirements and user value
-**Scope**: Business requirements, user value, success metrics, user stories, converged MVP requirements, Future/Out of Scope capabilities with reasons, user journey diagram, scope boundary diagram, and acceptance criteria with sequential IDs (for example `AC-001`, `AC-002`, continuing across all requirements in the document) only. Technical implementation details belong in Design Doc, technical decision rationale in ADR, and implementation phases or task breakdown belong in Work Plan.
+**Scope**: Binding product requirements and non-binding Product Context. Binding content includes the converged outcome, MVP requirements, acceptance criteria with sequential IDs, and user-decided exclusions. Product Context may record business value, user value, UX evidence, success signals, and feasibility or rough-effort evidence as `user-provided`, `observed`, `inferred`, or `unknown`. Unknown context does not block implementation unless the user must decide it to define the outcome or an acceptance criterion. Technical implementation details belong in Design Doc, technical decision rationale in ADR, and implementation phases or task breakdown belong in Work Plan.
 
 ### ADR (Architecture Decision Record)
 **Purpose**: Record technical decision rationale and background
-**Scope**: Decision, rationale, option comparison (minimum 3 options), architecture impact, and principled implementation guidance only. Implementation procedures and code examples belong in Design Doc, while schedule and resource assignments belong in Work Plan.
+**Scope**: Decision, rationale, credible alternatives actually considered, architecture impact, consequences, and principled implementation guidance only. Record Why now, Known unknowns, Kill criteria, and diagrams when they change how the decision is judged or reversed; otherwise use a brief N/A. Implementation procedures and code examples belong in Design Doc, while schedule and resource assignments belong in Work Plan.
 
 ### UI Specification
 **Purpose**: Define UI structure, screen transitions, component decomposition, and interaction design
@@ -65,49 +68,39 @@ description: "Documentation creation criteria for PRD, ADR, Design Doc, UI Spec,
 
 ### Design Document
 **Purpose**: Define technical implementation methods in detail
-**Scope**: Existing codebase analysis, technical approach, dependencies and constraints, interface and contract definitions, data flow, acceptance criteria, change impact map, code inspection evidence, and verification strategy only. Technology selection rationale belongs in ADR, schedule and assignments belong in Work Plan, and detailed test strategy or case selection belongs in generated test skeletons.
+**Scope**: Existing repository evidence, technical approach, applicable dependencies and constraints, interface and contract definitions, data flow, acceptance criteria, change surface, and verification strategy. Include deployment, migration, feature-flag, or measurement design only when it changes repository implementation or an acceptance criterion. External approval, production access, release execution, and organizational operation are context rather than implementation gates. Technology selection rationale belongs in ADR, schedule and assignments belong in Work Plan, and detailed test strategy or case selection belongs in generated test skeletons.
 
 **Required Structural Elements**:
-- Existing codebase analysis and code inspection evidence
+- Existing repository evidence that constrains implementation decisions
 - Technical approach and implementation approach decision
-- Change impact map and interface/contract definitions
+- Change surface and applicable interface/contract definitions
 - Applicable standards with explicit/implicit classification
 - Verification Strategy
   - Correctness proof method
   - Early verification point
   - Minimal form allowed for low-risk or self-evident changes: concise entries or explicit `N/A` with rationale
-    Low-risk: changes affecting 1-2 files with no external contract, integration, or data-flow changes
+    Low-risk: one reversible change following an existing pattern with no external contract, integration, or data-flow changes
     Self-evident: internal-only refactoring with identical observable inputs and outputs
 
 ### Work Plan
 **Purpose**: Implementation task management and progress tracking
-**Scope**: Task breakdown, dependencies, schedule estimates, test skeleton file paths, Verification Strategy summaries from each Design Doc, Design-to-Plan Traceability mapping for implementation-relevant technical requirements, Reference Contract Values for binding observable Design Doc values, ADR Bindings for implementation-binding ADR decisions, final Quality Assurance phase, and progress tracking only. Technical rationale belongs in ADR and design details belong in Design Doc.
+**Scope**: Repository implementation outcomes from approved Design Docs, task dependencies, source section and acceptance-criteria references, executable verification, optional task-level false-green focus, and progress tracking only. The Work Plan references governing documents instead of reproducing their design details.
 
 **Phase Division Criteria**:
 
-**When Vertical Slice is selected**:
-- Each phase represents one value unit and includes its own implementation and verification
-- The earliest phase should contain the early verification point when defined
-- Final phase is always Quality Assurance
-
-**When Horizontal Slice is selected**:
-1. **Phase 1: Foundation Implementation** - Contract definitions, interfaces, test preparation
-2. **Phase 2: Core Feature Implementation** - Business logic, unit tests
-3. **Phase 3: Integration Implementation** - External connections, presentation layer
-4. **Final Phase: Quality Assurance (Required)** - Acceptance criteria, all tests, quality checks
-
-**When Hybrid is selected**:
-- Combine vertical and horizontal phase structures as defined in the Design Doc
-- Final phase is always Quality Assurance with acceptance criteria verification, all tests passing, and quality checks complete
+- Follow the implementation approach and dependency order selected by the Design Doc
+- Group implementation, tests, repository configuration, wiring, and documentation that reach the same observable verification point
+- Put the Design Doc's early verification point in the earliest applicable phase
+- Verify each task against its cited acceptance criteria
 
 ## Creation Process [MANDATORY]
 
 **STEP 1**: **Problem Analysis** — Change scale assessment, ADR condition check
-**STEP 2**: **ADR Option Consideration** (ADR only) — Compare 3+ options, specify trade-offs
+**STEP 2**: **ADR Option Consideration** (when creating an ADR) — Compare every credible materially distinct option found in requirements, repository evidence, or the current approach; record why no additional alternative is credible when only one remains
 **STEP 3**: **Creation** — Use templates, include measurable conditions
-**STEP 4**: **Approval** — "Accepted" after review enables implementation
+**STEP 4**: **Approval** — document review followed by user approval enables implementation
 
-**ENFORCEMENT**: Implementation CANNOT begin without approved documents for the relevant scale
+**ENFORCEMENT**: Begin implementation when the documents required for the relevant scale are approved.
 
 ## Storage Locations
 
@@ -118,25 +111,24 @@ description: "Documentation creation criteria for PRD, ADR, Design Doc, UI Spec,
 | UI Spec | `docs/ui-spec/` | `[feature-name]-ui-spec.md` |
 | Design Doc | `docs/design/` | `[feature-name]-design.md` |
 | Work Plan | `docs/plans/` | `YYYYMMDD-{type}-{description}.md` |
-| Task File | `docs/plans/tasks/` | `{plan-name}-task-{number}.md` |
 
 ## ADR Status
 `Proposed` -> `Accepted` -> `Deprecated`/`Superseded`/`Rejected`
 
 ## AI Automation Rules [MANDATORY]
-- 6+ files: MUST evaluate ADR conditions
-- Contract/data flow change detected: ADR REQUIRED
-- Check existing ADRs before implementation — ALWAYS verify alignment
+- Evaluate ADR conditions independently from file count
+- Check existing ADRs that govern the changed responsibility
+- Create an ADR only when the durable-decision conditions above apply
 
 ## Diagram Requirements
 
 | Document | Required Diagrams | Purpose |
 |----------|------------------|---------|
-| PRD | User journey, Scope boundary | Clarify user experience and scope |
-| ADR | Option comparison (when needed) | Visualize trade-offs |
-| UI Spec | Screen transition, Component tree | Clarify screen flow and structure |
-| Design Doc | Architecture, Data flow | Understand technical structure |
-| Work Plan | Phase structure, Task dependency | Clarify implementation order |
+| PRD | User journey or scope boundary when prose does not make the relationship clear | Clarify a material experience or scope relationship |
+| ADR | Option comparison when option relationships are not clear in the table | Visualize trade-offs |
+| UI Spec | Screen transition or component tree when the material interaction or hierarchy remains unclear in prose/tables | Clarify screen flow and structure |
+| Design Doc | Architecture or data flow when the changed relationships are not clear in prose/tables | Understand technical structure |
+| Work Plan | Task dependency when order is not evident | Clarify implementation order |
 
 ## Common ADR Relationships
 1. **At creation**: Identify common technical areas, reference existing common ADRs

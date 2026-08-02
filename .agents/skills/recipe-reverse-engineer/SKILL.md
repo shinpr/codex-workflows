@@ -6,9 +6,9 @@ description: "Generate PRD and Design Docs from existing codebase through discov
 ## Required Skills [LOAD BEFORE EXECUTION]
 
 1. [LOAD IF NOT ACTIVE] `documentation-criteria` — document creation rules and templates
-2. [LOAD IF NOT ACTIVE] `ai-development-guide` — AI development patterns
-3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and workflow flows
-4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
+2. [LOAD IF NOT ACTIVE] `ai-development-guide` — evidence and completeness discipline
+3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and review resolution
+4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — generated document handoffs
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
@@ -18,14 +18,14 @@ Target: $ARGUMENTS
 
 ## Orchestrator Definition
 
-**Core Identity**: "I am not a worker. I am an orchestrator."
+**Core Identity**: Coordinate reverse engineering, perform lightweight artifact routing directly, and invoke specialists for discovery, document generation, and semantic review.
 
 **Execution Protocol**:
-1. **Spawn agents for all work** -- your role is to invoke sub-agents, pass data between them, and report results
+1. Invoke the named specialists for discovery, generation, and semantic review; perform artifact selection, routing, deterministic transformations, and status updates directly
 2. **Process one step at a time**: Execute steps sequentially within each unit (2 -> 3 -> 4 -> 5). Each step's output is the required input for the next step. Complete all steps for one unit before starting the next
 3. **Pass `$STEP_N_OUTPUT` as-is** to sub-agents -- the orchestrator bridges data without processing or filtering it, except for steps that explicitly define a deterministic transformation with an input schema, output schema, and mapping rules
 
-**Execution Plan Gate**: After scope confirmation, call `update_plan` once with first "Map active rules to this task", all applicable workflow steps across both phases, and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+**Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
 ## Step 0: Initial Configuration
 
@@ -83,7 +83,9 @@ Spawn scope-discoverer agent: "Discover functional scope targets in the codebase
 
 #### Step 2: PRD Generation
 
-Spawn prd-creator agent: "Create reverse-engineered PRD for the following feature. Operation Mode: reverse-engineer. External Scope Provided: true. Feature: $PRD_UNIT_NAME. Description: $PRD_UNIT_DESCRIPTION. Related Files: $PRD_UNIT_COMBINED_RELATED_FILES. Entry Points: $PRD_UNIT_COMBINED_ENTRY_POINTS. Source Units: $PRD_UNIT_SOURCE_UNITS. Use provided scope as an investigation starting point. If tracing entry points reveals directly connected files outside this scope, include them. Create final version PRD based on thorough code investigation."
+Set `$PRD_UNIT_INVENTORY` to the category-wise deduplicated union of `unitInventory` from the `$STEP_1_OUTPUT.discoveredUnits` named by `$PRD_UNIT_SOURCE_UNITS`, preserving its `routes`, `testFiles`, and `publicExports` arrays.
+
+Spawn prd-creator agent: "Create reverse-engineered PRD for the following feature. Operation Mode: reverse-engineer. External Scope Provided: true. Feature: $PRD_UNIT_NAME. Description: $PRD_UNIT_DESCRIPTION. Related Files: $PRD_UNIT_COMBINED_RELATED_FILES. Entry Points: $PRD_UNIT_COMBINED_ENTRY_POINTS. Source Units: $PRD_UNIT_SOURCE_UNITS. Unit Inventory: $PRD_UNIT_INVENTORY. Use provided scope as an investigation starting point. If tracing entry points reveals directly connected files outside this scope, include them. Create final version PRD based on thorough code investigation."
 
 **Store output as**: `$STEP_2_OUTPUT` (PRD path)
 
@@ -91,14 +93,14 @@ Spawn prd-creator agent: "Create reverse-engineered PRD for the following featur
 
 **Prerequisite**: $STEP_2_OUTPUT (PRD path from Step 2)
 
-Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. verbose: false."
+Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. code_paths: $PRD_UNIT_COMBINED_RELATED_FILES. unit_inventory: $PRD_UNIT_INVENTORY. verbose: false."
 
 **Store output as**: `$STEP_3_OUTPUT`
 
 **Quality Gate**:
-- consistencyScore >= 70 and verifiableClaimCount >= 20 -> proceed to review (guards against shallow verification passes with too few extracted claims)
-- consistencyScore >= 70 and verifiableClaimCount < 20 -> re-run verifier because investigation depth is insufficient
-- consistencyScore < 70 -> flag for detailed review
+- `summary.status` is `consistent` or `mostly_consistent` -> proceed to review
+- `summary.status` is `needs_review` or `inconsistent` -> proceed to review with the returned discrepancies, severity, evidence, and effect
+- `summary.status` is `blocked`, or the result is unusable -> apply Orchestrator Escalation Resolution and retry verification after resolving its evidence or input problem
 
 #### Step 4: Review
 
@@ -108,12 +110,11 @@ Spawn document-reviewer agent: "Review the following PRD considering code verifi
 
 **Store output as**: `$STEP_4_OUTPUT`
 
-If `verdict.decision` is `rejected`, halt the current unit and escalate the blocking findings to the user.
+If `verdict.decision` is `rejected`, apply Orchestrator Escalation Resolution. Continue after an evidence-based self-resolution; ask the user only when that procedure reaches a user-decision condition.
 
 #### Step 5: Revision (conditional)
 
-- If `verdict.decision` is `needs_revision`, apply Review Revision Convergence (`author`: prd-creator; `artifact`: `$STEP_2_OUTPUT`); on `progression`, retain its final review as the current review and evaluate the next bullet.
-- If the current review permits progression and critical discrepancies exist in `$STEP_3_OUTPUT` or consistencyScore < 70, spawn prd-creator once: "Update PRD based on code verification results. Operation Mode: update. Existing PRD: $STEP_2_OUTPUT. Code Verification Results: $STEP_3_OUTPUT. Address discrepancies by severity. Critical and major items require correction. Minor items: correct if straightforward, otherwise leave as-is with rationale." Then re-run Step 4 and route the new verdict only; this verification-triggered correction runs once per unit.
+- If `verdict.decision` is `approved_with_conditions` or `needs_revision`, apply Review Resolution with prd-creator, then retain the review of the updated artifact as the current review.
 - After the applicable revision bullets complete, continue to Unit Completion.
 
 #### Unit Completion
@@ -152,7 +153,7 @@ Map PRD units to Design Doc generation targets by resolving each PRD unit's `sou
 - `technicalProfile.publicInterfaces` -> Public Interfaces
 - `dependencies` -> Dependencies
 - `relatedFiles` -> Scope boundary
-- `unitInventory` -> Unit Inventory
+- the category-wise deduplicated union of `unitInventory` from all resolved `sourceUnits` -> Unit Inventory
 
 **Store output as**: `$STEP_6_OUTPUT`
 
@@ -183,6 +184,7 @@ Map PRD units to Design Doc generation targets by resolving each PRD unit's `sou
 **Quality Gate**:
 - Every PRD unit appears in at least one `$STEP_6_OUTPUT` item
 - Every `$STEP_6_OUTPUT` item references only discovered units from its parent PRD unit
+- Every `$STEP_6_OUTPUT.unitInventory` is the union of `routes`, `testFiles`, and `publicExports` from all of its `sourceUnits`
 - `mappingRationale` explicitly states whether the mapping is default 1:1 or an intentional split
 
 ### Step 7-10: Per-Unit Processing
@@ -199,9 +201,14 @@ Spawn technical-designer agent: "Create Design Doc for the following feature bas
 
 #### Step 8: Code Verification
 
-Spawn code-verifier agent: "Verify consistency between Design Doc and code implementation. doc_type: design-doc. document_path: $STEP_7_OUTPUT. verbose: false."
+Spawn code-verifier agent: "Verify consistency between Design Doc and code implementation. doc_type: design-doc. document_path: $STEP_7_OUTPUT. code_paths: $UNIT_SCOPE_BOUNDARY. unit_inventory: $UNIT_INVENTORY. verbose: false."
 
 **Store output as**: `$STEP_8_OUTPUT`
+
+**Quality Gate**:
+- `summary.status` is `consistent` or `mostly_consistent` -> proceed to review
+- `summary.status` is `needs_review` or `inconsistent` -> proceed to review with the returned discrepancies, severity, evidence, and effect
+- `summary.status` is `blocked`, or the result is unusable -> apply Orchestrator Escalation Resolution and retry verification after resolving its evidence or input problem
 
 #### Step 9: Review
 
@@ -211,12 +218,11 @@ Spawn document-reviewer agent: "Review the following Design Doc considering code
 
 **Store output as**: `$STEP_9_OUTPUT`
 
-If `verdict.decision` is `rejected`, halt the current unit and escalate the blocking findings to the user.
+If `verdict.decision` is `rejected`, apply Orchestrator Escalation Resolution. Continue after an evidence-based self-resolution; ask the user only when that procedure reaches a user-decision condition.
 
 #### Step 10: Revision (conditional)
 
-- If `verdict.decision` is `needs_revision`, apply Review Revision Convergence (`author`: technical-designer; `artifact`: `$STEP_7_OUTPUT`); on `progression`, retain its final review as the current review and evaluate the next bullet.
-- If the current review permits progression and critical discrepancies exist in `$STEP_8_OUTPUT` or consistencyScore < 70, spawn technical-designer once: "Update Design Doc based on code verification results. Operation Mode: update. Existing Design Doc: $STEP_7_OUTPUT. Code Verification Results: $STEP_8_OUTPUT. Address discrepancies by severity. Critical and major items require correction. Minor items: correct if straightforward, otherwise leave as-is with rationale." Then re-run Step 9 and route the new verdict only; this verification-triggered correction runs once per unit.
+- If `verdict.decision` is `approved_with_conditions` or `needs_revision`, apply Review Resolution with technical-designer, then retain the review of the updated artifact as the current review.
 - After the applicable revision bullets complete, continue to Unit Completion.
 
 #### Unit Completion
@@ -229,8 +235,8 @@ If `verdict.decision` is `rejected`, halt the current unit and escalate the bloc
 ## Final Report
 
 Output summary including:
-- Generated documents table (Type, Name, Consistency Score, Review Status)
-- Action items (critical discrepancies, undocumented features, flagged items)
+- Generated documents table (Type, Name, Verification Status, Review Status)
+- Action items (discrepancy ID, severity, effect, undocumented features, flagged items)
 - Next steps checklist
 
 ## Error Handling
@@ -239,8 +245,8 @@ Output summary including:
 |-------|--------|
 | Discovery finds nothing | Ask user for project structure hints |
 | Generation fails | Log failure, continue with other units, report in summary |
-| consistencyScore < 50 | **[STOP — BLOCKING]** Flag for mandatory human review. **CANNOT proceed until user explicitly confirms.** |
-| Review Revision Convergence returns `non_convergent` | Stop the unit loop, present the exact unresolved findings and attempted corrections, then wait |
+| Code verification is blocked or unusable | Apply Orchestrator Escalation Resolution with the exact input or evidence problem |
+| Review Resolution requires a user-owned decision | Apply Orchestrator Escalation Resolution |
 
 ## Completion Criteria
 
