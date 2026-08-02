@@ -1,0 +1,18 @@
+{
+  "changes": [
+    {
+      "version": "1.0.0",
+      "operations": [
+        {
+          "type": "move",
+          "from": ".agents/skills/documentation-criteria/references/task-template.md",
+          "to": ".agents/skills/llm-friendly-context/references/task-template.md"
+        },
+        {
+          "type": "add",
+          "path": ".agents/skills/subagents-orchestration-guide/references/review-resolution.md"
+        }
+      ]
+    }
+  ]
+}

@@ -4,7 +4,7 @@
 skills:
   coding-rules:
     skill: "coding-rules"
-    tags: [implementation, code-quality, refactoring, design-convergence, contract-safety, boundary-safety, repository-local-choice, performance, security]
+    tags: [implementation, code-quality, refactoring, minimal-design-surface, contract-safety, boundary-safety, repository-local-choice, performance, security]
     typical-use: "Repository-aware implementation, refactoring, contract preservation, and pattern selection"
     size: small
     key-references:
@@ -43,24 +43,21 @@ skills:
 
   ai-development-guide:
     skill: "ai-development-guide"
-    tags: [anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, refactoring, code-reading, best-practices, fail-fast, error-handling, impact-analysis]
-    typical-use: "Technical decision criteria, anti-pattern detection, root-cause discipline, quality check workflows, impact analysis procedures"
-    size: large
+    tags: [technical-judgment, debugging, quality-commands, implementation, refactoring, code-reading, error-handling, impact-analysis, root-cause]
+    typical-use: "Root-cause discipline, proportionate impact analysis, and applicable quality assurance"
+    size: small
     key-references:
-      - "Rule of Three - Martin Fowler"
-      - "5 Whys - Toyota Production System"
-      - "DRY Principle - The Pragmatic Programmer"
-      - "YAGNI Principle - Extreme Programming"
+      - "Confirmed outcome boundary"
+      - "Observed failure evidence"
     sections:
-      - "Language-Specific References"
-      - "Technical Anti-patterns (Red Flag Patterns) [MANDATORY]"
-      - "Fail-Fast Fallback Design Principles"
-      - "Rule of Three - Criteria for Code Duplication"
-      - "Pattern 5: Existing Code Investigation [MANDATORY]"
-      - "Quality Assurance Mechanism Awareness"
-      - "Quality Check Workflow [MANDATORY]"
-      - "Implementation Completeness Assurance"
-      - "Impact Analysis"
+      - "Reference"
+      - "Outcome Boundary"
+      - "Root-Cause Discipline"
+      - "Proportionate Impact Analysis"
+      - "Design and Reuse Judgment"
+      - "Error and Fallback Safety"
+      - "Quality Assurance"
+      - "Completion Gate"
     references:
       - "references/frontend.md"
 
@@ -77,7 +74,7 @@ skills:
       - "Templates"
       - "Creation Decision Matrix [MANDATORY]"
       - "Structural Scale"
-      - "ADR Creation Conditions [MANDATORY if Any Apply]"
+      - "ADR Creation Conditions"
       - "Detailed Document Definitions"
       - "Creation Process [MANDATORY]"
       - "Storage Locations"
@@ -91,7 +88,6 @@ skills:
       - "references/ui-spec-template.md"
       - "references/design-template.md"
       - "references/plan-template.md"
-      - "references/task-template.md"
 
   requirement-convergence:
     skill: "requirement-convergence"
@@ -100,7 +96,7 @@ skills:
     size: small
     key-references:
       - "Observed scope facts"
-      - "User-authored exclusions"
+      - "User-decided exclusions"
     sections:
       - "Purpose"
       - "Convergence Record"
@@ -114,60 +110,53 @@ skills:
 
   implementation-approach:
     skill: "implementation-approach"
-    tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, verification-levels]
-    typical-use: "Implementation strategy selection, task decomposition, design decisions, large-scale change planning"
-    size: medium
+    tags: [architecture, implementation, task-decomposition, direct-mvp, design, planning, verification-levels, slicing]
+    typical-use: "Smallest sufficient implementation strategy, slicing, and verification-boundary selection"
+    size: small
     key-references:
-      - "Strangler Fig Pattern - Martin Fowler"
-      - "Feature Slicing - Martin Fowler"
-      - "Walking Skeleton - Alistair Cockburn"
+      - "Direct MVP"
+      - "Evidence-backed Failed Items"
     sections:
-      - "Meta-cognitive Strategy Selection Process [MANDATORY]"
-      - "Verification Level Definitions"
-      - "Integration Point Definitions"
-      - "Anti-patterns [MANDATORY to detect]"
-      - "Guidelines for Meta-cognitive Execution"
+      - "Strategy Selection"
+      - "Slicing Choice"
+      - "Verification Level"
+      - "Completion Check"
 
   integration-e2e-testing:
     skill: "integration-e2e-testing"
-    tags: [testing, integration-testing, e2e-testing, fixture-e2e, service-integration-e2e, e2e-absence-reason, test-design, behavior-first, roi, test-skeleton, ears-format]
-    typical-use: "Integration and E2E test design principles, value-based test selection, behavior-first approach, test skeleton specification"
-    size: medium
+    tags: [testing, integration-testing, e2e-testing, fixture-e2e, service-integration-e2e, test-design, behavior-first, roi, test-skeleton, proof-boundary]
+    typical-use: "Selecting only integration/E2E proof boundaries whose detection value exceeds their cost"
+    size: small
     key-references:
-      - "Test Pyramid - Mike Cohn"
-      - "Behavior-Driven Development"
+      - "Observable boundary"
+      - "Lowest-cost sufficient proof"
     sections:
-      - "References"
-      - "Test Type Definition and Limits [MANDATORY]"
-      - "Behavior-First Principle [MANDATORY]"
-      - "Value and Selection Model"
-      - "Test Skeleton Specification [MANDATORY]"
-      - "EARS Format Mapping"
-      - "Test File Naming Convention"
+      - "Reference"
+      - "Selection Gate"
+      - "Lanes and Ceilings"
+      - "Candidate Selection"
+      - "Skeleton Contract"
       - "Review Criteria"
-      - "Quality Standards [MANDATORY]"
+      - "Completion Check"
     references:
       - "references/e2e-design.md"
 
   subagents-orchestration-guide:
     skill: "subagents-orchestration-guide"
-    tags: [orchestration, workflow, subagents, update-plan, state-machine, context-isolation, autonomous-execution, guided-autonomous-execution, planning, design-flow, implementation-flow, implementation-readiness, readiness-resolution]
-    typical-use: "Orchestrating subagents through implementation workflows, scale determination, stop points, guided autonomous execution mode"
+    tags: [orchestration, workflow, subagents, update-plan, context-isolation, autonomous-execution, guided-autonomous-execution, planning, design-flow, implementation-flow, environment-preparation]
+    typical-use: "Orchestrating specialists through implementation workflows, approval points, optional environment preparation, and autonomous execution"
     size: large
     key-references:
       - "Orchestrator Pattern"
       - "Conductor Pattern"
     sections:
       - "Role: The Orchestrator"
-      - "Decision Flow When Receiving Tasks"
       - "Orchestration Principles"
       - "Constraints Between Subagents [MANDATORY]"
       - "How to Spawn Agents"
       - "Explicit Stop Points [MANDATORY]"
       - "Scale Determination and Document Requirements"
-      - "Structured Response Specification"
-      - "Implementation Readiness Marker Contract"
-      - "Implementation Readiness Preflight Procedure"
+      - "Using Agent Results"
       - "Handling Requirement Changes"
       - "Basic Flow for Work Planning"
       - "Autonomous Execution Mode"
@@ -177,6 +166,7 @@ skills:
       - "Action Checklist"
       - "References"
     references:
+      - "references/review-resolution.md"
       - "references/monorepo-flow.md"
 
   external-resource-context:
@@ -219,3 +209,6 @@ skills:
       - "Rewrite Patterns"
       - "Handoff Checklist"
       - "Generated Artifact Checklist"
+      - "References"
+    references:
+      - "references/task-template.md"

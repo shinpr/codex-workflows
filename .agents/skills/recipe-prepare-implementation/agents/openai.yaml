@@ -1,7 +1,7 @@
 interface:
   display_name: "recipe-prepare-implementation"
-  short_description: "Preflight work plan readiness before implementation"
-  default_prompt: "Use $recipe-prepare-implementation to verify: "
+  short_description: "Prepare repository-local tools before build"
+  default_prompt: "Use $recipe-prepare-implementation to prepare repository-local tools for: "
 
 policy:
   allow_implicit_invocation: false

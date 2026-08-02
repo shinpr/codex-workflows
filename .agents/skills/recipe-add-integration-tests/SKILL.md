@@ -5,11 +5,10 @@ description: "Add integration/E2E tests to existing codebase using Design Docs."
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
-1. [LOAD IF NOT ACTIVE] `testing` — test strategy and quality gates
-2. [LOAD IF NOT ACTIVE] `integration-e2e-testing` — integration and E2E test patterns
-3. [LOAD IF NOT ACTIVE] `documentation-criteria` — document creation rules and templates
-4. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — review revision convergence and agent coordination
-5. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
+1. [LOAD IF NOT ACTIVE] `testing` — repository-aware test execution
+2. [LOAD IF NOT ACTIVE] `integration-e2e-testing` — value-based integration/E2E selection
+3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — review resolution and agent coordination
+4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — task file contract
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
@@ -17,9 +16,9 @@ description: "Add integration/E2E tests to existing codebase using Design Docs."
 
 ## Orchestrator Definition
 
-**Core Identity**: "I am not a worker. I am an orchestrator."
+**Core Identity**: Coordinate test addition, perform lightweight evidence collection and routing directly, and invoke specialists for generation, implementation, and review judgment.
 
-**First Action**: Call `update_plan` with first "Map active rules to this task", Steps 0-8, and final "Verify outputs and rule adherence" before execution. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+**Execution Plan Gate**: Use the active execution plan when one exists. When none exists, create one with first "Map active rules to this task", Steps 0-8, and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
 
 **Why Spawn**: Orchestrator's context is shared across all steps. Direct implementation consumes context needed for review and quality check phases. Task files create context boundaries. Subagents work in isolated context.
 
@@ -41,7 +40,7 @@ Document paths: $ARGUMENTS
 
 ### Step 0: Prepare Context
 
-Reference documentation-criteria skill for task file template in Step 3.
+Use the llm-friendly-context Task File Contract in Step 3.
 
 ### Step 1: Discover and Validate Documents
 
@@ -55,128 +54,89 @@ ls $ARGUMENTS
 
 Use only the user-provided paths in `$ARGUMENTS`. Do not auto-discover additional Design Docs or UI Specs.
 
-Classify provided documents by path and filename, using first-match-wins:
-- Path matches `docs/ui-spec/*.md` -> **UI Spec**
-- Path matches `docs/design/*-backend-*.md` or `docs/design/*backend*.md` -> **Design Doc (backend)**
-- Path matches `docs/design/*-frontend-*.md` or `docs/design/*frontend*.md` -> **Design Doc (frontend)**
-- Path matches `docs/design/*.md` and none of the above -> **single-layer Design Doc**
-
-If a filename appears to match both backend and frontend, halt and ask the user which layer it belongs to.
+Treat paths under `docs/ui-spec/` as UI Specs and the supplied `docs/design/` paths as Design Docs. When a filename is unclear, use the document title and content; layer classification is not an execution gate because the generator returns each artifact's implementation kind.
 
 ### Step 2: Skeleton Generation
 
-Spawn acceptance-test-generator agent with only the documents that exist from Step 1:
+Spawn acceptance-test-generator with the validated document paths from Step 1. Include UI Specs as optional UI evidence.
 ```text
 Generate test skeletons from the following documents:
-- Design Doc (backend): [path]    <- include only if exists
-- Design Doc (frontend): [path]   <- include only if exists
-- UI Spec: [path]                 <- include only if exists
+- Design Docs: [paths]
+- UI Specs: [paths, when supplied]
 ```
 
-**Expected output**: `generatedFiles` as a structured object grouped by layer, for example:
+**Expected output**: consume the acceptance-test-generator contract directly:
 ```json
 {
-  "backend": ["path/to/backend.int.test.ts"],
-  "frontend": ["path/to/frontend.int.test.ts"],
-  "e2e": ["path/to/flow.e2e.test.ts"]
+  "status": "completed",
+  "artifacts": [{"path": "path", "implementationKind": "general | frontend"}]
 }
 ```
 
-### Step 3: Create Task Files [GATE]
+Verify returned artifact paths. When the selected set is empty, report that no integration/E2E skeleton was valuable and finish; otherwise continue to Step 3.
 
-**[STOP — BLOCKING]** Present task file content to user for confirmation before proceeding to implementation.
-**CANNOT proceed until user explicitly confirms.**
+### Step 3: Create Task Files
 
-Create one task file per layer, using the monorepo-flow.md naming convention for deterministic agent routing:
-- Backend skeletons exist -> `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
-- Frontend skeletons exist -> `docs/plans/tasks/integration-tests-frontend-task-YYYYMMDD.md`
-- Single-layer (no backend/frontend distinction) -> `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
+Group the returned artifacts by `implementationKind` and create at most one task per non-empty group:
 
-**Template** (per task file):
-```markdown
----
-name: Implement [layer] integration tests for [feature name]
-type: test-implementation
----
+| implementationKind | Task file | Executor | Quality fixer |
+|---|---|---|---|
+| `general` | `docs/plans/tasks/integration-tests-task-YYYYMMDD.md` | `task-executor` | `quality-fixer` |
+| `frontend` | `docs/plans/tasks/integration-tests-frontend-task-YYYYMMDD.md` | `task-executor-frontend` | `quality-fixer-frontend` |
 
-## Objective
+Populate the llm-friendly-context Task File Contract with:
 
-Implement test cases defined in skeleton files.
+- `Source Plan Tasks: N/A — standalone test-addition flow`
+- `Implementation Outcome`: implement every skeleton in this task's artifact group as a runnable integration/E2E test
+- `Governing Sources`: the supplied Design Doc/UI Spec paths and the ACs cited by the skeletons
+- `Target Files`: the `path` of every artifact in this task's group
+- `Investigation Targets`: the governing sections, generated skeletons, and one representative existing test per selected lane
+- `Implementation Steps`: implement the skeleton proof obligations, run their focused commands, and keep the selected boundaries observable
+- `Operation Verification Methods`: repository commands and observable pass conditions for the selected lanes
+- `Verification Focus`: when one material false-green condition controls completion, copy its Primary failure and smallest observable proof check
+- `Completion Criteria`: every selected skeleton is executable and its observable checks pass
 
-## Target Files
-
-- Skeleton: [layer-specific paths from Step 2 generatedFiles]
-- Design Doc: [layer-specific Design Doc from Step 1]
-
-## Tasks
-
-- [ ] Implement each test case in skeleton
-- [ ] Verify all tests pass
-- [ ] Ensure coverage meets requirements
-
-## Acceptance Criteria
-
-- All skeleton test cases implemented
-- All tests passing
-- No quality issues
-```
-
-**Output**: "Task file(s) created at [path(s)]. Ready for Step 4."
+**Output**: "Task file created at [path]. Ready for Step 4."
 
 ### Step 4: Test Implementation
 
-Record the current revision as `diffBase` before invoking the executor for each task.
+Start the subagents-orchestration-guide Per-Task Change Set before invoking the executor for each task.
 
-For each task file from Step 3, invoke task-executor routed by filename pattern:
-- `*-backend-task-*` -> Spawn `task-executor`
-- `*-frontend-task-*` -> Spawn `task-executor-frontend`
-- Prompt: "Task file: [task file path from Step 3]. Implement tests following the task file."
+For each task file from Step 3, invoke the executor from its table row with: "Task file: [task file path from Step 3]. Implement tests following the task file."
+
+Inspect the executor result and repository diff, then add its paths to `taskWriteSet`. Resolve an incomplete or unusable implementation through Orchestrator Escalation Resolution.
 
 Execute one task file at a time through Steps 4 -> 5 -> 6 -> 7 before starting the next.
 
-**Expected output**: `status`, `filesModified`, `testsAdded`
+**Expected output**: completion or escalation state, `filesModified`, `testsAdded`, `requiresTestReview`, and operation-verification evidence
 
 ### Step 5: Test Review
 
-Use the executor's `filesModified` as the task write set.
-Spawn integration-test-reviewer with `changedTestFiles: [integration/E2E test paths from filesModified]`, `diffBase`, `skeletonFiles: [layer-specific paths from Step 2]`, and `taskFile`.
+Use integration/E2E paths from `taskWriteSet` as the test-review input set.
+Spawn integration-test-reviewer with `changedTestFiles`, `diffBase`, `skeletonFiles: [artifact paths in the current task]`, and `taskFile`.
 Keep `testsAdded` as reporting metadata only.
 
-**Expected output**: `status` (approved/needs_revision/blocked), `reviewBasis`, `requiredFixes`. Apply Orchestrator Escalation Resolution for `blocked` or an unrecognized status.
+Consume the reviewer decision, actionable findings, and governing basis. Apply Orchestrator Escalation Resolution when the result is blocked or cannot support the next action.
 
 ### Step 6: Apply Review Fixes
 
-Check Step 5 result:
-- `status: approved` -> Mark complete, proceed to Step 7
-- `status: needs_revision` -> Apply Review Revision Convergence (`author`: layer-appropriate executor; `artifact`: changed test files); on `progression`, proceed to Step 7.
+Proceed when the review is approved. When it contains actionable revision findings, apply Review Resolution with the layer-appropriate executor, add repair paths to `taskWriteSet`, and rerun the reviewer.
 
 ### Step 7: Quality Check
 
-Spawn quality-fixer routed by task filename pattern:
-- `*-backend-task-*` -> Spawn `quality-fixer`
-- `*-frontend-task-*` -> Spawn `quality-fixer-frontend`
-- Inputs: `task_file: [current task file]` and Step 4 `filesModified`.
+Spawn the quality fixer from the current task's Step 3 table row with `task_file`, `filesModified: taskWriteSet`, and the executor's operation-verification evidence.
 
 **Expected output**: `status` (`stub_detected`/`approved`/`blocked`)
 
 ### Step 8: Commit
 
-On quality-fixer result:
-- `status: "stub_detected"` -> Return to Step 4 with `stubFindings`
-- `status: "blocked"` -> Apply Orchestrator Escalation Resolution
-- `status: "approved"` -> Commit test files
-- MUST commit test files with appropriate message
-ENFORCEMENT: Commits without quality-fixer approval are invalid.
+On quality approval, add its `filesModified`, reconcile and commit the Per-Task Change Set, then mark the temporary task file complete. Repair stubs through the current task's executor and accumulate their paths; resolve blocked results through Orchestrator Escalation Resolution.
 
 ## Completion Criteria
 
 - [ ] Design Doc validated and located
-- [ ] Skeleton generated via acceptance-test-generator
-- [ ] Task file created and confirmed
-- [ ] Tests implemented via task-executor
-- [ ] Tests reviewed via integration-test-reviewer (approved or fixes applied)
-- [ ] Quality check passed via quality-fixer
-- [ ] Test files committed
+- [ ] acceptance-test-generator returned `status: completed`
+- [ ] Every returned artifact was implemented, reviewed, quality-checked, and committed
 - [ ] Task files created by this recipe deleted from `docs/plans/tasks/`
 
 ## Final Cleanup

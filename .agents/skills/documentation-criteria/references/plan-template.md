@@ -2,297 +2,72 @@
 
 Created Date: YYYY-MM-DD
 Type: feature|fix|refactor
-Estimated Duration: X days
-Estimated Impact: X files
 Related Issue/PR: #XXX (if any)
-Review Scope: [planned-files scope derived from Design Doc and task targets; for a revision plan over existing work, base branch + diff range]
-Implementation Readiness: pending
+Review Scope: [repository responsibilities or expected files derived from the Design Doc]
 
 ## WorkPlan Review
 
-This section records the review gate state for the exact plan content. Set `Status: pending` when the plan is created or materially updated. The orchestrator treats only `Status: approved` with `Conditions: none` as reviewed.
+Plan creation and material updates set this to `pending`. Record `approved` after the user approves the reviewed implementation scope.
 
 - **Status**: pending|approved
-- **Conditions**: none
 
-## Related Documents
-- Design Doc(s):
-  - [docs/design/XXX.md]
-  - [docs/design/YYY.md] (if multiple, e.g. backend + frontend)
-- ADR: docs/adr/ADR-XXXX-title.md (if any)
-- PRD: [docs/prd/XXX.md] (if any)
+## Governing Documents
 
-ADR placeholders use the repository ADR filename convention: replace `XXXX` with the four-digit ADR number and `title` with the file slug.
+- Design Doc: [docs/design/XXX.md]
+- UI Spec: [docs/ui-spec/XXX.md] (when applicable)
+- ADR: [docs/adr/ADR-XXXX-title.md] (when applicable)
+- PRD: [docs/prd/XXX.md] (when applicable)
+- Test skeletons: [paths] (when generated)
 
-## Verification Strategies (from Design Docs)
+## Implementation Scope
 
-Repeat this block for each Design Doc when multiple Design Docs exist. Preserve each strategy's identity and source document path. Merge strategies only when the Design Docs explicitly define a shared one.
-
-### Verification Strategy: [docs/design/XXX.md]
-
-#### Correctness Proof Method
-- **Correctness definition**: [extracted from Design Doc]
-- **Target comparison**: [extracted from Design Doc]
-- **Verification method**: [extracted from Design Doc]
-- **Observable success indicator**: [extracted from Design Doc]
-- **Verification timing**: [`phase_1` | `per_phase` | `integration_phase` | `final_phase`]
-- **Timing note**: [optional clarification]
-
-#### Early Verification Point
-- **First verification target**: [extracted from Design Doc]
-- **Success criteria**: [extracted from Design Doc]
-- **Failure response**: [extracted from Design Doc]
-
-### Proof Strategy
-- **Proof obligation source**: [test skeleton annotations (`Primary failure mode`, `Proof obligation`) when skeletons exist; otherwise each acceptance criterion's primary failure mode derived from the Design Doc; include Assumed Behaviors `Confirmed: No` IDs when present]
-- **Per-task propagation**: every task that implements or verifies a claim records the AC ID or claim identifier in Proof Obligations (see task template) so downstream review can judge whether tests prove the claim, not merely run
-
-## Quality Assurance Mechanisms (from Design Docs)
-
-Adopted quality gates for the change area. Each task in this plan must satisfy the applicable mechanisms.
-
-| Mechanism | Enforces | Config Location | Covered Files |
-|-----------|----------|-----------------|---------------|
-| [Tool/check name] | [What quality aspect it enforces] | [path/to/config] | [file paths or patterns covered, or "project-wide"] |
-| [Domain constraint] | [What it enforces] | [path/to/source] | [file paths or patterns covered, or "project-wide"] |
-
-## Design-to-Plan Traceability
-
-Map each Design Doc technical requirement to the task or phase that covers it. Use one row per extracted requirement item. Every row must have at least one covering task, or an explicit justified gap.
-
-| Source Design Doc | DD Section | DD Item | Category | Covered By Task(s) | Gap Status | Notes |
-|-------------------|------------|---------|----------|--------------------|------------|-------|
-| [docs/design/xxx-design.md] | [Section name] | [Specific implementation-relevant item] | impl-target / connection-switching / contract-change / verification / prerequisite / scope-boundary | [P1-T1, P1-T2] | covered | |
-
-**Category values**: `impl-target` (implementation target), `connection-switching` (connection, switching, registration, dependency wiring), `contract-change` (interface change and propagation across boundaries), `verification` (verification method, test boundary, comparison point, or Assumed Behaviors `Confirmed: No` verification), `prerequisite` (migration, setup, security, environment preparation), `scope-boundary` (explicit non-target or no-ripple boundary that must remain unchanged)
-
-**Gap Status values**: `covered` (mapped to one or more tasks), `gap` (no task exists yet; include justification in Notes and require user confirmation before plan approval)
-
-**Task ID format**:
-- Implementation tasks: `P<phase-number>-T<task-number>` such as `P1-T1`, `P2-T3`
-- Phase completion tasks: `P<phase-number>-COMPLETE` such as `P1-COMPLETE`
-- Final quality task: `FINAL-QA`
-- Multiple covering tasks: comma-separated IDs in display order, for example `P1-T1, P1-T2`
-
-**DD Item normalization rules**:
-- One row = one independently plannable obligation that can be covered, deferred, or verified without relying on a hidden sub-obligation
-- Split compound obligations joined by `and`, `or`, or separate boundary crossings when they can be implemented or verified independently
-- Normalize same-boundary field propagation into one row when the fields must move together through the same boundary for the same reason
-- Merge duplicate restatements of the same obligation from multiple DD sections into one row and cite the primary section in `DD Section`
-- Keep `scope-boundary` rows concrete: name the protected file group, component boundary, contract, or workflow that must remain unchanged
-
-## Reference Contract Values
-
-Include this section when a Traceability row's DD Item encodes a binding observable value the implementation must reproduce exactly: a column/label set and order, a derived-display rule where one field determines another display value, or a `state-lifecycle-negative` that states when persisted, restored, cached, derived, client, session, or UI state must stay unused, including reset/clear behavior that returns state to its unused/default value. Serialized boundaries belong in the Connection Map / Field Propagation Map. When a value qualifies for both this table and a serialized boundary, record it only in the Connection Map. ADR-derived structural decisions belong in ADR Bindings.
-
-The Traceability table records coverage. This table carries the required value verbatim so the covering task can check the exact contract.
-
-| Design Doc (section) | Contract Type | Required Observable Value (verbatim) | Covered By Task(s) | Gap Status | Notes |
-|----------------------|---------------|--------------------------------------|--------------------|------------|-------|
-| docs/design/xxx-design.md (Section name) | structure-order / derived-display / state-lifecycle-negative | [Exact value copied from the Design Doc] | [P1-T1] | covered | |
-
-**Gap Status values**: `covered` (mapped to one or more tasks), `gap` (no task exists yet; set Covered By Task(s) to `-`, include justification in Notes, and require user confirmation before plan approval)
-
-## Failure Mode Checklist
-
-Domain-independent failure categories this implementation must guard against. Enumerate all ten categories, mark which apply, and list a covering task for each that applies; keep category names generic and place project-specific detail in task descriptions or notes.
-
-`missing-sort-key ordering` applies when a collection is sorted by a field or key that may be absent, null, derived, or conditionally omitted. Covering tasks must prove a deterministic fallback order for items lacking the sort key.
-
-| Category | Applies? | Covered By Task(s) |
-|----------|----------|--------------------|
-| same-value | yes/no | [P1-T1] |
-| no-op | yes/no | |
-| empty input | yes/no | |
-| invalid option | yes/no | |
-| missing config | yes/no | |
-| unavailable boundary | yes/no | |
-| shared-state dependency | yes/no | |
-| rollback-only visibility | yes/no | |
-| missing-sort-key ordering | yes/no | |
-| irreversible-operation | yes/no | |
-
-Set `irreversible-operation` to `yes` when an operation cannot be safely reversed or retried, and assign a covering task.
-
-## UI Spec Component -> Task Mapping
-
-Include this section when a UI Spec is among the inputs. Map each UI component section to the task(s) that implement it so task-decomposer can pass the exact UI Spec context to executor tasks. Omit this section when no UI Spec exists.
-
-| UI Spec Component (section heading) | States to Cover | Covered By Task(s) | Gap Status | Notes |
-|-------------------------------------|-----------------|--------------------|------------|-------|
-| [Use the UI Spec heading exactly as written, e.g. "Component: AlertCard"] | [default / loading / empty / error / partial] | [P1-T1, P2-T1] | covered | |
-
-**Reference key rule**: The component identifier is the UI Spec section heading verbatim. Component headings must be unique within a UI Spec.
-
-## ADR Bindings
-
-Include this section when ADRs are provided as input or listed in the Design Doc's "Prerequisite ADRs" section. Map each implementation-binding ADR decision to the task(s) it constrains. Omit this section when no ADR applies.
-
-A decision is **implementation-binding** when it constrains code placement, dependency direction, contract/schema shape, data flow, or persistence. Acceptance criteria and required behavior remain in the Design Doc; this table covers structural implementation constraints from ADRs.
-
-| ADR | Source Section | Axis (exactly one value) | Binding Decision | Covered By Task(s) | Gap Status | Notes |
-|-----|----------------|--------------------------|------------------|--------------------|------------|-------|
-| docs/adr/ADR-XXXX-title.md | Decision | dependency_direction | [One implementation-binding decision sentence, copied or condensed from the named section] | P1-T1, P2-T1 | covered | |
-| docs/adr/ADR-YYYY-title.md | Implementation Guidance | persistence | [Binding decision with no covering task yet] | - | gap | [Justification and user-confirmation note] |
-
-**Axis values**: `placement` (where code belongs), `dependency_direction` (allowed import or call direction), `contract_schema` (interface, payload, or schema shape), `data_flow` (how data moves across components), `persistence` (where and how state is stored)
-
-One row represents one independently checkable binding decision. A single ADR can contribute multiple rows. A single task can appear in multiple rows.
-
-**Gap Status values**: `covered` (mapped to one or more tasks), `gap` (no task exists yet; set Covered By Task(s) to `-`, include justification in Notes, and require user confirmation before plan approval)
-
-## Connection Map
-
-Include this section when implementation crosses runtime, process, deployment, or service boundaries, or when a value is serialized and parsed across a boundary within one runtime through a query string, route parameter, form post, CLI argument, environment variable, config entry, message payload, storage key, or file.
-
-For serialized boundaries, fill Serialized Format and Consumer Parse Rule with concrete values. Use "-" only for non-serialized external signals where the Expected Signal fully captures the boundary contract.
-
-| Boundary | Caller / Producer | Callee / Consumer | Serialized Format | Consumer Parse Rule | Expected Signal | Covered By Task(s) |
-|----------|-------------------|-------------------|-------------------|---------------------|-----------------|--------------------|
-| [producing side -> consuming side] | [module/package initiating request or message] | [module/package receiving request or message] | [exact representation the producer emits, or "-"] | [how the consumer decodes and validates it, or "-"] | [Observable evidence, e.g. HTTP 200 matching schema X] | [P1-T1, P1-T2] |
-
-## Objective
-[Why this change is necessary, what problem it solves]
-
-## Background
-[Current state and why changes are needed]
-
-## Risks and Countermeasures
-
-### Technical Risks
-- **Risk**: [Risk description]
-  - **Impact**: [Impact assessment]
-  - **Countermeasure**: [How to address it]
-
-### Schedule Risks
-- **Risk**: [Risk description]
-  - **Impact**: [Impact assessment]
-  - **Countermeasure**: [How to address it]
+[One concise statement of the repository implementation outcome defined by the Design Doc.]
 
 ## Implementation Phases
 
-Select one phase structure based on the implementation approach from the Design Doc.
-Delete every unused option before finalizing the work plan. The final document must contain only the selected phase structure.
+Use the implementation approach and dependency order from the Design Doc. Each phase groups work that reaches a shared observable verification point. Keep implementation, tests, configuration, wiring, and documentation together when they become complete at that point.
 
-### Option A: Vertical Slice Phase Structure
-
-Use when implementation approach is Vertical Slice. Each phase represents one value unit and includes its own verification.
-
-### Phase 1: [Value Unit 1] (Estimated commits: X)
-**Purpose**: [First slice that proves the approach works]
-**Verification**: [Use the early verification point when applicable]
+### Phase 1: [First implementation outcome]
 
 #### Tasks
-- [ ] [P1-T1] Specific work content
-- [ ] [P1-T2] Verification for this value unit
-- [ ] Quality check: Run staged static analysis, build verification, tests, and final quality gate
 
-#### Phase Completion Criteria
-- [ ] Early verification point passed
-- [ ] [Functional completion criteria]
-- [ ] [Quality completion criteria]
-- [ ] [P1-COMPLETE] Phase completion verification recorded
+- [ ] **P1-T1: [Repository implementation outcome]**
+  - **Source**: [every directly constraining Design Doc, ADR, or UI Spec path and section; AC IDs]
+  - **Scope**: [responsibility, component, or expected files]
+  - **Depends on**: none | [task IDs]
+  - **Verification**: [Design Doc verification method or repository command]
+  - **Primary failure**: [optional: most material false-green state]
+  - **Observable check**: [optional: smallest check that detects the primary failure]
 
-### Phase 2: [Value Unit 2] (Estimated commits: X)
-**Purpose**: [Subsequent slice]
-**Verification**: [Verification for this value unit]
+#### Phase Completion
 
-#### Tasks
-- [ ] [P2-T1] Specific work content
-- [ ] [P2-T2] Verification for this value unit
-- [ ] Quality check
+- [ ] Phase tasks are complete and their verification passes
 
-#### Phase Completion Criteria
-- [ ] [Functional completion criteria]
-- [ ] [Quality completion criteria]
-- [ ] [P2-COMPLETE] Phase completion verification recorded
-
-### Option B: Horizontal Slice Phase Structure
-
-Use when implementation approach is Horizontal Slice. Phases follow Foundation -> Core -> Integration -> QA.
-
-### Phase 1: [Foundation] (Estimated commits: X)
-**Purpose**: Contract definitions, interfaces, test preparation
+### Phase 2: [Next implementation outcome] (when required)
 
 #### Tasks
-- [ ] [P1-T1] Specific work content
-- [ ] [P1-T2] Specific work content
-- [ ] Quality check: Run staged static analysis, build verification, tests, and final quality gate
-- [ ] Unit tests: All related tests pass
 
-#### Phase Completion Criteria
-- [ ] [Functional completion criteria]
-- [ ] [Quality completion criteria]
-- [ ] [P1-COMPLETE] Phase completion verification recorded
+- [ ] **P2-T1: [Repository implementation outcome]**
+  - **Source**: [every directly constraining Design Doc, ADR, or UI Spec path and section; AC IDs]
+  - **Scope**: [responsibility, component, or expected files]
+  - **Depends on**: [task IDs]
+  - **Verification**: [Design Doc verification method or repository command]
+  - **Primary failure**: [optional]
+  - **Observable check**: [optional]
 
-### Phase 2: [Core Feature] (Estimated commits: X)
-**Purpose**: Business logic, unit tests
+#### Phase Completion
 
-#### Tasks
-- [ ] [P2-T1] Specific work content
-- [ ] [P2-T2] Specific work content
-- [ ] Quality check
-- [ ] Integration tests: Verify overall feature functionality
-
-#### Phase Completion Criteria
-- [ ] [Functional completion criteria]
-- [ ] [Quality completion criteria]
-- [ ] [P2-COMPLETE] Phase completion verification recorded
-
-### Phase 3: [Integration] (Estimated commits: X)
-**Purpose**: External connections, presentation layer
-
-#### Tasks
-- [ ] [P3-T1] Specific work content
-- [ ] [P3-T2] Specific work content
-- [ ] Quality check
-- [ ] Integration tests: Verify component coordination
-
-#### Phase Completion Criteria
-- [ ] [Functional completion criteria]
-- [ ] [Quality completion criteria]
-- [ ] [P3-COMPLETE] Phase completion verification recorded
-
-### Final Phase: Quality Assurance (Required) (Estimated commits: 1)
-This phase is required for all implementation approaches.
-
-**Purpose**: Cross-cutting quality assurance and Design Doc consistency verification
-
-#### Tasks
-- [ ] [FINAL-QA] Verify all Design Doc acceptance criteria achieved
-- [ ] Security review: Verify security considerations from Design Doc are implemented
-- [ ] Quality checks (types, lint, format)
-- [ ] Execute all tests (including integration/E2E from test skeletons, when provided)
-- [ ] Coverage threshold passes when configured
-- [ ] Document updates
-
-### Quality Assurance
-- [ ] Run staged static analysis, build verification, tests, and final quality gate
-- [ ] All tests pass
-- [ ] Static check pass
-- [ ] Lint check pass
-- [ ] Build success
+- [ ] Phase tasks are complete and their verification passes
 
 ## Completion Criteria
-- [ ] All phases completed
-- [ ] All integration/E2E tests passing (when test skeletons provided)
-- [ ] Acceptance criteria manually verified (when test skeletons are not provided)
-- [ ] Design Doc acceptance criteria satisfied
-- [ ] Staged quality checks completed (zero errors)
-- [ ] All tests pass
-- [ ] Necessary documentation updated
-- [ ] User review approval obtained
 
-## Progress Tracking
-### Phase 1
-- Start: YYYY-MM-DD HH:MM
-- Complete: YYYY-MM-DD HH:MM
-- Notes: [Any special remarks]
+- [ ] Every Design Doc obligation needed for implementation is covered by at least one task
+- [ ] Every task cites each directly constraining governing section and its applicable ACs
+- [ ] Every task produces a repository implementation outcome required by the Design Doc
+- [ ] Dependencies permit execution in the listed order
+- [ ] Verification is executable from repository artifacts or the task's own output
+- [ ] Task verification passes and the cited acceptance criteria are satisfied
 
-### Phase 2
-- Start: YYYY-MM-DD HH:MM
-- Complete: YYYY-MM-DD HH:MM
-- Notes: [Any special remarks]
+## Progress Notes
 
-## Notes
-[Special notes, reference information, important points, etc.]
+[Record execution-relevant discoveries only when they change task order, scope, or verification.]

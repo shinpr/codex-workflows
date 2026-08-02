@@ -1,6 +1,6 @@
 interface:
   display_name: "recipe-implement"
-  short_description: "Requirements to deployment lifecycle"
+  short_description: "Requirements to verified implementation"
   default_prompt: "Use $recipe-implement to start implementing: "
 
 policy:

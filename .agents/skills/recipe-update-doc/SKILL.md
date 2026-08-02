@@ -7,7 +7,7 @@ description: "Update existing design documents (Design Doc / PRD / ADR) with rev
 
 1. [LOAD IF NOT ACTIVE] `documentation-criteria` — document creation rules and templates
 2. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and workflow flows
-3. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
+3. [LOAD IF NOT ACTIVE] `llm-friendly-context` — document update and review handoffs
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
@@ -15,15 +15,15 @@ description: "Update existing design documents (Design Doc / PRD / ADR) with rev
 
 ## Orchestrator Definition
 
-**Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
+**Core Identity**: Coordinate document updates, perform lightweight routing and status changes directly, and invoke document specialists for semantic authoring and review.
 
-**First Action**: Call `update_plan` with first "Map active rules to this task", Steps 1-6, and final "Verify outputs and rule adherence" before execution. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+**Execution Plan Gate**: Use the active execution plan when one exists. When none exists, create one with first "Map active rules to this task", Steps 1-6, and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
 
 **Execution Protocol**:
-1. **Spawn agents for all work** -- your role is to invoke sub-agents, pass data between them, and report results
+1. Invoke the named author and reviewer for document judgment; perform artifact selection, routing, explicit-answer application, and status updates directly
 2. **Execute update flow**:
-   - Identify target -> Clarify changes -> Update document -> Review -> Consistency check
-   - **[STOP — BLOCKING]** At every `[Stop: ...]` marker -> Present status to user for confirmation. **CANNOT proceed until user explicitly confirms.**
+   - Identify target -> Clarify and classify changes -> converge scope changes -> Update document -> Review -> Consistency check
+   - Ask for missing change intent only when it cannot be recovered from the request and target document; obtain one document approval after review and applicable consistency verification
 3. **Scope**: Complete when updated document receives approval
 
 **CRITICAL**: MUST execute document-reviewer and all stopping points -- each serves as a quality gate for document accuracy.
@@ -32,13 +32,15 @@ ENFORCEMENT: Skipping document-reviewer risks propagating inconsistencies to dow
 ## Workflow Overview
 
 ```
-Target document -> [Stop: Confirm changes]
-                        |
-              technical-designer / technical-designer-frontend / prd-creator (update mode)
+Target document -> Clarify and classify changes
+                        | scope-changing PRD/Design Doc -> requirement-analyzer -> convergence hearing
+                        | ADR or scope-preserving ------------------------------|
+                                                                                 v
+                                      technical-designer / technical-designer-frontend / prd-creator (update mode)
                         | (Design Doc only)
-              code-verifier -> document-reviewer -> [Stop: Review approval]
+              code-verifier -> document-reviewer
                         | (Design Doc only)
-              design-sync -> [Stop: Final approval]
+              design-sync -> [Stop: Document approval]
 ```
 
 ## Scope Boundaries
@@ -46,12 +48,13 @@ Target document -> [Stop: Confirm changes]
 **Included in this skill**:
 - Existing document identification and selection
 - Change content clarification with user
+- Requirement Convergence for scope-changing PRD and Design Doc updates
 - Document update with appropriate agent (update mode)
 - Document review with document-reviewer
 - Consistency verification with design-sync (Design Doc only)
 
 **Out of scope** (redirect to appropriate skills):
-- New requirement analysis -> $recipe-design
+- New document design -> $recipe-design
 - Work planning or implementation -> $recipe-plan or $recipe-task
 
 **Responsibility Boundary**: This skill completes with updated document approval.
@@ -92,23 +95,24 @@ Read the document and determine its layer from content signals:
 - **Minor changes** (clarification, typo fix, small scope adjustment): Update the existing ADR file
 - **Major changes** (decision reversal, significant scope change): Create a new ADR that supersedes the original
 
-### Step 3: Change Content Clarification [Stop]
+### Step 3: Change Content Clarification
 
-**[STOP — BLOCKING]** Present change summary to user for confirmation.
-**CANNOT proceed until user explicitly confirms.**
+Derive the sections, reason, and expected outcome from the user request and target document. Ask only for a missing item that changes the requested outcome or update classification.
 
-Ask the user to clarify what changes are needed:
-- What sections need updating
-- Reason for the change (bug fix findings, spec change, review feedback, etc.)
-- Expected outcome after the update
+After confirmation, classify the update:
+- ADR: `convergence: N/A`.
+- Scope-preserving PRD or Design Doc update: the outcome, buildable requirements, and exclusions remain unchanged. Preserve the existing convergence record; when none exists, use the eligible update N/A value.
+- Scope-changing PRD or Design Doc update: the outcome, buildable requirements, or exclusions change. Load `requirement-convergence`, spawn requirement-analyzer with the document's current requirements plus the confirmed changes as self-contained input, and run the hearing on fields below `ready`. Continue when all four fields are `ready` or user-approved `weak-but-explicit`.
 
-Confirm understanding of changes with user before proceeding.
+Retain the classification for routing and, when scope-changing, the confirmed `convergence` object for Steps 4 and 5.
 
 ### Step 4: Document Update
 
-Spawn [Update Agent from Step 2] agent: "Operation Mode: update. Existing Document: [path from Step 1]. Changes Required: [Changes clarified in Step 3]. Update the document to reflect the specified changes. Add change history entry."
+For PRD or Design Doc, spawn [Update Agent from Step 2]: "Operation Mode: update. Existing Document: [path from Step 1]. Changes Required: [Changes clarified in Step 3]. confirmed_requirement_context: [confirmed convergence for scope-changing updates | existing carrier or eligible N/A for scope-preserving updates]. Update the document to reflect the specified changes. Add change history entry."
 
-### Step 5: Document Review [Stop]
+For ADR, spawn the update agent with the existing path and confirmed changes; Requirement Convergence is outside this update.
+
+### Step 5: Document Review
 
 For Design Doc updates, first verify the updated document against code:
 
@@ -117,47 +121,41 @@ Spawn code-verifier agent: "Verify the updated Design Doc against current code. 
 **Store output as**: `$CODE_VERIFICATION_OUTPUT`
 
 For Design Doc updates:
-Spawn document-reviewer agent: "Review the following updated document. doc_type: DesignDoc. review_context: update. target: [path from Step 1]. mode: composite. code_verification: $CODE_VERIFICATION_OUTPUT. Focus on: Consistency of updated sections with rest of document, no contradictions introduced by changes, completeness of change history."
+Spawn document-reviewer agent: "Review the following updated document. doc_type: DesignDoc. review_context: update. target: [path from Step 1]. mode: composite. confirmed_requirement_context: [Step 3 convergence or existing carrier/N/A]. code_verification: $CODE_VERIFICATION_OUTPUT. Focus on: Consistency of updated sections with rest of document, no contradictions introduced by changes, completeness of change history."
 
-For PRD or ADR updates:
-Spawn document-reviewer agent: "Review the following updated document. doc_type: [PRD or ADR]. target: [path from Step 1]. mode: composite. Focus on: Consistency of updated sections with rest of document, no contradictions introduced by changes, completeness of change history."
+For PRD updates, spawn document-reviewer with the target, `mode: composite`, and `confirmed_requirement_context` from Step 3. For ADR updates, pass the target and `mode: composite` without requirement-convergence context. Review consistency, contradictions, and change history.
 
 **Store output as**: `$STEP_5_OUTPUT`
 
 **On review result**:
-- `approved` -> **[STOP — BLOCKING]** Present review results to the user and proceed to Step 6 only after explicit approval
-- `approved_with_conditions` -> Apply the Approval Status Vocabulary conditions handling, then **[STOP — BLOCKING]** present the result and proceed to Step 6 only after explicit approval
-- `needs_revision` -> Apply Review Revision Convergence (`author`: [Update Agent from Step 2]; `artifact`: target document); on `progression`, follow the matching approved branch
-- `rejected` -> **[STOP — BLOCKING]** Present the exact blocking findings and required user decision, then wait
+- `approved` -> proceed to Step 6
+- `approved_with_conditions` or `needs_revision` -> Apply Review Resolution with the update agent, then review the updated document
+- `rejected` -> Apply Orchestrator Escalation Resolution. Continue after self-resolution; ask the user only when that procedure reaches a user-decision condition
 
-### Step 6: Consistency Verification (Design Doc only) [Stop]
+### Step 6: Consistency Verification and Approval
 
-**[STOP — BLOCKING]** Present consistency verification results to user for final approval.
-**CANNOT proceed until user explicitly confirms.**
-
-**Skip condition**: Document type is PRD or ADR -> Proceed to completion.
+For PRD or ADR, skip design-sync and present the reviewed document for user approval.
 
 For Design Doc, spawn design-sync agent: "Verify consistency of the updated Design Doc with other design documents. Updated document: [path from Step 1]"
 
 **On consistency result**:
-- No conflicts -> Present result to user for final approval
-- Conflicts detected -> Present conflicts to user:
-  - A: Return to Step 4 to resolve conflicts in this document
-  - B: End and address conflicts separately
+- No conflicts -> Present the reviewed and consistency-checked document for user approval
+- Conflicts detected -> Apply Orchestrator Escalation Resolution using both governing documents. Return to the responsible author when one document can be corrected without changing an approved decision; ask the user only when a governing decision must change
 
 ## Error Handling
 
 | Error | Action |
 |-------|--------|
 | Target document not found | Report and end (suggest $recipe-design instead) |
-| Sub-agent update fails | Log failure, present error to user, retry once |
-| Review Revision Convergence returns `non_convergent` | Stop the loop, present the exact unresolved findings and attempted corrections, then wait |
-| design-sync detects conflicts | Present to user for resolution decision |
+| Sub-agent update fails or returns an unusable result | Apply Orchestrator Escalation Resolution |
+| Review Resolution requires a user-owned decision | Apply Orchestrator Escalation Resolution |
+| design-sync detects conflicts | Apply Orchestrator Escalation Resolution against the governing sources |
 
 ## Completion Criteria
 
 - [ ] Identified target document
-- [ ] Clarified change content with user
+- [ ] Resolved change content from the request and target document, asking only when material intent was missing
+- [ ] Classified the update and converged scope-changing PRD/Design Doc requirements
 - [ ] Updated document via appropriate agent (update mode)
 - [ ] Ran code-verifier before document-reviewer for Design Doc updates
 - [ ] Spawned document-reviewer and addressed feedback

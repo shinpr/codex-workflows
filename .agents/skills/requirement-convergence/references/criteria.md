@@ -10,9 +10,9 @@ Record one observable result, not a feature list. A proposed requirement that ca
 
 | Layer | Meaning | Buildable now |
 |-------|---------|---------------|
-| `current-state` | Behavior that already exists | No; it is evidence |
-| `desired-future` | Change the user has chosen | Yes |
-| `speculative` | Idea raised without a decision | No; record a deferral reason |
+| `current-state` | Behavior that already exists | Evidence only |
+| `desired-future` | Change the user has chosen | Current scope |
+| `speculative` | User-raised idea deferred from current scope | Deferred; record a reason |
 
 Ask when the layer is unclear. Treating all three as equally binding turns exploration into accidental scope.
 
@@ -20,7 +20,7 @@ Ask when the layer is unclear. Treating all three as equally binding turns explo
 
 Present cost and its unknowns before asking what to exclude. Record exclusions in the user's wording. Set `userAgreedNone` only when the user considered exclusions and chose none.
 
-An adjacent capability noticed by an agent is a candidate question, not a non-goal.
+An agent-proposed capability remains a question until the user accepts or excludes it. Only then does it enter the record as a user decision.
 
 ## cost
 
@@ -35,27 +35,27 @@ Estimate cost from shallow structural inspection:
 | Verification support | Existing harnesses and representative test boundaries |
 | Unknowns | Facts shallow inspection cannot establish |
 
-File count is supporting evidence, not a scale rule: languages and architectures distribute the same change differently. Do not read implementation behavior deeply or produce person-day estimates here; design and planning refine the estimate later.
+Keep inspection shallow and express cost as a rough band; design and planning refine behavior and effort later.
 
 Mark each supporting item `observed` or `inferred`, with its source. Keep unresolved facts in `unknowns`. Record one band:
 
 | Band | Meaning |
 |------|---------|
-| `low-reversible` | Additive, isolated, flagged, or easily removed |
-| `medium` | Coordinates across a boundary or makes reversal affect related work |
-| `high-irreversible` | Changes a public contract, persisted data shape, dependency platform, or staged migration |
+| `low` | Existing support makes the change localized and straightforward |
+| `moderate` | The change coordinates across a boundary or adds notable supporting work |
+| `high` | The change affects a public contract, persisted data shape, or dependency platform |
 
-An unknown that could raise the band is a question, not permission to assume the lower band.
+Treat an unknown that could raise the band as a question, and set the band from established evidence.
 
 ## Challenge Intensity
 
 | Cost band | Response |
 |-----------|----------|
-| `low-reversible` | Record and accept when the fields converge |
-| `medium` | Present the cost and one lower-cost alternative |
-| `high-irreversible` | Present the trade-off and require the user's explicit choice before design |
+| `low` | Record and accept when the fields converge |
+| `moderate` | Present the cost and one lower-cost alternative |
+| `high` | Present the trade-off and require the user's explicit choice before design |
 
-The goal is a decision proportionate to cost, not resistance to user intent.
+The goal is a cost-proportionate decision that preserves user intent. Cost selects challenge intensity; documentation-criteria Structural Scale independently selects the workflow.
 
 ## Solution-in-Disguise Test
 

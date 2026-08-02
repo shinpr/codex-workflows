@@ -8,6 +8,18 @@
 ### Background
 [Why is this feature needed? What problem does it solve?]
 
+## Product Context (Non-binding)
+
+Record context that helps the user judge product value. Use `user-provided`, `observed`, `inferred`, or `unknown` as the evidence state. Unknown context remains valid unless the user must decide it to define the outcome or an acceptance criterion. Downstream design and planning consume only requirements or decisions that explicitly cite this context.
+
+| Dimension | Current Understanding | Evidence State | Source |
+|-----------|-----------------------|----------------|--------|
+| Business value | [Value or unknown] | [state] | [user statement / artifact / observation / N/A] |
+| User value | [Value or unknown] | [state] | [source] |
+| UX clarity | [Known interaction evidence or unknown] | [state] | [source] |
+| Success signal | [Known signal or unknown] | [state] | [source] |
+| Feasibility / rough effort | [Known constraint or rough assessment] | [state] | [source] |
+
 ## User Stories
 
 ### Primary Users
@@ -21,9 +33,7 @@ So that [expected value/benefit]
 ```
 
 ### Use Cases
-1. [Specific usage scenario 1]
-2. [Specific usage scenario 2]
-3. [Specific usage scenario 3]
+[Add a use case when it changes a requirement or acceptance criterion; otherwise N/A]
 
 ## Functional Requirements
 
@@ -31,87 +41,62 @@ So that [expected value/benefit]
 - [ ] Requirement 1: [Detailed description]
   - AC-001: [Acceptance criteria - Given/When/Then format or measurable standard]
   - AC-002: [Acceptance criteria]
-- [ ] Requirement 2: [Detailed description]
-  - AC-003: [Acceptance criteria]
-- [ ] Requirement 3: [Detailed description]
-  - AC-004: [Acceptance criteria]
+[Repeat only for additional confirmed requirements]
 
 ### Future / Out of Scope
 
-| Capability | Disposition | Origin | Reason |
-|---|---|---|---|
-| [Capability excluded during requirement convergence] | future / out-of-scope | user / analysis | [Why it is not required for the current outcome] |
+| Capability | Disposition | Reason |
+|---|---|---|
+| [Capability the user decided to exclude during requirement convergence] | future / out-of-scope | [Why it is not required for the current outcome] |
 
 If the user considered exclusions and chose none, record: `User confirmed no non-goals.`
+Reverse-engineered PRDs mark convergence-derived entries N/A because code contains no user decision. A scope-preserving update may retain existing convergence content or use the update N/A value when none exists.
 
-## Non-Functional Requirements
+## Non-Functional Requirements (When They Constrain the Current Outcome)
 
-### Performance
-- Response Time: [Target value]
-- Throughput: [Target value]
-- Concurrency: [Target value]
+| Area | Requirement | Evidence / Source |
+|------|-------------|-------------------|
+| [performance / reliability / security / accessibility / other] | [Confirmed constraint or measurable acceptance condition] | [Source] |
 
-### Reliability
-- Availability: [Target value]
-- Error Rate: [Target value]
-
-### Security
-- [Security requirements details]
-
-### Scalability
-- [Considerations for future scaling]
-
-### Accessibility (when feature includes UI)
-- Compliance standard: [Default: WCAG 2.1 AA (use organization standard if available)]
-- Target assistive technologies: [Screen reader, keyboard operation, voice control, etc.]
-- Platform requirements: [e.g., app store review requirements]
-- Known constraints: [e.g., external library limitations]
+Use `N/A — no confirmed non-functional requirement changes the current outcome` when none apply. General quality preferences remain non-binding context until the user approves them as product requirements.
 
 ## Success Criteria
 
 ### Converged Outcome
 
-[The one observable result from requirement convergence]
+[The one observable result from requirement convergence | N/A — reverse-engineered as-is document | N/A — requirement convergence not part of this update]
 
-### Quantitative Metrics
-1. [Measurable success metric 1]
-2. [Measurable success metric 2]
-3. [Measurable success metric 3]
+### Success Evidence
 
-### Qualitative Metrics
-1. [User experience metric 1]
-2. [User experience metric 2]
+| Signal | Method | Evidence State | Source |
+|--------|--------|----------------|--------|
+| [Quantitative or qualitative signal] | [How it can be observed, or unknown] | [user-provided / observed / inferred / unknown] | [Source] |
 
-### UI Quality Metrics (when feature includes UI)
-1. [Key operation completion rate / error recovery rate / retry success rate]
-2. [Accessibility audit target score]
+Unknown success evidence is valid product context. It becomes a binding metric only when the user approves it as a requirement or acceptance criterion.
 
-## Technical Considerations
+## Product Feasibility Context
 
 ### Dependencies
-- [Dependencies on existing systems]
-- [Dependencies on external services]
+- [Dependency that materially affects feasibility, or unknown]
 
 ### Constraints
-- [Technical constraints]
-- [Resource constraints]
+- [Constraint that materially affects product scope or rough effort, or unknown]
 
 ### Assumptions
-- [Prerequisite requiring validation 1]
-- [Prerequisite requiring validation 2]
+- [Assumption with evidence state and source]
 
 ### Risks and Mitigation
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|
-| [Risk 1] | High/Medium/Low | High/Medium/Low | [Countermeasure] |
-| [Risk 2] | High/Medium/Low | High/Medium/Low | [Countermeasure] |
+| [Material product risk, or N/A] | High/Medium/Low | High/Medium/Low/Unknown | [Current response or unknown] |
 
 ## Undetermined Items
 
-- [ ] [Question 1]: [Description of options or impacts]
-- [ ] [Question 2]: [Description of options or impacts]
+| Item | Kind | Why It Matters | Evidence State | Next Handling |
+|------|------|----------------|----------------|---------------|
+| [Question or unknown] | binding-decision / contextual | [Affected outcome, requirement, or context] | [state] | [Exact user decision needed before approval / retain as unknown] |
 
-*Discuss with user until this section is empty, then delete after confirmation*
+Only a `binding-decision` item prevents approval of the requirement or acceptance criterion it controls. Contextual items may remain unknown.
 
 ## Appendix
 

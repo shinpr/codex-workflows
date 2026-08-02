@@ -8,18 +8,19 @@ description: "Execute from codebase-scoped analysis to frontend design document 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
 1. [LOAD IF NOT ACTIVE] `documentation-criteria` -- document quality standards
-2. [LOAD IF NOT ACTIVE] `requirement-convergence` -- outcome, exclusion, and rough-cost convergence before design
-3. [LOAD IF NOT ACTIVE] `implementation-approach` -- implementation methodology
-4. [LOAD IF NOT ACTIVE] `external-resource-context` -- external resource hearing and lookup
-5. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- clear prompts, handoffs, and generated artifacts
+2. [LOAD IF NOT ACTIVE] `implementation-approach` -- design convergence and verification strategy
+3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and review resolution
+4. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- document and review handoffs
+
+Load `external-resource-context` in Step 4 only when a named external source is required for the current design or verification decision.
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
 ## Orchestrator Definition
 
-**Core Identity**: "I am not a worker. I am an orchestrator."
+**Core Identity**: Coordinate frontend design, perform lightweight workflow operations directly, and invoke specialists for design judgment and review.
 
-**Execution Plan Gate**: Call `update_plan` with first "Map active rules to this task", the frontend design steps, and final "Verify outputs and rule adherence" before scope bootstrap. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
+**Execution Plan Gate**: Use the active execution plan when one exists. When none exists, create one with first "Map active rules to this task", the frontend design steps, and final "Verify outputs and rule adherence" before scope bootstrap. While work remains, keep exactly one step `in_progress`; after final verification evidence exists, mark every step `completed`.
 
 **Execution Method**:
 - Scope bootstrap -> performed by the orchestrator as a file-location pass
@@ -39,14 +40,14 @@ Orchestrator spawns agents and passes structured data between them.
 - Scope bootstrap: locating seed files so codebase-analyzer receives a populated input
 - Codebase analysis with codebase-analyzer (entry point of the frontend design phase)
 - Scope confirmation with the user, grounded in codebase-analyzer findings
-- External resource hearing with external-resource-context
+- Focused external resource hearing when a current design decision requires it
 - UI fact gathering with ui-analyzer
 - UI Specification creation with ui-spec-designer (prototype code inquiry included)
-- ADR creation (if architecture changes, new technology, or data flow changes)
+- ADR creation when documentation-criteria identifies a durable technical decision
 - Design Doc creation with technical-designer-frontend
 - Document review with document-reviewer
 
-**Responsibility Boundary**: This skill completes with frontend design document (UI Spec/ADR/Design Doc) approval. Work planning and beyond are outside scope.
+**Responsibility Boundary**: This skill completes with approval of the UI Spec, Design Doc, and its preceding ADR when required. Work planning and beyond are outside scope.
 
 Requirements: $ARGUMENTS
 
@@ -60,21 +61,21 @@ Build a lightweight seed for codebase-analyzer. This is a file-location pass onl
 3. Bucket matches as `source`, `test`, `docs`, and `generated_or_vendor`. Exclude `generated_or_vendor` from the seed.
 4. Rank matches in this order: path or filename match, component/route/hook/API symbol match, source content match, tests for selected source files, docs for selected source files.
 5. Collect matched frontend and shared file paths as `affectedFiles`, and keep a one-line `seedRationale` for each file.
-6. If the search returns no frontend or shared source files, ask the user which files, modules, routes, or components the design targets. Use the user's answer as `affectedFiles`. If the user confirms no related code exists, confirm whether to proceed with a new-surface design before invoking codebase-analyzer.
-7. If the ranked seed has more than 20 files, present the top-ranked candidates and ask the user to narrow the seed before invoking codebase-analyzer.
+6. If the search returns no frontend or shared source files, expand once to likely route, component, and shared-state boundaries plus representative siblings. An empty direct-match set is valid for a new surface; pass the relevant boundary evidence to codebase-analyzer. Ask the user only when the requested UI target still cannot be identified from the request and repository.
+7. For a broad match set, pass the highest-signal files and their containing responsibility boundaries. File count does not create a user stop.
 
 Construct `requirement_analysis` with:
 - `affectedFiles`: the Step 1 seed
 - `affectedLayers`: `["frontend"]` plus `shared` when shared files are included
-- `scale`: provisional Structural Scale from the apparent outcomes, responsibility boundaries, and migration needs; file count is supporting evidence
+- `scale`: provisional Structural Scale from the apparent outcomes, responsibility boundaries, and durable design decisions; affected paths are supporting evidence
 - `purpose`: the user requirements
 - `confidence`: `confirmed` when target files are explicit or the ranked seed is focused; otherwise `provisional`
-- `adrRequired`: `true` when the request changes component architecture, state ownership, routing architecture, data flow, external dependencies, or shared cross-boundary contracts; otherwise `false`
+- `adrRequired`: apply the documentation-criteria durable-decision conditions; local component, state, routing, or data-flow changes that follow an accepted design remain in the Design Doc
 - `adrReason`: the specific matched ADR condition, or `null`
 - `prdRequired`: `true` when scale is `large` and no existing PRD covers the scope; otherwise `false`
 - `scopeDependencies`: questions whose answers can change the target files, scale, UI surface, or document type
 - `questions`: user-facing questions needed before design
-- `documentTypeRationale`: why ADR, Design Doc, or both are needed from the provisional seed
+- `documentTypeRationale`: whether the Design Doc requires a preceding ADR and the governing ADR condition
 - `seedRationale`: one-line reason for each file in `affectedFiles`
 - `technicalConsiderations`: include any obvious user-stated constraints, risks, and dependencies; use empty lists only when none are stated
 
@@ -82,13 +83,16 @@ Construct `requirement_analysis` with:
 Spawn codebase-analyzer agent: "Analyze the existing codebase to provide evidence for frontend Design Doc creation. Focus on existing implementations, state paths, API integrations, and constraints the design should respect. requirement_analysis: [Step 1 requirement_analysis]. requirements: [original user requirements]. layer: frontend. target_paths: [Step 1 affectedFiles]. focus_areas: component hierarchy, state management, UI interactions, data fetching."
 
 ### Step 3: Scope Confirmation
-After codebase-analyzer returns, build and judge the requirement-convergence record from the user request and returned scope facts. Estimate rough cost from those facts, then run the hearing on fields below `ready` before UI or design work.
+After codebase-analyzer returns, determine whether the Design Doc also requires an ADR:
+1. Locate a related PRD and read its Converged Outcome, MVP scope, Future / Out of Scope, and open requirement fields. If the related PRD is ambiguous, ask the user to select or provide its path, or confirm none exists, before continuing.
+2. When those fields match the current request and returned scope facts, use the PRD path as the current carrier and proceed directly to scope confirmation.
+3. When no current carrier exists, load `requirement-convergence`, build and judge its record from the request and scope facts, estimate rough cost, and run the hearing on fields below `ready`. Mark an existing but incomplete or scope-mismatched PRD for update; otherwise mark the carrier as absent.
 
 Present the frontend design scope to the user:
 - Target files/modules: `analysisScope.filesAnalyzed` and directly relevant components, routes, or modules
 - Affected layers: inferred from `analysisScope.categoriesDetected`, `focusAreas`, and paths
-- Recommended document path: ADR, Design Doc, or both, with `documentTypeRationale`, `adrRequired`, and `adrReason`
-- PRD status: whether `prdRequired` is true, whether an existing PRD path is available, and what decision is needed before UI/design work
+- Recommended document path: Design Doc alone or ADR followed by Design Doc, with `documentTypeRationale`, `adrRequired`, and `adrReason`
+- PRD status: whether `prdRequired` is true and whether the convergence carrier is current, requires update, or is absent
 - Unknowns/assumptions: `limitations` and unresolved risks
 - Questions before design: scope questions that change the UI surface, design target, or scale, including technical wording whose mandatory/candidate status is outcome-relevant and ambiguous
 
@@ -101,64 +105,49 @@ Ask the user to choose one:
 
 If `prdRequired` is true and the user neither provides a PRD path nor explicitly approves proceeding without a PRD, stop. This recipe does not create PRDs.
 
-After confirmation, set the final scale from documentation-criteria Structural Scale, recompute `adrRequired`, `adrReason`, `prdRequired`, `confidence`, and `documentTypeRationale`, then carry the complete confirmed requirement context and compact `convergence` object into UI and design creation.
+After confirmation, set the final scale from documentation-criteria Structural Scale and recompute `adrRequired`, `adrReason`, `prdRequired`, `confidence`, and `documentTypeRationale`. A current PRD carrier is passed by path. Carry the compact `convergence` object only when a Design Doc has no current PRD carrier.
 
-ADR-only path: run Steps 1, 2, 3, and 8. Also run Step 4 only when the ADR depends on external frontend resources, and Step 6 only when the ADR depends on existing UI facts beyond Step 2. Skip Steps 5 and 7.
-
-Design Doc path: run Steps 1 through 8.
-
-Both ADR and Design Doc path: run the Design Doc path, creating the ADR before the Design Doc in Step 8.
+Run Steps 1 through 8. When an ADR is required, create it before the Design Doc in Step 8.
 
 **[STOP -- BLOCKING]** Wait for user confirmation before proceeding.
 
+After confirmation, when Step 3 marked an existing PRD for update, spawn prd-creator in update mode with that PRD path and the confirmed `convergence` object. Review the updated PRD with document-reviewer using its path as `target`, then resolve findings through Review Resolution. After the review permits approval, present the updated PRD for user approval. Continue with its path as the carrier after approval.
+
+**[STOP -- BLOCKING when a PRD was updated]** Wait for user approval of the updated PRD.
+
 ### Step 4: External Resource Hearing
-For Design Doc output, run this step before UI fact gathering. For ADR-only output, run it only when the ADR depends on external frontend resources.
-
-After scope confirmation, run the frontend domain hearing protocol from `external-resource-context`.
-
-Persist project-level access methods in `docs/project-context/external-resources.md`. When the file already exists, ask whether to keep current axes, refresh all axes, or refresh selected axes.
-
-**[STOP -- BLOCKING]** Complete external resource hearing before UI fact gathering.
-Proceed to UI fact gathering after project-level external resources are written or the update is explicitly skipped.
+After scope confirmation, identify whether a current UI or verification decision requires evidence unavailable from the repository, supplied artifacts, or a recorded resource. When it does, run the focused hearing from `external-resource-context` for that exact axis and persist its access method. Ask the user only when the missing access method controls the design decision. Otherwise record no external-resource dependency and continue.
 
 ### Step 5: Prototype Inquiry
-For Design Doc output only. Skip this step for ADR-only output.
-
-After external resource hearing completes, ask the user about prototype code:
-
-**Ask the user**: "Do you have prototype code for this feature? If so, please provide the path to the code. The prototype will be placed in `docs/ui-spec/assets/` as reference material for the UI Spec."
-
-**[STOP -- BLOCKING]** Wait for user response about prototype code availability.
-**CANNOT proceed until user responds.**
+Use prototype code when the user supplied it or the confirmed UI target references it. Ask for a prototype path only when the UI target cannot otherwise be determined and the answer would change the UI specification. In all other cases set `prototype_path` to unavailable and continue.
 
 ### Step 6: UI Fact Gathering Phase
-For Design Doc output, run this step before UI Specification creation. For ADR-only output, run it only when the ADR decision depends on existing UI facts beyond the Step 2 codebase analysis.
+Use the prototype path as an input when one was provided; otherwise set `prototype_path` to unavailable.
 
-When Step 5 ran, use the prototype path as an input when one was provided. When Step 5 was skipped, set `prototype_path` to unavailable.
-
-Spawn ui-analyzer agent: "Gather UI facts for frontend design. requirement_analysis: [confirmed requirement context]. requirements: [original user requirements]. target_paths: [confirmed frontend affected files and directories]. target_components: [frontend target components when known]. ui_spec_path: [path if an existing UI Spec covers this feature]. prototype_path: [path if provided]. Read docs/project-context/external-resources.md, resolve relevant UI external resources through declared access methods, and analyze component structure, props patterns, CSS layout, state displays, accessibility, generated artifacts, and candidate write set."
+Spawn ui-analyzer agent: "Gather UI facts for frontend design. requirement_analysis: [confirmed requirement context]. requirements: [original user requirements]. target_paths: [confirmed frontend affected files and directories]. target_components: [frontend target components when known]. ui_spec_path: [path if an existing UI Spec covers this feature]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected in Step 4, or []]. Analyze component structure, props patterns, CSS layout, sourced state displays, accessibility, generated artifacts, and candidate write set."
 
 ### Step 7: UI Specification Phase
-For Design Doc output only. Skip this step for ADR-only output.
-
 After UI fact gathering completes, create the UI Specification:
-- Spawn ui-spec-designer agent: "Create UI Spec [from PRD at [path] if PRD exists]. Requirements: [original user requirements]. Confirmed scope and convergence exclusions: [Step 3 confirmed scope, nonGoals, and speculative requirements]. Codebase analysis: [JSON from codebase-analyzer]. UI analysis: [JSON from ui-analyzer]. [Prototype code is at [user-provided path]. Place prototype in docs/ui-spec/assets/{feature-name}/ | Prototype path unavailable; proceed from PRD/requirements and UI analysis.] Fill External Resources Used from docs/project-context/external-resources.md and feature identifiers."
+- Spawn ui-spec-designer agent: "Create UI Spec [from PRD at [path] if PRD exists; read its binding requirements and only Product Context entries they explicitly cite]. Requirements: [original user requirements]. Confirmed scope and convergence exclusions: [Step 3 confirmed scope, nonGoals, and speculative requirements]. Codebase analysis: [JSON from codebase-analyzer]. UI analysis: [JSON from ui-analyzer]. [Prototype code is at [user-provided path]. Place prototype in docs/ui-spec/assets/{feature-name}/ | Prototype path unavailable; proceed from PRD/requirements and UI analysis.] External resource refs: [ui_analysis.externalResources.selectedRefs]."
 - Spawn document-reviewer agent: "doc_type: UISpec target: [ui-spec path] Review for consistency and completeness"
+- Resolve `approved_with_conditions` or `needs_revision` through Review Resolution with ui-spec-designer, then review the updated UI Spec. Route governing-source contradictions through Orchestrator Escalation Resolution before the user approval stop.
 
 **[STOP -- BLOCKING]** Present UI Spec for user approval.
 **CANNOT proceed until user explicitly approves the UI Spec.**
 
 ### Step 8: Design Document Creation Phase
 Create appropriate design documents according to confirmed scope and scale:
-- For ADR: Spawn technical-designer-frontend agent: "document_to_create: ADR. Create ADR for [technical decision]. Requirements: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Codebase Analysis: [JSON from codebase-analyzer]. UI Analysis: [JSON from ui-analyzer, only if Step 6 ran]. Present at least two alternatives with trade-offs."
-- For Design Doc: Spawn technical-designer-frontend agent: "document_to_create: DesignDoc. Create Design Doc based on requirements. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including convergence, confirmed scope, user answers, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Codebase Analysis: [JSON from codebase-analyzer]. UI Analysis: [JSON from ui-analyzer]. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec. Fill External Resources Used from docs/project-context/external-resources.md and feature identifiers. Record only alternatives actually considered by Design Convergence; `None` is valid."
-  - When both ADR and Design Doc are required, create the ADR first. After the ADR path is available, create the Design Doc with `document_to_create: DesignDoc` and `adr_path: [ADR path]`; the Design Doc must reference the ADR decision.
-- For Design Docs only, spawn code-verifier agent: "Verify Design Doc against code. doc_type: design-doc. document_path: [document path]. verbose: false."
-- Review each created document:
-  - ADR: Spawn document-reviewer agent: "Review the ADR for consistency and completeness. doc_type: ADR. target: [ADR path]. mode: composite. codebase_analysis: [JSON from codebase-analyzer]. ui_analysis: [JSON from ui-analyzer, when available]."
-  - Design Doc: Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. review_context: creation. target: [Design Doc path]. mode: composite. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. codebase_analysis: [JSON from codebase-analyzer]. ui_analysis: [JSON from ui-analyzer]. code_verification: [JSON from code-verifier]."
+- When ADR is required: Spawn technical-designer-frontend agent: "document_to_create: ADR. Create ADR for [technical decision]. Requirements: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including confirmed scope, confirmed scale, adrRequired, adrReason, prdRequired, PRD path or explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Codebase Analysis: [JSON from codebase-analyzer]. UI Analysis: [JSON from ui-analyzer]. Present credible alternatives with trade-offs." Review the created ADR with document-reviewer using `doc_type: ADR`, `target: [ADR path]`, `mode: composite`, and the codebase and UI analysis outputs. Resolve findings through Review Resolution, then present it for user approval and record its status as `Accepted`.
 
-**[STOP -- BLOCKING]** Present the created design documents and any recorded trade-offs, then obtain user approval.
+  **[STOP -- BLOCKING when an ADR was created]** Wait for user approval of the ADR before creating the Design Doc.
+
+- For Design Doc: Spawn technical-designer-frontend agent: "document_to_create: DesignDoc. Create Design Doc based on requirements. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3, including the current PRD carrier path or convergence when no carrier exists, confirmed scope, user answers, confirmed scale, adrRequired, adrReason, prdRequired, explicit no-PRD approval when applicable, documentTypeRationale, scopeDependencies, questions, and seedRationale]. Follow `document_to_create` for this invocation; `documentTypeRationale` describes the overall confirmed path. Codebase Analysis: [JSON from codebase-analyzer]. UI Analysis: [JSON from ui-analyzer]. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec. External resource refs: [ui_analysis.externalResources.selectedRefs]. Record Direct MVP, failed current constraints or Material Risks, necessary additions, and subtraction evidence. Record only larger alternatives actually considered; `None` is valid."
+  - When an ADR is required, create the Design Doc with `document_to_create: DesignDoc` and `adr_path: [accepted ADR path]`; the Design Doc must reference the accepted ADR decision.
+- Spawn code-verifier agent: "Verify Design Doc against code. doc_type: design-doc. document_path: [document path]. verbose: false."
+- Review the Design Doc: Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. review_context: creation. target: [Design Doc path]. mode: composite. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. codebase_analysis: [JSON from codebase-analyzer]. ui_analysis: [JSON from ui-analyzer]. code_verification: [JSON from code-verifier]."
+- Resolve `approved_with_conditions` or `needs_revision` through Review Resolution with technical-designer-frontend, then review the updated Design Doc. Route governing-source contradictions through Orchestrator Escalation Resolution. Reach the user approval stop after review succeeds.
+
+**[STOP -- BLOCKING]** Present the Design Doc and its recorded trade-offs, then obtain user approval.
 **CANNOT proceed until user explicitly approves the design document.**
 
 ENFORCEMENT: Every stop point MUST be respected. Skipping user approval invalidates the entire workflow.
@@ -171,7 +160,7 @@ ENFORCEMENT: Every stop point MUST be respected. Skipping user approval invalida
 - [ ] Confirmed the frontend design scope with the user before UI and design work
 - [ ] External resource hearing completed when applicable
 - [ ] UI analysis completed before Design Doc creation when applicable
-- [ ] UI Specification created and approved for Design Docs
+- [ ] UI Specification created and approved
 - [ ] All documents required by `documentTypeRationale` created and approved
 - [ ] All document reviews passed
 

@@ -1,409 +1,116 @@
-# [Feature Name] Design Document
+# Design Document: [Feature Name]
 
 ## Overview
 
-[Explain the purpose and overview of this feature in 2-3 sentences]
+- Outcome: [confirmed observable result]
+- Scope: [repository responsibility being changed]
+- UI Spec: [path when applicable]
+- Governing ADRs: [paths when applicable]
 
-### Referenced UI Spec (when feature includes frontend)
-- UI Spec path: [docs/ui-spec/xxx-ui-spec.md]
-- Component structure and state design are inherited from UI Spec
+## Requirement Boundary
 
-## Design Summary (Meta)
+- PRD or convergence carrier: [path | embedded record | eligible N/A]
+- Current requirements: [binding requirements implemented by this design]
+- Non-goals: [user-decided exclusions | user confirmed none]
+- Speculative requirements: [deferred items | none]
+- Open requirement fields: [weak-but-explicit item and effect | none]
 
-```yaml
-design_type: "new_feature|extension|refactoring"
-risk_level: "low|medium|high"
-complexity_level: "low|medium|high"
-complexity_rationale: "[Required if medium/high: (1) which requirements/ACs necessitate this complexity, (2) which constraints/risks it addresses]"
-main_constraints:
-  - "[constraint 1]"
-  - "[constraint 2]"
-biggest_risks:
-  - "[risk 1]"
-  - "[risk 2]"
-unknowns:
-  - "[uncertainty 1]"
-  - "[uncertainty 2]"
-```
+Reverse-engineered documents use only `N/A — reverse-engineered as-is document` for convergence and describe existing behavior rather than future requirements.
 
-## Background and Context
+## Acceptance Criteria
 
-### Prerequisite ADRs
+Use the smallest representative set that proves the outcome and material failure boundaries. Each criterion cites its source requirement.
 
-- docs/adr/ADR-XXXX-title.md: [Related decision items]
-- Reference common technical ADRs when applicable
-- ADR placeholders use the repository ADR filename convention: replace `XXXX` with the four-digit ADR number and `title` with the file slug.
+- **AC-001** — **When** [trigger], the system shall [observable result]. Source: [requirement]
+- **AC-002** — **If** [material failure condition], **then** the system shall [observable result]. Source: [requirement]
 
-### External Resources Used
+## Existing Evidence
 
-| Project Resource Label | Feature Identifier | Purpose |
-|------------------------|--------------------|---------|
-| frontend-design-origin | [screen / node / frame / route / story id] | [why this feature uses it] |
-| api-schema-source | [endpoint / operation id / schema name] | [why this feature uses it] |
-| infra-iac-source | [service / module / environment] | [why this feature uses it] |
+Record only evidence that constrains an implementation or verification decision.
 
-### Requirement Convergence
-
-- PRD path: [docs/prd/xxx-prd.md | N/A]
-- Outcome: [observable result | N/A — stored in PRD]
-- Non-goals: [user-authored exclusions | user confirmed none | N/A — stored in PRD]
-- Speculative requirements: [deferred items with reason | None | N/A — stored in PRD]
-- Open fields (`weak-but-explicit`): [field, recorded value, and why it remains open | None]
-
-### Agreement Checklist
-
-#### Scope
-- [ ] [Features/components to change]
-- [ ] [Features to add]
-
-#### Non-Scope (Explicitly not changing)
-- [ ] [Features/components not to change]
-- [ ] [Existing logic to preserve]
-
-#### Constraints
-- [ ] Parallel operation: [Yes/No]
-- [ ] Backward compatibility: [Required/Not required]
-- [ ] Performance measurement: [Required/Not required]
-
-#### Applicable Standards
-- [ ] [Standard/convention] `[explicit]` - Source: [config / rule file / documentation path]
-- [ ] [Observed pattern] `[implicit]` - Evidence: [file paths] - Confirmed: [Yes/No]
-
-#### Assumed Behaviors
-Behavioral or factual claims the design relies on, such as framework or library defaults, capabilities assumed already provided, or features assumed already implemented. Use stable IDs (`AB-1`, `AB-2`, ...). `Confirmed: No` means evidence has not been located yet; when evidence search disproves the claim, revise the design to match verified behavior. Mark this subsection N/A when zero applicable claims exist.
-
-- [ ] AB-1 [Claim, e.g. "framework X defaults to Y" or "service already returns Z"] - Evidence: [file:line / command output / authoritative doc] - Confirmed: Yes
-- [ ] AB-2 [Claim] - Evidence search: [searched files / commands / docs] - Confirmed: No
-
-#### Quality Assurance Mechanisms
-How quality is enforced in the change area. Each item is either adopted for this change or noted with a reason.
-
-- [ ] [Tool/check name] — Enforces: [what] — Config: [path] — Covers: [file paths/patterns or "project-wide"] — Status: `adopted` / `noted (reason)`
-- [ ] [Domain-specific constraint] — Enforces: [what] — Source: [path] — Covers: [file paths/patterns or "project-wide"] — Status: `adopted` / `noted (reason)`
-
-### Problem to Solve
-
-[Specific problems or challenges this feature aims to address]
-
-### Current Challenges
-
-[Current system issues or limitations]
-
-### Requirements
-
-#### Functional Requirements
-
-- [List mandatory functional requirements]
-
-#### Non-Functional Requirements
-
-- **Performance**: [Response time, throughput requirements]
-- **Scalability**: [Requirements for handling increased load]
-- **Reliability**: [Error rate, availability requirements]
-- **Maintainability**: [Code readability and changeability]
-
-## Acceptance Criteria (AC) - EARS Format
-
-Each AC is written in EARS (Easy Approach to Requirements Syntax) format.
-
-**EARS Keywords**:
-| Keyword | Usage | Test Type |
-|---------|-------|-----------|
-| **When** | Event-triggered behavior | Event-driven test |
-| **While** | State-dependent behavior | State condition test |
-| **If-then** | Conditional behavior | Branch coverage test |
-| (none) | Ubiquitous behavior | Basic functionality test |
-
-**Format**: `[Keyword] <trigger/condition>, the system shall <expected behavior>`
-
-### [Functional Requirement]
-
-- [ ] **When** user clicks login button with valid credentials, the system shall authenticate and redirect to dashboard
-- [ ] **If** credentials are invalid, **then** the system shall display error message "Invalid credentials"
-- [ ] **While** user is logged in, the system shall maintain the session for configured timeout period
-- [ ] The system shall display data list with pagination of 10 items per page
-
-## Existing Codebase Analysis
-
-### Implementation Path Mapping
-| Type | Path | Description |
-|------|------|-------------|
-| Existing | src/[actual-path] | [Current implementation] |
-| New | src/[planned-path] | [Planned new creation] |
-
-### Integration Points (Include even for new implementations)
-- **Integration Target**: [What to connect with]
-- **Invocation Method**: [How it will be invoked]
-
-### Dependency Verification
-| Dependency | Status | Evidence |
-|------------|--------|----------|
-| [Service / hook / type / table / endpoint] | [verified-existing / requires-new-creation / external-dependency] | [path:line, search evidence, or authoritative external source] |
-
-### Code Inspection Evidence
-
-| File/Function | Relevance |
-|---------------|-----------|
-| [path:function] | [similar functionality / integration point / pattern reference] |
+| Evidence | Location | Design effect |
+|---|---|---|
+| Existing responsibility or representative pattern | [file:symbol] | [reuse, preserve, or replace] |
+| Applicable explicit/implicit standard | [rule/config/file] | [constraint] |
+| Repository quality mechanism | [command/config] | [applicable verification] |
 
 ## Design
 
-### Change Impact Map
+### Direct MVP
 
-```yaml
-Change Target: [Component/feature to change]
-Direct Impact:
-  - [Files/functions requiring direct changes]
-  - [Interface change points]
-Indirect Impact:
-  - [Data format changes]
-  - [Processing time changes]
-No Ripple Effect:
-  - [Explicitly specify unaffected features]
-```
+[Simplest end-to-end implementation through existing architecture and dependencies.]
 
-### Interface Change Impact Analysis
+### Failed Items and Necessary Additions
 
-Record boundary changes and compatibility preservation.
+| Direct MVP failure | Evidence | Smallest adopted addition | Subtraction evidence |
+|---|---|---|---|
+| [current unmet requirement/constraint/risk] | [source] | [addition] | [requirement, constraint, observed problem, or material in-scope risk that becomes unmet when this addition is removed] |
 
-| Existing Interface | New Interface | Conversion Required | Adapter / Wrapper Required | Compatibility Method |
-|-------------------|---------------|---------------------|----------------------------|----------------------|
-| [Function / method / props / contract] | [Function / method / props / contract] | [Yes / No] | [Required / Not Required] | [Adapter, wrapper, migration path, deprecation policy, or `-`] |
+Use `None — Direct MVP satisfies the current boundary` when no expansion is needed. Briefly note a rejected larger alternative only when it was actually considered and its rejection affects downstream implementation.
 
-### Architecture Overview
+### Change Surface
 
-[How this feature is positioned within the overall system]
+| Responsibility or expected file | Change | Governing source | Unaffected boundary to preserve |
+|---|---|---|---|
+| [component/module/path] | [implementation outcome] | [section / AC] | [contract or behavior] |
 
-### Data Flow
+### Components and Flow
 
-```
-[Express data flow using diagrams or pseudo-code]
-```
+[Describe the components and control/data flow needed to implement the change. Use a diagram only when prose or a compact table does not make a material relationship clear.]
 
-### Integration Points List
+### Contracts, State, and Persistence (When Applicable)
 
-Runtime wiring, switching, or registration points.
+Include only changed or newly relied-upon boundaries.
 
-| Integration Point | Location | Old Implementation | New Implementation | Switching Method | Verification Method |
-|-------------------|----------|-------------------|-------------------|------------------|---------------------|
-| Integration Point 1 | [Class/Function] | [Existing Process] | [New Process] | [DI/Factory etc.] | [How this switching or integration will be verified] |
+| Boundary | Input / exact format | Output / exact format | Error or state behavior | Compatibility |
+|---|---|---|---|---|
+| [caller → consumer, storage, message, route, file, etc.] | [contract] | [contract] | [observable behavior] | [preserved/change] |
 
-### Main Components
+For a value crossing multiple serialization boundaries, add its actual propagation steps beneath the row. Omit this section when the change has no cross-boundary contract, state, or persistence effect.
 
-#### Component 1
+### Security Boundary (When Applicable)
 
-- **Responsibility**: [Scope of responsibility for this component]
-- **Interface**: [APIs and contract definitions provided]
-- **Dependencies**: [Relationships with other components]
+[Authentication, authorization, untrusted input, sensitive data, or output handling changed by this design. Omit when the change does not cross a relevant trust boundary.]
 
-### Data Representation Decision (When Introducing New Structures)
+### Repository-Owned Migration, Flag, or Deployment Behavior (When Applicable)
 
-| Criterion | Assessment | Reason |
-|-----------|-----------|--------|
-| Semantic Fit | [Yes/No] | [Does existing structure's meaning align?] |
-| Responsibility Fit | [Yes/No] | [Same bounded context?] |
-| Lifecycle Fit | [Yes/No] | [Same creation/mutation/deletion timing?] |
-| Boundary/Interop Cost | [Low/Medium/High] | [Cost of sharing across boundaries?] |
+[Schema cutover, compatibility path, feature-flag behavior, or checked-in deployment configuration that changes implementation or an AC. Exclude release execution, production access, external account setup, and organizational approval.]
 
-**Decision**: [reuse / extend / new] -- [rationale in 1-2 sentences]
+## Implementation Approach
 
-### Design Convergence
-
-1. **Direct MVP**: [Simplest end-to-end design using existing system capabilities]
-2. **Failed Items**: [Unmet requirements, verified constraints, or observed problems with evidence | None]
-3. **Adopted Additions**: [Addition -> Failed Item -> item becomes unmet against its recorded evidence when removed | None]
-4. **Rejected Additions**: [Considered addition -> brief rejection reason | None]
-
-### Contract Definitions
-
-```
-// Record major contract/interface definitions here
-```
-
-### Data Contracts
-
-#### [Component or Boundary] (repeat per component/boundary)
-
-```yaml
-Contract: [interface / function / API / schema name]
-Input:
-  Type: [Data shape, contract, or schema]
-  Preconditions: [Required items, format constraints]
-  Validation: [Validation method]
-
-Output:
-  Type: [Data shape, contract, or schema]
-  Guarantees: [Conditions that must always be met]
-  On Error: [Exception/null/default value]
-
-Invariants:
-  - [Conditions that remain unchanged before and after processing]
-```
-
-### Observable Contract Values (When Applicable)
-
-Values the implementation must reproduce exactly; omit when none exist.
-
-| Contract Type | Required Observable Value |
-|---------------|---------------------------|
-| structure-order / derived-display / state-lifecycle-negative | [Exact column/field/label set and order, derived display rule, or condition where persisted/restored/cached/derived/client/session/UI state remains unused, including reset/clear behavior that returns state to its unused/default value] |
-
-### Test Boundaries
-
-#### Mock Boundary Decisions
-
-| Dependency / Boundary | Test Level | Use Real Dependency | Isolation Method | Rationale |
-|-----------------------|------------|---------------------|------------------|-----------|
-| [Repository / API / queue / hook] | [integration / e2e] | [Yes / No] | [mock / fake / local test env / browser harness] | [Why this boundary should behave this way in tests] |
-
-#### Data Layer Verification Strategy
-
-- Data storage involved: [Yes / No]
-- Schema or model references: [table / collection / model names or N/A]
-- Real verification approach: [container DB / dedicated test DB / in-memory adapter / browser fixture / N/A]
-- Query and repository coverage: [How repository, ORM, or query paths will be verified]
-- Migration compatibility check: [How schema drift will be detected or why N/A]
-
-### Field Propagation Map (When Fields Cross Boundaries)
-
-For serialized boundaries -- a value encoded on one side and parsed on the other (query string, CLI argument, env/config, message payload, storage key, file) -- record exact encoding and consumer parsing. Use "-" only for non-serialized rows.
-
-| Field | Boundary | Status | Serialized Format | Consumer Parse Rule | Detail |
-|-------|----------|--------|-------------------|---------------------|--------|
-| [field name] | [Component A to B] | preserved / transformed / dropped | [exact representation the producer emits when serialized; "-" otherwise] | [how the consumer decodes and validates it; "-" otherwise] | [logic or reason] |
+- Slicing: [vertical | foundation-first | hybrid]
+- Dependency order: [only verified ordering constraints]
+- First observable checkpoint: [earliest implementation state that proves useful behavior]
+- Rationale: [why this is the smallest sufficient order]
 
 ## Verification Strategy
 
-Define correctness and how to prove it at design time. Use task-level verification depth matching the exercised boundary: L1 for unit or local in-process behavior, L2 for interaction across a named component, persistence, process, or contract boundary, and L3 for a complete user, browser, process, or service journey.
-Use the minimal form only for a small structural change (one reversible outcome following an existing pattern, with no external contract/integration/data-flow change) or a self-evident internal refactor with identical observable inputs/outputs.
+| Claim / AC | Level | Repository command or operation | Observable pass condition |
+|---|---|---|---|
+| [behavior or contract] | [L1/L2/L3] | [existing command / task-created operation] | [result proving the claim] |
 
-### Correctness Proof Method
+- Early verification point: [first task and proof]
+- Data/persistence boundary: [real boundary used or N/A]
+- Existing observable-output comparison: [representative input and comparison method when behavior, external contract, or persisted shape changes; otherwise omit]
 
-- **Correctness definition**: [What "correct" means for this change]
-- **Target comparison**: [What is being compared or validated against what]
-- **Verification method**: [How correctness will be verified]
-- **Observable success indicator**: [What observable result proves the verification succeeded]
-- **Verification timing**: [`phase_1` | `per_phase` | `integration_phase` | `final_phase`]
-- **Timing note**: [Optional free-text clarification when the enum alone is insufficient]
+Do not require a live external service, production access, new dashboard, or new test lane unless a confirmed requirement makes it part of repository implementation.
 
-### Early Verification Point
+## Material Risks
 
-- **First verification target**: [The smallest unit that proves the approach works]
-- **Success criteria**: [Observable outcome that proves correctness]
-- **Failure response**: [What to do if early verification fails]
+| Risk | Evidence | In-scope response or verification |
+|---|---|---|
+| [risk that can change implementation correctness] | [source] | [mitigation/check] |
 
-### Output Comparison (When Changing Existing Observable Behavior, an External Contract, or a Persisted Data Shape)
+An implementation-critical premise that remains unverified belongs here only when implementation can resolve it with an in-scope verification or guard. State the evidence limitation and the exact response rather than presenting the premise as confirmed fact.
 
-- **Comparison input**: [Identical input used for both the current and new implementation]
-- **Expected output fields**: [Specific fields, columns, or output format to compare]
-- **Diff method**: [How the outputs are compared, such as field-by-field diff, file diff, or snapshot comparison]
-- **Transformation pipeline coverage**: [Map each listed step from codebase analysis `dataTransformationPipelines` to the comparison that verifies its output. If a step passes data through unchanged, mark it excluded with rationale]
-
-Mark as `N/A` with a brief rationale only when the change does not alter existing observable behavior, an external contract, or a persisted data shape.
-
-### State Transitions and Invariants (When Applicable)
-
-```yaml
-State Definition:
-  - Initial State: [Initial values and conditions]
-  - Possible States: [List of states]
-
-State Transitions:
-  Current State -> Event -> Next State
-
-System Invariants:
-  - [Conditions that hold in any state]
-```
-
-### UI Error State Design (when feature includes frontend)
-
-| Component / Screen | Loading | Empty | Error | Partial |
-|-------------------|---------|-------|-------|---------|
-| [Component name] | [Skeleton / spinner] | [Empty state + CTA] | [Error message + Retry] | [Cached display + Banner] |
-
-### Client State Design (when feature includes frontend)
-
-| State Category | State | Management Method | Sync Strategy | Reset/Clear Behavior |
-|---------------|-------|-------------------|---------------|----------------------|
-| Server state | [Fetched data] | [Cache library / custom hook] | [Polling / WebSocket / manual refresh] | [Cleared on clear-all / preserved] |
-| Local UI state | [Modal open, tab selection] | [useState / useReducer] | - | [Reset to default / preserved] |
-| Temporary state | [Form input, draft] | [useState / form library] | [Auto-save / manual save] | [Cleared on reset / persisted] |
-
-Fill `Reset/Clear Behavior` when the feature has a reset or clear-all operation. A state that must return to its unused/default value on reset is a `state-lifecycle-negative` observable contract.
-
-### UI Action - API Contract Mapping (when feature includes frontend)
-
-| UI Action | API Endpoint | Request | Response | Error Contract |
-|-----------|-------------|---------|----------|----------------|
-| [Button click / form submit] | [POST /api/xxx] | [Request body fields] | [Response fields] | [Error codes and UI handling] |
-
-### Error Handling
-
-| Error Category | Example | Detection | Recovery Strategy | User Impact |
-|---------------|---------|-----------|-------------------|-------------|
-| [Validation / External / Infrastructure / Business logic] | [Specific error] | [How detected] | [Retry / Fallback / Propagate / Log-and-continue] | [User-facing message or silent handling] |
-
-### Logging and Monitoring
-
-- **Log events**: [Key events to log: state transitions, external calls, error occurrences, performance thresholds]
-- **Log levels**: [Which events use DEBUG / INFO / WARN / ERROR]
-- **Sensitive data**: [Fields to mask or exclude; align with Security Considerations]
-- **Monitoring**: [Metrics to track, alert thresholds, dashboard requirements]
-
-## Implementation Plan
-
-### Implementation Approach
-
-**Selected Approach**: [Approach name or combination]
-**Selection Reason**: [Reason considering project constraints and technical dependencies]
-
-### Technical Dependencies and Implementation Order
-
-#### Required Implementation Order
-1. **[Component/Feature A]**
-   - Technical Reason: [Why this needs to be implemented first]
-   - Dependent Elements: [Other components that depend on this]
-
-2. **[Component/Feature B]**
-   - Technical Reason: [Technical necessity to implement after A]
-   - Prerequisites: [Required pre-implementations]
-
-### Migration Strategy
-
-[Technical migration approach, ensuring backward compatibility]
-
-## Security Considerations
-
-Evaluate the following for this feature's trust boundaries and data flow:
-
-- **Authentication & Authorization**: What authentication is required for new entry points? What authorization checks protect resource access?
-- **Input Validation**: Where does external input enter the system? How is it validated before processing?
-- **Sensitive Data Handling**: What data requires protection (encryption, masking, access control)? What data is safe to include in logs and error responses?
-
-Mark items as N/A with brief rationale when the feature has no relevant trust boundary.
-
-## Future Extensibility
-
-This section records what was excluded from the current design surface. Speculative inclusions belong in a separate proposal.
-
-- **Deferred possibilities**: [Capabilities considered during design and explicitly excluded from the current design surface. Each entry names either the current requirement it would have served, or marks itself as speculative]
-- **Intentional limitations**: [What was deliberately kept small and why]
-- **Extension points (existing, with current consumers)**: [Interfaces or hooks already in use by named current consumers. Each entry names a current consumer]
-
-## Risks and Mitigation
-
-For an Assumed Behaviors entry with `Confirmed: No`, start the Risk cell with the same ID (for example, `AB-2: [claim]`) and name the implementation-phase verification method or guard.
-
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| [Risk 1] | High/Medium/Low | High/Medium/Low | [Countermeasure] |
+Omit when no material implementation risk remains beyond the normal verification above.
 
 ## References
 
-- [Related documentation and links]
+- [governing and evidence paths]
 
 ## Update History
 
-| Date | Version | Changes | Author |
-|------|---------|---------|--------|
-| YYYY-MM-DD | 1.0 | Initial version | [Name] |
+| Date | Version | Changes |
+|---|---|---|
+| YYYY-MM-DD | 1.0 | Initial design |

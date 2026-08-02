@@ -13,7 +13,7 @@ Read [references/typescript.md](references/typescript.md) only for TypeScript us
 
 Follow, in order:
 
-1. Task, acceptance criteria, Binding Decisions, and Reference Contracts
+1. Task, acceptance criteria, and cited governing sources
 2. Governing Design Doc, ADR, Work Plan, and repository instructions
 3. Representative repository patterns
 4. Language/framework defaults
@@ -46,9 +46,13 @@ Before adopting a pattern, API, or dependency:
 
 Nearby code is evidence, not authority by itself.
 
+When choosing whether to reuse, extend, or add a data structure, check its semantic meaning, owning responsibility, lifecycle, and boundary or interoperability cost. Reuse or extend it when those dimensions remain compatible; choose a separate structure when sharing would merge responsibilities or lifecycles that can change independently.
+
+When the changed behavior implements a runtime rule that exists in multiple locations, inspect the other instances for synchronization impact. Centralize or update them together when they share responsibility and contract; preserve separate implementations when their responsibilities can evolve independently.
+
 ## Change Discipline
 
-- Keep the change within the task's target files and accepted scope.
+- Keep the change within the accepted outcome and responsibility boundary. Treat task target files as the expected set; include an adjacent file when the same outcome requires it and report the expanded write set.
 - Use names and structure that expose domain intent.
 - Remove unused code and obsolete comments in the changed scope.
 - Optimize only from measurements or a sourced requirement.

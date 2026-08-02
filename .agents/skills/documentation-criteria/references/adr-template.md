@@ -17,10 +17,10 @@
 | Item | Content |
 |------|---------|
 | **Decision** | [The decision in one sentence] |
-| **Why now** | [Why this needs to happen now (timing rationale)] |
 | **Why this** | [Why this option over alternatives (1-3 lines)] |
-| **Known unknowns** | [At least one uncertainty at this point] |
-| **Kill criteria** | [One signal that should trigger reversal of this decision] |
+| **Why now** | [Timing rationale when timing changes the decision; otherwise N/A] |
+| **Known unknowns** | [Uncertainty that changes implementation or verification; otherwise N/A] |
+| **Kill criteria** | [Observable reversal signal when reversal is a credible current path; otherwise N/A] |
 
 ## Rationale
 
@@ -28,17 +28,17 @@
 
 ### Options Considered
 
+Include every credible materially distinct option supported by requirements, repository evidence, or the current approach. When only one option remains credible, record the evidence that rules out another material alternative instead of inventing options.
+
 1. **Option 1**: [Description]
    - Pros: [List advantages]
    - Cons: [List disadvantages]
 
-2. **Option 2**: [Description]
+2. **Option 2 (when credible)**: [Description]
    - Pros: [List advantages]
    - Cons: [List disadvantages]
 
-3. **Option 3 (Selected)**: [Description]
-   - Pros: [List advantages]
-   - Cons: [List disadvantages]
+**Selected**: [Option and why its trade-offs best preserve the approved outcome]
 
 ## Consequences
 
@@ -52,7 +52,7 @@
 
 ### Neutral Consequences
 
-- [List changes that are neither good nor bad]
+[List decision-relevant neutral changes, or N/A]
 
 ## Architecture Impact
 

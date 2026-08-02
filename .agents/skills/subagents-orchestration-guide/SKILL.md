@@ -9,67 +9,36 @@ description: "Guides subagent coordination through implementation workflows. Use
 
 ## Role: The Orchestrator
 
-The orchestrator coordinates subagents. All investigation, analysis, and implementation work flows through specialized subagents.
+The orchestrator owns workflow state and directly performs lightweight coordination: locating artifacts, reading status fields, resolving paths, applying explicit user answers, updating execution plans and approval fields, running deterministic repository checks, and composing specialist inputs. Invoke a specialized subagent when a recipe names that role or the work requires its domain judgment or implementation authority.
 
-### Execution Plan Gate
+### Execution Plans
 
-For workflows with three or more objectives or sequential dependencies, call `update_plan` before the first substantive action.
-
-- Register the workflow phases once; do not create a fresh plan for each subagent call.
-- Use "Map active rules to this task" as the first step and "Verify outputs and rule adherence" as the final step.
-- While work remains, keep exactly one step `in_progress`.
-- Mark a step `completed` only after its named artifact, status, or verification evidence exists.
-- Start the next step only after every prerequisite step is `completed`.
-- After final verification evidence exists, mark every step `completed`.
-- Update the plan immediately when a result changes the valid next state, including revision, blocked, and escalation branches.
+Reuse one active execution plan for the recipe. When none exists, create it before substantive multi-step work with the recipe phases and final verification, then update the same plan as evidence is produced. Agent-internal execution plans remain local to each agent. Plans prevent skipped work; their wording or presence is not a user approval gate.
 
 ### Prompt Construction Rule
-Every subagent prompt must include:
-1. Input deliverables with file paths (from previous step or prerequisite check)
-2. Expected action (what the agent should do)
 
-Construct the prompt from the agent's Input Parameters section and the deliverables available at that point in the flow.
+Give each subagent the expected action and the artifact paths or evidence needed for that action. Follow the agent's input contract, but do not duplicate facts already carried by a supplied artifact. A compatible value under different wording is usable. Resolve only a missing input that would change the action or make its result unverifiable; use Orchestrator Escalation Resolution when repository and governing evidence cannot supply it.
 
-### Automatic Responses
+### Entry Ownership
 
-| Trigger | Action |
-|---------|--------|
-| New task | Spawn **requirement-analyzer** |
-| Flow in progress | Check scale determination table for next subagent |
-| Phase completion | Spawn the appropriate agent |
-| Stop point reached | Wait for user approval |
-
-### First Action Rule [MANDATORY]
-
-To accurately analyze user requirements, pass them directly to requirement-analyzer and determine the workflow based on its analysis results.
-
-**ENFORCEMENT**: MUST spawn requirement-analyzer as first action for every new task
-
-## Decision Flow When Receiving Tasks
-
-```
-Receive New Task -> Analyze requirements with requirement-analyzer
-                 -> Converge requirements at the requirements stop
-                 -> Scale assessment
-                 -> Execute flow based on scale
-```
-
-**During flow execution, determine next subagent according to scale determination table**
+The invoked recipe determines the workflow entry point. Recipes for new or scope-changing requirements explicitly invoke requirement-analyzer. Continuation, build, review, diagnosis, document update, and reverse-engineering recipes resume from their declared artifacts and invoke requirement-analyzer only when their own scope-change rule fires. This guide supplies coordination behavior after an entry has been selected.
 
 ### Requirement Convergence
 
-`requirement-analyzer` returns a compact `convergence` object. At the requirements stop, run the requirement-convergence hearing on fields below `ready`, using analyzer facts and cost evidence as the observed basis. Apply direct field answers in the orchestrator; re-invoke the analyzer only when an answer changes structural scope or cost evidence. Continue when every applicable field is `ready` or user-approved `weak-but-explicit`.
+`requirement-analyzer` returns a compact `convergence` object. At the requirements stop, run the requirement-convergence hearing with the analyzer's scope facts and cost evidence, then continue under that skill's convergence condition.
 
 Before a PRD or Design Doc exists, include the object only in the handoff that needs it. After it is persisted, pass the document path instead of copying the object through later prompts.
 
+A PRD is both a binding product contract and a Product Context carrier. Downstream design and planning prompts consume the converged outcome, confirmed requirements, acceptance criteria, user-decided exclusions, and explicit constraints. They load Product Context only when one of those binding items cites it. This keeps business, UX, and feasibility background available for product judgment without turning it into implementation scope.
+
 ### Requirement Change Detection During Flow [MANDATORY]
 
-**During flow execution**, if detecting the following in user response, MUST stop flow and go to requirement-analyzer:
-- Mentions of new features/behaviors (additional operation methods, display on different screens, etc.)
-- Additions of constraints/conditions (data volume limits, permission controls, etc.)
-- Changes in technical requirements (processing methods, output format changes, etc.)
+During flow execution, compare a user addition with the approved outcome, requirements, and exclusions:
 
-**ENFORCEMENT**: If any one applies — MUST restart from requirement-analyzer with integrated requirements
+- A clarification that preserves all three is applied by the orchestrator to the active artifact or task.
+- A new outcome, changed requirement, or changed exclusion enters requirement-analyzer with the complete integrated requirements.
+
+Resume from the earliest artifact affected by a confirmed scope change while preserving completed unaffected work.
 
 ## Orchestration Principles
 
@@ -77,13 +46,19 @@ Before a PRD or Design Doc exists, include the object only in the handoff that n
 
 Assign work based on each subagent's responsibilities:
 
+**What the orchestrator completes directly**:
+- Artifact discovery, path and status resolution, and exact task-set computation
+- Execution-plan and approval-field updates
+- Applying explicit user answers and governing-source resolutions
+- Deterministic commands and lightweight evidence collection needed to route the next step
+
 **What to spawn task-executor for**:
 - Implementation work and test addition
 - Confirmation of added tests passing (existing tests are not covered)
 - Spawn quality-fixer exclusively for quality assurance
 
 **What to spawn quality-fixer for**:
-- Overall quality assurance (static analysis, style check, all test execution, etc.)
+- Applicable repository checks discovered from the task, changed files, manifests, configuration, and CI
 - Complete execution of quality error fixes
 - Self-contained processing until fix completion
 - Final approved judgment (only after fixes are complete)
@@ -127,127 +102,91 @@ Autonomous execution MUST stop and wait for user input at these points.
 
 | Phase | Stop Point | User Action Required |
 |-------|------------|---------------------|
-| Requirements | After requirement-analyzer completes | Converge fields below `ready`, then confirm requirements |
+| Requirements | After an entry recipe invokes requirement-analyzer | Converge fields below `ready`, then confirm requirements |
 | PRD | After document-reviewer completes PRD review | Approve PRD |
 | UI Spec | After document-reviewer completes UI Spec review (frontend/fullstack) | Approve UI Spec |
 | ADR | After document-reviewer completes ADR review (if ADR created) | Approve ADR |
 | Design | After design-sync completes consistency verification | Approve Design Doc |
-| Work Plan | After document-reviewer completes WorkPlan review for Medium/Large, or after simplified plan creation for Small | Batch approval for implementation phase |
+| Work Plan | After document-reviewer completes WorkPlan review for Medium/Large | Batch approval for implementation phase |
 
 **ENFORCEMENT**: After batch approval, autonomous execution proceeds without stops until completion or Orchestrator Escalation Resolution requires user input. Skipping stop points is a CRITICAL VIOLATION.
 
-### Approval Status Vocabulary [MANDATORY]
+### Common Status Meanings
 
-These values standardize review and approval decisions. Review and approval agents MUST use this vocabulary consistently. Executor and quality-control operational statuses such as `completed`, `escalation_needed`, and `stub_detected` remain governed by their agent schemas and the Structured Response Specification.
+Use agent statuses as routing signals, not as a parser contract. Interpret the returned artifact and evidence when a field is absent or worded differently.
 
 | Status | Scope | Meaning | Next Action |
 |--------|-------|---------|-------------|
 | `approved` | Review/approval agents | All criteria met | Proceed to next phase |
-| `approved_with_conditions` | Document agents | Criteria met with minor open items | Proceed per document-specific handling; WorkPlan uses WorkPlan Review State |
+| `approved_with_conditions` | Document agents | Criteria met with minor open items | Resolve actionable conditions before the next approval point |
 | `approved_with_notes` | security-reviewer | Only hardening/policy findings | Proceed — include notes in completion report (no resolution required) |
-| `needs_revision` | Review/approval agents | Significant issues found | Use Review Revision Convergence when the active workflow owns the repair author; otherwise use the workflow's specific routing |
-| `rejected` | Document agents | Fundamental problems | Halt workflow, escalate to user |
-| `blocked` | security-reviewer | Committed secrets or high-confidence exploitable risk | Apply Orchestrator Escalation Resolution |
+| `needs_revision` | Review/approval agents | Significant issues repairable within approved repository scope, including high-confidence security risk | Resolve through the normal review or verifier-fix cycle |
+| `rejected` | Document agents | Fundamental problems | Apply Orchestrator Escalation Resolution |
+| `blocked` | security-reviewer | User-held secret rotation/revocation authority is required, or governing input is unusable | Apply Orchestrator Escalation Resolution |
 | `skipped` | Review/approval agents whose schema permits skipping | Preconditions not met for this step | Report reason, proceed |
 
-Handling rules:
-- `approved_with_conditions` for PRD, ADR, UI Spec, and Design Doc: append the listed conditions to the document's open-items section, carry them into the next phase, and resolve them before implementation
-- `approved_with_notes`: include the notes in the completion report for awareness
+Include `approved_with_notes` content in the completion report.
 
-**ENFORCEMENT**: Using any status value outside this vocabulary for a review or approval decision is a VIOLATION.
+### Review Resolution
 
-### Review Revision Convergence [MANDATORY]
-
-Review-result routing runs before any adjacent user-approval stop. Reach the approval stop only after the review status permits progression under the Approval Status Vocabulary. This procedure applies when the active workflow owns an author that can repair the reviewed artifact; review-only routing and Post-Implementation Verification retain their specific contracts.
-
-Inputs are `author`, `artifact`, `reviewer`, and the complete `current_review` response. Callers name the author and artifact; reviewer and current review are the active review agent and its response. The procedure retains the preceding response as `previous_review`.
-
-1. Invoke the author through its existing update or repair contract with the complete current findings.
-2. Re-run the reviewer through its declared input contract. Include the previous review JSON as `prior feedback` only when that reviewer accepts or scans prior-context input.
-3. Return `progression` when the review status satisfies the caller's phase gate; the WorkPlan phase gate accepts `approved`. Return `escalation` with the artifact, triggering findings, and attempted corrections for `rejected`, `blocked`, or a requirement change.
-4. Otherwise compare unresolved findings between `previous_review` and `current_review`. Match document-reviewer findings by `issues[].id`, or by normalized category, location, and description when an ID is absent. Match integration-test-reviewer findings by normalized `testName`, `issueType`, and `expectedClaim`, or by normalized `requiredFixes` text when structured issue fields are absent; normalization ignores case and whitespace only. Compare unresolved severity-count vectors from highest to lowest; progress exists when the first changed count decreases, or when new governing-source evidence makes a correction executable. Each distinct evidence item establishes progress on its first use for the matched finding and is then recorded as evaluated.
-5. On no progress, run one convergence pass using the governing sources to give the author targeted corrections. If the next review still makes no progress, return `non_convergent` with the artifact, unresolved findings, and attempted corrections.
-
-`progression`, `escalation`, and `non_convergent` are procedure control states, separate from the review and approval decisions governed by the Approval Status Vocabulary. The procedure owns the author-review loop; callers route its returned state exactly once and continue from the named destination. Observable progress governs loop length. The default route for `escalation` and `non_convergent` halts the current phase and presents the returned artifact, unresolved findings, and attempted corrections to the user; a caller-defined route takes precedence.
+Use [references/review-resolution.md](references/review-resolution.md). The orchestrator decides which findings to apply, decline, or return for a genuine user-owned decision; the author does not receive raw findings as an unconditional correction order.
 
 ### Orchestrator Escalation Resolution [MANDATORY]
 
-Apply this procedure when a workflow subagent returns `escalation_needed` or `blocked`, a required status is unrecognized, or autonomous execution would otherwise escalate. The response returns control to the orchestrator; it is not itself a human stop.
+Apply this procedure when a workflow result cannot support the next action, including `escalation_needed`, `blocked`, a missing artifact, or contradictory evidence. The response returns control to the orchestrator; it is not itself a human stop.
 
 1. Resolve the issue from approved requirements, governing artifacts, repository evidence, and prior agent outputs. Choose the smallest resolution that preserves approved intent.
-2. Invoke the responsible author to update the task, governing artifact, or implementation, then retry the interrupted step with the resolution and updated artifact.
-3. Continue while corrections make observable progress. On the first no-progress result, make one targeted correction from the governing sources and retry once.
-4. Resume the workflow when the interrupted step succeeds. Escalate to the user only when resolution requires a new or changed requirement, a business decision, unavailable external authority, an unauthorized irreversible action, or the targeted retry makes no progress. Preserve completed work and unaffected tasks.
+2. Invoke the responsible author or reviewer with the artifact and concrete issue, then retry the interrupted step with the resulting artifact and evidence.
+3. Continue while corrections make observable progress. When the first correction does not resolve the issue, make one targeted evidence-based retry rather than creating a new workflow state.
+4. Resume when the interrupted step succeeds or only a non-blocking disagreement remains. Escalate to the user only when resolution requires a new or changed requirement, a business or product decision, a change to an approved major design decision, unavailable user-held authority, or an unauthorized irreversible action. Preserve completed work and unaffected tasks.
 
-### WorkPlan Review State [MANDATORY]
+### Work Plan Resolution
 
-Medium and Large work plans must contain a `WorkPlan Review` section. Small simplified plans are exempt because they have no Design Doc to trace against. The plan is reviewed only when that section records `Status: approved` and `Conditions: none`.
+Resolve an exact Work Plan path in this order: an explicit recipe argument, the active execution plan's Work Plan, the plan name from the most recently modified task file matching the recipe's managed task pattern, then the most recently modified non-template Work Plan.
 
-Handling rules:
-- After WorkPlan review returns `approved`, invoke work-planner in update mode once to record the review section, without changing implementation content.
-- WorkPlan `approved_with_conditions` enters Review Revision Convergence with `work-planner` as the author. Resolve the conditions within convergence before task decomposition or implementation readiness.
-- A material work plan update resets `WorkPlan Review` to `Status: pending`.
-- Standalone build recipes apply WorkPlan review only before task decomposition, not after task files already exist.
+### Work Plan Approval
+
+Planning recipes create and review the Work Plan, then ask the user to approve its implementation scope. Record the result in the plan's existing plan-level status field.
+
+A build proceeds when the plan clearly records user approval. Treat common plan-level forms such as `WorkPlan Review` or `Implementation Approval` with an approved status as equivalent; headings and punctuation are not control fields. When approval is absent or genuinely ambiguous, ask once before invoking agents. A requested material plan change returns to work-planner and document review, then asks for approval again. Regenerate uncommitted task files affected by the changed plan and preserve completed unaffected work.
 
 ## Scale Determination and Document Requirements
 
-| Scale | Structural condition | PRD | ADR | Design Doc | Work Plan |
-|-------|----------------------|-----|-----|------------|-----------|
-| Small | One reversible outcome within an existing responsibility boundary | Update* | Not needed | Not needed | Simplified |
-| Medium | One outcome crosses a boundary or needs a durable decision | Update* | Conditional** | **Required** | **Required** |
-| Large | Independent outcomes, layer-specific designs, or staged migration/rollout | **Required*** | Conditional** | **Required** | **Required** |
+Use documentation-criteria Structural Scale as the single scale definition.
+
+| Scale | PRD | ADR | Design Doc | Work Plan |
+|-------|-----|-----|------------|-----------|
+| Small | None | None | None | None |
+| Medium | Update* | Conditional** | **Required** | **Required** |
+| Large | **Required*** | Conditional** | **Required** | **Required** |
 
 \* Update if PRD exists for the relevant feature
-\*\* When there are architecture changes, new technology introduction, or data flow changes
+\*\* When documentation-criteria identifies a durable technical decision that requires an ADR
 \*\*\* New creation/update existing/reverse PRD (when no existing PRD)
 
-## Structured Response Specification
+## Using Agent Results
 
-Subagents respond in JSON format. The final response from each JSON-returning subagent must be the JSON payload itself, with no trailing prose. Agent TOML files define the full schemas; the orchestrator only relies on these routing keys:
+Agent schemas describe their full internal result. The orchestrator consumes only the fields needed for the next action:
 
-| Agent | Routing fields the orchestrator uses |
-|-------|--------------------------------------|
-| `requirement-analyzer` | `convergence`, `scale`, `scaleRationale`, `confidence`, `affectedLayers`, `adrRequired`, `scopeDependencies`, `questions` |
-| `codebase-analyzer` | `focusAreas`, `dataModel`, `qualityAssurance`, `dataTransformationPipelines`, `limitations` |
-| `ui-analyzer` | `externalResources`, `componentStructure`, `propsPatterns`, `cssLayout`, `stateDisplay`, `focusAreas`, `candidateWriteSet`, `limitations` |
-| `task-executor*` | `status`, `escalation_type` (`design_compliance_violation`, `similar_function_found`, `similar_component_found`, `investigation_target_not_found`, `out_of_scope_file`, `dependency_version_uncertain`, `binding_decision_violation`, `test_environment_not_ready`), `filesModified`, `requiresTestReview` |
-| `quality-fixer*` | Inputs: `task_file`, `filesModified`; outputs: `status`, `reason`, `stubFindings`, `blockingIssues`, `missingPrerequisites` |
-| `document-reviewer` | `verdict.decision`, `verdict.conditions`, `issues`, `prior_context_check` |
-| `code-verifier` | `summary.status`, `blockingReason`, `discrepancies`, `reverseCoverage` |
-| `design-sync` | `sync_status` |
-| `integration-test-reviewer` | Inputs: `changedTestFiles`, `diffBase`, optional review-basis inputs; outputs: `status`, `reviewBasis`, `requiredFixes` |
-| `security-reviewer` | `status`, `findings`, `notes`, `requiredFixes` |
-| `acceptance-test-generator` | `status`, `generatedFiles.integration`, `generatedFiles.fixtureE2e`, `generatedFiles.serviceE2e`, `e2eAbsenceReason.fixtureE2e`, `e2eAbsenceReason.serviceE2e` |
+| Producer | Consumer-required result |
+|---|---|
+| Artifact producer | completion or blocked state, plus produced artifact path(s) |
+| Task executor | completion or escalation state, `filesModified`, `requiresTestReview`, and operation-verification evidence |
+| Quality fixer | approved, `stub_detected`, or blocked state; `filesModified`; reason or findings when not approved |
+| Reviewer | decision, actionable findings, governing basis, and whether each finding blocks the approved outcome |
 
-## Implementation Readiness Marker Contract
+Minor optional-field, serialization, or wording differences do not stop the workflow when the orchestrator can verify the required outcome from the artifact, repository, or command result. Verify claimed paths before passing them onward. A missing artifact, failed implementation, unresolved contradiction, or otherwise unusable result enters Orchestrator Escalation Resolution.
 
-Work plans use the header line `Implementation Readiness: <status>`.
+### Per-Task Change Set
 
-| Status | Meaning | Consumer Action |
-|--------|---------|-----------------|
-| `pending` | Initial state from work-planner; readiness has not been checked | Run the Implementation Readiness Preflight Procedure before task execution |
-| `ready` | Readiness scan completed and no applicable failures remain | Proceed with task execution |
-| `escalated` | Readiness scan completed, but one or more failures remain | Read the work plan's Implementation Readiness Report, present remaining gaps, and continue only on explicit user approval |
-| absent | Older work plan without the marker | Run the Implementation Readiness Preflight Procedure and persist the resulting marker |
+For each implementation task, record `diffBase` and maintain one `taskWriteSet`:
 
-## Implementation Readiness Preflight Procedure
+1. Initialize it from the first executor's `filesModified` and the repository diff from `diffBase`.
+2. Union files changed by executor retries, review fixes, stub repairs, and the quality fixer.
+3. Before quality review and before commit, reconcile it with repository state so earlier changes are retained and unrelated user changes are excluded.
+4. Pass the accumulated `taskWriteSet` to the quality fixer. After quality approval, commit only implementation, test, and required generated files in that set. After that commit succeeds, mark the Task File's satisfied Completion Criteria and the corresponding Work Plan task and phase complete, then update the active execution plan.
 
-Use this procedure after work-plan approval and before autonomous task execution when the flow needs to verify implementation readiness. The procedure supplies the evidence needed for user decisions; prompts for approval only after concrete failing criteria and proposed prep tasks are known.
-
-1. Load the approved work plan exact path and extract Verification Strategies, Quality Assurance Mechanisms, Design-to-Plan Traceability, Reference Contract Values, ADR Bindings, UI Spec Component -> Task Mapping, Connection Map, test skeleton references, E2E absence reasons, phase structure, referenced Design Docs, ADRs, and UI Specs.
-2. Evaluate these criteria with evidence:
-   - R1 Verification Strategy and binding references resolve
-   - R2 E2E prerequisites are addressed
-   - R3 Phase 1 observability exists
-   - R4 UI rendering surface exists when UI work is present
-   - R5 Local service stack or browser harness procedure exists when applicable
-3. If every applicable criterion passes, persist `## Implementation Readiness Report` in the work plan and set `Implementation Readiness: ready`.
-4. If any criterion fails, present the failing criteria, evidence, and the smallest proposed prep tasks that close the gaps. Continue with prep execution only after explicit user approval for those tasks.
-5. If the user declines prep execution, persist `Implementation Readiness: escalated` with the remaining gaps and stop before autonomous task execution.
-6. If the user approves prep execution, create the approved prep task files under `docs/plans/tasks/` using the task template. Use `{plan-name}-task-prep-{NN}.md` for single-layer plans, `{plan-name}-backend-task-prep-{NN}.md` for backend prep, and `{plan-name}-frontend-task-prep-{NN}.md` for frontend prep.
-7. Execute each exact prep task file through the standard executor -> quality-fixer -> commit cycle, then re-run the scan.
-8. After re-scan, set `Implementation Readiness: ready` when all applicable criteria pass, otherwise `Implementation Readiness: escalated`, and persist remaining gaps in the Readiness Report.
-9. Collapse completed prep task references into the Readiness Report and delete only the prep task files created for the current work plan.
+Task Files and Work Plans are local workflow state. Exclude both from implementation commits; their checkboxes record completion only after quality approval and a successful implementation commit.
 
 ## Handling Requirement Changes
 
@@ -266,82 +205,59 @@ Document generation agents (work-planner, technical-designer, prd-creator) can u
 
 ## Basic Flow for Work Planning
 
-Always start with `requirement-analyzer`, converge its result at the requirements stop, then follow the minimum flow required by scale and affected layers.
+After the selected entry recipe completes its requirement stop, follow the minimum flow required by scale and affected layers. Continuation recipes resume from their declared artifact.
 
 | Scale | Required flow |
 |-------|---------------|
-| Large | `requirement-analyzer` **[Stop]** -> `prd-creator` -> `document-reviewer` **[Stop]** -> optional `ui-spec-designer` + `document-reviewer` **[Stop]** -> optional ADR + `document-reviewer` **[Stop]** -> `codebase-analyzer` -> `technical-designer*` -> `code-verifier` -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
-| Medium | `requirement-analyzer` **[Stop]** -> `codebase-analyzer` -> optional `ui-spec-designer` + `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
-| Small | `requirement-analyzer` **[Stop]** -> simplified plan **[Stop: Batch approval]** -> direct implementation |
+| Large | `requirement-analyzer` **[Stop]** -> `prd-creator` -> `document-reviewer` **[Stop]** -> layer analysis -> frontend/fullstack UI Spec + `document-reviewer` **[Stop]** -> optional ADR + `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
+| Medium | `requirement-analyzer` **[Stop]** -> layer analysis -> frontend/fullstack UI Spec + `document-reviewer` **[Stop]** -> optional ADR + `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
+| Small | `requirement-analyzer` **[Stop]** -> one standard task file -> task execution cycle |
 
 Flow rules:
-- Frontend and fullstack flows add UI Spec before Design Doc creation
-- Create ADR only when architecture, technology, or data-flow changes require it
+- Backend layer analysis runs `codebase-analyzer`. Frontend layer analysis resolves decision-relevant external or prototype inputs, then runs `codebase-analyzer` and `ui-analyzer`; independent calls may run in parallel. Fullstack layer analysis follows `references/monorepo-flow.md`.
+- Frontend and fullstack flows create the UI Spec from completed layer analysis before ADR or Design Doc creation.
+- Create an ADR when architecture, technology, or data-flow changes require a durable decision, then create the Design Doc from that accepted decision
 - Pass requirement-analyzer routing output and original requirements to `codebase-analyzer`; include `convergence` only until a PRD or Design Doc persists it
-- For Small flows with no durable requirement document, include the compact convergence record in the simplified plan and its implementation handoff
+- For Small flows whose confirmed scope is carried by the execution task, use the llm-friendly-context Task File Contract to create `docs/plans/tasks/small-{name}.md`. Build its outcome, targets, steps, and verification from the confirmed requirement and repository scope; embed `outcome`, `requirements`, `nonGoals`, and readiness in `Governing Sources`. Pass the exact file to the layer-appropriate executor. Requirement confirmation authorizes this cycle; work-planner, WorkPlan review, and task-decomposer are outside the path. Remove the task file after security-reviewer passes.
 - Pass `codebase-analyzer` output to the designer as `Codebase Analysis`
 - Pass Design Doc path to `code-verifier`, then pass `code_verification` to `document-reviewer`
 - Fullstack layer sequencing is defined in `references/monorepo-flow.md`
-- Run WorkPlan review after every Medium/Large work plan creation or update and before batch approval. On `needs_revision` or WorkPlan `approved_with_conditions`, apply Review Revision Convergence (`author`: work-planner; `artifact`: work plan); on `progression`, follow the `approved` branch. On `rejected`, halt and escalate to the user.
+- Run WorkPlan review after every Medium/Large work plan creation or update and before batch approval. Resolve `needs_revision` or `approved_with_conditions` through Review Resolution with work-planner, then ask the user to approve the reviewed plan. Route governing-source contradictions through Orchestrator Escalation Resolution.
 
 ## Autonomous Execution Mode
 
-### Pre-Execution Environment Check
+### Conditional Environment Preparation
 
-**Principle**: Verify subagents can complete their responsibilities
-
-**Required environments**:
-- Commit capability (for per-task commit cycle)
-- Quality check tools (quality-fixer will detect and escalate if missing)
-- Test runner (task-executor will detect and escalate if missing)
-
-**If critical environment unavailable**: Apply Orchestrator Escalation Resolution with the specific missing component before entering autonomous mode
+Build recipes proceed with the approved task set. `recipe-prepare-implementation` runs when the user explicitly requests repository-local setup or when a concrete task-local capability failure makes preparation the smallest authorized Orchestrator Escalation Resolution. Unaffected implementation continues.
 
 ### Authority Grant
 
-**After environment check passes**:
-- Batch approval for entire implementation phase grants authority to agents
+**After implementation-scope approval**:
+- Medium/Large Work Plan batch approval, or Small-flow confirmation of the converged requirement, grants execution authority
 - task-executor: Implementation authority
 - quality-fixer: Fix authority (automatic quality error fixes)
 
 ### Definition of Autonomous Execution Mode
 
-After "batch approval for entire implementation phase" with work-planner, autonomously execute the following processes without human approval:
+After implementation-scope approval, autonomously execute the following processes without human approval:
 
 ```
-Batch approval -> Start autonomous execution mode
-  -> task-decomposer: Task decomposition
-      - blocked/unrecognized -> Orchestrator Escalation Resolution
-  -> Task execution loop:
-      -> Orchestrator: capture diffBase
-      -> task-executor: Implementation
-      -> Escalation judgment:
-          - escalation_needed/blocked -> Orchestrator Escalation Resolution
-          - requiresTestReview: true -> integration-test-reviewer with changedTestFiles from filesModified, diffBase, taskFile, and matching skeletonFiles when available from acceptance-test-generator output or task/work-plan references
-              - needs_revision -> Review Revision Convergence (`author`: task-executor/task-executor-frontend; `artifact`: changed test files); on `progression` -> quality-fixer
-              - approved -> quality-fixer
-              - blocked/unrecognized -> Orchestrator Escalation Resolution
-          - No issues -> quality-fixer
-      -> quality-fixer: Quality check and fixes with task_file and filesModified
-          - stub_detected -> task-executor/task-executor-frontend: complete implementation -> re-run quality-fixer
-      -> Orchestrator: Execute git commit
-      -> Check remaining tasks:
-          - Yes -> next task
-          - No -> code-verifier + security-reviewer: Post-implementation verification
-              - all pass -> Completion report
-              - any fail -> exact ephemeral task path -> layer-appropriate task-executor -> quality-fixer -> re-run all verifiers
-              - blocked -> Orchestrator Escalation Resolution
+Approved scope -> task decomposition when needed -> each task:
+implementation -> optional integration-test review -> quality-fixer -> commit
+-> final code/security verification -> completion report
 ```
+
+For each task, record `diffBase`, run the routed executor, and inspect the resulting repository change. Add each execution or repair result to the Per-Task Change Set. Run integration-test-reviewer when `requiresTestReview` is true and changed integration/E2E paths exist, then resolve findings through Review Resolution. Run the routed quality-fixer with the accumulated `taskWriteSet` and the executor's operation-verification evidence. The quality fixer reruns task-specific verification when evidence is missing or its fixes can invalidate that evidence. On quality approval, add its changed paths to the set and commit the implementation files. After the commit succeeds, mark the Task File's satisfied Completion Criteria and the corresponding Work Plan task and phase complete, then update the active execution plan. Repair `stub_detected` through the same implementation owner. Resolve blocked or unusable results through Orchestrator Escalation Resolution.
 
 ### Conditions for Stopping Autonomous Execution
 
 Stop autonomous execution and request user input in the following cases:
 
 1. **Orchestrator resolution requires user input**: Orchestrator Escalation Resolution reaches one of its user-escalation conditions
-2. **Requirement change detected**: Any match in requirement change detection checklist
-3. **Work-planner update restriction violated**: Requirement changes after task-decomposer starts require overall redesign
-4. **User explicitly stops**: Direct stop instruction or interruption
-5. **Review cannot converge**: Review Revision Convergence returns `non_convergent`; report its artifact, unresolved findings, and attempted corrections
+2. **Confirmed scope change needs approval**: Requirement Change Detection routes the addition through Requirement Convergence
+3. **User explicitly stops**: Direct stop instruction or interruption
+
+Agent `blocked` results, maintained blocking findings, and implementation deviations first enter Orchestrator Escalation Resolution. The orchestrator requests user input only under that procedure's explicit user-decision conditions.
 
 Continue autonomous execution in the following situations:
 - A workflow subagent is still pending
@@ -349,10 +265,10 @@ Continue autonomous execution in the following situations:
 - The orchestrator has partial context but is still waiting on a required subagent output
 
 Use the task loop defined in the autonomous execution diagram above. The canonical per-task cycle is:
-1. capture `diffBase`, then task-executor implementation
-2. escalation or integration-test-reviewer decision
-3. quality-fixer quality gate
-4. git commit on approval
+1. capture `diffBase`, execute the task, and accumulate its change set
+2. resolve escalation or integration-test review when applicable
+3. run the quality fixer on the accumulated change set and repair until approved
+4. commit implementation files, then record Task File, Work Plan task/phase, and execution-plan completion locally
 
 ### Post-Implementation Verification Pass/Fail Criteria
 
@@ -361,49 +277,54 @@ Use the task loop defined in the autonomous execution diagram above. The canonic
 | code-verifier | `summary.status` is `consistent` or `mostly_consistent` | `summary.status` is `needs_review` or `inconsistent` | `summary.status` is `blocked` |
 | security-reviewer | `status` is `approved` or `approved_with_notes` | `status` is `needs_revision` | `status` is `blocked` |
 
-Consolidate failed verifier findings into one ephemeral task per required executor and pass each exact task path through its executor and quality-fixer. Re-run both code-verifier and security-reviewer after any verification fix because the fix can invalidate either result. Delete the ephemeral task files after both verifiers pass.
+Code-verifier runs correspond to durable governing documents. The Small path passes its active task file to security-reviewer as `type: task-file`. Repository quality checks are owned by the quality-fixer run in each implementation and verifier-fix task cycle.
+
+#### Post-Verification Rerun Rule
+
+Consolidate required verifier fixes into the fewest executor-routed ephemeral tasks, execute them through the normal task cycle, then re-run the verifiers affected by the actual repository changes. Delete the ephemeral task files after verification passes.
 If any verifier still fails after the re-run, apply Orchestrator Escalation Resolution.
 
 ## Main Orchestrator Roles
 
 1. **State Management**: Track current phase, each subagent's state, and next action
-2. **Information Bridging**: Data conversion and transmission between subagents
+2. **Lightweight Workflow Work**: Resolve artifact paths and statuses, apply explicit decisions, update execution plans and approval fields, and run deterministic routing checks
+3. **Information Bridging**: Data conversion and transmission between subagents
    - Convert each subagent's output to next subagent's input format
    - **Always pass deliverables from previous process to next agent**
-   - Extract the routing fields listed above
    - Explicitly integrate initial and additional requirements when requirements change
-3. **Quality Assurance and Commit Execution**: Execute git commit per the 4-step task cycle
-4. **Autonomous Execution Mode Management**: Start/stop autonomous execution after approval, escalation decisions
-5. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
+4. **Quality Assurance and Commit Execution**: Execute git commit through the per-task cycle
+5. **Autonomous Execution Mode Management**: Start/stop autonomous execution after approval and escalation decisions
+6. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
 
 ### Required Handoffs
 
 | From | To | Required pass-through |
 |------|----|-----------------------|
 | `requirement-analyzer` | `codebase-analyzer` | requirement analysis routing fields and original requirements; include `convergence` before persistence, otherwise pass its PRD path |
-| convergence record | document owner | `prd-creator` persists it to PRD fields; `technical-designer*` persists it to Design Doc when no PRD exists and always records `weak-but-explicit` fields |
-| convergence record | Small-flow implementation | compact record through the simplified plan when no PRD or Design Doc exists |
+| convergence record | PRD or Design Doc owner | `prd-creator` persists PRD fields; `technical-designer*` persists Design Doc fields when no PRD exists; both record open requirement fields while cost remains ephemeral |
+| convergence record | Small-flow implementation | compact record in the task file's `Governing Sources` when no PRD or Design Doc exists |
 | `codebase-analyzer` | `technical-designer*` | `Codebase Analysis`, including `focusAreas`, `dataModel`, `qualityAssurance`, `dataTransformationPipelines`, `limitations` |
 | `technical-designer*` | `code-verifier` | Design Doc path |
 | `code-verifier` | `document-reviewer` | `code_verification` JSON |
-| `task-executor*` | `integration-test-reviewer` | `diffBase`, changed integration/E2E paths from `filesModified`, task file, matching skeleton paths when available, and prompt claims when used |
-| `task-executor*` | `quality-fixer*` | exact `task_file` and `filesModified` |
-| `acceptance-test-generator` | `work-planner` | `generatedFiles.integration`, `generatedFiles.fixtureE2e`, `generatedFiles.serviceE2e`, `e2eAbsenceReason: { fixtureE2e, serviceE2e }` |
-| Design Doc | `work-planner` | Verification Strategy summary, Output Comparison details, implementation-relevant technical requirements, protected no-change boundaries |
+| `task-executor*` | `integration-test-reviewer` | `diffBase`, changed integration/E2E paths, exact task file, and matching skeleton paths when available |
+| implementation task | `quality-fixer*` | exact task file, accumulated `taskWriteSet`, and operation-verification evidence |
+| `acceptance-test-generator` | `work-planner` | `artifacts[].path` |
+| `work-planner` | `document-reviewer` | completed `path` |
+| `task-decomposer` | routed `task-executor*` | completed `taskFiles[]` |
+| Design Doc | `work-planner` | Design Doc path; work-planner reads only sections that control task outcome, order, or verification |
 
 Handoff rules:
 - Until persistence, pass the compact convergence object only to the next consumer that needs it. After persistence, pass its PRD or Design Doc path
 - Downstream consumers exclude `nonGoals` and `speculative` requirements from current work
-- Verify generated integration, fixture-e2e, and service-integration-e2e file paths exist before passing them onward
-- Apply Orchestrator Escalation Resolution only when required outputs are missing without a valid absence reason
-- Require work-planner to map every carried-forward technical requirement to a covering task or a justified `gap`
+- Verify generated artifact paths before passing them onward
+- Require every Work Plan task to cite the Design Doc section or AC that authorizes its repository implementation outcome
 
 ## Important Constraints [MANDATORY]
 
 - **Quality check is REQUIRED**: quality-fixer approval MUST be obtained before commit
-- **Structured response REQUIRED**: Information transmission between subagents MUST use JSON format
+- **Usable result required**: Continue from verified artifacts and repository evidence; resolve missing or unusable results before passing them onward
 - **Approval management**: Document creation -> Execute document-reviewer -> Get user approval before proceeding
-- **Flow confirmation**: After getting approval, MUST check next step with work planning flow (large/medium/small scale)
+- **Flow confirmation**: After approval, select the next step from the active recipe and current artifact state
 - **Consistency verification**: If subagent determinations contradict, MUST prioritize the constraints and decision rules defined in this orchestration guide
 
 **ENFORCEMENT**: Violating ANY constraint requires immediate correction
@@ -412,7 +333,7 @@ Handoff rules:
 
 ### Basic Principles
 - **Stopping is REQUIRED**: MUST wait for human response at stop points
-- **Confirmation then Agreement cycle**: After document generation, proceed to next step after agreement or fix instructions in update mode
+- **Confirmation then Agreement cycle**: After document generation, complete review resolution before requesting approval or proceeding from an existing approval
 - **Specific questions**: Make decisions easy with options (A/B/C) or comparison tables
 
 ## Action Checklist
@@ -421,10 +342,11 @@ When receiving a task, check the following:
 
 - [ ] Confirmed whether the user provided a specific workflow recipe or explicit execution constraint
 - [ ] Determined task type (new feature/fix/research, etc.)
-- [ ] Selected the next subagent according to the decision flow and current phase
-- [ ] Decided next action according to decision flow
+- [ ] Selected the next subagent according to the active recipe and current phase
+- [ ] Decided the next action from the active recipe and current artifact state
 - [ ] Monitored requirement changes and errors during autonomous execution mode
 
 ## References
 
+- `references/review-resolution.md`: Evidence- and ROI-based review finding resolution
 - `references/monorepo-flow.md`: Fullstack (monorepo) orchestration flow

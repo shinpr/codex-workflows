@@ -17,14 +17,12 @@ Target problem: $ARGUMENTS
 
 ## Orchestrator Definition
 
-**Core Identity**: "I am not a worker. I am an orchestrator."
-
 **Execution Method**:
 - Investigation -> Spawn investigator agent
 - Verification -> Spawn verifier agent
 - Solution derivation -> Spawn solver agent
 
-Orchestrator spawns sub-agents and passes structured data between them.
+The orchestrator structures the reported problem, coordinates the three specialist stages, evaluates their results, and passes only the context needed by the next stage.
 
 **Execution Plan Gate**: Before substantive work, call `update_plan` with first "Map active rules to this task", then problem structuring, investigation, verification, and solution, and final "Verify outputs and rule adherence". While work remains, keep exactly one step `in_progress`; after final report evidence exists, mark every step `completed`.
 
@@ -37,35 +35,16 @@ Orchestrator spawns sub-agents and passes structured data between them.
 | Change Failure | Indicates some change occurred before the problem appeared |
 | New Discovery | No relation to changes is indicated |
 
-If uncertain, ask the user whether any changes were made right before the problem occurred.
+If uncertain, keep the type provisional and let repository history and investigation evidence resolve it.
 
 ### 0.2 Information Supplementation for Change Failures
 
-If the following are unclear, MUST **ask the user** before proceeding:
+For change failures, resolve the following from the supplied report and repository evidence when available:
 - What was changed (cause change)
 - What broke (affected area)
 - Relationship between both (shared components, etc.)
 
-### 0.3 Problem Essence Understanding
-
-Spawn rule-advisor agent: "Identify the essence and required rules for this problem: [Problem reported by user]"
-
-Confirm from rule-advisor output:
-- `taskAnalysis.essence`: Root problem beyond surface symptoms
-- `taskAnalysis.taskType`: Classification of the problem
-- `selectedRules`: Applicable rule sections
-- `warningPatterns`: Patterns to avoid
-
-### 0.4 Reflecting in investigator Prompt
-
-**Include the following in investigator prompt**:
-1. Problem essence (`taskAnalysis.essence`)
-2. Key applicable rules summary (from selectedRules)
-3. Investigation focus (investigationFocus): Convert warningPatterns to "points prone to confusion or oversight in this investigation"
-4. **For change failures, additionally include**:
-   - Detailed analysis of the change content
-   - Commonalities between cause change and affected area
-   - Determination of whether the change is a "correct fix" or "new bug" with comparison baseline selection
+Carry unresolved details into the investigator prompt as investigation targets and continue.
 
 ## Diagnosis Flow Overview
 
@@ -92,11 +71,8 @@ Spawn investigator agent with the following prompt:
 Comprehensively collect information related to the following phenomenon.
 
 Phenomenon: [Problem reported by user]
-Problem essence: [taskEssence]
-Investigation focus: [investigationFocus]
-Applicable rules: [selectedRules summary]
 
-For change failures, also include:
+For change failures, include available facts and unresolved investigation targets for:
 - what changed
 - what broke
 - what both areas share
@@ -115,20 +91,11 @@ Review investigation output:
 - [ ] causeCategory for each failure point
 - [ ] `investigationSources` covers at least 3 distinct source types
 - [ ] each failure point has supporting evidence with a concrete source
-- [ ] Investigation covering investigationFocus items (when provided)
 
 **If quality insufficient**: MUST re-spawn investigator agent specifying the missing items and include the previous investigation output for context
 ENFORCEMENT: Proceeding to verifier with incomplete investigation data produces unreliable conclusions.
 
-**design_gap Escalation**:
-
-When investigator output contains `causeCategory: design_gap` or `recurrenceRisk: high`:
-1. **[STOP — BLOCKING]** Present design gap findings to user for confirmation. **CANNOT proceed until user explicitly confirms.**
-2. Ask user:
-   "A design-level issue was detected. How should we proceed?"
-   - A: Attempt fix within current design
-   - B: Include design reconsideration
-3. If user selects B, pass `includeRedesign: true` to solver
+Carry `causeCategory: design_gap` and `recurrenceRisk: high` through verification and solution derivation as evidence. Diagnosis presents the resulting trade-offs without changing implementation scope.
 
 Proceed to verifier once quality is satisfied.
 
