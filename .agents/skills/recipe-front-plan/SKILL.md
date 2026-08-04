@@ -58,7 +58,7 @@ Spawn work-planner agent: "Create an implementation-focused work plan from Desig
 Verify the returned Work Plan path and use it as the Step 4 review target.
 
 ### Step 4: Work Plan Review
-Spawn document-reviewer agent: "Review the frontend work plan. doc_type: WorkPlan. target: [work-planner completed path]. mode: composite. Verify Design Doc and UI Spec implementation coverage, absence of added operational scope, dependency order, executable verification, optional Verification Focus, and Review Scope."
+Spawn document-reviewer agent: "Review the frontend work plan. doc_type: WorkPlan. target: [work-planner completed path]. Verify Design Doc and UI Spec implementation coverage, absence of added operational scope, dependency order, executable verification, optional Verification Focus, and Review Scope."
 
 Branch on `verdict.decision`:
 - `approved` -> proceed to Step 5 with the plan-level status pending

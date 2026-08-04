@@ -23,9 +23,9 @@ description: "Documentation creation criteria for PRD, ADR, Design Doc, UI Spec,
 
 Build one path in this order:
 
-1. An ADR condition sets the scale floor to Medium; select the resulting scale's base path.
+1. Select the base path from Structural Scale.
 2. Frontend or fullstack scope inserts UI Spec immediately before the Design Doc.
-3. An ADR condition inserts ADR immediately before the Design Doc.
+3. One or more qualifying ADR decision points insert an ADR batch immediately before the Design Doc. A qualifying decision point sets the scale floor to Medium.
 
 **ENFORCEMENT**: EVALUATE structural scale and ADR conditions BEFORE starting implementation
 
@@ -39,18 +39,27 @@ Classify the decision burden, not repository layout. File count is supporting ev
 | Medium | One coherent outcome coordinates across a boundary or requires a durable design decision |
 | Large | Multiple independently valuable outcomes require separate design decisions |
 
-An ADR condition sets the floor at Medium because it creates a durable decision. Large applies when multiple independently valuable outcomes require separate design decisions; one coherent outcome remains Medium across multiple layers.
+A qualifying ADR decision point sets the floor at Medium because it creates a durable decision. Large applies when multiple independently valuable outcomes require separate design decisions; one coherent outcome remains Medium across multiple layers. ADR decision points come from the Choice and Durability filters independently of scale.
 
 ## ADR Creation Conditions
 
-Create an ADR when implementation depends on a durable technical choice that future work must understand or preserve, such as:
+Apply both filters in order for each technical topic within the confirmed implementation scope:
+
+1. **Choice requires judgment** — current requirements, accepted decisions, and representative repository patterns support at least two credible materially distinct options whose selection requires comparison.
+2. **Decision is durable** — choosing among those options materially changes a responsibility, dependency direction, shared contract, persistence model, technology dependency, reversibility, or lifecycle cost that future work must understand or preserve.
+
+Create one ADR for each topic that passes both filters. Route topics with one evident choice, generic technical concerns, operational possibilities, and rejected activities directly to the Design Doc or out of current design as applicable.
+
+Treat choices as one decision point when they must be selected or reconsidered together. Use separate decision points when each choice can be selected and revisited independently.
+
+Qualifying durable choices include:
 
 - introducing or replacing a technology, library, platform, storage model, or external dependency;
 - changing ownership, dependency direction, trust boundary, or a shared public contract in a way with credible materially different alternatives;
 - reversing or superseding an accepted architecture decision;
 - choosing an irreversible or high-cost-to-reverse data or compatibility strategy.
 
-A local contract, data-flow, state, or component change that follows an accepted design and has no material alternative belongs in the Design Doc. Create an ADR for a durable decision with materially distinct alternatives; counts of files, consumers, nesting levels, states, or steps remain supporting evidence rather than decision criteria.
+A local contract, data-flow, state, or component change that follows an accepted design, has one evident repository-supported implementation, or remains cheaply reversible belongs in the Design Doc. Counts of files, consumers, nesting levels, states, steps, and Structural Scale remain supporting evidence rather than ADR criteria.
 
 ## Detailed Document Definitions
 
@@ -60,7 +69,7 @@ A local contract, data-flow, state, or component change that follows an accepted
 
 ### ADR (Architecture Decision Record)
 **Purpose**: Record technical decision rationale and background
-**Scope**: Decision, rationale, credible alternatives actually considered, architecture impact, consequences, and principled implementation guidance only. Record Why now, Known unknowns, Kill criteria, and diagrams when they change how the decision is judged or reversed; otherwise use a brief N/A. Implementation procedures and code examples belong in Design Doc, while schedule and resource assignments belong in Work Plan.
+**Scope**: One qualifying technical decision point, its credible alternatives, requirement and repository fit, current-scope benefit, lifecycle cost, maintainability, selected necessary-and-sufficient option, consequences, and reconsideration conditions. An ADR narrows the technical solution space; the confirmed requirements remain the product and implementation scope. Implementation procedures and code examples belong in Design Doc, while schedule and resource assignments belong in Work Plan.
 
 ### UI Specification
 **Purpose**: Define UI structure, screen transitions, component decomposition, and interaction design
@@ -95,10 +104,10 @@ A local contract, data-flow, state, or component change that follows an accepted
 
 ## Creation Process [MANDATORY]
 
-**STEP 1**: **Problem Analysis** — Change scale assessment, ADR condition check
-**STEP 2**: **ADR Option Consideration** (when creating an ADR) — Compare every credible materially distinct option found in requirements, repository evidence, or the current approach; record why no additional alternative is credible when only one remains
-**STEP 3**: **Creation** — Use templates, include measurable conditions
-**STEP 4**: **Approval** — document review followed by user approval enables implementation
+**STEP 1**: **Problem Analysis** — Determine Structural Scale, applicable documents, and candidate technical decision points
+**STEP 2**: **ADR Choice Check when candidates exist** — Retain in-scope topics whose selection requires comparison between at least two credible materially distinct options and has durable impact
+**STEP 3**: **Creation** — Create each applicable document from its template; complete every qualifying ADR file before ADR review
+**STEP 4**: **Approval** — Review applicable artifacts and obtain user approval; supply the complete ADR path set to one review and one approval request
 
 **ENFORCEMENT**: Begin implementation when the documents required for the relevant scale are approved.
 
@@ -116,9 +125,9 @@ A local contract, data-flow, state, or component change that follows an accepted
 `Proposed` -> `Accepted` -> `Deprecated`/`Superseded`/`Rejected`
 
 ## AI Automation Rules [MANDATORY]
-- Evaluate ADR conditions independently from file count
+- Apply the Choice filter before the Durability filter and independently from Structural Scale
 - Check existing ADRs that govern the changed responsibility
-- Create an ADR only when the durable-decision conditions above apply
+- Create one ADR per decision point that passes both filters, then review the complete batch together
 
 ## Diagram Requirements
 

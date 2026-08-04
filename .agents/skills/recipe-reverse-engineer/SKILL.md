@@ -95,18 +95,13 @@ Spawn prd-creator agent: "Create reverse-engineered PRD for the following featur
 
 Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. code_paths: $PRD_UNIT_COMBINED_RELATED_FILES. unit_inventory: $PRD_UNIT_INVENTORY. verbose: false."
 
-**Store output as**: `$STEP_3_OUTPUT`
-
-**Quality Gate**:
-- `summary.status` is `consistent` or `mostly_consistent` -> proceed to review
-- `summary.status` is `needs_review` or `inconsistent` -> proceed to review with the returned discrepancies, severity, evidence, and effect
-- `summary.status` is `blocked`, or the result is unusable -> apply Orchestrator Escalation Resolution and retry verification after resolving its evidence or input problem
+Apply Review Resolution to every discrepancy. Pass `apply` corrections to prd-creator in update mode, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$STEP_3_RESOLUTION` after the `apply` set becomes empty. A blocked or unusable result enters Orchestrator Escalation Resolution.
 
 #### Step 4: Review
 
-**Required Input**: $STEP_3_OUTPUT (verification data from Step 3)
+**Required Input**: $STEP_3_RESOLUTION (resolved verification evidence from Step 3)
 
-Spawn document-reviewer agent: "Review the following PRD considering code verification findings. doc_type: PRD. target: $STEP_2_OUTPUT. mode: composite. code_verification: $STEP_3_OUTPUT. Additional Review Focus: Alignment between PRD claims and verification evidence, resolution recommendations for each discrepancy, completeness of undocumented feature coverage."
+Spawn document-reviewer agent: "Review the following PRD. doc_type: PRD. target: $STEP_2_OUTPUT. verification_resolution: $STEP_3_RESOLUTION. Review alignment between PRD claims, resolved verification evidence, and in-scope inventory coverage."
 
 **Store output as**: `$STEP_4_OUTPUT`
 
@@ -203,18 +198,13 @@ Spawn technical-designer agent: "Create Design Doc for the following feature bas
 
 Spawn code-verifier agent: "Verify consistency between Design Doc and code implementation. doc_type: design-doc. document_path: $STEP_7_OUTPUT. code_paths: $UNIT_SCOPE_BOUNDARY. unit_inventory: $UNIT_INVENTORY. verbose: false."
 
-**Store output as**: `$STEP_8_OUTPUT`
-
-**Quality Gate**:
-- `summary.status` is `consistent` or `mostly_consistent` -> proceed to review
-- `summary.status` is `needs_review` or `inconsistent` -> proceed to review with the returned discrepancies, severity, evidence, and effect
-- `summary.status` is `blocked`, or the result is unusable -> apply Orchestrator Escalation Resolution and retry verification after resolving its evidence or input problem
+Apply Review Resolution to every discrepancy. Pass `apply` corrections to technical-designer in update mode, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$STEP_8_RESOLUTION` after the `apply` set becomes empty. A blocked or unusable result enters Orchestrator Escalation Resolution.
 
 #### Step 9: Review
 
-**Required Input**: $STEP_8_OUTPUT (verification data from Step 8)
+**Required Input**: $STEP_8_RESOLUTION (resolved verification evidence from Step 8)
 
-Spawn document-reviewer agent: "Review the following Design Doc considering code verification findings. doc_type: DesignDoc. review_context: as-is. target: $STEP_7_OUTPUT. mode: composite. code_verification: $STEP_8_OUTPUT. Parent PRD: $APPROVED_PRD_PATH. Additional Review Focus: Technical accuracy of documented interfaces, consistency with parent PRD scope, completeness of unit boundary definitions."
+Spawn document-reviewer agent: "Review the following Design Doc. doc_type: DesignDoc. review_context: as-is. target: $STEP_7_OUTPUT. verification_resolution: $STEP_8_RESOLUTION. Parent PRD: $APPROVED_PRD_PATH. Review technical accuracy, parent PRD scope, and in-scope unit boundary coverage."
 
 **Store output as**: `$STEP_9_OUTPUT`
 

@@ -5,6 +5,8 @@ sandbox_mode = "read-only"
 developer_instructions = """
 You verify an authoritative document against repository evidence without modifying either.
 
+Your discrepancies are independent evidence for orchestrator Resolution. Confirmed requirements and selected ADR decisions define design scope; Resolution determines correction obligations.
+
 ## Required Skills [LOAD BEFORE EXECUTION]
 
 Load and read each skill completely before taking task actions: `documentation-criteria`, `ai-development-guide`, `coding-rules`.
@@ -77,5 +79,6 @@ Use:
 - Supplied Unit Inventory counts, exclusions, and unaccounted items are returned in `inventoryCoverage`.
 - Every discrepancy cites the document claim and observed repository evidence.
 - Search breadth stopped at decision-relevant evidence.
-- No recommendation adds product scope, optional hardening, external operations, or documentation completeness for its own sake.
+- Recommendations remain within confirmed product scope and current implementation or verification obligations.
+- Every discrepancy contains the exact effect that Resolution must judge and only the repository evidence relevant to that judgment.
 """

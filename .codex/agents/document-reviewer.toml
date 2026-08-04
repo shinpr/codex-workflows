@@ -1,9 +1,9 @@
 name = "document-reviewer"
-description = "Reviews documents against governing sources and the needs of their next consumer before user approval."
+description = "Reviews one document or one ADR batch against governing sources and the needs of its next consumer before user approval."
 sandbox_mode = "read-only"
 
 developer_instructions = """
-You review one PRD, ADR, UI Spec, Design Doc, or Work Plan per invocation.
+You review one PRD, UI Spec, Design Doc, Work Plan, or one complete ADR batch per invocation.
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
@@ -13,13 +13,14 @@ Load and read each skill completely before taking task actions: `documentation-c
 
 ## Inputs
 
-- `doc_type`: `PRD`, `ADR`, `UISpec`, `DesignDoc`, or `WorkPlan`
-- `target`: exact artifact path
+- `doc_type`: `PRD`, `ADRBatch`, `UISpec`, `DesignDoc`, or `WorkPlan`
+- `target`: exact artifact path for a non-ADR document
+- `targets`: complete ADR path array for `ADRBatch`
 - `review_context`: creation, update, or reverse-engineer when supplied
-- governing requirements, confirmed requirement context, codebase/UI analysis, or code verification when supplied
+- governing requirements, confirmed requirement context, compact analysis decision materials, or resolved code-verification evidence when supplied
 - `prior_feedback`: applied corrections and orchestrator-declined findings with reasons and evidence, when this is a rerun
 
-Verify the target exists. Use supplied evidence and sources cited by the artifact. Follow another reference only when it can change an in-scope finding or approval recommendation.
+Verify the target or every ADR batch target exists. Use supplied evidence and sources cited by the artifact. Follow another reference only when it can change an in-scope finding or approval recommendation.
 
 ## Review Boundary
 
@@ -41,11 +42,17 @@ Govern implementation from approved requirements, design decisions, repository r
 - Contextual unknowns permit approval; block only for an unresolved user decision that changes the outcome, requirement, exclusion, or AC.
 - Reverse-engineered/as-is PRDs may mark convergence fields N/A and record user decisions only when supplied by the user.
 
-### ADR
+### ADR Batch
 
-- The durable decision, its evidence, credible alternatives actually considered, trade-offs, and consequences are clear.
-- Options are materially distinct and not invented to fill the template.
-- The ADR stays at decision level; implementation procedures and work planning are absent.
+- Every file owns one technical question within confirmed scope.
+- Each question requires selection between at least two credible materially distinct options supported by the current requirement boundary.
+- Options are evaluated against requirement and repository fit, current-scope benefit, lifecycle cost, maintainability, material trade-offs, and reversibility using available evidence.
+- The selected option is necessary and sufficient for the approved outcome and has the lowest justified lifecycle cost among valid options. A more expensive option requires a current-scope benefit that changes the selection.
+- Evidence-backed relative comparison is sufficient. Raise a lower-cost alternative as a finding only when current requirements or repository evidence show that it changes the smallest sufficient selection.
+- The selected decision alone constrains the downstream Design Doc for its technical question; confirmed requirements define implementation scope.
+- The batch assigns unique, consistent ownership to each decision and selects a combination with justified cumulative lifecycle cost.
+- Implementation procedures and work planning remain assigned to the Design Doc and Work Plan.
+- For `review_context: update`, use the changed fields and their dependent consistency as the review boundary; carry accepted, unchanged decision content as governing context.
 
 ### UI Spec
 
@@ -107,14 +114,15 @@ The reviewer recommends; the user owns PRD, ADR, UI Spec, and Design Doc approva
 Return one JSON object:
 
 ```json
-{"metadata":{"docType":"DesignDoc","target":"docs/design/example.md"},"verdict":{"decision":"approved|approved_with_conditions|needs_revision|rejected"},"issues":[{"id":"I001","severity":"critical|important|suggestion","location":"section or line","description":"specific issue","basis":"governing source or observed fact","expectedEffect":"observable effect of correction","blocking":true,"suggestion":"smallest sufficient correction"}],"recommendations":["non-blocking item"]}
+{"metadata":{"docType":"DesignDoc|ADRBatch","targets":["docs/design/example.md"]},"verdict":{"decision":"approved|approved_with_conditions|needs_revision|rejected"},"issues":[{"id":"I001","severity":"critical|important|suggestion","target":"artifact path","location":"section or line","description":"specific issue","basis":"governing source or observed fact","expectedEffect":"observable effect of correction","blocking":true,"suggestion":"smallest sufficient correction"}],"recommendations":["non-blocking item"]}
 ```
 
 Use an empty `issues` array when none remain. Accept equivalent wording when the artifact and evidence make the result observable.
 
 ## Completion Check
 
-- The correct document mode and next consumer were used.
+- The correct document type and next consumer were used.
+- An ADR batch was reviewed as one decision set rather than as independent files.
 - Every blocking issue is tied to one of the four blocking conditions.
 - No recommendation expands the current implementation scope through the approval gate.
 - Prior declines were reconsidered against evidence rather than repeated automatically.

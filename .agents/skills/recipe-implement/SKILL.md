@@ -24,9 +24,9 @@ Follow the scale-selected flow and its user approval points from subagents-orche
 
 ## Step 1: Requirement Analysis
 
-Spawn requirement-analyzer agent to determine scale and affected layers.
+Spawn requirement-analyzer for compact request signals, scope evidence, cost evidence, affected-layer evidence, and decision-changing questions.
 
-At the existing requirements stop, apply subagents-orchestration-guide `Requirement Convergence` and resolve any `scopeDependencies` through requirement-analyzer before routing.
+At the requirements stop, the orchestrator applies subagents-orchestration-guide `Requirement Convergence` from the user's wording and supplied evidence, resolves material questions, determines Structural Scale and affected layers, and selects the canonical route.
 
 **[STOP — BLOCKING]** Present the converged requirement record, scale, affectedLayers, and scope to the user for confirmation. **CANNOT proceed until user explicitly confirms.**
 
@@ -59,11 +59,11 @@ Verify acceptance-test-generator artifact paths and pass them to work-planner.
 
 ## Completion Criteria
 
-- [ ] Requirement analysis completed and user-confirmed
+- [ ] Scope/cost evidence was collected and the orchestrator's requirement and scale decisions were user-confirmed
 - [ ] Layer routing determined (backend / frontend / fullstack)
 - [ ] Correct workflow followed per layer routing
 - [ ] codebase-analyzer included before Design Doc creation for Medium/Large flows
-- [ ] code-verifier included before document-reviewer for Design Doc review
+- [ ] code-verifier discrepancies passed through Review Resolution before Design Doc review
 - [ ] All stopping points honored with user confirmation obtained
 - [ ] Quality-fixer spawned before every commit
 - [ ] All tasks committed or user input requested

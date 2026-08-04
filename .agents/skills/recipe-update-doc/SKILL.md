@@ -38,7 +38,7 @@ Target document -> Clarify and classify changes
                                                                                  v
                                       technical-designer / technical-designer-frontend / prd-creator (update mode)
                         | (Design Doc only)
-              code-verifier -> document-reviewer
+              code-verifier -> Review Resolution -> document-reviewer
                         | (Design Doc only)
               design-sync -> [Stop: Document approval]
 ```
@@ -102,7 +102,7 @@ Derive the sections, reason, and expected outcome from the user request and targ
 After confirmation, classify the update:
 - ADR: `convergence: N/A`.
 - Scope-preserving PRD or Design Doc update: the outcome, buildable requirements, and exclusions remain unchanged. Preserve the existing convergence record; when none exists, use the eligible update N/A value.
-- Scope-changing PRD or Design Doc update: the outcome, buildable requirements, or exclusions change. Load `requirement-convergence`, spawn requirement-analyzer with the document's current requirements plus the confirmed changes as self-contained input, and run the hearing on fields below `ready`. Continue when all four fields are `ready` or user-approved `weak-but-explicit`.
+- Scope-changing PRD or Design Doc update: the outcome, buildable requirements, or exclusions change. Load `requirement-convergence`, spawn requirement-analyzer for compact scope/cost evidence, then have the orchestrator build the convergence record from the current document and user-confirmed changes. Run the hearing on fields below `ready` and continue when all four fields are `ready` or user-approved `weak-but-explicit`.
 
 Retain the classification for routing and, when scope-changing, the confirmed `convergence` object for Steps 4 and 5.
 
@@ -110,7 +110,7 @@ Retain the classification for routing and, when scope-changing, the confirmed `c
 
 For PRD or Design Doc, spawn [Update Agent from Step 2]: "Operation Mode: update. Existing Document: [path from Step 1]. Changes Required: [Changes clarified in Step 3]. confirmed_requirement_context: [confirmed convergence for scope-changing updates | existing carrier or eligible N/A for scope-preserving updates]. Update the document to reflect the specified changes. Add change history entry."
 
-For ADR, spawn the update agent with the existing path and confirmed changes; Requirement Convergence is outside this update.
+For a minor ADR change, spawn the update agent with `Operation Mode: update`, the existing path, confirmed changes, and `confirmed_requirement_context: N/A — ADR update`. For a major ADR change, leave this update path and use the normal ADR creation and approval flow to create the superseding ADR.
 
 ### Step 5: Document Review
 
@@ -118,12 +118,12 @@ For Design Doc updates, first verify the updated document against code:
 
 Spawn code-verifier agent: "Verify the updated Design Doc against current code. doc_type: design-doc. document_path: [path from Step 1]. verbose: false. Focus especially on literal identifier referential integrity for concrete paths, endpoints, type names, config keys, and other exact identifiers changed in this update."
 
-**Store output as**: `$CODE_VERIFICATION_OUTPUT`
+Apply Review Resolution to every discrepancy. Pass `apply` corrections to the update agent, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$VERIFICATION_RESOLUTION` after the `apply` set becomes empty.
 
 For Design Doc updates:
-Spawn document-reviewer agent: "Review the following updated document. doc_type: DesignDoc. review_context: update. target: [path from Step 1]. mode: composite. confirmed_requirement_context: [Step 3 convergence or existing carrier/N/A]. code_verification: $CODE_VERIFICATION_OUTPUT. Focus on: Consistency of updated sections with rest of document, no contradictions introduced by changes, completeness of change history."
+Spawn document-reviewer agent: "Review the following updated document. doc_type: DesignDoc. review_context: update. target: [path from Step 1]. confirmed_requirement_context: [Step 3 convergence or existing carrier/N/A]. verification_resolution: $VERIFICATION_RESOLUTION. Focus on consistency of the updated sections, governing requirements, and change history."
 
-For PRD updates, spawn document-reviewer with the target, `mode: composite`, and `confirmed_requirement_context` from Step 3. For ADR updates, pass the target and `mode: composite` without requirement-convergence context. Review consistency, contradictions, and change history.
+For PRD updates, spawn document-reviewer with the target and `confirmed_requirement_context` from Step 3. For minor ADR updates, use `doc_type: ADRBatch`, `targets: [updated ADR path]`, and `review_context: update`; review the requested changes and their dependent consistency while carrying the accepted, unchanged decision content as governing context.
 
 **Store output as**: `$STEP_5_OUTPUT`
 
@@ -157,7 +157,7 @@ For Design Doc, spawn design-sync agent: "Verify consistency of the updated Desi
 - [ ] Resolved change content from the request and target document, asking only when material intent was missing
 - [ ] Classified the update and converged scope-changing PRD/Design Doc requirements
 - [ ] Updated document via appropriate agent (update mode)
-- [ ] Ran code-verifier before document-reviewer for Design Doc updates
+- [ ] Applied Review Resolution to code-verifier discrepancies before document-reviewer for Design Doc updates
 - [ ] Spawned document-reviewer and addressed feedback
 - [ ] Spawned design-sync for consistency verification (Design Doc only)
 - [ ] Obtained user approval for updated document

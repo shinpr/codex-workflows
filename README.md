@@ -96,6 +96,8 @@ The number of independent product and design decisions determines the route. Fil
 | Medium | One outcome that needs coordination across parts of the system or a lasting design decision | UI Spec / ADR when required → Design Doc → select useful integration/E2E tests → Work Plan → implementation |
 | Large | Multiple outcomes that need separate design decisions | PRD → UI Spec / ADR when required → Design Doc → select useful integration/E2E tests → Work Plan → implementation |
 
+ADR creation starts from a current-scope technical choice with at least two credible materially distinct options and durable impact. Structural scale supplies context; every qualifying choice gets its own ADR, and the complete set is reviewed together.
+
 For Medium and Large work, an integration or E2E test is selected only when it proves a component, process, browser, or service interaction that a cheaper test cannot. Selecting none is valid.
 
 The documents record only decisions that affect the product or repository implementation. Third-party approval, production access, release execution, and unrelated operational work do not become implementation gates.
@@ -269,12 +271,12 @@ Codex spawns these as needed during recipe execution. You do not need to learn t
 
 | Agent | Role |
 |-------|------|
-| `requirement-analyzer` | Requirement convergence, rough cost, and structural work scale determination |
+| `requirement-analyzer` | Compact request signals plus repository-backed scope and cost evidence for orchestrator decisions |
 | `prd-creator` | PRD creation and structuring |
-| `technical-designer` | ADR and Design Doc creation (backend) |
-| `technical-designer-frontend` | Frontend ADR and Design Doc creation (React) |
+| `technical-designer` | Complete ADR-batch or Design Doc creation (backend/general) |
+| `technical-designer-frontend` | Complete frontend ADR-batch or Design Doc creation (React) |
 | `ui-spec-designer` | UI Specification from PRD and optional prototype code |
-| `codebase-analyzer` | Existing codebase analysis before Design Doc creation |
+| `codebase-analyzer` | Compact repository evidence for option selection, minimal design, and verification |
 | `ui-analyzer` | UI facts from external resources (design tools, design-system docs, deployed UI) and frontend code |
 | `work-planner` | Work plan creation from Design Docs |
 | `document-reviewer` | Document review against governing requirements and design decisions |
