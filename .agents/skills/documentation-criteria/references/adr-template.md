@@ -8,6 +8,12 @@
 
 [Describe the background and reasons why this decision is needed. Include the essence of the problem, current challenges, and constraints]
 
+## Decision Point
+
+- **Question**: [The technical choice requiring comparison and selection]
+- **Why a decision exists**: [Evidence for at least two credible materially distinct options]
+- **Scope boundary**: [Approved requirement or existing contract this decision serves]
+
 ## Decision
 
 [Describe the actual decision made. Aim for specific and clear descriptions]
@@ -18,9 +24,8 @@
 |------|---------|
 | **Decision** | [The decision in one sentence] |
 | **Why this** | [Why this option over alternatives (1-3 lines)] |
-| **Why now** | [Timing rationale when timing changes the decision; otherwise N/A] |
 | **Known unknowns** | [Uncertainty that changes implementation or verification; otherwise N/A] |
-| **Kill criteria** | [Observable reversal signal when reversal is a credible current path; otherwise N/A] |
+| **Reconsider when** | [Observable condition that changes the option comparison; otherwise N/A] |
 
 ## Rationale
 
@@ -28,17 +33,14 @@
 
 ### Options Considered
 
-Include every credible materially distinct option supported by requirements, repository evidence, or the current approach. When only one option remains credible, record the evidence that rules out another material alternative instead of inventing options.
+Compare every credible materially distinct option supported by current requirements and repository evidence. Relative, evidence-backed cost is sufficient for the selection.
 
-1. **Option 1**: [Description]
-   - Pros: [List advantages]
-   - Cons: [List disadvantages]
+| Option | Requirement and repository fit | Current-scope benefit | Lifecycle cost | Maintainability | Material trade-offs |
+|---|---|---|---|---|---|
+| [Option 1] | [fit and evidence] | [benefit required now] | [implementation, operation, change, reversal] | [fit with ownership and representative patterns] | [trade-offs] |
+| [Option 2] | [fit and evidence] | [benefit required now] | [implementation, operation, change, reversal] | [fit with ownership and representative patterns] | [trade-offs] |
 
-2. **Option 2 (when credible)**: [Description]
-   - Pros: [List advantages]
-   - Cons: [List disadvantages]
-
-**Selected**: [Option and why its trade-offs best preserve the approved outcome]
+**Selected**: [The smallest sufficient option whose maintainability and lifecycle cost are justified by its current-scope benefit]
 
 ## Consequences
 
@@ -61,7 +63,6 @@ Include every credible materially distinct option supported by requirements, rep
 ## Implementation Guidance
 
 [Principled direction only. Implementation procedures go to Design Doc]
-Example: "Use dependency injection" (good), "Implement in Phase 1" (bad)
 
 ## Related Information
 

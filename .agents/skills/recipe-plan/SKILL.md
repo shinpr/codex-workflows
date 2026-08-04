@@ -55,7 +55,7 @@ Present options if multiple exist (can be specified with $ARGUMENTS).
 - Verify the returned Work Plan path and use it as the Step 4 review target
 
 ### Step 4: Work Plan Review
-Spawn document-reviewer agent: "Review the work plan. doc_type: WorkPlan. target: [work-planner completed path]. mode: composite. Verify Design Doc implementation coverage, absence of added operational scope, dependency order, executable verification, optional Verification Focus, and Review Scope."
+Spawn document-reviewer agent: "Review the work plan. doc_type: WorkPlan. target: [work-planner completed path]. Verify Design Doc implementation coverage, absence of added operational scope, dependency order, executable verification, optional Verification Focus, and Review Scope."
 
 Branch on `verdict.decision`:
 - `approved` -> proceed to Step 5 with the plan-level status pending

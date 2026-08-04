@@ -16,7 +16,7 @@ Load and read each skill completely before taking task actions: `ai-development-
 - **designDoc**: one or more Design Doc paths
 - **uiSpec**: optional UI Specification path
 - **prd**: optional PRD path
-- **adr**: optional ADR path
+- **adrs**: optional accepted ADR path array
 - **testSkeletons**: optional generated integration/E2E skeleton paths
 - **updateContext**: existing plan path and requested change in update mode
 
