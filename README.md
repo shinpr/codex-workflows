@@ -4,21 +4,21 @@
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Spec%20Compliant-blue)](https://developers.openai.com/codex/skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Make Codex deliver the smallest outcome you approve—not a larger, technically defensible version of it—without giving up the autonomy that makes Codex useful.
+codex-workflows keeps Codex focused on the smallest approved outcome while preserving its implementation autonomy.
 
-Codex usually has enough capability to implement the request. On non-trivial work, the risk is literal success: it can build every requested detail and justify a larger solution even when the product outcome does not need one.
+On non-trivial work, Codex can implement every requested detail or introduce a larger solution than the product outcome requires.
 
-codex-workflows is a repository-installed set of Agent Skills and custom agents for [OpenAI Codex CLI](https://developers.openai.com/codex/cli). It challenges the scope before design, then carries the approved outcome through implementation and review. The main Codex session acts as the orchestrator: it keeps that outcome in view, delegates specialist work, and resolves implementation details from repository evidence. The workflow controls product and design boundaries without trying to prescribe every internal choice.
+codex-workflows is a repository-installed set of Agent Skills and custom agents for [OpenAI Codex CLI](https://developers.openai.com/codex/cli). It checks the scope before design and records the approved outcome for use during implementation and review. The main Codex session coordinates specialist agents and resolves implementation details from repository evidence.
 
 ---
 
 ## Why not use Codex directly?
 
-For a well-scoped fix, a disposable experiment, or a one-shot script, you should. Direct Codex execution is faster and cheaper when the intended outcome and safe implementation boundary are already obvious.
+Direct Codex is the better fit for a well-scoped fix, disposable experiment, or one-shot script. It is faster and cheaper when the intended outcome and safe implementation boundary are already clear.
 
-Use codex-workflows when doing too much can be as costly as doing the wrong thing.
+Use codex-workflows when the scope needs explicit review and approval.
 
-You ask Codex to extend the existing authentication path. Halfway through, a second mechanism looks cleaner. The response contract shifts to match it. The frontend adapts. Every diff is defensible. Every test passes. And the result is no longer what your team approved.
+For example, a request to extend an existing authentication path can drift into adding a second mechanism and changing the response contract. The frontend may adapt and the tests may pass even though the result no longer matches the approved design.
 
 codex-workflows controls that expansion at three points:
 
@@ -113,7 +113,7 @@ The included [Work Plan template](.agents/skills/documentation-criteria/referenc
 ```markdown
 ### P1-T1: Preserve the error response contract
 
-- **Source**: `docs/design/example-design.md` — API contract, AC-2
+- **Source**: `docs/design/example-design.md`, API contract, AC-2
 - **Scope**: Update the repository implementation and its focused tests
 - **Depends on**: none
 - **Verification**: Run the contract test and observe the documented response shape
@@ -140,8 +140,8 @@ npx codex-workflows install
 ```
 
 This copies into your project:
-- `.agents/skills/` — Codex skills (foundational + recipes)
-- `.codex/agents/` — Subagent TOML definitions
+- `.agents/skills/`: Codex skills (foundational + recipes)
+- `.codex/agents/`: Subagent TOML definitions
 - Manifest file for tracking managed files
 
 To make the workflows available to Codex across all projects, install them into
@@ -167,7 +167,7 @@ npx codex-workflows update
 npx codex-workflows update --user
 ```
 
-Files you've modified locally are preserved — the updater compares each file against its hash at install time and skips any file you've changed. Versioned update history applies file moves and deletions in order, so local changes follow a moved file to its current path. Modified files retired without a replacement are moved to `.codex-workflows-preserved/<version>/`. New files from the update are added automatically.
+The updater preserves files you have modified locally. It compares each file against its hash at install time and skips changed files. Versioned update history applies file moves and deletions in order, so local changes follow a moved file to its current path. Modified files retired without a replacement are moved to `.codex-workflows-preserved/<version>/`. New files from the update are added automatically.
 
 ```bash
 # Check installed version
@@ -190,7 +190,7 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 
 | Recipe | What it does | When to use |
 |--------|-------------|-------------|
-| `$recipe-implement` | Full lifecycle with layer routing (backend/frontend/fullstack) | New features — universal entry point |
+| `$recipe-implement` | Full lifecycle with layer routing (backend/frontend/fullstack) | New features (universal entry point) |
 | `$recipe-task` | Single task with rule selection | Bug fixes, small changes |
 | `$recipe-design` | Requirements → scale-selected product and design documents | Product and architecture design |
 | `$recipe-plan` | Design Doc → selective integration/E2E skeletons → work plan | Planning phase from an approved Design Doc |
@@ -373,7 +373,7 @@ A: Designed for current GPT models. Models are configurable per agent in the TOM
 
 **Q: Can I customize the agents?**
 
-A: Yes. Edit the TOML files in `.codex/agents/` — change model, sandbox_mode, or developer_instructions. Each agent names its required skills in `developer_instructions`. Files you modify locally are preserved during `npx codex-workflows update`.
+A: Yes. Edit the TOML files in `.codex/agents/` to change `model`, `sandbox_mode`, or `developer_instructions`. Each agent names its required skills in `developer_instructions`. Files you modify locally are preserved during `npx codex-workflows update`.
 
 For a user-level installation, edit the files in `$CODEX_HOME/agents/` and use
 `npx codex-workflows update --user`. User-level files modified after installation
@@ -385,7 +385,7 @@ A: `$recipe-implement` is the universal entry point. It runs requirement-analyze
 
 **Q: Does this work with MCP servers?**
 
-A: Yes. Codex skills and subagents work alongside [MCP](https://developers.openai.com/codex/mcp) — skills operate at the instruction layer while MCP operates at the tool transport layer. Custom agents inherit parent `mcp_servers` when the agent TOML omits `mcp_servers`; add agent-local MCP config only for agent-specific servers or tool filtering.
+A: Yes. Codex skills and subagents work alongside [MCP](https://developers.openai.com/codex/mcp). Skills operate at the instruction layer, while MCP operates at the tool transport layer. Custom agents inherit parent `mcp_servers` when the agent TOML omits `mcp_servers`; add agent-local MCP config only for agent-specific servers or tool filtering.
 
 **Q: How is this related to claude-code-workflows?**
 
@@ -402,9 +402,10 @@ A: The main Codex session owns progress. It inspects the returned evidence, retr
 <details>
 <summary>Background reading behind the workflow design</summary>
 
-- [Planning Is the Real Superpower of Agentic Coding](https://www.norsica.jp/blog/planning-superpower-agentic-coding) — why explicit planning turns large-task execution from raw generation into verification against a design and task breakdown
-- [Why LLMs Are Bad at 'First Try' and Great at Verification](https://www.norsica.jp/blog/llm-verification-over-generation) — why review loops and session separation are more reliable than first-shot generation on complex work
-- [Stop Putting Everything in AGENTS.md](https://www.norsica.jp/blog/stop-putting-everything-in-agents-md) — why `AGENTS.md` should stay lean while rules, docs, and task instructions live near the point of use
+- [Planning Is the Real Superpower of Agentic Coding](https://www.norsica.jp/blog/planning-superpower-agentic-coding): why explicit planning turns large-task execution from raw generation into verification against a design and task breakdown
+- [Why LLMs Are Bad at 'First Try' and Great at Verification](https://www.norsica.jp/blog/llm-verification-over-generation): why review loops and session separation are more reliable than first-shot generation on complex work
+- [When Better Models Make Old Agent Workflows Worse](https://www.norsica.jp/blog/when-better-models-make-old-agent-workflows-worse): why workflow constraints should protect boundaries and evidence without prescribing the model's internal path
+- [Stop Putting Everything in AGENTS.md](https://www.norsica.jp/blog/stop-putting-everything-in-agents-md): why `AGENTS.md` should stay lean while rules, docs, and task instructions live near the point of use
 
 </details>
 
@@ -412,7 +413,7 @@ A: The main Codex session owns progress. It inspects the returned evidence, retr
 
 ## License
 
-MIT License — free to use, modify, and distribute.
+MIT License. Free to use, modify, and distribute.
 
 ---
 
