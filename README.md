@@ -404,6 +404,7 @@ A: The main Codex session owns progress. It inspects the returned evidence, retr
 
 - [Planning Is the Real Superpower of Agentic Coding](https://www.norsica.jp/blog/planning-superpower-agentic-coding): why explicit planning turns large-task execution from raw generation into verification against a design and task breakdown
 - [Why LLMs Are Bad at 'First Try' and Great at Verification](https://www.norsica.jp/blog/llm-verification-over-generation): why review loops and session separation are more reliable than first-shot generation on complex work
+- [When Better Models Make Old Agent Workflows Worse](https://www.norsica.jp/blog/when-better-models-make-old-agent-workflows-worse): why workflow constraints should protect boundaries and evidence without prescribing the model's internal path
 - [Stop Putting Everything in AGENTS.md](https://www.norsica.jp/blog/stop-putting-everything-in-agents-md): why `AGENTS.md` should stay lean while rules, docs, and task instructions live near the point of use
 
 </details>
