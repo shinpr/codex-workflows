@@ -116,7 +116,7 @@ Record every approved ADR file as `Accepted` when ADRs were created. Spawn techn
 ### Step 5: Code Verification
 Spawn code-verifier agent: "Verify the Design Doc against the current codebase. document_path: [Design Doc path from Step 4]. doc_type: design-doc."
 
-Apply Review Resolution to every discrepancy before document review. Pass `apply` corrections only to technical-designer in update mode, then rerun code-verifier. When the `apply` set is empty, carry the resolved verification summary, declines with reasons, and material limitations to Step 6.
+Apply Review Resolution to every discrepancy before document review. Pass only the `apply` discrepancies to technical-designer in update mode, then rerun code-verifier. When the `apply` set is empty, carry the resolved verification summary, declines with reasons, and material limitations to Step 6.
 
 ### Step 6: Document Review
 Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. review_context: creation. target: [Design Doc path]. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. decision_materials: [only Step 2 material that constrains this design]. verification_resolution: [resolved Step 5 evidence]."

@@ -119,13 +119,10 @@ Use agent statuses as routing signals, not as a parser contract. Interpret the r
 |--------|-------|---------|-------------|
 | `approved` | Review/approval agents | All criteria met | Proceed to next phase |
 | `approved_with_conditions` | Document agents | Criteria met with minor open items | Resolve actionable conditions before the next approval point |
-| `approved_with_notes` | security-reviewer | Only hardening/policy findings | Proceed — include notes in completion report (no resolution required) |
-| `needs_revision` | Review/approval agents | Significant issues repairable within approved repository scope, including high-confidence security risk | Resolve through the normal review or verifier-fix cycle |
+| `needs_revision` | Review/approval agents | Significant issues repairable within approved repository scope | Resolve through the normal review or verifier-fix cycle |
 | `rejected` | Document agents | Fundamental problems | Apply Orchestrator Escalation Resolution |
-| `blocked` | security-reviewer | User-held secret rotation/revocation authority is required, or governing input is unusable | Apply Orchestrator Escalation Resolution |
+| `blocked` | Agents whose schema permits it | An agent-specific blocking condition prevents a usable result | Apply Orchestrator Escalation Resolution |
 | `skipped` | Review/approval agents whose schema permits skipping | Preconditions not met for this step | Report reason, proceed |
-
-Include `approved_with_notes` content in the completion report.
 
 ### Review Resolution
 
@@ -275,8 +272,8 @@ Use the task loop defined in the autonomous execution diagram above. The canonic
 
 | Verifier | Pass | Fail | Blocked |
 |----------|------|------|---------|
-| code-verifier | `summary.status` is `consistent` or `mostly_consistent` | `summary.status` is `needs_review` or `inconsistent` | `summary.status` is `blocked` |
-| security-reviewer | `status` is `approved` or `approved_with_notes` | `status` is `needs_revision` | `status` is `blocked` |
+| code-verifier | `summary.status` is `consistent` | `summary.status` is `needs_review` or `inconsistent` | `summary.status` is `blocked` |
+| security-reviewer | `status` is `approved` | `status` is `needs_revision` | `status` is `blocked` |
 
 Code-verifier runs correspond to durable governing documents. The Small path passes its active task file to security-reviewer as `type: task-file`. Repository quality checks are owned by the quality-fixer run in each implementation and verifier-fix task cycle.
 
@@ -306,7 +303,7 @@ Apply Review Resolution to verifier findings. Consolidate the `apply` set into t
 | `codebase-analyzer` | orchestrator and `technical-designer*` | relevant `reuse`, `invalidations`, `candidateDecisionPoints`, `verification`, decision-changing `unknowns`, and material limitations; the orchestrator passes confirmed ADR points to the designer |
 | `technical-designer*` | ADR batch reviewer | complete ADR `paths[]` from the invocation |
 | `technical-designer*` | `code-verifier` | Design Doc path |
-| `code-verifier` | orchestrator Review Resolution, then technical designer or document reviewer | `apply` corrections for the author; declined reasons and resolved verification evidence for the next reviewer |
+| `code-verifier` | orchestrator Review Resolution, then technical designer or document reviewer | `apply` discrepancies for the author; declined reasons and resolved verification evidence for the next reviewer |
 | `task-executor*` | `integration-test-reviewer` | `diffBase`, changed integration/E2E paths, exact task file, and matching skeleton paths when available |
 | implementation task | `quality-fixer*` | exact task file, accumulated `taskWriteSet`, and operation-verification evidence |
 | `acceptance-test-generator` | `work-planner` | `artifacts[].path` |

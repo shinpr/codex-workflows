@@ -59,7 +59,7 @@ For destructive or irreversible operations, and security-sensitive mutations rea
 When multiple routes reach the same mutation, compare validation, classification, resource bounds, and read/parse/mutation/reporting order. Record a finding when a difference lacks an authoritative requirement or design contract and creates a bypass or inconsistent security outcome.
 
 ### 4. Contract and Boundary Safety Check
-Apply the coding-rules checks that match the changed attack surface: untrusted input, output destination, resource authorization, secrets, data access, persistent/shared state, and error exposure. Classify unrelated generic hardening outside the review scope.
+Apply the coding-rules checks that match the changed attack surface: untrusted input, output destination, resource authorization, secrets, data access, persistent/shared state, and error exposure.
 
 ### 5. Pattern Detection
 Execute the applicable security detection patterns from `coding-rules`:
@@ -75,12 +75,10 @@ Consolidate all findings, remove duplicates, and classify each finding into one 
 
 | Category | Definition | Examples |
 |----------|-----------|----------|
-| **confirmed_risk** | An attack surface is present in the implementation as-is | Missing authentication on endpoint, arbitrary file access, SQL injection via string concatenation |
-| **defense_gap** | Not immediately exploitable, but a defensive layer is thin or absent | Runtime type validation missing (framework may catch it), unnecessary capability enabled |
-| **hardening** | Improvement to reduce attack surface or exposure | Reducing log verbosity, tightening error response content |
-| **policy** | Organizational or operational practice concern | Dependency version pinning strategy, CI security scanning coverage |
+| **confirmed_risk** | An attack surface is exploitable in the implementation as-is | Missing authentication on endpoint, arbitrary file access, SQL injection via string concatenation |
+| **defense_gap** | A governing security requirement or in-scope security boundary lacks a required defensive control | Runtime type validation missing at an input boundary, unnecessary capability enabled |
 
-For each finding, evaluate whether it represents an actual risk given the project's runtime environment, framework protections, and existing mitigations. Discard false positives.
+Emit a finding only when current evidence shows a correction is required to satisfy a governing security requirement or protect an in-scope security boundary. Evaluate it against the project's runtime environment, framework protections, and existing mitigations.
 
 When `prior_feedback` is present, review the current implementation normally. Withdraw a declined finding when its reason remains consistent with governing evidence. Maintain it only when current or newly observed evidence still supports `needs_revision`; newly observed findings require current evidence.
 
@@ -90,10 +88,8 @@ Each finding must include a `rationale` field whose content depends on the categ
 
 | Category | Rationale must explain |
 |----------|----------------------|
-| **confirmed_risk** | Why the attack surface is exploitable as-is |
-| **defense_gap** | What defensive layer is being relied upon, and why it may be insufficient |
-| **hardening** | Why the current state is acceptable, and what improvement would add |
-| **policy** | Why this is not a technical vulnerability (what mitigates the technical risk) |
+| **confirmed_risk** | Why the attack surface is exploitable as-is after applying existing mitigations |
+| **defense_gap** | Which required defensive control is missing or insufficient and which boundary it protects |
 
 ### 8. Return JSON Result
 Return the JSON result as the final response. See Output Format for the schema.
@@ -101,27 +97,17 @@ Return the JSON result as the final response. See Output Format for the schema.
 ## Output Format
 
 ```json
-{"status":"approved|approved_with_notes|needs_revision|blocked","summary":"[1-2 sentence summary]","filesReviewed":5,"findings":[{"id":"S001","category":"confirmed_risk|defense_gap|hardening|policy","confidence":"high|medium|low","location":"[file:line]","description":"[specific issue found]","rationale":"[category-specific, see Category-Specific Rationale]","suggestion":"[specific fix]"}],"notes":"[summary of hardening/policy findings for completion report, present when status is approved_with_notes]","requiredFixes":["[specific fix 1 — only confirmed_risk and qualifying defense_gap items]"]}
+{"status":"approved|needs_revision|blocked","summary":"[1-2 sentence summary]","filesReviewed":5,"findings":[{"id":"S001","category":"confirmed_risk|defense_gap","location":"[file:line]","description":"[specific issue found]","rationale":"[category-specific, see Category-Specific Rationale]","suggestion":"[specific fix]"}]}
 ```
 
 ## Status Determination
 
-### blocked
+Return `blocked` when:
+
 - A committed credential or secret requires user-held rotation or revocation authority in addition to repository correction
 - Required governing input is missing or unreadable
 
-### needs_revision
-- One or more confirmed_risk findings
-- Multiple defense_gap findings that affect primary input boundaries
-- `requiredFixes` lists only confirmed_risk and qualifying defense_gap items
-
-### approved_with_notes
-- Findings are limited to hardening and/or policy categories
-- Or defense_gap findings exist but are isolated and do not affect primary input boundaries
-- Notes are included in the completion report for awareness
-
-### approved
-- No meaningful findings after consolidation
+Otherwise return `needs_revision` when `findings` is non-empty and `approved` when `findings` is empty after consolidation.
 
 ## Quality Checklist
 
@@ -129,8 +115,8 @@ Return the JSON result as the final response. See Output Format for the schema.
 - [ ] Each Security section subsection checked against implementation
 - [ ] Applicable stable and trend-sensitive patterns exposed by coding-rules searched
 - [ ] Conditional advisory check performed or marked not applicable with reason
-- [ ] Each finding classified into confirmed_risk / defense_gap / hardening / policy
-- [ ] False positives excluded considering runtime environment and existing mitigations
+- [ ] Each finding classified into confirmed_risk / defense_gap
+- [ ] Every finding requires correction after considering the runtime environment and existing mitigations
 - [ ] Committed secrets checked (blocked status if found)
 - [ ] Final response is the JSON output
 

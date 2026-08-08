@@ -55,14 +55,14 @@ If either reviewer returns a blocked or otherwise unusable result, apply Orchest
 - `code-reviewer` verdict is `pass`
 
 **Security criteria**:
-- `approved` or `approved_with_notes` -> Pass
+- `approved` -> Pass
 - `needs_revision` -> Fail
 
 Report both results from their evidence, then apply Review Resolution before proposing corrections:
 
 ```
 Code Compliance: [verdict]
-  Acceptance Criteria: [fulfilled/partial/unfulfilled items with evidence]
+  Acceptance Criteria: [fulfilled/unfulfilled items with evidence]
   Findings: [blocking findings with basis and effect]
   Recommendations: [non-blocking items]
 
@@ -70,9 +70,6 @@ Security Review: [status from security-reviewer]
   Findings by category:
   - [confirmed_risk] [location]: [description] — [rationale]
   - [defense_gap] [location]: [description] — [rationale]
-  - [hardening] [location]: [description] — [rationale]
-  - [policy] [location]: [description] — [rationale]
-  Notes: [notes from security-reviewer, if present]
 
 Proposed corrections:
   c) Code-side fix
@@ -112,7 +109,6 @@ Code Compliance:
 Security Review:
   Initial: [status]
   Final: [status] (if fixes executed)
-  Notes: [notes from approved_with_notes, if any]
 
 Remaining issues:
 - [items requiring manual intervention]

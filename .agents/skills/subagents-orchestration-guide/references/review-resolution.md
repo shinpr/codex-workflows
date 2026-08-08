@@ -12,11 +12,11 @@ The orchestrator classifies each finding or discrepancy from its cited evidence:
 | `decline` | The finding adds scope, reverses a recorded exclusion, requests optional hardening or external operation, duplicates existing proof, or costs more than its observable effect justifies. |
 | `user_decision_required` | Resolution changes the product outcome, a confirmed requirement or exclusion, or a major approved design decision. |
 
-For `apply`, give the author the finding, governing source, expected effect, and smallest sufficient correction. For `decline`, give the originating reviewer or verifier the governing source or observed evidence and the concrete scope mismatch or cost-to-effect mismatch. Keep the dispositions in the active workflow context as the complete resolution record.
+For `apply`, pass the complete finding or discrepancy unchanged with its disposition. For `decline`, give the originating reviewer or verifier the governing source or observed evidence and the concrete scope mismatch or cost-to-effect mismatch. Keep the dispositions in the active workflow context as the complete resolution record.
 
 ## 2. Revise and Reconsider
 
-Invoke the responsible author when at least one `apply` finding exists, and pass only those accepted corrections. Then rerun the same reviewer or verifier with the changed artifact and the declined reasons as prior feedback. An empty `apply` set proceeds directly to the next workflow step.
+Invoke the responsible author when at least one `apply` finding or discrepancy exists, and pass only the `apply` findings or discrepancies. Then rerun the same reviewer or verifier with the changed artifact and the declined reasons as prior feedback. An empty `apply` set proceeds directly to the next workflow step.
 
 The reviewer withdraws a declined finding when the reason is consistent with governing evidence. It may maintain the finding when existing or newly observed governing evidence still shows the result is incorrect, non-executable, or non-verifiable. A maintained non-blocking recommendation does not prevent progression.
 
@@ -33,6 +33,6 @@ Return to the user only for `user_decision_required`, unavailable user-held auth
 Pass only:
 
 - artifact or implementation path or ADR batch paths;
-- accepted findings with their governing basis and smallest correction;
+- complete `apply` findings or discrepancies unchanged with their dispositions;
 - declined finding IDs with reasons and evidence;
 - the observable condition the rerun must judge.
