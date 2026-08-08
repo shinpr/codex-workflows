@@ -95,7 +95,7 @@ Spawn prd-creator agent: "Create reverse-engineered PRD for the following featur
 
 Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. code_paths: $PRD_UNIT_COMBINED_RELATED_FILES. unit_inventory: $PRD_UNIT_INVENTORY. verbose: false."
 
-Apply Review Resolution to every discrepancy. Pass `apply` corrections to prd-creator in update mode, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$STEP_3_RESOLUTION` after the `apply` set becomes empty. A blocked or unusable result enters Orchestrator Escalation Resolution.
+Apply Review Resolution to every discrepancy. Pass the `apply` discrepancies to prd-creator in update mode, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$STEP_3_RESOLUTION` after the `apply` set becomes empty. A blocked or unusable result enters Orchestrator Escalation Resolution.
 
 #### Step 4: Review
 
@@ -198,7 +198,7 @@ Spawn technical-designer agent: "Create Design Doc for the following feature bas
 
 Spawn code-verifier agent: "Verify consistency between Design Doc and code implementation. doc_type: design-doc. document_path: $STEP_7_OUTPUT. code_paths: $UNIT_SCOPE_BOUNDARY. unit_inventory: $UNIT_INVENTORY. verbose: false."
 
-Apply Review Resolution to every discrepancy. Pass `apply` corrections to technical-designer in update mode, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$STEP_8_RESOLUTION` after the `apply` set becomes empty. A blocked or unusable result enters Orchestrator Escalation Resolution.
+Apply Review Resolution to every discrepancy. Pass the `apply` discrepancies to technical-designer in update mode, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$STEP_8_RESOLUTION` after the `apply` set becomes empty. A blocked or unusable result enters Orchestrator Escalation Resolution.
 
 #### Step 9: Review
 
@@ -226,7 +226,7 @@ If `verdict.decision` is `rejected`, apply Orchestrator Escalation Resolution. C
 
 Output summary including:
 - Generated documents table (Type, Name, Verification Status, Review Status)
-- Action items (discrepancy ID, severity, effect, undocumented features, flagged items)
+- Remaining issues requiring manual intervention, with source ID and effect
 - Next steps checklist
 
 ## Error Handling

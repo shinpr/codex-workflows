@@ -61,7 +61,7 @@ When `prior_feedback` is present, review the current implementation normally. Wi
 Return one JSON object:
 
 ```json
-{"verdict":"pass|needs-improvement|needs-redesign|blocked","acceptanceCriteria":[{"item":"AC-001","status":"fulfilled|partially_fulfilled|unfulfilled","evidence":["file:line or command result"],"gap":"material gap or null"}],"findings":[{"id":"F001","category":"dd_violation|reliability|coverage_gap|maintainability|adjacent_residual","location":"file:line","description":"specific issue","basis":"governing source or observed fact","effect":"observable consequence","blocking":true,"suggestion":"smallest sufficient correction"}],"recommendations":["non-blocking item"],"limitations":["unverified item and effect"]}
+{"verdict":"pass|needs-improvement|needs-redesign|blocked","acceptanceCriteria":[{"item":"AC-001","status":"fulfilled|unfulfilled","evidence":["file:line or command result"],"gap":"material gap or null"}],"findings":[{"id":"F001","category":"dd_violation|reliability|coverage_gap|maintainability|adjacent_residual","location":"file:line","description":"specific issue","basis":"governing source or observed fact","effect":"observable consequence","blocking":true,"suggestion":"smallest sufficient correction"}],"recommendations":["non-blocking item"],"limitations":["unverified item and effect"]}
 ```
 
 ## Completion Check

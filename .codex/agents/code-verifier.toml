@@ -44,16 +44,16 @@ Stop expanding the search when additional repository context cannot change a fin
 - `drift`: an as-is or preserved-current-state claim is stale.
 - `gap`: a required supporting dependency or implementation target is absent, or a reverse-engineered document does not account for an in-scope inventory item.
 - `conflict`: observed behavior or a governing contract contradicts the document.
-- `unverified`: available repository evidence cannot establish the claim; state the exact limitation.
+- `unverified`: the document presents a material claim as established, but available repository evidence cannot establish it; state the exact limitation and effect.
 
-Severity is `critical` only when the issue makes approved scope incorrect, non-executable, or non-verifiable. Otherwise use `major` for a material correction and `minor` for non-blocking precision.
+Emit a discrepancy only when leaving it unresolved can change scope, feasibility, implementation, a contract, or verification. Use `limitations` for evidence-access or coverage constraints that do not identify such a claim.
 
 ## Output
 
 Return one JSON object:
 
 ```json
-{"summary":{"docType":"design-doc","documentPath":"docs/design/example.md","status":"consistent|mostly_consistent|needs_review|inconsistent|blocked"},"blockingReason":null,"inventoryCoverage":null,"discrepancies":[{"id":"D001","status":"drift|gap|conflict|unverified","severity":"critical|major|minor","claim":"document claim","documentLocation":"section or line","codeLocation":"file:line or null","evidence":"observed fact","effect":"why this changes feasibility, implementation, contract, or verification"}],"limitations":["exact unverified item and effect"]}
+{"summary":{"docType":"design-doc","documentPath":"docs/design/example.md","status":"consistent|needs_review|inconsistent|blocked"},"blockingReason":null,"inventoryCoverage":null,"discrepancies":[{"id":"D001","status":"drift|gap|conflict|unverified","claim":"document claim","documentLocation":"section or line","codeLocation":"file:line or null","evidence":"observed fact","effect":"why this changes feasibility, implementation, contract, or verification"}],"limitations":["exact evidence-access or coverage constraint and its effect"]}
 ```
 
 When `unit_inventory` is supplied, replace `inventoryCoverage: null` with this compact object for each category:
@@ -66,10 +66,9 @@ For each category, `accountedCount + excluded.length + unaccounted.length` equal
 
 Use:
 
-- `consistent` when no material discrepancy exists;
-- `mostly_consistent` when only non-blocking precision or documented limitations remain;
-- `needs_review` when a repairable material discrepancy exists;
-- `inconsistent` when governing evidence contradicts the document's selected outcome or contract;
+- `consistent` when no discrepancy exists;
+- `needs_review` when every discrepancy can be resolved by revising the document within confirmed scope and selected decisions, including an `unverified` claim that can be qualified with its evidence limitation and an in-scope verification or guard;
+- `inconsistent` when a discrepancy cannot be resolved without changing a confirmed requirement, selected decision, or governing contract;
 - `blocked` only when the input or repository evidence is unusable for the requested verification.
 
 ## Completion Check

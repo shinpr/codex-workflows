@@ -89,7 +89,7 @@ Before spawning, replace every context placeholder with a concrete context objec
 
 ### Verification Resolution
 
-Apply Review Resolution independently to each code-verifier result. Send `apply` corrections to the matching technical designer, rerun the affected verifier, and provide document-reviewer with resolved verification evidence after each `apply` set becomes empty.
+Apply Review Resolution independently to each code-verifier result. Send the `apply` discrepancies to the matching technical designer, rerun the affected verifier, and provide document-reviewer with resolved verification evidence after each `apply` set becomes empty.
 
 **Frontend UI Analysis**:
 **Agent**: Spawn ui-analyzer

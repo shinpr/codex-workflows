@@ -118,7 +118,7 @@ For Design Doc updates, first verify the updated document against code:
 
 Spawn code-verifier agent: "Verify the updated Design Doc against current code. doc_type: design-doc. document_path: [path from Step 1]. verbose: false. Focus especially on literal identifier referential integrity for concrete paths, endpoints, type names, config keys, and other exact identifiers changed in this update."
 
-Apply Review Resolution to every discrepancy. Pass `apply` corrections to the update agent, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$VERIFICATION_RESOLUTION` after the `apply` set becomes empty.
+Apply Review Resolution to every discrepancy. Pass the `apply` discrepancies to the update agent, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$VERIFICATION_RESOLUTION` after the `apply` set becomes empty.
 
 For Design Doc updates:
 Spawn document-reviewer agent: "Review the following updated document. doc_type: DesignDoc. review_context: update. target: [path from Step 1]. confirmed_requirement_context: [Step 3 convergence or existing carrier/N/A]. verification_resolution: $VERIFICATION_RESOLUTION. Focus on consistency of the updated sections, governing requirements, and change history."
