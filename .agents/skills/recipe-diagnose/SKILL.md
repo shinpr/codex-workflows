@@ -94,8 +94,6 @@ Review investigation output:
 
 When required evidence is missing, re-run investigator with the missing items and previous output. Proceed to verifier when the causal path and its material unknowns are explicit.
 
-Carry `causeCategory: design_gap` and `recurrenceRisk: high` through verification and solution derivation as evidence. Diagnosis presents the resulting trade-offs without changing implementation scope.
-
 Proceed to verifier once quality is satisfied.
 
 ### Step 3: Verification (verifier)
