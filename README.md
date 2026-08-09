@@ -4,11 +4,11 @@
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Spec%20Compliant-blue)](https://developers.openai.com/codex/skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-codex-workflows keeps Codex focused on the smallest approved outcome while preserving its implementation autonomy.
+On larger product work, Codex can pursue technical consistency beyond what the user needs. Handling every edge case and making each path deterministic can alter what users see even when the approved outcome does not require it.
 
-On non-trivial work, Codex can implement every requested detail or introduce a larger solution than the product outcome requires.
+codex-workflows keeps that work within the smallest approved outcome. It checks scope and rough cost before design, records user-visible contracts and exclusions, and creates only the design and verification work the change needs. Codex still chooses the implementation details that stay within those boundaries.
 
-codex-workflows is a repository-installed set of Agent Skills and custom agents for [OpenAI Codex CLI](https://developers.openai.com/codex/cli). It checks the scope before design and records the approved outcome for use during implementation and review. The main Codex session coordinates specialist agents and resolves implementation details from repository evidence.
+The workflows are installed as Agent Skills and custom agents for [OpenAI Codex CLI](https://developers.openai.com/codex/cli). The main Codex session owns progress, evaluates specialist findings against the approved outcome, and resolves implementation details from repository evidence.
 
 ---
 
@@ -16,9 +16,9 @@ codex-workflows is a repository-installed set of Agent Skills and custom agents 
 
 Direct Codex is the better fit for a well-scoped fix, disposable experiment, or one-shot script. It is faster and cheaper when the intended outcome and safe implementation boundary are already clear.
 
-Use codex-workflows when the scope needs explicit review and approval.
+Use codex-workflows when technical choices can change the product scope, user-visible behavior, or a decision that needs to survive across contexts.
 
-For example, a request to extend an existing authentication path can drift into adding a second mechanism and changing the response contract. The frontend may adapt and the tests may pass even though the result no longer matches the approved design.
+For example, a request to extend an existing authentication path can lead to a technically cleaner second mechanism, broader validation, and a new response contract. The frontend may adapt and the tests may pass, while users receive behavior that was never part of the approved change.
 
 codex-workflows controls that expansion at three points:
 
@@ -26,9 +26,11 @@ codex-workflows controls that expansion at three points:
 |---|---|
 | Before approval | The workflow compares the request with the desired outcome, explicit exclusions, the existing code, and rough implementation cost. It removes work that does not earn its cost and chooses only the documents and tests the change needs. |
 | Across agent handoffs | Approved requirements and design decisions live in repository documents and task files. A new agent reads those decisions instead of reconstructing intent from a long conversation. |
-| After approval | The orchestrator evaluates agent results and review findings against the approved outcome. It applies useful corrections, declines scope-expanding suggestions with evidence, and lets Codex resolve implementation details autonomously. |
+| After approval | The orchestrator treats agent results and review findings as evidence. It applies corrections required by the approved outcome, consolidates related findings, declines optional hardening, and lets Codex resolve implementation details autonomously. |
 
 This workflow uses more agent calls and tokens than direct execution. Use it when protecting the approved outcome is worth that cost.
+
+An edge case does not require work simply because Codex can handle it. Additional validation, deterministic behavior, or a new abstraction must protect an approved requirement, an observable contract, or a demonstrated failure.
 
 ### A real workflow run
 
@@ -39,6 +41,8 @@ Before merge, live evaluation established the final model routing, prompt limits
 ---
 
 ## Quick Start
+
+Requires Node.js 22 or later and the latest [Codex CLI](https://developers.openai.com/codex/cli).
 
 ### Install and run
 
@@ -77,10 +81,10 @@ flowchart LR
     A[Request] --> B[Agree on the smallest useful outcome]
     B --> C{Design needed?}
     C -->|No| H[Execute autonomously]
-    C -->|Yes| D[Inspect and design]
-    D --> E[Approve product and design decisions]
-    E --> F[Create implementation plan]
-    F --> G[Approve implementation scope]
+    C -->|Yes| D[Inspect and record needed decisions]
+    D --> E[Approve product and major design boundaries]
+    E --> F[Plan dependent work]
+    F --> G[Approve the implementation scope]
     G --> H
     H --> I[Verify approved outcome]
     I -->|Fixable implementation gap| H
@@ -88,7 +92,7 @@ flowchart LR
     I -->|Passed| J[Complete]
 ```
 
-The number of independent product and design decisions determines the route. File count does not:
+The number of independent product and design decisions determines the route. File count and the number of edge cases Codex can identify do not:
 
 | Scale | What the change needs | What happens |
 |-------|-----------------------|--------------|
@@ -96,15 +100,13 @@ The number of independent product and design decisions determines the route. Fil
 | Medium | One outcome that needs coordination across parts of the system or a lasting design decision | UI Spec / ADR when required → Design Doc → select useful integration/E2E tests → Work Plan → implementation |
 | Large | Multiple outcomes that need separate design decisions | PRD → UI Spec / ADR when required → Design Doc → select useful integration/E2E tests → Work Plan → implementation |
 
-ADR creation starts from a current-scope technical choice with at least two credible materially distinct options and durable impact. Structural scale supplies context; every qualifying choice gets its own ADR, and the complete set is reviewed together.
-
-For Medium and Large work, an integration or E2E test is selected only when it proves a component, process, browser, or service interaction that a cheaper test cannot. Selecting none is valid.
+An ADR is created only for a durable current-scope choice with at least two materially distinct options. When several choices qualify, their ADRs are reviewed together. An integration or E2E test is selected only when a cheaper test cannot prove the required interaction. Some changes need neither.
 
 The documents record only decisions that affect the product or repository implementation. Third-party approval, production access, release execution, and unrelated operational work do not become implementation gates.
 
-After the implementation scope is approved, the orchestrator runs the tasks, focused verification, applicable repository checks, and one implementation commit per task. It resolves problems from the approved documents and repository evidence first. It asks you only when progress requires a new product requirement, a change to a major approved design decision, authority only you hold, or an irreversible action you did not authorize.
+After the implementation scope is approved, the orchestrator runs the tasks, focused verification, applicable repository checks, and one implementation commit per task. It resolves problems from the approved documents and repository evidence first. User-visible behavior remains a product boundary rather than something the implementation may adjust for internal consistency. The orchestrator asks you only when progress requires a new product requirement, a change to a major approved design decision, authority only you hold, or an irreversible action you did not authorize.
 
-Specialist agents receive the exact documents and paths needed for their work. They do not depend on the accumulated implementation conversation.
+Specialist agents receive the exact documents and paths needed for their work. They supply focused evidence without inheriting authority to expand the approved outcome.
 
 ### A handoff you can inspect
 
@@ -405,6 +407,7 @@ A: The main Codex session owns progress. It inspects the returned evidence, retr
 - [Planning Is the Real Superpower of Agentic Coding](https://www.norsica.jp/blog/planning-superpower-agentic-coding): why explicit planning turns large-task execution from raw generation into verification against a design and task breakdown
 - [Why LLMs Are Bad at 'First Try' and Great at Verification](https://www.norsica.jp/blog/llm-verification-over-generation): why review loops and session separation are more reliable than first-shot generation on complex work
 - [When Better Models Make Old Agent Workflows Worse](https://www.norsica.jp/blog/when-better-models-make-old-agent-workflows-worse): why workflow constraints should protect boundaries and evidence without prescribing the model's internal path
+- [Reasoning Effort Is Not a Quality Setting](https://www.norsica.jp/blog/reasoning-effort-is-not-a-quality-setting): why broader technical exploration is useful only when the phase can select and discard the extra work it finds
 - [Stop Putting Everything in AGENTS.md](https://www.norsica.jp/blog/stop-putting-everything-in-agents-md): why `AGENTS.md` should stay lean while rules, docs, and task instructions live near the point of use
 
 </details>
