@@ -5,8 +5,8 @@
 In addition to the general anti-patterns in SKILL.md, detect these frontend-specific patterns:
 
 1. **Excessive use of type assertions (`as`)** - Abandoning type safety; use `unknown` + type guards instead
-2. **Prop drilling through 3+ levels** - Use Context API or state management
-3. **Massive components (300+ lines)** - Split into smaller, focused components
+2. **Pass-through prop chains that obscure state ownership** - Use composition, Context, or the repository's state layer when intermediate components only forward values and a broader owner is clearer; retain explicit props when responsibility remains local and moving ownership upward would add coordination
+3. **Components mixing independently changing responsibilities** - Split when rendering, state/data ownership, or reusable/testable behavior forms an independent responsibility; retain cohesive components when splitting would add avoidable prop/state synchronization
 4. **Commented-out JSX or component code** - Delete it; Git preserves history
 
 ## Frontend Commonalization Criteria
@@ -24,7 +24,7 @@ In addition to the general anti-patterns in SKILL.md, detect these frontend-spec
 - **API Layer**: Convert fetch errors to domain errors
 
 ### Detection of Excessive Fallbacks
-- Require design review when writing the 3rd catch statement in the same feature
+- Require design review when adding a catch that duplicates or fragments an existing recovery responsibility; retain it for a distinct failure mode whose recovery owner is defined in the Design Doc and whose outcome is visible in the UI
 - Verify Design Doc definition before implementing fallbacks
 - Log errors explicitly and make failures visible
 

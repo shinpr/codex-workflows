@@ -139,7 +139,7 @@ Apply this procedure when a workflow result cannot support the next action, incl
 
 ### Work Plan Resolution
 
-Resolve an exact Work Plan path in this order: an explicit recipe argument, the active execution plan's Work Plan, the plan name from the most recently modified task file matching the recipe's managed task pattern, then the most recently modified non-template Work Plan.
+Resolve an exact Work Plan path from the first applicable source: an explicit recipe argument, the active execution plan's Work Plan, or Work Plans derived from task files matching the recipe's managed task patterns. When no managed task file yields a candidate, treat non-template Work Plans as candidates. Use the sole candidate; when multiple candidates remain, present them for selection; when none exists, report the exact missing prerequisite.
 
 ### Work Plan Approval
 
