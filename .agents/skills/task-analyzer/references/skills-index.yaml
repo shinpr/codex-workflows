@@ -61,6 +61,28 @@ skills:
     references:
       - "references/frontend.md"
 
+  reviewee-judgment:
+    skill: "reviewee-judgment"
+    tags: [review-feedback, reviewee, findings, decision-making, root-cause, maintainability, prompt-quality, specification-quality, roi, over-implementation]
+    typical-use: "Evaluating received findings before they generate implementation or revision work"
+    size: medium
+    key-references:
+      - "Received review findings"
+      - "Governing outcome and contracts"
+      - "Artifact-specific verification evidence"
+    sections:
+      - "Purpose and Value"
+      - "Artifact Context"
+      - "Core Distinctions"
+      - "Decision Order"
+      - "Resolution Method"
+      - "Response Contract"
+      - "Completion Check"
+    references:
+      - "references/code.md"
+      - "references/prompt.md"
+      - "references/spec.md"
+
   documentation-criteria:
     skill: "documentation-criteria"
     tags: [documentation, decision-making, adr, prd, design-doc, ui-spec, work-plan, templates, planning, process, scale-assessment]

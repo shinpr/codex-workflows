@@ -1,0 +1,8 @@
+interface:
+  display_name: "Reviewee Judgment"
+  short_description: "Evaluate findings before changes"
+  default_prompt: "Use $reviewee-judgment to evaluate the received findings before deciding what work to perform."
+
+policy:
+  allow_implicit_invocation: true
+

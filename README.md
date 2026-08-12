@@ -247,6 +247,7 @@ Recipes load the repository-aware guidance required for the current task. You ra
 | `coding-rules` | Code quality, function design, error handling, refactoring |
 | `testing` | Proportionate TDD, observable proof selection, test integrity, and repository-required verification |
 | `ai-development-guide` | Evidence-backed root cause, proportionate impact analysis, and applicable quality assurance |
+| `reviewee-judgment` | Evidence-backed evaluation of received findings before they generate revision work |
 | `documentation-criteria` | Document creation rules and templates (PRD, ADR, Design Doc, Work Plan) |
 | `requirement-convergence` | Outcome, requirement layers, user-decided exclusions, and rough cost before design |
 | `implementation-approach` | Direct MVP, evidence-backed expansion, subtraction, slicing, and verification boundary |
@@ -331,6 +332,7 @@ your-project/
 │   ├── coding-rules/         # Foundational guidance
 │   ├── testing/
 │   ├── ai-development-guide/
+│   ├── reviewee-judgment/
 │   ├── documentation-criteria/
 │   ├── requirement-convergence/
 │   ├── implementation-approach/
