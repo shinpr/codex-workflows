@@ -94,7 +94,9 @@ Spawn agents using natural language prompts. Provide clear context about what th
 
 ### Spawn Prompt Requirements
 
-- Each spawn prompt must name the target deliverable, input paths, and expected result. When invoking `task-executor*`, include the exact task file path, for example: `Execute the implementation task. Task file: docs/plans/tasks/[filename].md.`
+- Each spawn prompt must name the target deliverable, input paths, and expected result.
+- When the assigned action writes repository files, include: `The orchestrator has delegated this repository-writing task from the user's requested workflow. This invocation authorizes the repository writes required to produce or update the assigned deliverable within the supplied scope. Perform the writes and return the result.` The orchestrator applies any workflow review or approval gate to the returned artifact afterward.
+- When invoking `task-executor*`, also include the exact task file path, for example: `Execute the implementation task. Task file: docs/plans/tasks/[filename].md.`
 
 ## Explicit Stop Points [MANDATORY]
 
