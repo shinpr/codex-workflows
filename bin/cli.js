@@ -152,8 +152,8 @@ function readUpdateHistory(sourceDir, installedVersion, targetVersion) {
           2
         );
       }
-      if (operation.type === "add" || operation.type === "delete") {
-        assertSafeRelativePath(operation.path, operation.type);
+      if (operation.type === "delete") {
+        assertSafeRelativePath(operation.path, "delete");
       } else if (operation.type === "move") {
         assertSafeRelativePath(operation.from, "move source");
         assertSafeRelativePath(operation.to, "move destination");
@@ -411,10 +411,6 @@ function planUpdate({ installation, installedHashes, version, files, changes }) 
 
   for (const change of changes) {
     for (const operation of change.operations) {
-      if (operation.type === "add") {
-        continue;
-      }
-
       if (operation.type === "delete") {
         const deleted = resolveHistoryPath(installation, operation.path);
         if (!deleted) continue;

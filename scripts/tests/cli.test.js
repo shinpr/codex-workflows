@@ -264,24 +264,6 @@ test("preserves an untracked legacy move source and installs the current destina
   );
 });
 
-test("treats an add history entry for an already managed path as idempotent", () => {
-  const cwd = makeTemporaryDirectory("codex-workflows-project");
-  const managedPath = ".codex/agents/example.toml";
-  const packageFixture = createPackageFixture({
-    version: "2.0.0",
-    files: { [managedPath]: "package v2\n" },
-    changes: [
-      { version: "2.0.0", operations: [{ type: "add", path: managedPath }] },
-    ],
-  });
-  writeInstalledFixture({ cwd, version: "1.0.0", files: { [managedPath]: "package v1\n" } });
-
-  const result = runCli(["update"], { cwd, cliPath: packageFixture.cliPath });
-
-  assert.equal(result.status, 0, result.stderr);
-  assert.equal(fs.readFileSync(path.join(cwd, managedPath), "utf8"), "package v2\n");
-});
-
 test("moves a locally modified managed file to its current path without overwriting it", () => {
   const cwd = makeTemporaryDirectory("codex-workflows-project");
   const oldPath = ".agents/skills/example/old.md";
@@ -353,7 +335,7 @@ test("maps project history paths to user-scoped installation paths", () => {
   );
 });
 
-test("removes retired managed files and installs additions without touching unrelated files", () => {
+test("removes retired managed files and automatically installs additions without touching unrelated files", () => {
   const cwd = makeTemporaryDirectory("codex-workflows-project");
   const deletedPath = ".codex/agents/retired.toml";
   const addedPath = ".codex/agents/new.toml";
@@ -364,10 +346,7 @@ test("removes retired managed files and installs additions without touching unre
     changes: [
       {
         version: "2.0.0",
-        operations: [
-          { type: "delete", path: deletedPath },
-          { type: "add", path: addedPath },
-        ],
+        operations: [{ type: "delete", path: deletedPath }],
       },
     ],
   });
