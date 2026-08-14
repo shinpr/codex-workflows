@@ -1,7 +1,7 @@
 {
   "name": "codex-workflows",
   "version": "1.1.0",
-  "description": "Task-oriented agentic coding framework for OpenAI Codex CLI — skills, recipes, and subagents for structured development workflows",
+  "description": "Codex CLI workflows that keep larger software changes within the approved scope, from planning through review",
   "license": "MIT",
   "author": "Shinsuke Kagawa",
   "repository": {
@@ -23,18 +23,17 @@
   ],
   "keywords": [
     "codex",
+    "codex-cli",
     "openai",
+    "openai-codex",
     "agent-skills",
-    "agentic-coding",
+    "skills",
+    "workflow",
+    "codex-workflow",
+    "development-workflow",
     "ai-coding",
-    "ai-coding-agent",
-    "subagents",
-    "multi-agent",
-    "harness-engineering",
-    "context-engineering",
-    "ai-development-workflow",
-    "tdd",
-    "code-generation"
+    "agentic-coding",
+    "subagents"
   ],
   "homepage": "https://github.com/shinpr/codex-workflows#readme",
   "engines": {
