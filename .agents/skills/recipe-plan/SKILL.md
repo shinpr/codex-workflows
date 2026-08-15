@@ -59,7 +59,7 @@ Spawn document-reviewer agent: "Review the work plan. doc_type: WorkPlan. target
 
 Branch on `verdict.decision`:
 - `approved` -> proceed to Step 5 with the plan-level status pending
-- `approved_with_conditions` or `needs_revision` -> apply Review Resolution with work-planner, then review the updated plan
+- `needs_revision` -> apply Review Resolution with work-planner, then review the updated plan
 - `rejected` -> apply Orchestrator Escalation Resolution using the cited governing sources
 
 ### Step 5: Plan Approval

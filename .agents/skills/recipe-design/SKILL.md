@@ -123,7 +123,7 @@ Spawn document-reviewer agent: "Review the Design Doc for consistency, completen
 
 Route the result before consistency verification:
 - `approved`: continue
-- `approved_with_conditions` or `needs_revision`: apply Review Resolution with the creating technical-designer, then review the updated document
+- `needs_revision`: apply Review Resolution with the creating technical-designer, then review the updated document
 - `rejected`: apply Orchestrator Escalation Resolution. Continue after an evidence-based self-resolution; ask the user only when that procedure reaches a user-decision condition
 
 ### Step 7: Consistency Verification

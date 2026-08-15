@@ -67,7 +67,3 @@ Use the implementation approach and dependency order from the Design Doc. Each p
 - [ ] Dependencies permit execution in the listed order
 - [ ] Verification is executable from repository artifacts or the task's own output
 - [ ] Task verification passes and the cited acceptance criteria are satisfied
-
-## Progress Notes
-
-[Record execution-relevant discoveries only when they change task order, scope, or verification.]

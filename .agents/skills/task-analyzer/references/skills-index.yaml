@@ -86,7 +86,7 @@ skills:
   documentation-criteria:
     skill: "documentation-criteria"
     tags: [documentation, decision-making, adr, prd, design-doc, ui-spec, work-plan, templates, planning, process, scale-assessment]
-    typical-use: "Scale assessment at implementation start, document creation criteria, ADR/PRD/Design Doc/Work Plan creation standards"
+    typical-use: "Scale assessment, document routing, and template selection for PRD, ADR, UI Spec, Design Doc, and Work Plan"
     size: medium
     key-references:
       - "ADR Method - Michael Nygard"
@@ -97,13 +97,9 @@ skills:
       - "Creation Decision Matrix [MANDATORY]"
       - "Structural Scale"
       - "ADR Creation Conditions"
-      - "Detailed Document Definitions"
-      - "Creation Process [MANDATORY]"
+      - "What Each Document Fixes"
       - "Storage Locations"
       - "ADR Status"
-      - "AI Automation Rules [MANDATORY]"
-      - "Diagram Requirements"
-      - "Common ADR Relationships"
     references:
       - "references/prd-template.md"
       - "references/adr-template.md"

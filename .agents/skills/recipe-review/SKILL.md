@@ -37,18 +37,18 @@ Design Doc (uses most recent if omitted): $ARGUMENTS
 ## Execution Flow
 
 ### Step 1: Prerequisite Check
-Identify Design Doc in docs/design/ and check implementation files via git diff.
+Identify the Design Doc in `docs/design/`. Derive `$STEP_1_FILES` as the complete change set for the current work from repository history, tracking state, and the working tree. Include committed, staged, unstaged, and untracked paths, and pass the complete set unchanged to both reviewers.
 If a single active work plan is explicitly provided or unambiguously resolved for that Design Doc, read its `Review Scope` line. Otherwise set `Work Plan: none` and `Review Scope: none`; do not infer.
 
 ### Step 2: Execute code-reviewer
-Spawn code-reviewer agent: "Validate Design Doc compliance for the implementation. Design Doc path: [path]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. Implementation files: [git diff file list]. Review mode: full. Return structured JSON report per your Output Format specification."
+Spawn code-reviewer agent: "Validate Design Doc compliance for the implementation. Design Doc path: [path]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. Implementation files: [$STEP_1_FILES]. Review mode: full. Return structured JSON report per your Output Format specification."
 
 **Store output as**: `$STEP_2_OUTPUT`
 
 ### Step 3: Execute security-reviewer
-Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]` and `implementationFiles: [file list from git diff in Step 1]`.
+Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]` and `implementationFiles: $STEP_1_FILES`.
 
-**Store output as**: `$STEP_3_OUTPUT` and `$STEP_1_FILES` (the initial file list)
+**Store output as**: `$STEP_3_OUTPUT`
 
 ### Step 4: Verdict and Response
 

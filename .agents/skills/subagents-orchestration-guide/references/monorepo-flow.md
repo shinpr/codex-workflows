@@ -119,7 +119,7 @@ After work-planner creates or updates the plan, spawn document-reviewer:
 
 > "Review the fullstack work plan. doc_type: WorkPlan. target: [work plan path]. Verify Design Doc and UI Spec implementation coverage, repository-only scope, cross-layer dependency order, executable verification, optional Verification Focus, and Review Scope."
 
-On `needs_revision` or `approved_with_conditions`, apply Review Resolution with work-planner and review the updated plan. Route governing-source contradictions through Orchestrator Escalation Resolution. Stop for batch approval after WorkPlan review succeeds; after explicit user approval, record the plan-level status as approved.
+On `needs_revision`, apply Review Resolution with work-planner and review the updated plan. Route governing-source contradictions through Orchestrator Escalation Resolution. Stop for batch approval after WorkPlan review succeeds; after explicit user approval, record the plan-level status as approved.
 
 ## Task Decomposition Phase
 

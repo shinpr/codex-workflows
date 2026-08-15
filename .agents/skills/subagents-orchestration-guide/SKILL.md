@@ -120,7 +120,6 @@ Use agent statuses as routing signals, not as a parser contract. Interpret the r
 | Status | Scope | Meaning | Next Action |
 |--------|-------|---------|-------------|
 | `approved` | Review/approval agents | All criteria met | Proceed to next phase |
-| `approved_with_conditions` | Document agents | Criteria met with minor open items | Resolve actionable conditions before the next approval point |
 | `needs_revision` | Review/approval agents | Significant issues repairable within approved repository scope | Resolve through the normal review or verifier-fix cycle |
 | `rejected` | Document agents | Fundamental problems | Apply Orchestrator Escalation Resolution |
 | `blocked` | Agents whose schema permits it | An agent-specific blocking condition prevents a usable result | Apply Orchestrator Escalation Resolution |
@@ -222,7 +221,7 @@ Flow rules:
 - Pass only codebase-analyzer material that changes reuse, option validity or selection, lifecycle cost, a preserved contract, design, or verification to the relevant ADR/Design Doc owner.
 - Pass a Design Doc path to `code-verifier`, apply Review Resolution to its discrepancies, and pass only resolved verification evidence to `document-reviewer`.
 - Fullstack layer sequencing is defined in `references/monorepo-flow.md`
-- Run WorkPlan review after every Medium/Large work plan creation or update and before batch approval. Resolve `needs_revision` or `approved_with_conditions` through Review Resolution with work-planner, then ask the user to approve the reviewed plan. Route governing-source contradictions through Orchestrator Escalation Resolution.
+- Run WorkPlan review after every Medium/Large work plan creation or update and before batch approval. Resolve `needs_revision` through Review Resolution with work-planner, then ask the user to approve the reviewed plan. Route governing-source contradictions through Orchestrator Escalation Resolution.
 
 ## Autonomous Execution Mode
 

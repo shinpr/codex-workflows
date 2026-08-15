@@ -109,12 +109,11 @@ If `verdict.decision` is `rejected`, apply Orchestrator Escalation Resolution. C
 
 #### Step 5: Revision (conditional)
 
-- If `verdict.decision` is `approved_with_conditions` or `needs_revision`, apply Review Resolution with prd-creator, then retain the review of the updated artifact as the current review.
+- If `verdict.decision` is `needs_revision`, apply Review Resolution with prd-creator, then retain the review of the updated artifact as the current review.
 - After the applicable revision bullets complete, continue to Unit Completion.
 
 #### Unit Completion
 
-- [ ] `verdict.decision` is `approved` or `approved_with_conditions`
 - [ ] Human review passed (if enabled in Step 0)
 
 **Next**: Proceed to next unit. After all units -> Phase 2.
@@ -212,12 +211,11 @@ If `verdict.decision` is `rejected`, apply Orchestrator Escalation Resolution. C
 
 #### Step 10: Revision (conditional)
 
-- If `verdict.decision` is `approved_with_conditions` or `needs_revision`, apply Review Resolution with technical-designer, then retain the review of the updated artifact as the current review.
+- If `verdict.decision` is `needs_revision`, apply Review Resolution with technical-designer, then retain the review of the updated artifact as the current review.
 - After the applicable revision bullets complete, continue to Unit Completion.
 
 #### Unit Completion
 
-- [ ] `verdict.decision` is `approved` or `approved_with_conditions`
 - [ ] Human review passed (if enabled in Step 0)
 
 **Next**: Proceed to next unit. After all units -> Final Report.
