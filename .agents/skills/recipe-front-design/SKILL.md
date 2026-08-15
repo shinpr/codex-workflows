@@ -108,7 +108,7 @@ Spawn ui-analyzer agent: "Gather UI facts for frontend design. requirement_analy
 After UI fact gathering completes, create the UI Specification:
 - Spawn ui-spec-designer agent: "Create UI Spec [from PRD at [path] if PRD exists; read its binding requirements and only Product Context entries they explicitly cite]. Requirements: [original user requirements]. Confirmed scope and convergence exclusions: [Step 3 confirmed scope, nonGoals, and speculative requirements]. Codebase analysis: [JSON from codebase-analyzer]. UI analysis: [JSON from ui-analyzer]. [Prototype code is at [user-provided path]. Place prototype in docs/ui-spec/assets/{feature-name}/ | Prototype path unavailable; proceed from PRD/requirements and UI analysis.] External resource refs: [ui_analysis.externalResources.selectedRefs]."
 - Spawn document-reviewer agent: "doc_type: UISpec target: [ui-spec path] Review for consistency and completeness"
-- Resolve `approved_with_conditions` or `needs_revision` through Review Resolution with ui-spec-designer, then review the updated UI Spec. Route governing-source contradictions through Orchestrator Escalation Resolution before the user approval stop.
+- Resolve `needs_revision` through Review Resolution with ui-spec-designer, then review the updated UI Spec. Route governing-source contradictions through Orchestrator Escalation Resolution before the user approval stop.
 
 **[STOP -- BLOCKING]** Present UI Spec for user approval.
 **CANNOT proceed until user explicitly approves the UI Spec.**
@@ -124,7 +124,7 @@ Create appropriate design documents from confirmed scope and decision materials:
 - Spawn code-verifier agent: "Verify Design Doc against code. doc_type: design-doc. document_path: [document path]. verbose: false."
 - Apply Review Resolution to every code-verifier discrepancy. Pass only the `apply` discrepancies to technical-designer-frontend in update mode, rerun code-verifier, and carry the resolved verification summary, declines with reasons, and material limitations after the `apply` set becomes empty.
 - Review the Design Doc: Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. review_context: creation. target: [Design Doc path]. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. decision_materials: [only analysis material that constrains this design]. verification_resolution: [resolved code-verifier evidence]."
-- Resolve `approved_with_conditions` or `needs_revision` through Review Resolution with technical-designer-frontend, then review the updated Design Doc. Route governing-source contradictions through Orchestrator Escalation Resolution. Reach the user approval stop after review succeeds.
+- Resolve `needs_revision` through Review Resolution with technical-designer-frontend, then review the updated Design Doc. Route governing-source contradictions through Orchestrator Escalation Resolution. Reach the user approval stop after review succeeds.
 
 **[STOP -- BLOCKING]** Present the Design Doc and its recorded trade-offs, then obtain user approval.
 **CANNOT proceed until user explicitly approves the design document.**

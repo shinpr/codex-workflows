@@ -31,7 +31,7 @@ Design Doc (uses most recent if omitted): $ARGUMENTS
 ## Execution Flow
 
 ### 1. Prerequisite Check
-Identify the Design Doc in `docs/design/`. Resolve the review base from an explicitly supplied revision or the repository's default branch, and use its merge-base with `HEAD`. Derive `$STEP_1_FILES` as the paths changed from that base through the current repository state, including committed, staged, unstaged, and untracked changes, whose change implements or verifies the Design Doc. Exclude the governing documents and task or plan artifacts used by this recipe. If the review base cannot be resolved, request the exact base instead of silently narrowing the review to the working tree.
+Identify the Design Doc in `docs/design/`. Derive `$STEP_1_FILES` as the complete change set for the current work from repository history, tracking state, and the working tree. Include committed, staged, unstaged, and untracked paths, and pass the complete set unchanged to both reviewers.
 If a single active work plan is explicitly provided or unambiguously resolved for that Design Doc, read its `Review Scope` line. Otherwise set `Work Plan: none` and `Review Scope: none`; do not infer.
 
 **[STOP -- BLOCKING]** If no Design Doc or implementation files found, notify user and halt.
@@ -45,7 +45,7 @@ Spawn code-reviewer agent: "Validate Design Doc compliance for [design-doc-path]
 ### 3. Execute security-reviewer
 Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]` and `implementationFiles: $STEP_1_FILES`.
 
-**Store output as**: `$STEP_3_OUTPUT` and `$STEP_1_FILES` (the initial file list)
+**Store output as**: `$STEP_3_OUTPUT`
 
 ### 4. Verdict and Response
 

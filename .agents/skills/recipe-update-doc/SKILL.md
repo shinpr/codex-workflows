@@ -129,7 +129,7 @@ For PRD updates, spawn document-reviewer with the target and `confirmed_requirem
 
 **On review result**:
 - `approved` -> proceed to Step 6
-- `approved_with_conditions` or `needs_revision` -> Apply Review Resolution with the update agent, then review the updated document
+- `needs_revision` -> Apply Review Resolution with the update agent, then review the updated document
 - `rejected` -> Apply Orchestrator Escalation Resolution. Continue after self-resolution; ask the user only when that procedure reaches a user-decision condition
 
 ### Step 6: Consistency Verification and Approval

@@ -103,7 +103,6 @@ When `prior_feedback` contains an orchestrator decline, withdraw the finding whe
 ## Decision
 
 - `approved`: no blocking issue remains; recommendations may still be reported.
-- `approved_with_conditions`: a small actionable correction is needed before user approval but does not change approved scope or a major decision.
 - `needs_revision`: one or more blocking issues can be repaired within approved scope.
 - `rejected`: governing sources conflict or repair requires changing an approved product or major design decision.
 
@@ -114,7 +113,7 @@ The reviewer recommends; the user owns PRD, ADR, UI Spec, and Design Doc approva
 Return one JSON object:
 
 ```json
-{"metadata":{"docType":"DesignDoc|ADRBatch","targets":["docs/design/example.md"]},"verdict":{"decision":"approved|approved_with_conditions|needs_revision|rejected"},"issues":[{"id":"I001","severity":"critical|important|suggestion","target":"artifact path","location":"section or line","description":"specific issue","basis":"governing source or observed fact","expectedEffect":"observable effect of correction","blocking":true,"suggestion":"smallest sufficient correction"}],"recommendations":["non-blocking item"]}
+{"metadata":{"docType":"DesignDoc|ADRBatch","targets":["docs/design/example.md"]},"verdict":{"decision":"approved|needs_revision|rejected"},"issues":[{"id":"I001","severity":"critical|important|suggestion","target":"artifact path","location":"section or line","description":"specific issue","basis":"governing source or observed fact","expectedEffect":"observable effect of correction","blocking":true,"suggestion":"smallest sufficient correction"}],"recommendations":["non-blocking item"]}
 ```
 
 Use an empty `issues` array when none remain. Accept equivalent wording when the artifact and evidence make the result observable.
