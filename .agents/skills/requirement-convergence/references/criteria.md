@@ -18,7 +18,7 @@ Ask when the layer is unclear. Treating all three as equally binding turns explo
 
 ## nonGoals[]
 
-Present cost and its unknowns before asking what to exclude. Record exclusions in the user's wording. Set `userAgreedNone` only when the user considered exclusions and chose none.
+Present cost and its unknowns before asking what to exclude. Record exclusions in the user's wording. Treat an empty `nonGoals` list as ready only when the user considered exclusions and chose none.
 
 An agent-proposed capability remains a question until the user accepts or excludes it. Only then does it enter the record as a user decision.
 

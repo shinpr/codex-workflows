@@ -114,7 +114,7 @@ If `verdict.decision` is `rejected`, apply Orchestrator Escalation Resolution. C
 
 #### Unit Completion
 
-- [ ] `verdict.decision` is `approved` or `approved_with_conditions`
+- [ ] `verdict.decision` is `approved`
 - [ ] Human review passed (if enabled in Step 0)
 
 **Next**: Proceed to next unit. After all units -> Phase 2.
@@ -217,7 +217,7 @@ If `verdict.decision` is `rejected`, apply Orchestrator Escalation Resolution. C
 
 #### Unit Completion
 
-- [ ] `verdict.decision` is `approved` or `approved_with_conditions`
+- [ ] `verdict.decision` is `approved`
 - [ ] Human review passed (if enabled in Step 0)
 
 **Next**: Proceed to next unit. After all units -> Final Report.

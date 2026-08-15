@@ -37,16 +37,16 @@ Design Doc (uses most recent if omitted): $ARGUMENTS
 ## Execution Flow
 
 ### Step 1: Prerequisite Check
-Identify Design Doc in docs/design/ and check implementation files via git diff.
+Identify the Design Doc in `docs/design/`. Resolve the review base from an explicitly supplied revision or the repository's default branch, and use its merge-base with `HEAD`. Derive `$STEP_1_FILES` as the paths changed from that base through the current repository state, including committed, staged, unstaged, and untracked changes, whose change implements or verifies the Design Doc. Exclude the governing documents and task or plan artifacts used by this recipe. If the review base cannot be resolved, request the exact base instead of silently narrowing the review to the working tree.
 If a single active work plan is explicitly provided or unambiguously resolved for that Design Doc, read its `Review Scope` line. Otherwise set `Work Plan: none` and `Review Scope: none`; do not infer.
 
 ### Step 2: Execute code-reviewer
-Spawn code-reviewer agent: "Validate Design Doc compliance for the implementation. Design Doc path: [path]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. Implementation files: [git diff file list]. Review mode: full. Return structured JSON report per your Output Format specification."
+Spawn code-reviewer agent: "Validate Design Doc compliance for the implementation. Design Doc path: [path]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. Implementation files: [$STEP_1_FILES]. Review mode: full. Return structured JSON report per your Output Format specification."
 
 **Store output as**: `$STEP_2_OUTPUT`
 
 ### Step 3: Execute security-reviewer
-Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]` and `implementationFiles: [file list from git diff in Step 1]`.
+Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]` and `implementationFiles: $STEP_1_FILES`.
 
 **Store output as**: `$STEP_3_OUTPUT` and `$STEP_1_FILES` (the initial file list)
 

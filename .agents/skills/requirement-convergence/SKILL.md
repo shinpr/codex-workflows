@@ -57,7 +57,7 @@ Persist `weak-but-explicit` outcome, requirements, and non-goals as open questio
 
 - [ ] Scope facts and inferences are distinguished
 - [ ] Every buildable requirement traces to the outcome
-- [ ] Every `nonGoals` item is user-decided or `userAgreedNone` is true
+- [ ] Every non-goal is user-decided, and an empty `nonGoals` list reflects the user's explicit choice of none
 - [ ] Cost is approximate and evidence-backed
 - [ ] Every field is `ready` or user-approved `weak-but-explicit`
 

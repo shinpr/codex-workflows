@@ -16,7 +16,7 @@ For `apply`, pass the complete finding or discrepancy unchanged with its disposi
 
 ## 2. Revise and Reconsider
 
-Invoke the responsible author when at least one `apply` finding or discrepancy exists, and pass only the `apply` findings or discrepancies. Then rerun the same reviewer or verifier with the changed artifact and the declined reasons as prior feedback. An empty `apply` set proceeds directly to the next workflow step.
+Invoke the responsible author when at least one `apply` finding or discrepancy exists, and pass only the `apply` findings or discrepancies. Then rerun the same reviewer or verifier with its original inputs and the changed artifact or implementation. When that agent accepts `prior_feedback`, include the applied corrections and declined reasons; otherwise keep the dispositions in the active workflow context for orchestrator reassessment. An empty `apply` set proceeds directly to the next workflow step.
 
 The reviewer withdraws a declined finding when the reason is consistent with governing evidence. It may maintain the finding when existing or newly observed governing evidence still shows the result is incorrect, non-executable, or non-verifiable. A maintained non-blocking recommendation does not prevent progression.
 
