@@ -1,14 +1,14 @@
 # codex-workflows
 
 [![Codex CLI](https://img.shields.io/badge/Codex%20CLI-Compatible-10a37f)](https://developers.openai.com/codex/cli)
-[![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Spec%20Compliant-blue)](https://developers.openai.com/codex/skills/)
+[![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Compatible-blue)](https://developers.openai.com/codex/skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 On larger product work, Codex can pursue technical consistency beyond what the user needs. Handling every edge case and making each path deterministic can alter what users see even when the approved outcome does not require it.
 
-codex-workflows keeps that work within the smallest approved outcome. It checks scope and rough cost before design, records user-visible contracts and exclusions, and creates only the design and verification work the change needs. Codex still chooses the implementation details that stay within those boundaries.
+codex-workflows keeps that work within the smallest approved outcome. It confirms which user-visible behavior may change, records what must not, and requires evidence before completion. Within those boundaries, Codex chooses reversible implementation details from the repository.
 
-The workflows are installed as Agent Skills and custom agents for [OpenAI Codex CLI](https://developers.openai.com/codex/cli). The main Codex session owns progress, evaluates specialist findings against the approved outcome, and resolves implementation details from repository evidence.
+The workflows are installed as Agent Skills and custom agents for [OpenAI Codex CLI](https://developers.openai.com/codex/cli). The main Codex session checks scope and rough cost before design, owns progress and review decisions, and carries approved work through implementation and independent verification.
 
 ---
 
@@ -20,13 +20,14 @@ Use codex-workflows when technical choices can change the product scope, user-vi
 
 For example, a request to extend an existing authentication path can lead to a technically cleaner second mechanism, broader validation, and a new response contract. The frontend may adapt and the tests may pass, while users receive behavior that was never part of the approved change.
 
-codex-workflows controls that expansion at three points:
+codex-workflows controls that expansion throughout the run:
 
-| When | What changes |
+| Control | What changes |
 |---|---|
-| Before approval | The workflow compares the request with the desired outcome, explicit exclusions, the existing code, and rough implementation cost. It removes work that does not earn its cost and chooses only the documents and tests the change needs. |
-| Across agent handoffs | Approved requirements and design decisions live in repository documents and task files. A new agent reads those decisions instead of reconstructing intent from a long conversation. |
-| After approval | The orchestrator treats agent results and review findings as evidence. It applies corrections required by the approved outcome, consolidates related findings, declines optional hardening, and lets Codex resolve implementation details autonomously. |
+| Scope | The workflow compares the request with the desired outcome, explicit exclusions, the existing code, and rough implementation cost. Work that does not earn its cost is removed before it becomes architecture. |
+| Phase gates | Requirements, design, and planning outputs are checked before they can authorize the next phase. Fresh agents read the approved decisions and evidence they need instead of reconstructing intent from a long conversation. |
+| Execution | After implementation approval, Codex executes the task set autonomously. Each task passes its focused verification and applicable repository checks before its implementation commit. |
+| Completion | Independent code and security verification inspect the whole change. Required corrections return through the same implementation and quality cycle; optional hardening can be declined with evidence. |
 
 This workflow uses more agent calls and tokens than direct execution. Use it when protecting the approved outcome is worth that cost.
 
@@ -64,7 +65,6 @@ $recipe-implement Add user authentication with JWT
 | What do you need? | Start with |
 |---|---|
 | Deliver a backend, API, CLI, or general change end to end | `$recipe-implement` |
-| Complete a focused task without staged design handoffs | `$recipe-task` |
 | Design first and implement later | `$recipe-design` → `$recipe-plan` → `$recipe-build` |
 | Design and build a React / TypeScript web frontend | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
 | Deliver a backend and React frontend change together | `$recipe-fullstack-implement` |
@@ -79,38 +79,38 @@ $recipe-implement Add user authentication with JWT
 ```mermaid
 flowchart LR
     A[Request] --> B[Agree on the smallest useful outcome]
-    B --> C{Design needed?}
-    C -->|No| H[Execute autonomously]
-    C -->|Yes| D[Inspect and record needed decisions]
-    D --> E[Approve product and major design boundaries]
-    E --> F[Plan dependent work]
-    F --> G[Approve the implementation scope]
-    G --> H
-    H --> I[Verify approved outcome]
-    I -->|Fixable implementation gap| H
-    I -->|Requirement or major design changed| B
-    I -->|Passed| J[Complete]
+    B --> C{One evident implementation path?}
+    C -->|Yes| S[Direct task cycle and security review]
+    S --> L[Complete]
+    C -->|No| D[Inspect, design, and review]
+    D --> E[Plan dependent work]
+    E --> F[Approve implementation scope]
+    F --> H[Per task: implement, verify, quality-check, commit]
+    H --> K[Independent code and security verification]
+    K -->|Correction| H
+    K -->|Requirement or major design changed| B
+    K -->|Passed| L[Complete]
 ```
 
-The number of independent product and design decisions determines the route. File count and the number of edge cases Codex can identify do not:
+The number of independent product and design decisions determines the route, not file count or the number of edge cases Codex can identify.
 
 | Scale | What the change needs | What happens |
 |-------|-----------------------|--------------|
-| Small | One outcome that follows an existing pattern in one part of the system | One task file → implementation |
-| Medium | One outcome that needs coordination across parts of the system or a lasting design decision | UI Spec / ADR when required → Design Doc → select useful integration/E2E tests → Work Plan → implementation |
-| Large | Multiple outcomes that need separate design decisions | PRD → UI Spec / ADR when required → Design Doc → select useful integration/E2E tests → Work Plan → implementation |
+| Small | One outcome that follows an existing pattern in one part of the system | Confirmed task → implementation → quality and security checks |
+| Medium | One outcome that needs coordination across parts of the system or a lasting design decision | Reviewed Design Doc, plus UI Spec / ADR when required → selected integration/E2E proof → reviewed Work Plan → autonomous task cycles → final verification |
+| Large | Multiple outcomes that need separate design decisions | Reviewed PRD and Design Docs, plus UI Spec / ADR when required → selected integration/E2E proof → reviewed Work Plan → autonomous task cycles → final verification |
 
 An ADR is created only for a durable current-scope choice with at least two materially distinct options. When several choices qualify, their ADRs are reviewed together. An integration or E2E test is selected only when a cheaper test cannot prove the required interaction. Some changes need neither.
 
-The documents record only decisions that affect the product or repository implementation. Third-party approval, production access, release execution, and unrelated operational work do not become implementation gates.
+Only decisions that affect the product or repository implementation are carried forward in durable project documents. Third-party approval, production access, release execution, and unrelated operational work do not become implementation gates.
 
 After the implementation scope is approved, the orchestrator runs the tasks, focused verification, applicable repository checks, and one implementation commit per task. It resolves problems from the approved documents and repository evidence first. User-visible behavior remains a product boundary rather than something the implementation may adjust for internal consistency. The orchestrator asks you only when progress requires a new product requirement, a change to a major approved design decision, authority only you hold, or an irreversible action you did not authorize.
 
 Specialist agents receive the exact documents and paths needed for their work. They supply focused evidence without inheriting authority to expand the approved outcome.
 
-### A handoff you can inspect
+### How decisions survive fresh contexts
 
-The included [Work Plan template](.agents/skills/documentation-criteria/references/plan-template.md) ties each implementation task to its Design Doc section and acceptance criteria:
+Fresh contexts keep exploration, design, implementation, and review from silently sharing assumptions. The included [Work Plan template](.agents/skills/documentation-criteria/references/plan-template.md) ties each implementation task to its Design Doc section and acceptance criteria:
 
 ```markdown
 ### P1-T1: Preserve the error response contract
@@ -121,7 +121,7 @@ The included [Work Plan template](.agents/skills/documentation-criteria/referenc
 - **Verification**: Run the contract test and observe the documented response shape
 ```
 
-The [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) carries the source, intended result, target files, and executable verification into implementation. It adds a `Verification Focus` only when a test could pass without proving one important behavior. Final review checks the approved documents against the completed diff.
+The [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) carries the source, intended result, target files, and executable verification into implementation. It adds a `Verification Focus` only when a test could pass without proving one important behavior. After execution, the applicable repository checks run against the complete task change before commit. Final reviewers compare the approved documents with the completed code and rerun after accepted corrections.
 
 ---
 
@@ -196,7 +196,7 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 | `$recipe-task` | Single task with rule selection | Bug fixes, small changes |
 | `$recipe-design` | Requirements → scale-selected product and design documents | Product and architecture design |
 | `$recipe-plan` | Design Doc → selective integration/E2E skeletons → work plan | Planning phase from an approved Design Doc |
-| `$recipe-prepare-implementation` | Set up dependencies, local services, and test tools using existing project commands | Explicit setup request or a required local tool is unavailable |
+| `$recipe-prepare-implementation` | Prepare existing repository-local tools needed by an approved Work Plan | Explicit setup request or a concrete task capability is unavailable |
 | `$recipe-build` | Execute backend tasks with validation between steps | Resume backend implementation |
 | `$recipe-review` | Design Doc compliance and security validation with optional approved corrections | Post-implementation check |
 | `$recipe-diagnose` | Problem investigation → failure-point verification → solution | Bug investigation |
@@ -406,7 +406,6 @@ A: The main Codex session owns progress. It inspects the returned evidence, retr
 <details>
 <summary>Background reading behind the workflow design</summary>
 
-- [Planning Is the Real Superpower of Agentic Coding](https://www.norsica.jp/blog/planning-superpower-agentic-coding): why explicit planning turns large-task execution from raw generation into verification against a design and task breakdown
 - [Why LLMs Are Bad at 'First Try' and Great at Verification](https://www.norsica.jp/blog/llm-verification-over-generation): why review loops and session separation are more reliable than first-shot generation on complex work
 - [When Better Models Make Old Agent Workflows Worse](https://www.norsica.jp/blog/when-better-models-make-old-agent-workflows-worse): why workflow constraints should protect boundaries and evidence without prescribing the model's internal path
 - [Reasoning Effort Is Not a Quality Setting](https://www.norsica.jp/blog/reasoning-effort-is-not-a-quality-setting): why broader technical exploration is useful only when the phase can select and discard the extra work it finds
