@@ -364,9 +364,9 @@ your-project/
 
 ## 함께 사용할 수 있는 도구
 
-요구사항이 이미 Linear나 기존 PRD에 있다면 [linear-prism](https://github.com/shinpr/linear-prism)이 코드베이스를 읽어 구현 가능한 작업으로 나누고, 의존성을 명확히 하며, Design Doc 경계를 유지할 수 있습니다.
+제품 아이디어를 더 탐색하거나 검증해야 한다면 [Nautilus](https://github.com/shinpr/nautilus)로 관련 가설을 확인하고 그 결과를 PRD로 정리할 수 있습니다. 승인된 PRD를 `$recipe-implement`나 `$recipe-design`에 전달하세요.
 
-이 작업을 `$recipe-design`에 전달하면 범위와 작업을 더 명확히 파악한 상태에서 설계 단계를 시작할 수 있습니다.
+요구사항이 이미 Linear나 기존 PRD에 있다면 [linear-prism](https://github.com/shinpr/linear-prism)이 코드베이스를 읽어 구현 가능한 Linear 이슈로 나누고 이슈 간 의존 관계를 기록할 수 있습니다. 승인된 이슈를 `$recipe-design`의 입력으로 사용하세요.
 
 ---
 
