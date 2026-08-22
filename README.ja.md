@@ -364,9 +364,9 @@ your-project/
 
 ## 連携できるツール
 
-要件がすでにLinearや既存のPRDにまとまっている場合は、[linear-prism](https://github.com/shinpr/linear-prism)を使うと、コードベースを読みながら要件を実装可能なタスクへ分解し、依存関係を明示しつつDesign Docの境界を維持できます。
+プロダクトのアイデアをさらに探索・検証したい場合は、[Nautilus](https://github.com/shinpr/nautilus)を使って前提を確かめ、その結果をPRDにまとめられます。承認後は、そのPRDを`$recipe-implement`または`$recipe-design`へ渡せます。
 
-作成したタスクを`$recipe-design`へ渡せば、スコープが明確で見通しのよい状態から設計フェーズを始められます。
+要件がすでにLinearや既存のPRDにまとまっている場合は、[linear-prism](https://github.com/shinpr/linear-prism)を使うと、コードベースを読みながら実装可能なLinearのissueへ分解し、依存関係を明示できます。承認したissueは`$recipe-design`の入力にできます。
 
 ---
 

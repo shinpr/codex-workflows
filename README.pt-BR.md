@@ -364,9 +364,9 @@ your-project/
 
 ## Ferramentas relacionadas
 
-Se os requisitos já estiverem no Linear ou em um PRD existente, o [linear-prism](https://github.com/shinpr/linear-prism) pode ler o código, dividi-los em tarefas prontas para implementação, explicitar as dependências e preservar os limites do Design Doc.
+Quando uma ideia de produto ainda precisa de descoberta ou validação, o [Nautilus](https://github.com/shinpr/nautilus) pode testar as premissas por trás dela e transformar os resultados em um PRD. Depois da aprovação, passe o PRD para `$recipe-implement` ou `$recipe-design`.
 
-Essas tarefas podem ser passadas para `$recipe-design`, iniciando a fase de design com um escopo mais claro e melhor visibilidade do trabalho.
+Se os requisitos já estiverem no Linear ou em um PRD existente, o [linear-prism](https://github.com/shinpr/linear-prism) pode ler o código, dividir o trabalho em issues do Linear prontas para implementação e registrar as dependências entre elas. Use uma issue aprovada como entrada para `$recipe-design`.
 
 ---
 

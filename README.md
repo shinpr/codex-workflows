@@ -365,9 +365,9 @@ your-project/
 
 ## Works With
 
-If your requirements already live in Linear or an existing PRD, [linear-prism](https://github.com/shinpr/linear-prism) can decompose them into implementation-ready tasks by reading the codebase, making dependencies explicit, and preserving Design Doc boundaries.
+When a product idea still needs discovery or validation, [Nautilus](https://github.com/shinpr/nautilus) can test the assumptions behind it and turn the results into a PRD. Pass the approved PRD to `$recipe-implement` or `$recipe-design`.
 
-Those tasks can then be passed into `$recipe-design` to enter the design phase with clearer scope and better task visibility.
+If requirements already live in Linear or an existing PRD, [linear-prism](https://github.com/shinpr/linear-prism) can read the codebase, split the work into implementation-ready Linear issues, and record blocking relationships. Use an approved issue as input to `$recipe-design`.
 
 ---
 

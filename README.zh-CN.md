@@ -364,9 +364,9 @@ your-project/
 
 ## 配套工具
 
-如果需求已经记录在Linear或现有PRD中，[linear-prism](https://github.com/shinpr/linear-prism)可以读取代码库，将需求拆成能够直接实现的任务，同时明确依赖关系，并保持Design Doc的边界。
+产品想法还需要进一步探索或验证时，可以用[Nautilus](https://github.com/shinpr/nautilus)检验相关假设，并将结果整理成PRD。PRD获批后，可将其交给`$recipe-implement`或`$recipe-design`。
 
-之后可以把这些任务交给`$recipe-design`，在范围更清楚、任务更直观的基础上进入设计阶段。
+如果需求已经记录在Linear或现有PRD中，[linear-prism](https://github.com/shinpr/linear-prism)可以结合代码库，将工作拆成可直接实施的Linear任务，并明确任务之间的依赖关系。获批的任务可作为`$recipe-design`的输入。
 
 ---
 
