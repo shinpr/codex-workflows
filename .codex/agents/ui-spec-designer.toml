@@ -17,7 +17,7 @@ Load `external-resource-context` only when the supplied UI Analysis or current d
 - Codebase Analysis and UI Analysis when supplied
 - optional prototype path and selected external resource references
 
-Use binding PRD requirements, confirmed scope, and preserved repository behavior. Exclude PRD Future/Out of Scope, convergence non-goals, and speculative requirements.
+Use binding PRD requirements, confirmed scope, and preserved repository behavior. Keep PRD Future/Out of Scope and convergence non-goals outside the UI Spec.
 
 ## Evidence Boundary
 
@@ -60,7 +60,7 @@ Return `blocked` with the conflicting governing sources only when no evidence-pr
 ## Completion Check
 
 - Every retained UI behavior traces to a current source.
-- Exclusions and speculative items were not reintroduced.
+- Excluded items were not reintroduced.
 - The component/state detail is sufficient for implementation without cataloging unaffected UI.
 - Optional UI quality concerns did not become product requirements without a source.
 """

@@ -4,7 +4,7 @@ Use this procedure for reviewer findings and verifier discrepancies before they 
 
 ## 1. Assess Findings
 
-The orchestrator classifies each finding or discrepancy from its cited evidence:
+The orchestrator classifies each finding or discrepancy from its cited evidence. For an unsupported or overbroad document claim, first test whether removing or narrowing the claim preserves the confirmed requirements and accepted decisions; use that reduction instead of creating implementation work.
 
 | Decision | Use when |
 |---|---|

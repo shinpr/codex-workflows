@@ -280,7 +280,7 @@ Webフロントエンドで使うTypeScript向けには、Reactアプリケー�
 | `technical-designer` | ADR一式またはDesign Docの作成（バックエンド/一般） |
 | `technical-designer-frontend` | フロントエンド向けADR一式またはDesign Docの作成（React） |
 | `ui-spec-designer` | PRDと任意のプロトタイプコードからUI Specificationを作成 |
-| `codebase-analyzer` | 選択肢の比較、最小設計、検証に必要なリポジトリ上の根拠を簡潔に収集 |
+| `codebase-analyzer` | 後続の技術判断・最小限の設計・検証に必要な事実だけをリポジトリから収集 |
 | `ui-analyzer` | 外部資料（デザインツール、デザインシステム文書、公開中のUI）とフロントエンドコードからUIの事実を収集 |
 | `work-planner` | Design DocからWork Planを作成 |
 | `document-reviewer` | 上位要件と設計判断に照らして文書をレビュー |
@@ -307,6 +307,7 @@ Webフロントエンドで使うTypeScript向けには、Reactアプリケー�
 | `security-reviewer` | 実装後のセキュリティ準拠をレビュー |
 | `rule-advisor` | レシピの管理外にある単独タスクのスキルを選定 |
 | `scope-discoverer` | 既存システムの文書化に向けてコードベースの範囲を調査し、PRDの単位を整理 |
+| `technical-spike` | 設計判断を左右する効果やコストを、対象を1つに絞って実測 |
 
 ### 調査エージェント
 
@@ -348,7 +349,7 @@ your-project/
 │   ├── technical-designer.toml
 │   ├── ui-analyzer.toml
 │   ├── task-executor.toml
-│   └── ...（全25エージェント）
+│   └── ...（全26エージェント）
 └── docs/                     # レシピの利用に応じて作成
     ├── prd/
     ├── design/

@@ -63,9 +63,10 @@ Govern implementation from approved requirements, design decisions, repository r
 ### Design Doc
 
 - The design implements only the confirmed outcome and required dependencies.
+- The document contains selected implementation conclusions rather than evaluation-only ideas or unselected candidates; ADRs may retain alternatives as decision history.
 - Existing evidence is sufficient for the decisions that rely on it; cited identifiers and contracts agree with supplied code verification or repository facts.
-- Direct MVP delivers the outcome; each added persistent mechanism resolves a recorded current failure, constraint, or material risk, and its subtraction evidence identifies what becomes unmet without it.
-- An implementation-critical premise is either supported by evidence or explicitly recorded as a Material Risk with its evidence limitation and an in-scope verification or guard. Treat that executable record as sufficient at design time.
+- The smallest direct design delivers the outcome; each added mechanism resolves a current requirement, verified constraint, observed problem, or evidence-backed in-scope risk, and its supported outcome benefit justifies total complexity over the smaller design.
+- A premise that can change design selection is supported by repository evidence or a bounded technical spike. Material Risks are limited to residual implementation uncertainty whose handling cannot change the selected design or add optional scope.
 - Changed responsibility, interfaces, data/state/persistence flow, exact boundary values, migration/flag behavior, security boundary, and verification are documented when applicable.
 - Acceptance criteria and verification use the smallest representative boundary that can prove the approved outcome.
 - Release execution, production access, external account setup, organizational approval, and unrelated operations are not implementation gates.
@@ -76,7 +77,7 @@ Govern implementation from approved requirements, design decisions, repository r
 - Every Design Doc obligation needed for implementation is covered by at least one task.
 - Every task produces a repository implementation outcome required by a cited Design Doc section or AC.
 - The plan uses the fewest tasks permitted by real dependency order, executor routing, and independently completable outcomes.
-- Every task maps to a confirmed AC, a failed item resolved by an adopted Necessary Addition, or a dependency required by one; together the tasks cover the complete approved implementation scope.
+- Every task maps to a confirmed AC, a selected implementation obligation, or a dependency required by one; together the tasks cover the complete approved implementation scope.
 - Task order makes the first vertical slice's representative ACs observable across their required repository path at the earliest point permitted by observed dependencies and executor routing; the Design Doc's early verification runs at the earliest applicable point within that slice, and every earlier task is required by and consumed by that slice.
 - Each generated test skeleton path is assigned unchanged to the earliest task where its declared real boundary becomes executable, and that task completes the same file as a runnable test.
 - Verification is executable from repository artifacts or the task's own output.
@@ -96,7 +97,7 @@ Set `blocking: true` only when the artifact otherwise:
 
 Classify scope additions, optional hardening, external operations, extra Product Context, duplicate proof, and stylistic completeness as non-blocking recommendations.
 
-An adopted addition is a blocking scope contradiction only when its recorded failed item remains satisfied after removing it. A missing or unsupported premise is blocking only when it otherwise leaves the approved implementation incorrect, non-executable, or non-verifiable.
+A missing or unsupported premise is blocking only when it otherwise leaves the approved implementation incorrect, non-executable, or non-verifiable.
 
 When `prior_feedback` contains an orchestrator decline, withdraw the finding when its reason is consistent with governing evidence. Maintain it only when current or newly observed governing evidence still shows one of the four blocking conditions above. A maintained non-blocking recommendation permits approval.
 

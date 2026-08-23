@@ -12,7 +12,6 @@
 - PRD or convergence carrier: [path | embedded record | eligible N/A]
 - Current requirements: [binding requirements implemented by this design]
 - Non-goals: [user-decided exclusions | user confirmed none]
-- Speculative requirements: [deferred items | none]
 - Open requirement fields: [weak-but-explicit item and effect | none]
 
 Reverse-engineered documents use only `N/A — reverse-engineered as-is document` for convergence and describe existing behavior rather than future requirements.
@@ -36,17 +35,9 @@ Record only evidence that constrains an implementation or verification decision.
 
 ## Design
 
-### Direct MVP
+### Selected Design
 
-[Simplest end-to-end implementation through existing architecture and dependencies.]
-
-### Failed Items and Necessary Additions
-
-| Direct MVP failure | Evidence | Smallest adopted addition | Subtraction evidence |
-|---|---|---|---|
-| [current unmet requirement/constraint/risk] | [source] | [addition] | [requirement, constraint, observed problem, or material in-scope risk that becomes unmet when this addition is removed] |
-
-Use `None — Direct MVP satisfies the current boundary` when no expansion is needed. Briefly note a rejected larger alternative only when it was actually considered and its rejection affects downstream implementation.
+[Describe only the selected end-to-end implementation. Each element serves a current requirement, verified constraint, observed problem, or evidence-backed in-scope risk, and has justified total complexity over the smaller design. Keep evaluation-only ideas and unselected candidates in the active design context; ADRs alone retain alternatives as decision history.]
 
 ### Change Surface
 
@@ -101,7 +92,7 @@ Limit live external services, production access, new dashboards, and new test la
 |---|---|---|
 | [risk that can change implementation correctness] | [source] | [mitigation/check] |
 
-An implementation-critical premise that remains unverified belongs here only when implementation can resolve it with an in-scope verification or guard. State the evidence limitation and the exact response rather than presenting the premise as confirmed fact.
+A residual implementation uncertainty belongs here only when its in-scope verification or guard cannot change the selected design or add optional scope. Premises that can change design selection are resolved before this document is finalized.
 
 Omit when no material implementation risk remains beyond the normal verification above.
 

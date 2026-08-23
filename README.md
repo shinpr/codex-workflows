@@ -281,7 +281,7 @@ Codex spawns these as needed during recipe execution. You do not need to learn t
 | `technical-designer` | Complete ADR-batch or Design Doc creation (backend/general) |
 | `technical-designer-frontend` | Complete frontend ADR-batch or Design Doc creation (React) |
 | `ui-spec-designer` | UI Specification from PRD and optional prototype code |
-| `codebase-analyzer` | Compact repository evidence for option selection, minimal design, and verification |
+| `codebase-analyzer` | Compact repository facts for later technical decisions, minimal design, and verification |
 | `ui-analyzer` | UI facts from external resources (design tools, design-system docs, deployed UI) and frontend code |
 | `work-planner` | Work plan creation from Design Docs |
 | `document-reviewer` | Document review against governing requirements and design decisions |
@@ -308,6 +308,7 @@ Codex spawns these as needed during recipe execution. You do not need to learn t
 | `security-reviewer` | Security compliance review after implementation |
 | `rule-advisor` | Skill selection for standalone work not already governed by a recipe |
 | `scope-discoverer` | Codebase scope discovery for reverse docs, including PRD unit grouping |
+| `technical-spike` | Bounded empirical evidence for one design-changing effect or cost |
 
 ### Diagnosis Agents
 
@@ -349,7 +350,7 @@ your-project/
 │   ├── technical-designer.toml
 │   ├── ui-analyzer.toml
 │   ├── task-executor.toml
-│   └── ... (25 agents total)
+│   └── ... (26 agents total)
 └── docs/                     # Created as you use the recipes
     ├── prd/
     ├── design/

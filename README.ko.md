@@ -280,7 +280,7 @@ React 애플리케이션을 포함한 웹 프런트엔드 TypeScript용 참고 �
 | `technical-designer` | 전체 ADR 묶음 또는 Design Doc 작성(백엔드/일반) |
 | `technical-designer-frontend` | 프런트엔드 ADR 묶음 또는 Design Doc 작성(React) |
 | `ui-spec-designer` | PRD와 선택적 프로토타입 코드에서 UI Specification 작성 |
-| `codebase-analyzer` | 선택지 결정, 최소 설계, 검증을 위한 간결한 저장소 근거 수집 |
+| `codebase-analyzer` | 후속 기술 판단·최소한의 설계·검증에 필요한 사실만 저장소에서 수집 |
 | `ui-analyzer` | 외부 자료(디자인 도구, 디자인 시스템 문서, 배포된 UI)와 프런트엔드 코드에서 UI 정보 수집 |
 | `work-planner` | Design Doc에서 Work Plan 작성 |
 | `document-reviewer` | 상위 요구사항과 설계 결정에 따라 문서 리뷰 |
@@ -307,6 +307,7 @@ React 애플리케이션을 포함한 웹 프런트엔드 TypeScript용 참고 �
 | `security-reviewer` | 구현 후 보안 준수 리뷰 |
 | `rule-advisor` | 레시피 밖의 단독 작업을 위한 스킬 선택 |
 | `scope-discoverer` | 역문서화를 위한 코드베이스 범위 조사와 PRD 단위 구성 |
+| `technical-spike` | 설계 판단에 영향을 주는 효과나 비용 한 가지를 제한된 범위에서 검증 |
 
 ### 진단 에이전트
 
@@ -348,7 +349,7 @@ your-project/
 │   ├── technical-designer.toml
 │   ├── ui-analyzer.toml
 │   ├── task-executor.toml
-│   └── ... (총 25개 에이전트)
+│   └── ... (총 26개 에이전트)
 └── docs/                     # 레시피를 사용하면서 생성
     ├── prd/
     ├── design/

@@ -280,7 +280,7 @@ O Codex cria esses agentes conforme a necessidade durante a execução dos fluxo
 | `technical-designer` | Cria um lote completo de ADRs ou um Design Doc (backend/geral) |
 | `technical-designer-frontend` | Cria um lote completo de ADRs ou um Design Doc frontend (React) |
 | `ui-spec-designer` | Cria uma UI Specification a partir do PRD e, opcionalmente, de código de protótipo |
-| `codebase-analyzer` | Reúne evidências concisas do repositório para escolher opções, projetar o mínimo e verificar |
+| `codebase-analyzer` | Reúne do repositório apenas as informações necessárias para decisões técnicas, o design mais simples e a verificação |
 | `ui-analyzer` | Levanta fatos sobre a UI a partir de recursos externos (ferramentas de design, documentação do design system e interfaces em produção) e do código frontend |
 | `work-planner` | Cria o Work Plan a partir de Design Docs |
 | `document-reviewer` | Revisa documentos com base nos requisitos e decisões de design que os regem |
@@ -307,6 +307,7 @@ O Codex cria esses agentes conforme a necessidade durante a execução dos fluxo
 | `security-reviewer` | Revisa a segurança depois da implementação |
 | `rule-advisor` | Seleciona skills para tarefas avulsas fora dos fluxos existentes |
 | `scope-discoverer` | Descobre o escopo do código para documentação reversa e agrupa unidades de PRD |
+| `technical-spike` | Executa um teste empírico limitado para medir um efeito ou custo que pode mudar uma decisão de design |
 
 ### Agentes de diagnóstico
 
@@ -348,7 +349,7 @@ your-project/
 │   ├── technical-designer.toml
 │   ├── ui-analyzer.toml
 │   ├── task-executor.toml
-│   └── ... (25 agentes no total)
+│   └── ... (26 agentes no total)
 └── docs/                     # Criado conforme os fluxos são usados
     ├── prd/
     ├── design/

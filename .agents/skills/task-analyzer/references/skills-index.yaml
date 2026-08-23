@@ -170,7 +170,6 @@ skills:
     sections:
       - "Role: The Orchestrator"
       - "Orchestration Principles"
-      - "Constraints Between Subagents [MANDATORY]"
       - "How to Spawn Agents"
       - "Explicit Stop Points [MANDATORY]"
       - "Scale Determination and Document Requirements"

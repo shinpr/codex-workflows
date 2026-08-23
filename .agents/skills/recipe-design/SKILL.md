@@ -59,7 +59,7 @@ Requirements -> scope evidence -> codebase-analyzer -> [Stop: Scope confirmation
 
 Requirements: $ARGUMENTS
 
-For ADRs, clearly present design alternatives and trade-offs. For Design Docs, record the Direct MVP, failed current constraints or Material Risks, necessary additions, and subtraction evidence. Record only larger alternatives actually considered; `None` is valid.
+ADRs record the considered options and one selected decision. PRDs and Design Docs contain only confirmed requirements and selected conclusions; evaluation-only ideas and unselected design candidates remain in the active workflow context.
 
 Execute the process below within design scope.
 
@@ -67,7 +67,7 @@ Execute the process below within design scope.
 
 ### Step 1: Scope and Cost Evidence
 
-Spawn requirement-analyzer with the original requirements. Treat its request signals, scope evidence, cost evidence, and questions as material; the orchestrator determines requirements, scale, and ADR routing.
+Spawn requirement-analyzer with the original requirements. Treat exact user quotes according to their returned signal type: implementation requirements and exclusions can enter confirmed scope; evaluation requests, speculation, and prescribed mechanisms remain non-binding until the orchestrator resolves them against the user's wording. Treat scope evidence, cost evidence, and questions as material; the orchestrator determines requirements, scale, and ADR routing.
 
 ### Step 2: Codebase Analysis
 Spawn codebase-analyzer agent: "Analyze the existing codebase to provide compact decision materials for requirement confirmation, ADR selection, minimal Design Doc creation, and verification. requirement_analysis: [Step 1 scopeEvidence]. requirements: $ARGUMENTS. target_paths: [Step 1 scopeEvidence.affectedFiles]."

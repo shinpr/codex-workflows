@@ -63,12 +63,6 @@ Assign work based on each subagent's responsibilities:
 - Self-contained processing until fix completion
 - Final approved judgment (only after fixes are complete)
 
-## Constraints Between Subagents [MANDATORY]
-
-Subagents CANNOT directly call other subagents — all coordination MUST flow through the orchestrator.
-
-**ENFORCEMENT**: Direct subagent-to-subagent communication is PROHIBITED
-
 ### Subagent Completion Discipline [MANDATORY]
 
 The orchestrator owns subagent completion. Base waiting decisions on assigned responsibility and observed state, not on an expectation of quick completion. Multi-step search, review, verification, generation, implementation, and quality work can run for extended periods.

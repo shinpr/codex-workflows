@@ -13,7 +13,7 @@ Load and read each skill completely before taking task actions: `ai-development-
 
 ## Responsibilities
 
-1. Preserve explicit requirement, exclusion, speculative, and implementation-suggestion statements as typed user-provided signals for orchestrator judgment.
+1. Preserve exact user quotes as implementation requirements, exclusions, evaluation requests, speculative ideas, or prescribed mechanisms for orchestrator judgment.
 2. Inspect the codebase shallowly for target, boundary, reuse, and relative-cost evidence.
 3. Identify ambiguities and unknowns whose resolution can change the outcome, current requirements, exclusions, Structural Scale, or analysis target.
 4. Return compact evidence for the orchestrator. User-confirmed boundaries supply requirements and implementation scope.
@@ -27,7 +27,7 @@ Load and read each skill completely before taking task actions: `ai-development-
 
 ### 1. Extract Request Signals
 
-Record the apparent outcome, explicit current requirements, explicit exclusions, speculative ideas, and prescribed mechanisms as separate user-provided signals. Mark ambiguity when materially different interpretations remain.
+Record the apparent outcome, explicit current requirements, explicit exclusions, requests to evaluate whether something should be changed, speculative ideas, and prescribed mechanisms as separate signals. Preserve each signal as an exact quote with its source and assign each quoted span to one primary category according to its operative role. A definite or imperative requested behavior is an explicit requirement even when it names a technical mechanism; `prescribedMechanisms` is limited to a route offered as a suggestion, preference, or subject for evaluation. A scope-limited requirement remains one requirement rather than a duplicate exclusion or mechanism. Mark ambiguity when materially different classifications remain; keep evaluation requests and suggested mechanisms non-binding for orchestrator judgment.
 
 ### 2. Collect Shallow Scope Evidence
 
@@ -35,21 +35,22 @@ Search only far enough to locate likely targets, responsibility boundaries, affe
 
 ### 3. Form Decision Materials
 
-Summarize relative cost from observed boundaries, reuse, persistence or contract changes, and verification support. Record only questions whose answers can change the outcome, current requirements, exclusions, Structural Scale, analysis target, or whether a prescribed mechanism remains a candidate. Return those questions for orchestrator judgment.
+Summarize relative cost from observed boundaries, reuse, persistence or contract changes, and verification support. Return a question only when its answer changes the product outcome, current scope, exclusion, Structural Scale, or analysis target and supplied project evidence cannot resolve it. An unresolved evaluation request remains non-binding decision material and produces a question only when the user must define its scope before a confirmed requirement can be analyzed. Repository-local implementation choices, response-shape details derivable from existing contracts, and empirical comparison criteria belong to later analysis or design rather than user questioning.
 
 ### 4. Return JSON
 
 Return exactly one JSON object:
 
 ```json
-{"taskType":"feature|fix|refactor|performance|security","requestSignals":{"apparentOutcome":"user-stated result or null","explicitRequirements":["user statement"],"explicitExclusions":["user-stated exclusion"],"speculativeIdeas":["candidate future idea"],"prescribedMechanisms":["implementation suggestion requiring later option evaluation"]},"scopeEvidence":{"affectedFiles":["candidate/path"],"affectedLayers":["backend"],"responsibilityBoundaries":[{"boundary":"responsibility or integration","evidence":"path:line","effect":"how it can change scale or analysis target"}],"reuse":[{"element":"path:symbol","effect":"work potentially avoided"}]},"costEvidence":{"drivers":[{"kind":"observed|inferred","fact":"structural cost fact","source":"request or path"}],"unknowns":["fact that can change relative cost"]},"questions":[{"decision":"outcome|requirement|exclusion|scale|analysis_target|prescribed_mechanism","question":"specific unresolved question","effect":"what changes based on the answer"}]}
+{"taskType":"feature|fix|refactor|performance|security","requestSignals":{"apparentOutcome":"user-stated result or null","explicitRequirements":[{"quote":"exact user text","source":"requirements|context"}],"explicitExclusions":[{"quote":"exact user text","source":"requirements|context"}],"evaluationRequests":[{"quote":"exact request to assess whether a change is worthwhile","source":"requirements|context"}],"speculativeIdeas":[{"quote":"exact future or uncertain idea","source":"requirements|context"}],"prescribedMechanisms":[{"quote":"exact implementation suggestion","source":"requirements|context"}]},"scopeEvidence":{"affectedFiles":["candidate/path"],"affectedLayers":["backend"],"responsibilityBoundaries":[{"boundary":"responsibility or integration","evidence":"path:line","effect":"how it can change scale or analysis target"}],"reuse":[{"element":"path:symbol","effect":"work potentially avoided"}]},"costEvidence":{"drivers":[{"kind":"observed|inferred","fact":"structural cost fact","source":"request or path"}],"unknowns":["fact that can change relative cost"]},"questions":[{"decision":"outcome|requirement|exclusion|scale|analysis_target","question":"specific unresolved question","effect":"what changes based on the answer"}]}
 ```
 
 The orchestrator combines `costEvidence` drivers and unknowns with the user's wording to derive the Requirement Convergence cost band and determine Structural Scale.
 
 ## Completion Check
 
-- [ ] User statements retain their source labels for orchestrator judgment
+- [ ] Every classified user signal retains its exact quote and source
+- [ ] Each quoted span has one primary signal classification
 - [ ] Scope and cost evidence is shallow, compact, and source-backed
 - [ ] Every question names the decision its answer can change
 - [ ] Convergence, scale, ADR, and implementation-scope decisions remain assigned to the orchestrator

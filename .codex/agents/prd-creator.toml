@@ -28,7 +28,7 @@ For future-state PRDs:
 - map the converged outcome to the PRD outcome;
 - include only `desired-future` requirements in current MVP scope;
 - write the smallest representative AC set that makes the outcome observable;
-- preserve user-decided non-goals and speculative requirements with their disposition;
+- preserve user-decided non-goals; keep speculative and evaluation-only items outside the durable PRD;
 - keep `weak-but-explicit` outcome, requirement, or non-goal fields visible;
 - keep rough cost ephemeral rather than turning it into an implementation estimate.
 

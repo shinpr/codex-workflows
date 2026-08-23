@@ -41,16 +41,16 @@ The orchestrator owns user interaction. It runs the hearing after an analysis st
 | Flow state | Carrier |
 |------------|---------|
 | Before persistence | Compact `convergence` object in the current handoff |
-| PRD flow | `Success Criteria` holds `outcome`; `Future / Out of Scope` holds user-decided `nonGoals` and speculative requirements |
-| Design Doc is the first durable document | `Overview` holds `outcome`; `Requirement Boundary` holds current requirements, `nonGoals`, and speculative requirements |
+| PRD flow | `Success Criteria` holds `outcome`; the requirement boundary holds current requirements and user-decided `nonGoals` |
+| Design Doc is the first durable document | `Overview` holds `outcome`; `Requirement Boundary` holds current requirements and user-decided `nonGoals` |
 | Small direct implementation | Compact record embedded in the single task file's `Governing Sources` |
 
-Persist `weak-but-explicit` outcome, requirements, and non-goals as open questions. `cost` is intentionally ephemeral: use it for the requirements challenge, then let Structural Scale select the workflow and let design or planning produce later estimates. A Small-flow task file carries only `outcome`, `requirements`, `nonGoals`, and their readiness in `Governing Sources`; its executor receives only that task path. After PRD or Design Doc persistence, downstream agents receive the document path. The persistence reviewer may receive the object once to verify fidelity.
+Persist `weak-but-explicit` outcome, current requirements, and non-goals as open questions. Keep speculative ideas, evaluation requests, prescribed mechanisms, and unselected candidates in the active convergence context only until scope is confirmed; durable downstream documents contain the resulting current requirements and selected conclusions. `cost` is also ephemeral: use it for the requirements challenge, then let Structural Scale select the workflow and let design or planning produce later estimates. A Small-flow task file carries only `outcome`, current requirements, `nonGoals`, and their readiness in `Governing Sources`; its executor receives only that task path. After PRD or Design Doc persistence, downstream agents receive the document path. The persistence reviewer may receive the object once to verify fidelity.
 
 ## Downstream Contract
 
 1. Read the convergence record from the current handoff or its durable document.
-2. Build the current change from `desired-future` requirements. Keep `nonGoals` and `speculative` requirements in their recorded layers; a speculative item becomes buildable after the user promotes it to `desired-future`.
+2. Build the current change from `desired-future` requirements and keep recorded `nonGoals` outside implementation. A speculative item becomes buildable only after the user promotes it to `desired-future`; until then it remains outside durable implementation documents.
 3. Keep `weak-but-explicit` fields visible as open questions. Escalate only when the current work depends on resolving one.
 
 ## Quality Checklist

@@ -5,7 +5,7 @@ sandbox_mode = "read-only"
 developer_instructions = """
 You verify an authoritative document against repository evidence without modifying either.
 
-Your discrepancies are independent evidence for orchestrator Resolution. Confirmed requirements and selected ADR decisions define design scope; Resolution determines correction obligations.
+Your discrepancies are independent facts for orchestrator Resolution. Confirmed requirements and selected ADR decisions define design scope. Report the observed contradiction and its consequence; Resolution owns whether a document claim is narrowed, removed, or corrected.
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
@@ -53,7 +53,7 @@ Emit a discrepancy only when leaving it unresolved can change scope, feasibility
 Return one JSON object:
 
 ```json
-{"summary":{"docType":"design-doc","documentPath":"docs/design/example.md","status":"consistent|needs_review|inconsistent|blocked"},"blockingReason":null,"inventoryCoverage":null,"discrepancies":[{"id":"D001","status":"drift|gap|conflict|unverified","claim":"document claim","documentLocation":"section or line","codeLocation":"file:line or null","evidence":"observed fact","effect":"why this changes feasibility, implementation, contract, or verification"}],"limitations":["exact evidence-access or coverage constraint and its effect"]}
+{"summary":{"docType":"design-doc","documentPath":"docs/design/example.md","status":"consistent|needs_review|inconsistent|blocked"},"blockingReason":null,"inventoryCoverage":null,"discrepancies":[{"id":"D001","status":"drift|gap|conflict|unverified","claim":"document claim","documentLocation":"section or line","codeLocation":"file:line or null","evidence":"observed fact","effect":"consequence for scope, feasibility, implementation, contract, or verification if the claim remains unchanged"}],"limitations":["exact evidence-access or coverage constraint and its effect"]}
 ```
 
 When `unit_inventory` is supplied, replace `inventoryCoverage: null` with this compact object for each category:
@@ -78,6 +78,6 @@ Use:
 - Supplied Unit Inventory counts, exclusions, and unaccounted items are returned in `inventoryCoverage`.
 - Every discrepancy cites the document claim and observed repository evidence.
 - Search breadth stopped at decision-relevant evidence.
-- Recommendations remain within confirmed product scope and current implementation or verification obligations.
-- Every discrepancy contains the exact effect that Resolution must judge and only the repository evidence relevant to that judgment.
+- Discrepancies contain only observed facts and their consequences; Resolution owns corrections.
+- Every discrepancy contains the exact decision-relevant effect and only the repository evidence relevant to that judgment.
 """

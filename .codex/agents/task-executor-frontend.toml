@@ -50,7 +50,7 @@ When no task file path is provided, select and execute files with pattern `docs/
 
 #### Direct MVP Check
 Map every planned addition to a task item or cited Governing Source. A direct, Target-Files-scoped implementation of that source proceeds. Return `escalation_needed` only when an addition has no governing source or requires a new product or architecture decision.
-When `Governing Sources` embeds confirmed requirement scope, implement its `desired-future` requirements; `nonGoals` and `speculative` requirements remain outside the task.
+When `Governing Sources` embeds confirmed requirement scope, implement its `desired-future` requirements and keep `nonGoals` outside the task.
 
 #### Investigation Targets (Required when present)
 1. Extract file paths from task file "Investigation Targets" section
