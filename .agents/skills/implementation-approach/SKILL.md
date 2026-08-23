@@ -12,12 +12,12 @@ Use this sequence when a design or task needs an implementation approach:
 1. **Current evidence** — inspect the relevant responsibility, data/control path, representative repository pattern, and constraints that can change the choice.
 2. **Direct MVP** — describe the simplest end-to-end change that delivers the confirmed outcome through the existing architecture and dependencies.
 3. **Failure check** — test that Direct MVP against current requirements, verified constraints, observed problems, and evidence-backed material risks within scope.
-4. **Targeted expansion** — add only what resolves a failed item. Prefer the sufficient option with the lowest lifecycle cost.
-5. **Subtraction check** — remove a proposed addition when the failed item remains satisfied without it.
+4. **Targeted expansion** — add only what resolves a failed item. Compare the smallest sufficient design with and without the addition; technical correctness makes an option admissible but does not make it valuable.
+5. **Value and subtraction check** — retain the addition only when observed or governing evidence shows that its outcome benefit justifies its total UX, runtime, implementation, testing, documentation, and maintenance cost over the smaller design.
 
 Possible future reuse, generic best practice, speculative edge cases, and optional hardening are not failed items. A path or file count is supporting evidence, not a scale or strategy rule.
 
-For implementation agents, keep this analysis in the active execution context. Create a separate artifact only for a named downstream consumer. Design Docs and Work Plans record adopted decisions that control downstream implementation, plus a brief reason when a larger candidate was rejected.
+For implementation agents, keep this analysis in the active execution context. Create a separate artifact only for a named downstream consumer. Design Docs and Work Plans record only adopted decisions that control downstream implementation; unselected candidates remain transient unless an ADR records them as decision history.
 
 ## Slicing Choice
 

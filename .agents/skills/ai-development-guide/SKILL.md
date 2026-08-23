@@ -46,7 +46,8 @@ For an observed bug or regression, inspect adjacent cases that share its support
 
 ## Design and Reuse Judgment
 
-- Prefer the lowest-lifecycle-cost implementation that satisfies the current outcome.
+- Treat complexity as cost, never as evidence of value. Additional user decisions, settings, modes, concepts, outputs, persistent state, and implementation paths earn their cost only when a confirmed current need cannot be served by a smaller existing or default behavior and the observable benefit justifies the total UX and lifecycle burden.
+- Prefer the lowest-total-complexity implementation that satisfies the current outcome.
 - Reuse or extend an existing element when it owns the same responsibility and represents the repository’s current pattern.
 - Keep similar local code separate when its responsibilities may evolve independently or abstraction adds more contract surface than it removes.
 - Introduce shared state, public fields, modes, flags, fallbacks, abstractions, services, or dependencies only when current evidence requires them.

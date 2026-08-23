@@ -34,7 +34,7 @@ For a Small flow whose scope is carried by this task file, replace the path entr
 
 - Confirmed outcome: [observable result]
 - Desired-future requirements: [current buildable requirements]
-- Non-goals and speculative requirements: [excluded items or confirmed none]
+- Non-goals: [excluded items or confirmed none]
 - Open fields: [weak-but-explicit items or none]
 
 ## Target Files

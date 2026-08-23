@@ -4,11 +4,11 @@ Use this procedure for reviewer findings and verifier discrepancies before they 
 
 ## 1. Assess Findings
 
-The orchestrator classifies each finding or discrepancy from its cited evidence:
+The orchestrator classifies each finding or discrepancy from its cited evidence. For an unsupported or overbroad document claim, first test whether removing or narrowing the claim preserves the confirmed requirements and accepted decisions; use that reduction instead of creating implementation work.
 
 | Decision | Use when |
 |---|---|
-| `apply` | The current artifact or implementation contradicts an approved requirement, the selected decision of an accepted ADR, repository rule, or observed contract, or would remain incorrect, non-executable, or non-verifiable. |
+| `apply` | The current artifact or implementation contradicts an approved requirement, selected ADR decision, repository rule, or observed contract; would remain incorrect, non-executable, or non-verifiable; or commits downstream work to an unsupported addition that can be removed or narrowed without changing confirmed requirements. |
 | `decline` | The finding adds scope, reverses a recorded exclusion, requests optional hardening or external operation, duplicates existing proof, or costs more than its observable effect justifies. |
 | `user_decision_required` | Resolution changes the product outcome, a confirmed requirement or exclusion, or a major approved design decision. |
 

@@ -12,7 +12,7 @@ Record one observable result, not a feature list. A proposed requirement that ca
 |-------|---------|---------------|
 | `current-state` | Behavior that already exists | Evidence only |
 | `desired-future` | Change the user has chosen | Current scope |
-| `speculative` | User-raised idea deferred from current scope | Deferred; record a reason |
+| `speculative` | User-raised idea not selected for current scope | Deferred in the active convergence context; omit from durable downstream documents |
 
 Ask when the layer is unclear. Treating all three as equally binding turns exploration into accidental scope.
 

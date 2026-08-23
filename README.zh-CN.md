@@ -280,7 +280,7 @@ PRD、ADR、UI Spec和Design Doc属于需要长期保存的项目文档，应当
 | `technical-designer` | 创建完整ADR批次或Design Doc（后端/通用） |
 | `technical-designer-frontend` | 创建完整的前端ADR批次或Design Doc（React） |
 | `ui-spec-designer` | 根据PRD和可选原型代码创建UI Specification |
-| `codebase-analyzer` | 为方案选择、最小设计和验证收集精简的仓库证据 |
+| `codebase-analyzer` | 从仓库中提取技术决策、精简设计和验证所需的关键信息 |
 | `ui-analyzer` | 从外部资源（设计工具、设计系统文档、线上UI）和前端代码中整理UI事实 |
 | `work-planner` | 根据Design Doc创建Work Plan |
 | `document-reviewer` | 按照上层需求和设计决策评审文档 |
@@ -307,6 +307,7 @@ PRD、ADR、UI Spec和Design Doc属于需要长期保存的项目文档，应当
 | `security-reviewer` | 实现后进行安全符合性评审 |
 | `rule-advisor` | 为不受现有工作流管理的独立任务选择技能 |
 | `scope-discoverer` | 为逆向文档发现代码库范围，并整理PRD单元 |
+| `technical-spike` | 在有限范围内验证一项可能影响设计决策的效果或成本 |
 
 ### 诊断代理
 
@@ -348,7 +349,7 @@ your-project/
 │   ├── technical-designer.toml
 │   ├── ui-analyzer.toml
 │   ├── task-executor.toml
-│   └── ...（共25个代理）
+│   └── ...（共26个代理）
 └── docs/                     # 使用工作流时创建
     ├── prd/
     ├── design/

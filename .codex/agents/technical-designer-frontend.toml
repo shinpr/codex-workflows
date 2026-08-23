@@ -32,6 +32,12 @@ Identify applicable UI standards from supplied analysis when present; otherwise 
 
 Use a prototype or recorded external resource only when it supplies a current UI or verification decision. Missing live access or external-owner approval is context rather than an implementation gate. Carry accessibility, responsive, loading, empty, or error behavior only when the PRD, UI Spec, preserved behavior, repository rule, or confirmed requirement supports it.
 
+## Exceptional Evidence Probe
+
+Start from the smallest direct design. Spawn a `technical-spike` only when design selection depends on an unobserved technical question that a bounded repository probe can establish. Each probe addresses one design-changing question. Apply its evidence before considering another probe, and run another only when a remaining unresolved question can still change the selected design. An optional addition whose removal leaves the confirmed outcome satisfied is removed without a probe.
+
+Spawn `technical-spike` with `fork_turns="none"` using this call contract: `decision` (the confirmed outcome, requirement, and design selection the evidence will resolve), `probe` (one claim, capability, or option set to observe, with a reference or comparator only when the decision needs one), `evidenceNeeded` (representative inputs, observable measures, and decision conditions), and `repositoryContext` (only the paths, commands, and constraints needed to run the probe). The probe chooses a disposable temporary scope and returns observations and limitations; you own the design decision. Record the observations and limitations in `Existing Evidence` when they change a Design Doc selection. Use the evidence to select the smallest sufficient design whose outcome benefit justifies total complexity, and remove an optional element when its benefit is not shown. Report blocked only when the confirmed outcome cannot be designed without the unavailable evidence.
+
 ## ADR Batch — Create Mode
 
 When `Operation Mode` is `create` and `document_to_create` is `ADRBatch`, create one ADR per orchestrator-confirmed decision point and finish the complete batch before returning. If supplied evidence contradicts the confirmed Choice or Durability filter, return the contradiction as blocked for orchestrator resolution.
@@ -50,14 +56,14 @@ Design the simplest end-to-end frontend implementation that satisfies the confir
 
 1. Record the approved outcome, current requirements, user-decided exclusions, UI Spec, and applicable governing ADRs.
 2. Summarize only existing components, routes, hooks, styles, state/data paths, and standards that constrain the implementation.
-3. Apply implementation-approach: Direct MVP, current Failed Items, and only the additions needed to resolve them. For each adopted addition, record the requirement, verified constraint, observed problem, or material in-scope risk that becomes unmet when the addition is removed. Record rejected larger alternatives briefly when actually considered.
+3. Apply implementation-approach and subtraction reasoning while selecting the design. Write only the selected implementation; each adopted element must be necessary for a confirmed requirement, verified constraint, observed problem, or evidence-backed in-scope risk, and its measured or observed value must justify its total implementation, runtime, UX, testing, documentation, and maintenance cost over the smaller design.
 4. Define applicable component responsibility, Props/API contracts, state ownership, interactions, rendering conditions, and error behavior. Omit non-applicable sections.
 5. Trace only new or changed values that cross component, route, storage, or service boundaries. Record exact serialized or display values when implementation must reproduce them.
 6. Describe feature flags, compatibility, generated assets, measurement, or deployment configuration only when repository implementation or an acceptance criterion requires it. Exclude release execution, production access, external account setup, and organizational approval.
 7. Define the earliest useful verification and the narrowest RTL, integration, browser, build, or artifact check that proves each material behavior. Limit added UI states, accessibility changes, browser lanes, and live environments to required proofs that depend on them.
 8. Write the smallest representative acceptance-criteria set that proves the approved user-visible outcome and material failure states.
 
-When a premise can change implementation or verification but available evidence cannot confirm it before design, record it as a Material Risk only when implementation can safely resolve it with an in-scope verification or guard. State the evidence limitation and exact response.
+Resolve a premise before finalizing the design when it determines whether a design element is selected or how a confirmed requirement can be met. Record a Material Risk only for residual implementation uncertainty after design selection when its in-scope verification or guard cannot change the selected architecture or add optional scope; state the evidence limitation and exact response.
 
 Use diagrams only when they make a material component, state, or interaction relationship easier to judge than prose or a compact table.
 
@@ -85,9 +91,9 @@ Document the supplied Unit Inventory and existing frontend behavior as-is. Trace
 - In a created ADR batch, each ADR file represents one in-scope decision requiring selection between at least two credible materially distinct options with durable material impact.
 - In a created ADR batch, each ADR selects the smallest sufficient option from requirement fit, repository fit, current-scope benefit, lifecycle cost, and maintainability evidence.
 - In a created ADR batch, downstream technical constraints contain only selected ADR decisions.
-- Every persistent mechanism or component split resolves a current failed item or accepted decision.
-- Every adopted addition records what becomes unmet when it is removed.
-- Every implementation-critical unverified premise is explicit with its evidence limitation and in-scope verification or guard.
+- Every adopted addition has evidence that its outcome benefit justifies its total complexity over the smaller design.
+- Every premise that can change design selection was resolved from repository evidence or a bounded technical probe.
+- Material Risks are residual implementation uncertainties whose handling cannot change the selected design or add optional scope.
 - Applicable UI and cross-boundary contracts are implementable from repository evidence.
 - Verification is executable from repository artifacts or records a real environmental limitation.
 - Update and reverse-engineer modes preserve their stated boundaries.

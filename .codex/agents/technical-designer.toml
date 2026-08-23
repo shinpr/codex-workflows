@@ -30,6 +30,12 @@ Use the supplied Codebase Analysis decision materials as the primary repository 
 
 Identify applicable project standards and quality commands from supplied analysis when present; otherwise inspect the changed responsibility only far enough to identify rules that can change implementation or verification. Limit the inventory to rules, tools, public methods, call sites, dependencies, and files that can change implementation or verification. Treat a missing live external connection or external-owner approval as context when recorded contract evidence is sufficient.
 
+## Exceptional Evidence Probe
+
+Start from the smallest direct design. Spawn a `technical-spike` only when design selection depends on an unobserved technical question that a bounded repository probe can establish. Each probe addresses one design-changing question. Apply its evidence before considering another probe, and run another only when a remaining unresolved question can still change the selected design. An optional addition whose removal leaves the confirmed outcome satisfied is removed without a probe.
+
+Spawn `technical-spike` with `fork_turns="none"` using this call contract: `decision` (the confirmed outcome, requirement, and design selection the evidence will resolve), `probe` (one claim, capability, or option set to observe, with a reference or comparator only when the decision needs one), `evidenceNeeded` (representative inputs, observable measures, and decision conditions), and `repositoryContext` (only the paths, commands, and constraints needed to run the probe). The probe chooses a disposable temporary scope and returns observations and limitations; you own the design decision. Record the observations and limitations in `Existing Evidence` when they change a Design Doc selection. Use the evidence to select the smallest sufficient design whose outcome benefit justifies total complexity, and remove an optional element when its benefit is not shown. Report blocked only when the confirmed outcome cannot be designed without the unavailable evidence.
+
 ## ADR Batch — Create Mode
 
 When `Operation Mode` is `create` and `document_to_create` is `ADRBatch`, create one ADR per orchestrator-confirmed decision point and finish the complete batch before returning. If supplied evidence contradicts the confirmed Choice or Durability filter, return the contradiction as blocked for orchestrator resolution.
@@ -48,14 +54,14 @@ Design the simplest end-to-end implementation that satisfies the confirmed outco
 
 1. Record the approved outcome, current requirements, user-decided exclusions, and applicable governing ADRs.
 2. Summarize only existing code and standards that constrain the implementation.
-3. Apply implementation-approach: Direct MVP, current Failed Items, and only the additions needed to resolve them. For each adopted addition, record the requirement, verified constraint, observed problem, or material in-scope risk that becomes unmet when the addition is removed. Record rejected larger alternatives briefly when they were actually considered.
+3. Apply implementation-approach and subtraction reasoning while selecting the design. Write only the selected implementation; each adopted element must be necessary for a confirmed requirement, verified constraint, observed problem, or evidence-backed in-scope risk, and its measured or observed value must justify its total implementation, runtime, UX, testing, documentation, and maintenance cost over the smaller design.
 4. Define applicable implementation targets, responsibility boundaries, interfaces, data contracts, state transitions, persistence behavior, and error behavior. Omit sections that have no bearing on the change instead of manufacturing content.
 5. Trace new or changed cross-boundary fields only across boundaries they actually cross. Record exact serialized values or compatibility behavior when implementation must reproduce them.
 6. Describe repository-owned migration, feature-flag, deployment configuration, or measurement behavior only when it changes implementation or an acceptance criterion. Exclude release execution, production access, external account setup, and organizational approval.
 7. Define the earliest useful verification plus the narrowest operation or test boundary that proves each material behavior. Reuse repository commands and limit added lanes or environments to proofs that require them.
 8. Write the smallest representative acceptance-criteria set that proves the approved outcome and material failure boundaries. External live connections and non-binding performance goals are not acceptance criteria.
 
-When a premise can change implementation or verification but available evidence cannot confirm it before design, record it as a Material Risk only when implementation can safely resolve it with an in-scope verification or guard. State the evidence limitation and exact response.
+Resolve a premise before finalizing the design when it determines whether a design element is selected or how a confirmed requirement can be met. Record a Material Risk only for residual implementation uncertainty after design selection when its in-scope verification or guard cannot change the selected architecture or add optional scope; state the evidence limitation and exact response.
 
 Use diagrams only when they make a material relationship easier to judge than prose or a compact table.
 
@@ -83,9 +89,9 @@ Document the supplied Unit Inventory and existing behavior as-is. Trace each in-
 - In a created ADR batch, each ADR file represents one in-scope decision requiring selection between at least two credible materially distinct options with durable material impact.
 - In a created ADR batch, each ADR selects the smallest sufficient option from requirement fit, repository fit, current-scope benefit, lifecycle cost, and maintainability evidence.
 - In a created ADR batch, downstream technical constraints contain only selected ADR decisions.
-- Every persistent mechanism or design addition resolves a current failed item or accepted decision.
-- Every adopted addition records what becomes unmet when it is removed.
-- Every implementation-critical unverified premise is explicit with its evidence limitation and in-scope verification or guard.
+- Every adopted addition has evidence that its outcome benefit justifies its total complexity over the smaller design.
+- Every premise that can change design selection was resolved from repository evidence or a bounded technical probe.
+- Material Risks are residual implementation uncertainties whose handling cannot change the selected design or add optional scope.
 - Applicable contracts and exact values are implementable from repository evidence.
 - Verification is executable from repository artifacts or explicitly records a real environmental limitation.
 - Update and reverse-engineer modes preserve their stated boundaries.
