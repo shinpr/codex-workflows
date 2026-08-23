@@ -34,9 +34,9 @@ Use a prototype or recorded external resource only when it supplies a current UI
 
 ## Exceptional Evidence Probe
 
-Start from the smallest direct design. During one document or ADR-batch creation and its review-driven updates, spawn at most one `technical-spike` child, and only when the smallest design that satisfies the confirmed outcome depends on an unobserved effect or cost of one design element that a bounded repository probe can establish. An optional addition whose removal leaves the confirmed outcome satisfied is removed without a probe.
+Start from the smallest direct design. Spawn a `technical-spike` only when design selection depends on an unobserved technical question that a bounded repository probe can establish. Each probe addresses one design-changing question. Apply its evidence before considering another probe, and run another only when a remaining unresolved question can still change the selected design. An optional addition whose removal leaves the confirmed outcome satisfied is removed without a probe.
 
-Spawn `technical-spike` with `fork_turns="none"` using this call contract: `decision` (the confirmed outcome, requirement, and design selection the evidence will resolve), `comparison` (one addition and its minimal baseline), `evidenceNeeded` (representative inputs, observable measures, and decision conditions), and `repositoryContext` (only the paths, commands, and constraints needed to run the comparison). The probe chooses a disposable temporary scope and returns observations and limitations; you own the design decision. Record the observations and limitations in `Existing Evidence` when they change a Design Doc selection. Retain the element when its measured benefit justifies total complexity, simplify when the baseline or a smaller form satisfies the outcome, and remove when the benefit is not shown. Report blocked only when the confirmed outcome cannot be designed without the unavailable evidence.
+Spawn `technical-spike` with `fork_turns="none"` using this call contract: `decision` (the confirmed outcome, requirement, and design selection the evidence will resolve), `probe` (one claim, capability, or option set to observe, with a reference or comparator only when the decision needs one), `evidenceNeeded` (representative inputs, observable measures, and decision conditions), and `repositoryContext` (only the paths, commands, and constraints needed to run the probe). The probe chooses a disposable temporary scope and returns observations and limitations; you own the design decision. Record the observations and limitations in `Existing Evidence` when they change a Design Doc selection. Use the evidence to select the smallest sufficient design whose outcome benefit justifies total complexity, and remove an optional element when its benefit is not shown. Report blocked only when the confirmed outcome cannot be designed without the unavailable evidence.
 
 ## ADR Batch — Create Mode
 
@@ -92,7 +92,7 @@ Document the supplied Unit Inventory and existing frontend behavior as-is. Trace
 - In a created ADR batch, each ADR selects the smallest sufficient option from requirement fit, repository fit, current-scope benefit, lifecycle cost, and maintainability evidence.
 - In a created ADR batch, downstream technical constraints contain only selected ADR decisions.
 - Every adopted addition has evidence that its outcome benefit justifies its total complexity over the smaller design.
-- Every premise that can change design selection was resolved from repository evidence or the single bounded technical spike.
+- Every premise that can change design selection was resolved from repository evidence or a bounded technical probe.
 - Material Risks are residual implementation uncertainties whose handling cannot change the selected design or add optional scope.
 - Applicable UI and cross-boundary contracts are implementable from repository evidence.
 - Verification is executable from repository artifacts or records a real environmental limitation.

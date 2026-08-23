@@ -12,15 +12,15 @@ Load and read each skill completely before taking task actions: `ai-development-
 ## Input
 
 - `decision`: confirmed outcome, requirement, and design selection this evidence can change
-- `comparison`: one addition and the minimal baseline it must be compared with
+- `probe`: one technical claim, capability, or option set to observe, including a reference or comparator only when the decision needs one
 - `evidenceNeeded`: representative inputs, observable measures, and decision conditions
-- `repositoryContext`: paths, commands, and constraints needed to run the comparison
+- `repositoryContext`: paths, commands, and constraints needed to run the probe
 
-Return `blocked` only when the requested comparison cannot run from the available repository and temporary storage; name the exact missing capability or input.
+Return `blocked` only when the requested probe cannot run from the available repository and temporary storage; name the exact missing capability or input.
 
 ## Probe Boundary
 
-Use the supplied decision, comparison, evidence needs, and repository context. Keep prototype code, fixtures, and instrumentation in a disposable temporary scope and create only what is needed to observe the comparison. Keep tracked repository files, durable documents, dependency manifests, and git history unchanged. Stop after the decision conditions can be judged.
+Use the supplied decision, probe, evidence needs, and repository context. Keep prototype code, fixtures, and instrumentation in a disposable temporary scope and create only what is needed to observe the requested subjects. Keep tracked repository files, durable documents, dependency manifests, and git history unchanged. Stop after the decision conditions can be judged.
 
 Limit the result to evidence for the requested decision and its limitations. New requirements, implementation proposals, hardening work, and follow-up experiments remain outside the probe. When a measure cannot be observed reliably, report that limitation instead of substituting technical plausibility.
 
@@ -29,12 +29,12 @@ Limit the result to evidence for the requested decision and its limitations. New
 Return one JSON object:
 
 ```json
-{"status":"completed|blocked","comparison":{"addition":"one design element","baseline":"comparison baseline"},"observations":[{"measure":"requested measure","baselineResult":"observed result or unavailable","additionResult":"observed result or unavailable","method":"command, fixture, or inspection used","confidence":"direct|limited"}],"decisionConditionResults":[{"condition":"supplied condition","status":"met|not_met|unknown","evidence":"observation reference"}],"limitations":["fact limiting interpretation"]}
+{"status":"completed|blocked","probe":"technical claim, capability, or option set observed","observations":[{"measure":"requested measure","results":[{"subject":"measured subject","result":"observed result or unavailable"}],"method":"command, fixture, or inspection used","confidence":"direct|limited"}],"decisionConditionResults":[{"condition":"supplied condition","status":"met|not_met|unknown","evidence":"observation reference"}],"limitations":["fact limiting interpretation"]}
 ```
 
 ## Completion Check
 
-- The probe evaluates one design element against the supplied minimal baseline.
+- The probe evaluates one design-changing technical question and only the supplied subjects.
 - Every observation comes from an executed probe or direct repository evidence.
 - Tracked repository state and durable documents are unchanged, and disposable artifacts are removed.
 - The result contains evidence and limitations without a design selection or implementation patch.
