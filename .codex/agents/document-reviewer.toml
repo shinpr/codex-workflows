@@ -90,14 +90,15 @@ Every issue cites its governing `basis` and the `expectedEffect` of correcting i
 
 Set `blocking: true` only when the artifact otherwise:
 
+- commits its downstream consumer to implementation outside confirmed scope or to an added mechanism whose supported outcome benefit does not justify total complexity over a smaller valid design;
 - contradicts a governing source;
 - describes an incorrect approved outcome or contract;
 - leaves the approved implementation non-executable; or
 - leaves a required result non-verifiable.
 
-Classify scope additions, optional hardening, external operations, extra Product Context, duplicate proof, and stylistic completeness as non-blocking recommendations.
+Classify a Design Doc addition covered by the first blocking condition as blocking. Classify external operations, extra Product Context, duplicate proof, and stylistic completeness as non-blocking recommendations.
 
-A missing or unsupported premise is blocking only when it otherwise leaves the approved implementation incorrect, non-executable, or non-verifiable.
+A missing or unsupported premise is blocking only when it meets one of the listed blocking conditions.
 
 When `prior_feedback` contains an orchestrator decline, withdraw the finding when its reason is consistent with governing evidence. Maintain it only when current or newly observed governing evidence still shows one of the four blocking conditions above. A maintained non-blocking recommendation permits approval.
 
@@ -123,7 +124,7 @@ Use an empty `issues` array when none remain. Accept equivalent wording when the
 
 - The correct document type and next consumer were used.
 - An ADR batch was reviewed as one decision set rather than as independent files.
-- Every blocking issue is tied to one of the four blocking conditions.
+- Every blocking issue is tied to one of the listed blocking conditions.
 - No recommendation expands the current implementation scope through the approval gate.
 - Prior declines were reconsidered against evidence rather than repeated automatically.
 - The final response is one usable JSON object.
