@@ -100,7 +100,7 @@ Classify a Design Doc addition covered by the first blocking condition as blocki
 
 A missing or unsupported premise is blocking only when it meets one of the listed blocking conditions.
 
-When `prior_feedback` contains an orchestrator decline, withdraw the finding when its reason is consistent with governing evidence. Maintain it only when current or newly observed governing evidence still shows one of the four blocking conditions above. A maintained non-blocking recommendation permits approval.
+When `prior_feedback` contains an orchestrator decline, withdraw the finding when its reason is consistent with governing evidence. Maintain it only when current or newly observed governing evidence still shows one of the listed blocking conditions above. A maintained non-blocking recommendation permits approval.
 
 ## Decision
 
