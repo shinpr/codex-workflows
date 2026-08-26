@@ -273,7 +273,7 @@ Code-verifier runs correspond to durable governing documents. The Small path pas
 
 #### Post-Verification Rerun Rule
 
-Apply Review Resolution to verifier findings. Consolidate the `apply` set into the fewest executor-routed ephemeral tasks, execute them through the normal task cycle, then re-run the verifiers affected by the actual repository changes. Delete the ephemeral task files after verification passes. A remaining unusable result enters Orchestrator Escalation Resolution.
+Apply Review Resolution to verifier findings. Consolidate the `apply` set into the fewest executor-routed ephemeral tasks, execute them through the normal task cycle, then re-run only verifiers classified as Fail by the table above. A Pass result completes that verifier's work for this build. Delete the ephemeral task files after final verification. A remaining unusable result enters Orchestrator Escalation Resolution.
 
 ## Main Orchestrator Roles
 
