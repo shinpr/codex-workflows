@@ -36,7 +36,6 @@ A PRD is both a binding product contract and a Product Context carrier. Downstre
 During flow execution, compare a user addition with the approved outcome, requirements, and exclusions:
 
 - A clarification that preserves all three is applied by the orchestrator to the active artifact or task.
-- A new outcome, changed requirement, or changed exclusion enters requirement-analyzer with the complete integrated requirements.
 
 Resume from the earliest artifact affected by a confirmed scope change while preserving completed unaffected work.
 
