@@ -239,6 +239,8 @@ implementation -> optional integration-test review -> quality-fixer -> commit
 -> final code/security verification -> completion report
 ```
 
+Reviewer findings in this mode are candidates, not work orders; create repair work only from the Review Resolution `apply` set.
+
 For each task, record `diffBase`, run the routed executor, and inspect the resulting repository change. Add each execution or repair result to the Per-Task Change Set. Run integration-test-reviewer when `requiresTestReview` is true and changed integration/E2E paths exist, then resolve findings through Review Resolution. Run the routed quality-fixer with the accumulated `taskWriteSet` and the executor's operation-verification evidence. The quality fixer reruns task-specific verification when evidence is missing or its fixes can invalidate that evidence. On quality approval, add its changed paths to the set and commit the implementation files. After the commit succeeds, mark the Task File's satisfied Completion Criteria and the corresponding Work Plan task and phase complete, then update the active execution plan. Repair `stub_detected` through the same implementation owner. Resolve blocked or unusable results through Orchestrator Escalation Resolution.
 
 ### Conditions for Stopping Autonomous Execution
@@ -262,18 +264,16 @@ Use the task loop defined in the autonomous execution diagram above. The canonic
 3. run the quality fixer on the accumulated change set and repair until approved
 4. commit implementation files, then record Task File, Work Plan task/phase, and execution-plan completion locally
 
-### Post-Implementation Verification Pass/Fail Criteria
+### Post-Implementation Verification
 
-| Verifier | Pass | Fail | Blocked |
+| Verifier | Pass | Requires disposition | Blocked |
 |----------|------|------|---------|
 | code-verifier | `summary.status` is `consistent` | `summary.status` is `needs_review` or `inconsistent` | `summary.status` is `blocked` |
 | security-reviewer | `status` is `approved` | `status` is `needs_revision` | `status` is `blocked` |
 
 Code-verifier runs correspond to durable governing documents. The Small path passes its active task file to security-reviewer as `type: task-file`. Repository quality checks are owned by the quality-fixer run in each implementation and verifier-fix task cycle.
 
-#### Post-Verification Rerun Rule
-
-Apply Review Resolution to verifier findings. Consolidate the `apply` set into the fewest executor-routed ephemeral tasks, execute them through the normal task cycle, then re-run only verifiers classified as Fail by the table above. A Pass result completes that verifier's work for this build. Delete the ephemeral task files after final verification. A remaining unusable result enters Orchestrator Escalation Resolution.
+Apply Review Resolution to verifier findings. Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
 
 ## Main Orchestrator Roles
 

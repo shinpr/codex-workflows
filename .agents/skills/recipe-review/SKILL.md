@@ -54,12 +54,14 @@ Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [p
 
 If either reviewer returns a blocked or otherwise unusable result, apply Orchestrator Escalation Resolution before continuing.
 
+Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
+
 **Code compliance criteria (considering project stage)**:
 - `code-reviewer` verdict is `pass`
 
 **Security criteria**:
 - `approved` -> Pass
-- `needs_revision` -> Fail
+- `needs_revision` -> Requires disposition
 
 Report both results from their evidence, then apply Review Resolution before proposing corrections:
 

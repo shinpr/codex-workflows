@@ -69,7 +69,9 @@ Apply subagents-orchestration-guide `Requirement Change Detection During Flow` a
 
 ## 9. Final Verification
 
-Apply `subagents-orchestration-guide` Post-Implementation Verification to the actual files changed by completed tasks and their governing documents. Route required fixes through the layer-selected task cycle and apply its Post-Verification Rerun Rule.
+Apply `subagents-orchestration-guide` Post-Implementation Verification to the actual files changed by completed tasks and their governing documents. Route required fixes through the layer-selected task cycle.
+
+Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
 
 ## 10. Cleanup and Report
 

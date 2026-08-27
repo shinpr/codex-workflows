@@ -52,7 +52,9 @@ For a fullstack task set, apply the Fullstack Flow filename routing exposed by `
 
 ### Post-Implementation Verification (After All Tasks Complete)
 
-Apply subagents-orchestration-guide `Post-Implementation Verification Pass/Fail Criteria` to the actual repository changes and governing documents. Use the active Small task file as the security source when no durable document exists. Resolve required fixes through the normal task cycle and `Post-Verification Rerun Rule`.
+Apply subagents-orchestration-guide `Post-Implementation Verification` to the actual repository changes and governing documents. Use the active Small task file as the security source when no durable document exists. Resolve required fixes through the normal task cycle.
+
+Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
 
 ### Test Information Communication
 Verify acceptance-test-generator artifact paths and pass them to work-planner.
