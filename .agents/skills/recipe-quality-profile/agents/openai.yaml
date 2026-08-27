@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-quality-profile"
+  short_description: "Create or maintain repository review policy"
+  default_prompt: "Use $recipe-quality-profile to generate or update the quality profile for: "
+
+policy:
+  allow_implicit_invocation: false

@@ -29,7 +29,7 @@ codex-workflows controls that expansion throughout the run:
 | Scope | The workflow compares the request with the desired outcome, explicit exclusions, the existing code, and rough implementation cost. Work that does not earn its cost is removed before it becomes architecture. |
 | Phase gates | Requirements, design, and planning outputs are checked before they can authorize the next phase. Fresh agents read the approved decisions and evidence they need instead of reconstructing intent from a long conversation. |
 | Execution | After implementation approval, Codex executes the task set autonomously. Each task passes its focused verification and applicable repository checks before its implementation commit. |
-| Completion | Independent code and security verification inspect the whole change. Required corrections return through the same implementation and quality cycle; optional hardening can be declined with evidence. |
+| Completion | Independent code and security review inspects the completed change for approved scope and material failures. Required corrections return through the same implementation and quality cycle. |
 
 This workflow uses more agent calls and tokens than direct execution. Use it when protecting the approved outcome is worth that cost.
 
@@ -71,6 +71,7 @@ $recipe-implement Add user authentication with JWT
 | Design and build a React / TypeScript web frontend | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
 | Deliver a backend and React frontend change together | `$recipe-fullstack-implement` |
 | Review an implementation against its design | `$recipe-review` or `$recipe-front-review` |
+| Create or maintain repository-specific review policy | `$recipe-quality-profile` |
 | Investigate a problem without changing code | `$recipe-diagnose` |
 | Run a throwaway experiment or one-shot script | Use Codex directly |
 
@@ -88,7 +89,7 @@ flowchart LR
     D --> E[Plan dependent work]
     E --> F[Approve implementation scope]
     F --> H[Per task: implement, verify, quality-check, commit]
-    H --> K[Independent code and security verification]
+    H --> K[Independent code and security review]
     K -->|Correction| H
     K -->|Requirement or major design changed| B
     K -->|Passed| L[Complete]
@@ -123,7 +124,7 @@ Fresh contexts keep exploration, design, implementation, and review from silentl
 - **Verification**: Run the contract test and observe the documented response shape
 ```
 
-The [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) carries the source, intended result, target files, and executable verification into implementation. It adds a `Verification Focus` only when a test could pass without proving one important behavior. After execution, the applicable repository checks run against the complete task change before commit. Final reviewers compare the approved documents with the completed code and rerun after accepted corrections.
+The [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) carries the source, intended result, target files, and executable verification into implementation. It adds a `Verification Focus` only when a test could pass without proving one important behavior. After execution, the applicable repository checks run against the complete task change before commit. Final reviewers compare the approved documents with the completed code, check for unsupported implementation scope and material code-quality failures, and rerun only the correction-affected review boundary after accepted corrections. `docs/project-context/quality.yaml`, generated or updated with `$recipe-quality-profile`, can add evidence-backed repository policy to that review.
 
 ---
 
@@ -200,7 +201,8 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 | `$recipe-plan` | Design Doc → selective integration/E2E skeletons → work plan | Planning phase from an approved Design Doc |
 | `$recipe-prepare-implementation` | Prepare existing repository-local tools needed by an approved Work Plan | Explicit setup request or a concrete task capability is unavailable |
 | `$recipe-build` | Execute backend tasks with validation between steps | Resume backend implementation |
-| `$recipe-review` | Design Doc compliance and security validation with optional approved corrections | Post-implementation check |
+| `$recipe-review` | Implementation scope, Design Doc compliance, code quality, and security review with user-approved corrections | Post-implementation check |
+| `$recipe-quality-profile` | Generate or update `docs/project-context/quality.yaml` from repository evidence | Repository review-policy setup and maintenance |
 | `$recipe-diagnose` | Problem investigation → failure-point verification → solution | Bug investigation |
 | `$recipe-reverse-engineer` | Generate PRD + Design Docs from existing code | Legacy system documentation |
 | `$recipe-add-integration-tests` | Add integration/E2E tests from Design Doc | Test coverage for existing code |
@@ -214,7 +216,7 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 | `$recipe-front-adjust` | Focused UI adjustment using repository, supplied, or required external evidence | Focused UI changes after implementation |
 | `$recipe-front-plan` | Frontend Design Doc → selective integration/E2E skeletons → work plan | Frontend planning phase |
 | `$recipe-front-build` | Execute frontend tasks with focused verification and quality checks | Resume frontend implementation |
-| `$recipe-front-review` | Frontend compliance and security validation with optional approved React corrections | Frontend post-implementation check |
+| `$recipe-front-review` | Frontend scope, compliance, code quality, and security review with user-approved React corrections | Frontend post-implementation check |
 
 ### Fullstack (Cross-Layer)
 
@@ -303,7 +305,7 @@ Codex spawns these as needed during recipe execution. You do not need to learn t
 
 | Agent | Role |
 |-------|------|
-| `code-reviewer` | Design Doc compliance validation |
+| `code-reviewer` | Completed implementation scope, governing-source compliance, and material code-quality review |
 | `code-verifier` | Document-code consistency verification |
 | `security-reviewer` | Security compliance review after implementation |
 | `rule-advisor` | Skill selection for standalone work not already governed by a recipe |

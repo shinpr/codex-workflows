@@ -26,7 +26,9 @@ Resolve the entry from supplied artifacts and repository state. Ask only when di
 
 Apply the Fullstack Flow exposed by `subagents-orchestration-guide` with backend, frontend, and shared routing. The orchestrator directly owns artifact/path resolution, execution-plan updates, approval recording, task-set computation, commits, and lightweight checks; invoke the named specialists for analysis, authoring, implementation, review, and quality judgment.
 
-Reuse the active execution plan or register the material remaining phases once. Follow the Fullstack Flow's document approvals. After implementation-scope approval, execute tasks autonomously through its filename routing, Per-Task Change Set, quality gate, commit, and Post-Implementation Verification.
+Reuse the active execution plan or register the material remaining phases once. Follow the Fullstack Flow's document approvals. After implementation-scope approval, execute tasks autonomously through its filename routing, Per-Task Change Set, quality gate, commit, and Post-Implementation Review.
+
+Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
 
 External evidence, prototypes, and repository environment preparation remain conditional under the canonical flow. A missing optional input does not create a stop.
 

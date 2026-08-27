@@ -1,6 +1,6 @@
 ---
 name: recipe-front-review
-description: "Frontend Design Doc compliance and security validation with optional auto-fixes using React-specific quality checks."
+description: "Reviews completed frontend implementation for governing-source compliance, scope economy, repository quality, and security, and applies user-approved React corrections."
 ---
 
 **Context**: Post-implementation quality assurance for React/TypeScript frontend
@@ -17,7 +17,7 @@ description: "Frontend Design Doc compliance and security validation with option
 
 ## Execution Method
 
-- Compliance validation -> performed by code-reviewer
+- Implementation review -> performed by code-reviewer
 - Security validation -> performed by security-reviewer
 - Code-side fix path -> performed by task-executor-frontend
 - Design-side update path -> performed by technical-designer-frontend in update mode, then document-reviewer, then design-sync when multiple Design Docs exist
@@ -38,7 +38,7 @@ If a single active work plan is explicitly provided or unambiguously resolved fo
 **CANNOT proceed without both a Design Doc and implementation files.**
 
 ### 2. Execute code-reviewer
-Spawn code-reviewer agent: "Validate Design Doc compliance for [design-doc-path]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. Implementation files: [$STEP_1_FILES]. Review mode: full. Return structured JSON report per your Output Format specification."
+Spawn code-reviewer agent: "Review the completed frontend implementation. governingDocuments: [{type: design-doc, path: [design-doc-path]}]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. implementationFiles: [$STEP_1_FILES]. Return the initial review JSON."
 
 **Store output as**: `$STEP_2_OUTPUT`
 
@@ -51,20 +51,21 @@ Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [p
 
 If either reviewer returns a blocked or otherwise unusable result, apply Orchestrator Escalation Resolution before continuing.
 
+Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
+
 **Code compliance criteria (considering project stage)**:
 - `code-reviewer` verdict is `pass`
 
 **Security criteria**:
 - `approved` -> Pass
-- `needs_revision` -> Fail
+- `needs_revision` -> Requires disposition
 
-Report both results from their evidence, then apply Review Resolution before proposing corrections:
+Report required corrections from both results, then apply Review Resolution before proposing corrections:
 
 ```
-Code Compliance: [verdict]
+Implementation Review: [verdict]
   Acceptance Criteria: [fulfilled/unfulfilled items with evidence]
-  Findings: [blocking findings with basis and effect]
-  Recommendations: [non-blocking items]
+  Findings: [required-correction findings with basis and effect]
 
 Security Review: [status from security-reviewer]
   Findings by category:
@@ -74,15 +75,13 @@ Security Review: [status from security-reviewer]
 Proposed corrections:
   c) Code-side fix
   d) Design-side update
-Declined recommendations:
-  - [finding and evidence-backed reason]
 ```
 
 Apply Review Resolution before presenting results. Recommend a correction route only for findings classified `apply` or `user_decision_required`:
 - Use `d` when implementation intent matches the requirement but the Design Doc is stale or too narrow.
-- Use `c` when code drifted from a still-correct Design Doc, or when the finding is reliability, security, or maintainability related.
+- Use `c` when the required correction changes implementation.
 
-Present the review and internally declined recommendations. When no correction remains, proceed to Final Report. Because this recipe is a review request rather than prior implementation authority, ask once before applying the proposed code or document corrections.
+Present the review. When no correction remains, proceed to Final Report. Because this recipe is a review request rather than prior implementation authority, ask once before applying the proposed code or document corrections.
 
 If the user declines corrections, skip fix steps and proceed to Final Report.
 
@@ -92,9 +91,11 @@ If the user declines corrections, skip fix steps and proceed to Final Report.
 2. **Plan fixes**: Use the active execution plan when one exists. When none exists, create one for the accepted fix flow. Create `docs/plans/tasks/review-fixes-YYYYMMDD.md` with only accepted code compliance issues and security required fixes routed to `c`.
 3. **Execute fixes**: Start the Per-Task Change Set, invoke task-executor-frontend with the task file, inspect its result and repository diff, and accumulate its paths.
 4. **Quality check**: Invoke quality-fixer-frontend with `task_file`, `filesModified: taskWriteSet`, and executor operation-verification evidence. On approval, add its paths and commit the reconciled set; repair stubs through task-executor-frontend, accumulate their paths, and resolve blocked results through Orchestrator Escalation Resolution.
-5. **Re-validate**: Run code-reviewer and security-reviewer against the updated Design Doc and actual implementation and fix files. Pass both `prior_feedback: [applied corrections and declined finding IDs with reasons and evidence]` and review the current result normally.
+5. **Re-validate**: Run code-reviewer and security-reviewer against the updated Design Doc and actual implementation and fix files. For code-reviewer, pass `prior_feedback: [the complete initial result, applied corrections, declined finding IDs with reasons and evidence, and the correction paths or diff]` and apply its Rerun Boundary. Pass the applicable corrections and dispositions to security-reviewer.
 
-After any code fix, both review agents must re-run. Delete the task file only after both pass.
+After any code fix, both review agents must re-run.
+
+Apply Review Resolution to rerun findings. Its convergence rule governs any further correction and rerun; code-reviewer receives the latest complete result and the next correction paths or diff.
 
 ENFORCEMENT: Auto-fixes MUST go through quality-fixer-frontend before re-validation. Skipping quality checks invalidates fixes.
 
@@ -102,7 +103,7 @@ ENFORCEMENT: Auto-fixes MUST go through quality-fixer-frontend before re-validat
 Delete the review-fix task file this recipe created, if present. Its work is committed; `docs/plans/` is ephemeral working state.
 
 ```
-Code Compliance:
+Implementation Review:
   Initial: [verdict]
   Final: [verdict] (if fixes executed)
 
@@ -114,18 +115,6 @@ Remaining issues:
 - [items requiring manual intervention]
 ```
 
-## Auto-fixable Items
-- Simple unimplemented acceptance criteria
-- Error handling additions
-- Contract definition fixes
-- Function splitting (length/complexity improvements)
-- Security confirmed_risk and defense_gap fixes (input validation, auth checks, output encoding)
-
-## Non-fixable Items
-- Fundamental business logic changes
-- Architecture-level modifications
-- Design Doc deficiencies
-- Committed secrets (blocked -> human intervention)
 
 ## Completion Criteria
 

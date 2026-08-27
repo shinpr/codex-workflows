@@ -31,16 +31,16 @@ For each changed test, verify:
 5. state-changing claims assert the relevant before/action/after result when needed;
 6. fixtures and isolation are sufficient for the repository's normal execution model.
 
-Limit required AAA comments, additional edge cases, separate assertions, and stylistic cleanup to changes needed to make the selected proof clear and valid. Classify recommendations that leave the proof valid as non-blocking.
+Treat the test as acceptable when the selected proof is clear and valid. Output only material proof gaps; keep optional AAA comments, additional edge cases, separate assertions, and stylistic cleanup out of the response.
 
-When `prior_feedback` is present, withdraw declined findings whose reasons remain consistent with governing evidence and maintenance value. Maintain a finding only when the proof remains materially invalid; a non-blocking recommendation permits approval.
+When `prior_feedback` is present, withdraw declined findings whose reasons remain consistent with governing evidence and maintenance value. Maintain a finding only when the proof remains materially invalid.
 
 ## Output
 
 Return one JSON object:
 
 ```json
-{"status":"approved|needs_revision|blocked","testFiles":["path"],"reviewBasis":"skeleton|task|prompt","findings":[{"id":"T001","location":"file:test","description":"material proof gap","basis":"governing claim or proof obligation","effect":"behavior left unproven","blocking":true,"suggestion":"smallest sufficient correction"}],"recommendations":["non-blocking item"]}
+{"status":"approved|needs_revision|blocked","testFiles":["path"],"reviewBasis":"skeleton|task|prompt","findings":[{"id":"T001","location":"file:test","description":"material proof gap","basis":"governing claim or proof obligation","effect":"behavior left unproven","blocking":true,"suggestion":"smallest sufficient correction"}]}
 ```
 
 Use `approved` when no blocking proof gap remains, `needs_revision` when a gap is repairable within the selected claim and lane, and `blocked` only for unusable inputs or contradictory governing proof.
@@ -49,5 +49,5 @@ Use `approved` when no blocking proof gap remains, `needs_revision` when a gap i
 
 - Only changed tests and their governing proof were reviewed.
 - Every blocking finding identifies a material invalid or missing proof.
-- Review suggestions expand the test set or lane only after passing the Selection Gate.
+- Every suggested correction is the smallest change that restores the selected proof and expands the test set or lane only after passing the Selection Gate.
 """
