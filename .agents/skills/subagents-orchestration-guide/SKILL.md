@@ -210,7 +210,7 @@ Flow rules:
 - Frontend and fullstack flows create the UI Spec from completed layer analysis before ADR or Design Doc creation.
 - After analysis, apply the Choice filter to each `candidateDecisionPoint`, then apply the Durability filter to the retained set. Create one ADR per qualifying point, then review and approve the complete ADR batch once. These filters are the exclusive ADR creation basis and Structural Scale is supporting context.
 - Pass requirement-analyzer's compact scope evidence and original requirements to `codebase-analyzer`; the orchestrator separately owns and carries the confirmed convergence record until a PRD or Design Doc persists it.
-- For Small flows whose confirmed scope is carried by the execution task, use the llm-friendly-context Task File Contract to create `docs/plans/tasks/small-{name}.md`. Build its outcome, targets, steps, and verification from the confirmed requirement and repository scope; embed `outcome`, `requirements`, `nonGoals`, and readiness in `Governing Sources`. Pass the exact file to the layer-appropriate executor. Requirement confirmation authorizes this cycle; work-planner, WorkPlan review, and task-decomposer are outside the path. Remove the task file after security-reviewer passes.
+- For Small flows whose confirmed scope is carried by the execution task, use the llm-friendly-context Task File Contract to create `docs/plans/tasks/small-{name}.md`. Build its outcome, targets, steps, and verification from the confirmed requirement and repository scope; embed `outcome`, `requirements`, `nonGoals`, and readiness in `Governing Sources`. Pass the exact file to the layer-appropriate executor. Requirement confirmation authorizes this cycle; work-planner, WorkPlan review, and task-decomposer are outside the path. Remove the task file after Post-Implementation Review passes.
 - Pass only codebase-analyzer material that changes reuse, option validity or selection, lifecycle cost, a preserved contract, design, or verification to the relevant ADR/Design Doc owner.
 - Pass a Design Doc path to `code-verifier`, apply Review Resolution to its discrepancies, and pass only resolved verification evidence to `document-reviewer`.
 - Fullstack layer sequencing is defined in `references/monorepo-flow.md`
@@ -236,7 +236,7 @@ After implementation-scope approval, autonomously execute the following processe
 ```
 Approved scope -> task decomposition when needed -> each task:
 implementation -> optional integration-test review -> quality-fixer -> commit
--> final code/security verification -> completion report
+-> final code/security review -> completion report
 ```
 
 Reviewer findings in this mode are candidates, not work orders; create repair work only from the Review Resolution `apply` set.
@@ -264,16 +264,16 @@ Use the task loop defined in the autonomous execution diagram above. The canonic
 3. run the quality fixer on the accumulated change set and repair until approved
 4. commit implementation files, then record Task File, Work Plan task/phase, and execution-plan completion locally
 
-### Post-Implementation Verification
+### Post-Implementation Review
 
-| Verifier | Pass | Requires disposition | Blocked |
+| Reviewer | Pass | Requires disposition | Blocked |
 |----------|------|------|---------|
-| code-verifier | `summary.status` is `consistent` | `summary.status` is `needs_review` or `inconsistent` | `summary.status` is `blocked` |
+| code-reviewer | `verdict` is `pass` | `verdict` is `needs-improvement` or `needs-redesign` | `verdict` is `blocked` |
 | security-reviewer | `status` is `approved` | `status` is `needs_revision` | `status` is `blocked` |
 
-Code-verifier runs correspond to durable governing documents. The Small path passes its active task file to security-reviewer as `type: task-file`. Repository quality checks are owned by the quality-fixer run in each implementation and verifier-fix task cycle.
+Run code-reviewer against the complete implementation change set and its governing Design Docs, or the active task file for a Small flow. When an applied correction changes code, rerun it with `prior_feedback` containing the previous complete result, finding dispositions, and the correction paths or diff; its Rerun Boundary preserves unaffected evidence. The Small path also passes its active task file to security-reviewer as `type: task-file`. Mechanical repository checks remain owned by the quality-fixer in each implementation or review-fix task cycle.
 
-Apply Review Resolution to verifier findings. Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
+Apply Review Resolution to reviewer findings. Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
 
 ## Main Orchestrator Roles
 

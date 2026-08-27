@@ -1,6 +1,6 @@
 ---
 name: recipe-review
-description: "Design Doc compliance and security validation with optional auto-fixes."
+description: "Reviews completed implementation for governing-source compliance, scope economy, repository quality, and security, and applies user-approved corrections."
 ---
 
 ## Required Skills [LOAD BEFORE EXECUTION]
@@ -23,7 +23,7 @@ description: "Design Doc compliance and security validation with optional auto-f
 
 ## Execution Method
 
-- Compliance validation -> Spawn code-reviewer agent
+- Implementation review -> Spawn code-reviewer agent
 - Security validation -> Spawn security-reviewer agent
 - Code-side fix path -> Spawn task-executor agent
 - Design-side update path -> Spawn technical-designer in update mode, then document-reviewer, then design-sync when multiple Design Docs exist
@@ -41,7 +41,7 @@ Identify the Design Doc in `docs/design/`. Derive `$STEP_1_FILES` as the complet
 If a single active work plan is explicitly provided or unambiguously resolved for that Design Doc, read its `Review Scope` line. Otherwise set `Work Plan: none` and `Review Scope: none`; do not infer.
 
 ### Step 2: Execute code-reviewer
-Spawn code-reviewer agent: "Validate Design Doc compliance for the implementation. Design Doc path: [path]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. Implementation files: [$STEP_1_FILES]. Review mode: full. Return structured JSON report per your Output Format specification."
+Spawn code-reviewer agent: "Review the completed implementation. governingDocuments: [{type: design-doc, path: [path]}]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. implementationFiles: [$STEP_1_FILES]. Return the initial review JSON."
 
 **Store output as**: `$STEP_2_OUTPUT`
 
@@ -63,13 +63,12 @@ Apply a security-reviewer finding only when leaving it unresolved would violate 
 - `approved` -> Pass
 - `needs_revision` -> Requires disposition
 
-Report both results from their evidence, then apply Review Resolution before proposing corrections:
+Report required corrections from both results, then apply Review Resolution before proposing corrections:
 
 ```
-Code Compliance: [verdict]
+Implementation Review: [verdict]
   Acceptance Criteria: [fulfilled/unfulfilled items with evidence]
-  Findings: [blocking findings with basis and effect]
-  Recommendations: [non-blocking items]
+  Findings: [required-correction findings with basis and effect]
 
 Security Review: [status from security-reviewer]
   Findings by category:
@@ -79,15 +78,13 @@ Security Review: [status from security-reviewer]
 Proposed corrections:
   c) Code-side fix
   d) Design-side update
-Declined recommendations:
-  - [finding and evidence-backed reason]
 ```
 
 Apply Review Resolution before presenting results. Recommend a correction route only for findings classified `apply` or `user_decision_required`:
 - Use `d` when implementation intent matches the requirement but the Design Doc is stale or too narrow.
-- Use `c` when code drifted from a still-correct Design Doc, or when the finding is reliability, security, or maintainability related.
+- Use `c` when the required correction changes implementation.
 
-Present the review and internally declined recommendations. When no correction remains, proceed to Step 11. Because this recipe is a review request rather than prior implementation authority, ask once before applying the proposed code or document corrections.
+Present the review. When no correction remains, proceed to Step 11. Because this recipe is a review request rather than prior implementation authority, ask once before applying the proposed code or document corrections.
 
 If the user declines corrections, skip Steps 5-10 and proceed to Step 11.
 
@@ -121,20 +118,22 @@ Spawn quality-fixer with `task_file`, `filesModified: taskWriteSet`, and executo
 
 ### Step 9: Re-validate code-reviewer
 
-Spawn code-reviewer with the Design Doc, actual implementation and fix files, and `prior_feedback: [applied corrections and declined finding IDs with reasons and evidence from Step 4]`. Review the current implementation normally and verify the applied corrections.
+Spawn code-reviewer with the original governing documents and implementation change set, plus `prior_feedback: [the complete Step 2 result, applied corrections, declined finding IDs with reasons and evidence, and the correction paths or diff]`. Apply its Rerun Boundary.
 
 ### Step 10: Re-validate security-reviewer
 
 Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]`, the actual implementation and fix files, and `prior_feedback: [applied corrections and declined finding IDs with reasons and evidence from Step 4]`.
 
-After any code fix, both Steps 9 and 10 are mandatory even when only one reviewer initially reported a finding. Delete the task file only after both pass.
+After any code fix, both Steps 9 and 10 are mandatory even when only one reviewer initially reported a finding.
+
+Apply Review Resolution to rerun findings. Its convergence rule governs any further correction and rerun; code-reviewer receives the latest complete result and the next correction paths or diff.
 
 ### Step 11: Final Report
 
 Delete the review-fix task file this recipe created, if present. Its work is committed; `docs/plans/` is ephemeral working state.
 
 ```
-Code Compliance:
+Implementation Review:
   Initial: [verdict]
   Final: [verdict] (if fixes executed)
 
@@ -146,19 +145,6 @@ Remaining issues:
 - [items requiring manual intervention]
 ```
 
-## Auto-fixable Items
-- Simple unimplemented acceptance criteria
-- Error handling additions
-- Contract definition fixes
-- Function splitting (length/complexity improvements)
-- Security confirmed_risk and defense_gap fixes (input validation, auth checks, output encoding)
-
-## Non-fixable Items
-- Fundamental business logic changes
-- Architecture-level modifications
-- Design Doc deficiencies
-- Committed secrets (blocked -> human intervention)
-
 ## Completion Criteria
 
 - [ ] Design Doc identified and implementation files checked
@@ -169,4 +155,4 @@ Remaining issues:
 - [ ] Re-validation completed after fixes (both code and security)
 - [ ] Final report presented to user
 
-**Scope**: Design Doc compliance validation, security review, and auto-fixes.
+**Scope**: Completed implementation review, security review, and approved corrections.
