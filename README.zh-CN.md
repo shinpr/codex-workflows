@@ -29,7 +29,7 @@ codex-workflows会在整个执行过程中约束这种范围膨胀：
 | 范围 | 工作流会对照预期结果、明确排除项、现有代码和大致实现成本来检查需求。投入与收益不相称的工作，会在演变成架构设计之前被删掉。 |
 | 阶段门槛 | 需求、设计和计划的产出必须先通过检查，才能授权下一阶段。新代理直接读取已经批准的决策和所需依据，无须从一段很长的对话中重新猜测意图。 |
 | 执行 | 实现范围获批后，Codex会自主完成整组任务。每项任务都要通过针对性验证和仓库要求的检查，之后才会提交实现。 |
-| 完成 | 独立的代码评审和安全评审会确认最终改动未超出已批准范围，且不存在重大问题。必须修复的问题会回到同一套实现与质量流程。 |
+| 完成 | 独立的代码和安全评审会检查全部改动。必须修复的问题会回到相同的实现与质量流程；可选的加固项则可以在有依据的情况下不做。 |
 
 与直接执行相比，这套工作流会调用更多代理、消耗更多token。只有当保护既定目标值得这笔成本时，才需要使用它。
 
@@ -71,7 +71,6 @@ $recipe-implement 使用JWT添加用户认证
 | 设计并实现React / TypeScript Web前端 | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
 | 同时交付后端和React前端改动 | `$recipe-fullstack-implement` |
 | 按照设计评审实现 | `$recipe-review` 或 `$recipe-front-review` |
-| 定义或更新仓库专属评审规则 | `$recipe-quality-profile` |
 | 调查问题但不修改代码 | `$recipe-diagnose` |
 | 做一次性实验或临时脚本 | 直接使用Codex |
 
@@ -89,7 +88,7 @@ flowchart LR
     D --> E[规划存在依赖关系的工作]
     E --> F[批准实现范围]
     F --> H[逐项实现、验证、质量检查并提交]
-    H --> K[独立代码评审和安全评审]
+    H --> K[独立代码和安全验证]
     K -->|需要修正| H
     K -->|需求或主要设计发生变化| B
     K -->|通过| L[完成]
@@ -124,7 +123,7 @@ flowchart LR
 - **验证**: 运行契约测试，确认响应结构符合文档
 ```
 
-[Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md)会把来源、预期结果、目标文件和可执行的验证方法传递到实现阶段。只有在测试可能通过、却没有证明某项关键行为时，才会增加`Verification Focus`。任务执行完毕后，完整改动必须在提交前通过适用的仓库检查。最终评审者会将完成的代码与已批准文档逐项对照，同时检查是否存在超出批准范围的实现或重大的代码质量问题。接受修正后，下一轮评审只聚焦于可能受该修正影响的检查项。运行`$recipe-quality-profile`，可根据仓库中的依据，在`docs/project-context/quality.yaml`中定义额外的专属评审规则。
+[Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md)会把来源、预期结果、目标文件和可执行的验证方法传递到实现阶段。只有在测试可能通过、却没有证明某项关键行为时，才会增加`Verification Focus`。任务执行完毕后，完整改动必须在提交前通过适用的仓库检查。最终评审者会将完成的代码与已批准文档逐项对照，并在接受的修正完成后重新检查。
 
 ---
 
@@ -200,8 +199,7 @@ npx codex-workflows status --user
 | `$recipe-plan` | Design Doc → 按需生成集成/E2E测试骨架 → Work Plan | 根据已批准的Design Doc制定计划 |
 | `$recipe-prepare-implementation` | 准备已批准Work Plan所需的现有仓库内工具 | 明确要求准备环境，或任务所需能力不可用 |
 | `$recipe-build` | 执行后端任务，并在各步骤之间验证 | 继续后端实现 |
-| `$recipe-review` | 评审实现范围、Design Doc符合性、代码质量和安全性，并应用用户批准的修正 | 实现后检查 |
-| `$recipe-quality-profile` | 在`docs/project-context/quality.yaml`中定义或更新仓库专属评审规则 | 设置和维护评审策略 |
+| `$recipe-review` | 检查Design Doc符合性和安全性，并按需完成已批准修正 | 实现后检查 |
 | `$recipe-diagnose` | 调查问题 → 验证故障点 → 提出解决方案 | 缺陷调查 |
 | `$recipe-reverse-engineer` | 从现有代码生成PRD和Design Doc | 遗留系统文档化 |
 | `$recipe-add-integration-tests` | 根据Design Doc添加集成/E2E测试 | 为现有代码补充测试 |
@@ -215,7 +213,7 @@ npx codex-workflows status --user
 | `$recipe-front-adjust` | 根据仓库、已有资料或必要外部依据进行针对性UI调整 | 实现后的局部UI修改 |
 | `$recipe-front-plan` | 前端Design Doc → 按需生成集成/E2E测试骨架 → Work Plan | 前端规划阶段 |
 | `$recipe-front-build` | 执行前端任务，并进行针对性验证和质量检查 | 继续前端实现 |
-| `$recipe-front-review` | 评审前端范围、符合性、代码质量和安全性，并应用用户批准的React修正 | 前端实现后检查 |
+| `$recipe-front-review` | 检查前端符合性和安全性，并按需完成已批准的React修正 | 前端实现后检查 |
 
 ### 全栈（跨层）
 
@@ -304,7 +302,7 @@ PRD、ADR、UI Spec和Design Doc属于需要长期保存的项目文档，应当
 
 | 代理 | 职责 |
 |------|------|
-| `code-reviewer` | 对照批准范围和约束文档检查最终实现，并指出重大的代码质量问题 |
+| `code-reviewer` | 验证实现是否符合Design Doc |
 | `code-verifier` | 验证文档与代码的一致性 |
 | `security-reviewer` | 实现后进行安全符合性评审 |
 | `rule-advisor` | 为不受现有工作流管理的独立任务选择技能 |
