@@ -29,7 +29,7 @@ codex-workflows는 실행 내내 이런 범위 확장을 제어합니다.
 | 범위 | 요청을 원하는 결과, 명시적 제외 사항, 기존 코드, 대략적인 구현 비용과 비교합니다. 비용만큼 가치가 없는 작업은 아키텍처가 되기 전에 제거합니다. |
 | 단계 게이트 | 요구사항, 설계, 계획 결과물을 확인한 뒤에만 다음 단계를 허용합니다. 새 에이전트는 긴 대화에서 의도를 다시 추측하는 대신 승인된 결정과 필요한 근거를 읽습니다. |
 | 실행 | 구현이 승인되면 Codex가 작업 묶음을 자율적으로 수행합니다. 각 작업은 구현 커밋 전에 해당 작업에 맞춘 검증과 저장소에서 요구하는 검사를 통과합니다. |
-| 완료 | 독립적인 코드 및 보안 검증이 변경 전체를 살핍니다. 반드시 고쳐야 할 문제는 같은 구현·품질 주기로 돌아가며, 선택적인 보강은 근거를 제시하고 하지 않을 수 있습니다. |
+| 완료 | 독립적인 코드 리뷰와 보안 리뷰를 통해 완성된 변경이 승인 범위를 벗어나지 않았고 중대한 문제가 없는지 확인합니다. 반드시 필요한 수정은 같은 구현·품질 주기로 돌려보냅니다. |
 
 이 워크플로는 Codex를 직접 실행할 때보다 더 많은 에이전트 호출과 토큰을 사용합니다. 승인된 결과를 지키는 일이 그 비용보다 중요할 때 사용하세요.
 
@@ -71,6 +71,7 @@ $recipe-implement JWT 사용자 인증 추가
 | React / TypeScript 웹 프런트엔드를 설계하고 구현 | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
 | 백엔드와 React 프런트엔드 변경을 함께 구현 | `$recipe-fullstack-implement` |
 | 설계에 맞게 구현되었는지 리뷰 | `$recipe-review` 또는 `$recipe-front-review` |
+| 저장소별 리뷰 규칙 정의 또는 업데이트 | `$recipe-quality-profile` |
 | 코드를 바꾸지 않고 문제 조사 | `$recipe-diagnose` |
 | 일회성 실험이나 단발성 스크립트 실행 | Codex 직접 사용 |
 
@@ -88,7 +89,7 @@ flowchart LR
     D --> E[의존 작업 계획]
     E --> F[구현 범위 승인]
     F --> H[작업별 구현, 검증, 품질 검사 및 커밋]
-    H --> K[독립 코드 및 보안 검증]
+    H --> K[독립 코드 및 보안 리뷰]
     K -->|수정 필요| H
     K -->|요구사항 또는 주요 설계 변경| B
     K -->|통과| L[완료]
@@ -123,7 +124,7 @@ ADR은 현재 범위에 속하고 오래 유지되는 선택에 실질적으로 
 - **검증**: 계약 테스트를 실행하고 문서에 정의된 응답 형태 확인
 ```
 
-[Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md)는 출처, 의도한 결과, 대상 파일, 실행 가능한 검증을 구현 단계로 전달합니다. 테스트가 통과해도 중요한 동작을 증명하지 못할 수 있을 때만 `Verification Focus`를 추가합니다. 실행 후에는 커밋 전에 작업 변경 전체에 해당 저장소 검사를 적용합니다. 최종 리뷰어는 승인 문서와 완성된 코드를 비교하고, 채택된 수정이 끝나면 다시 검토합니다.
+[Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md)는 출처, 의도한 결과, 대상 파일, 실행 가능한 검증을 구현 단계로 전달합니다. 테스트가 통과해도 중요한 동작을 증명하지 못할 수 있을 때만 `Verification Focus`를 추가합니다. 실행 후에는 커밋 전에 작업 변경 전체에 해당 저장소 검사를 적용합니다. 최종 리뷰어는 완성된 코드를 승인 문서와 대조합니다. 또한 승인 범위를 벗어난 구현이나 중대한 코드 품질 문제가 있는지 확인합니다. 수정이 채택되면 다음 리뷰에서는 해당 수정의 영향을 받을 수 있는 검사 항목에 집중합니다. `$recipe-quality-profile`을 실행하면 저장소의 근거를 바탕으로 `docs/project-context/quality.yaml`에 리뷰 규칙을 추가할 수 있습니다.
 
 ---
 
@@ -199,7 +200,8 @@ Codex에서 `$recipe-name`으로 레시피를 호출합니다. `$recipe-`를 입
 | `$recipe-plan` | Design Doc → 필요한 통합/E2E 골격 → Work Plan | 승인된 Design Doc에서 계획 수립 |
 | `$recipe-prepare-implementation` | 승인된 Work Plan에 필요한 기존 저장소 내부 도구 준비 | 명시적인 설정 요청 또는 필요한 작업 기능이 없을 때 |
 | `$recipe-build` | 단계 사이 검증과 함께 백엔드 작업 실행 | 백엔드 구현 재개 |
-| `$recipe-review` | Design Doc 준수 및 보안 검증, 필요시 승인된 수정 | 구현 후 확인 |
+| `$recipe-review` | 구현 범위, Design Doc 준수 여부, 코드 품질 및 보안을 리뷰하고 사용자가 승인한 수정 적용 | 구현 후 확인 |
+| `$recipe-quality-profile` | `docs/project-context/quality.yaml`에 저장소별 리뷰 규칙 정의 또는 업데이트 | 리뷰 정책 설정 및 유지보수 |
 | `$recipe-diagnose` | 문제 조사 → 장애 지점 검증 → 해결책 | 버그 조사 |
 | `$recipe-reverse-engineer` | 기존 코드에서 PRD와 Design Doc 생성 | 레거시 시스템 문서화 |
 | `$recipe-add-integration-tests` | Design Doc에서 통합/E2E 테스트 추가 | 기존 코드의 테스트 범위 확대 |
@@ -213,7 +215,7 @@ Codex에서 `$recipe-name`으로 레시피를 호출합니다. `$recipe-`를 입
 | `$recipe-front-adjust` | 저장소, 제공 자료 또는 필요한 외부 근거를 사용한 집중 UI 조정 | 구현 후의 좁은 UI 변경 |
 | `$recipe-front-plan` | 프런트엔드 Design Doc → 필요한 통합/E2E 골격 → Work Plan | 프런트엔드 계획 단계 |
 | `$recipe-front-build` | 작업에 맞춘 검증과 품질 검사를 포함한 프런트엔드 작업 실행 | 프런트엔드 구현 재개 |
-| `$recipe-front-review` | 프런트엔드 준수 및 보안 검증, 필요시 승인된 React 수정 | 프런트엔드 구현 후 확인 |
+| `$recipe-front-review` | 프런트엔드 범위, 준수 여부, 코드 품질 및 보안을 리뷰하고 사용자가 승인한 React 수정 적용 | 프런트엔드 구현 후 확인 |
 
 ### 풀스택(계층 간)
 
@@ -302,7 +304,7 @@ React 애플리케이션을 포함한 웹 프런트엔드 TypeScript용 참고 �
 
 | 에이전트 | 역할 |
 |----------|------|
-| `code-reviewer` | Design Doc 준수 검증 |
+| `code-reviewer` | 완성된 구현을 승인 범위 및 기준 문서와 대조하고 중대한 코드 품질 문제를 확인 |
 | `code-verifier` | 문서와 코드 일치 검증 |
 | `security-reviewer` | 구현 후 보안 준수 리뷰 |
 | `rule-advisor` | 레시피 밖의 단독 작업을 위한 스킬 선택 |
