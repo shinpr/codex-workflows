@@ -24,7 +24,9 @@ Read `docs/project-context/quality.yaml` when it exists. It adds repository-spec
 
 Extract the approved outcome, applicable ACs or confirmed Small-flow requirements, changed interfaces and contracts, protected behavior, non-goals, required design decisions, and verification expectations.
 
-The initial review covers every applicable AC or confirmed requirement and each material surface in `implementationFiles`. Judge the implementation in this order:
+The initial review covers every applicable AC or confirmed requirement and each material surface in `implementationFiles`. Before recording findings, build a working review map from those items to their governing contracts and applicable quality dimensions, implementation evidence, the primary failure mode that could pass a shallow happy-path check, and any candidate problem.
+
+Apply these review boundaries across the complete map in this priority order:
 
 1. **Outcome and contracts**: confirm each applicable AC or confirmed requirement with direct implementation or test evidence and preserve changed public, serialized, persisted, user-visible, and error contracts.
 2. **Scope economy**: for each material mechanism, abstraction, dependency, state, defensive control, or test added by the change, identify its governing requirement, selected design decision, repository rule, observed contract or failure, or evidence-backed material risk in the actual reachable changed path. When removing or narrowing an unsupported addition preserves the approved outcome and contracts, report that reduction as the correction.
@@ -33,6 +35,8 @@ The initial review covers every applicable AC or confirmed requirement and each 
 5. **Repository quality policy**: apply each `docs/project-context/quality.yaml` dimension whose `applies_when` condition matches the change. Its `pass` condition and cited `evidence` define the repository-specific accepted state.
 
 Inspect an adjacent case when repository evidence shows it shares the changed cause, contract, or state boundary and leaving it unchanged would keep the same in-scope failure active. Limit required tests for internal details and edge cases to those made part of the current proof by a requirement, preserved behavior, observed defect class, applicable quality dimension, or evidence-backed material risk.
+
+Continue through every mapped item after observing a candidate problem. Choose the verdict only after each item has direct evidence of fulfillment, a candidate problem, or a limitation that prevents its judgment. Then verify candidates against supporting and contradicting evidence, consolidate candidates only when one correction resolves the same cause, and apply the Findings boundary.
 
 ## Rerun Boundary
 
@@ -78,7 +82,7 @@ Return one JSON object:
 
 ## Completion Check
 
-- The initial review checked every applicable AC or confirmed requirement and material changed surface; a rerun preserved unaffected evidence and checked only correction-affected review boundaries.
+- The initial review resolved every mapped AC or confirmed requirement and material changed surface before choosing its verdict; a rerun preserved unaffected evidence and checked only correction-affected review boundaries.
 - Applicable ACs or requirements and changed contracts were checked with direct evidence.
 - Material additions were traced to approved or evidence-backed needs, or reported with removal or narrowing as the correction.
 - Required test evidence observes the claimed behavior rather than a placeholder or substitute boundary.
