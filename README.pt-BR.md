@@ -29,7 +29,7 @@ O codex-workflows controla esse crescimento de escopo ao longo de toda a execuç
 | Escopo | O fluxo compara o pedido com o resultado desejado, as exclusões explícitas, o código existente e o custo aproximado de implementação. O trabalho que não justifica seu custo é removido antes de virar arquitetura. |
 | Controles entre fases | Os resultados de requisitos, design e planejamento são revisados antes de autorizar a próxima fase. Novos agentes leem as decisões aprovadas e as evidências necessárias, em vez de reconstruir a intenção a partir de uma conversa longa. |
 | Execução | Depois que o escopo de implementação é aprovado, o Codex executa o conjunto de tarefas de forma autônoma. Cada tarefa passa por sua verificação específica e pelas checagens aplicáveis do repositório antes do commit de implementação. |
-| Conclusão | Revisões independentes de código e segurança examinam toda a mudança. Correções obrigatórias voltam ao mesmo ciclo de implementação e qualidade; reforços opcionais podem ser recusados quando houver justificativa. |
+| Conclusão | Revisões independentes de código e segurança confirmam que a mudança concluída permanece dentro do escopo aprovado e não contém falhas graves. As correções obrigatórias voltam ao mesmo ciclo de implementação e qualidade. |
 
 Esse fluxo usa mais chamadas de agentes e mais tokens do que uma execução direta. Use-o quando proteger o resultado aprovado valer esse custo.
 
@@ -71,6 +71,7 @@ O prefixo `$` invoca uma skill explicitamente. Digite `$recipe-` para ver os flu
 | Projetar e construir um frontend web com React / TypeScript | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
 | Entregar juntos uma mudança de backend e outra de frontend React | `$recipe-fullstack-implement` |
 | Revisar uma implementação com base no design | `$recipe-review` ou `$recipe-front-review` |
+| Definir ou atualizar regras de revisão específicas do repositório | `$recipe-quality-profile` |
 | Investigar um problema sem alterar o código | `$recipe-diagnose` |
 | Fazer um experimento descartável ou um script pontual | Use o Codex diretamente |
 
@@ -88,7 +89,7 @@ flowchart LR
     D --> E[Planejar trabalhos dependentes]
     E --> F[Aprovar o escopo da implementação]
     F --> H[Por tarefa: implementar, verificar, checar qualidade e fazer commit]
-    H --> K[Verificação independente de código e segurança]
+    H --> K[Revisão independente de código e segurança]
     K -->|Correção| H
     K -->|Requisito ou design principal mudou| B
     K -->|Aprovado| L[Concluído]
@@ -123,7 +124,7 @@ Separar os contextos evita que exploração, design, implementação e revisão 
 - **Verificação**: Executar o teste de contrato e observar o formato de resposta documentado
 ```
 
-O [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) leva para a implementação a fonte, o resultado esperado, os arquivos-alvo e uma verificação executável. Ele só acrescenta um `Verification Focus` quando um teste pode passar sem comprovar um comportamento importante. Após a execução, todas as checagens aplicáveis do repositório rodam sobre a mudança completa antes do commit. Os revisores finais comparam o código concluído com os documentos aprovados e repetem a análise depois das correções aceitas.
+O [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) leva para a implementação a fonte, o resultado esperado, os arquivos-alvo e uma verificação executável. Ele só acrescenta um `Verification Focus` quando um teste pode passar sem comprovar um comportamento importante. Após a execução, todas as checagens aplicáveis do repositório rodam sobre a mudança completa antes do commit. Os revisores finais comparam o código concluído com os documentos aprovados. Eles também procuram mudanças fora do escopo aprovado e problemas sérios de qualidade do código. Quando uma correção é aceita, a revisão seguinte se concentra nas verificações que ela pode afetar. Execute `$recipe-quality-profile` para definir outras regras de revisão em `docs/project-context/quality.yaml` com base nas evidências do próprio repositório.
 
 ---
 
@@ -199,7 +200,8 @@ No Codex, use `$recipe-name` para invocar um fluxo. Digite `$recipe-` e use o pr
 | `$recipe-plan` | Design Doc → estruturas seletivas de testes de integração/E2E → Work Plan | Planejamento a partir de um Design Doc aprovado |
 | `$recipe-prepare-implementation` | Prepara as ferramentas locais já existentes exigidas por um Work Plan aprovado | Pedido explícito de preparação ou recurso necessário indisponível |
 | `$recipe-build` | Executa tarefas de backend com validação entre etapas | Retomar uma implementação de backend |
-| `$recipe-review` | Valida conformidade com o Design Doc e segurança, com correções aprovadas opcionais | Revisão após a implementação |
+| `$recipe-review` | Revisa o escopo de implementação, a conformidade com o Design Doc, a qualidade do código e a segurança; aplica as correções aprovadas pelo usuário | Revisão após a implementação |
+| `$recipe-quality-profile` | Define ou atualiza regras de revisão específicas do repositório em `docs/project-context/quality.yaml` | Configuração e manutenção das regras de revisão |
 | `$recipe-diagnose` | Investigação → verificação do ponto de falha → solução | Investigação de bugs |
 | `$recipe-reverse-engineer` | Gera PRD e Design Docs com base no código existente | Documentação de sistemas legados |
 | `$recipe-add-integration-tests` | Adiciona testes de integração/E2E a partir do Design Doc | Ampliar a cobertura do código existente |
@@ -213,7 +215,7 @@ No Codex, use `$recipe-name` para invocar um fluxo. Digite `$recipe-` e use o pr
 | `$recipe-front-adjust` | Ajuste delimitado de UI com evidências do repositório, material fornecido ou fontes externas necessárias | Mudanças pontuais de UI após a implementação |
 | `$recipe-front-plan` | Design Doc frontend → estruturas seletivas de integração/E2E → Work Plan | Fase de planejamento frontend |
 | `$recipe-front-build` | Executa tarefas frontend com verificação específica e checagens de qualidade | Retomar uma implementação frontend |
-| `$recipe-front-review` | Valida conformidade e segurança frontend, com correções React aprovadas opcionais | Revisão frontend após a implementação |
+| `$recipe-front-review` | Revisa o escopo, a conformidade, a qualidade do código e a segurança do frontend; aplica as correções React aprovadas pelo usuário | Revisão frontend após a implementação |
 
 ### Fullstack (entre camadas)
 
@@ -302,7 +304,7 @@ O Codex cria esses agentes conforme a necessidade durante a execução dos fluxo
 
 | Agente | Função |
 |--------|--------|
-| `code-reviewer` | Valida a conformidade com o Design Doc |
+| `code-reviewer` | Compara a implementação concluída com o escopo e os documentos aprovados, e aponta problemas sérios de qualidade do código |
 | `code-verifier` | Verifica a consistência entre documentos e código |
 | `security-reviewer` | Revisa a segurança depois da implementação |
 | `rule-advisor` | Seleciona skills para tarefas avulsas fora dos fluxos existentes |
