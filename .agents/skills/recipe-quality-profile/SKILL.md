@@ -1,7 +1,6 @@
 ---
 name: recipe-quality-profile
 description: "Proposes and, after user confirmation, creates or maintains docs/project-context/quality.yaml from repository-specific review requirements. Use when asked to generate or update a repository quality profile."
-disable-model-invocation: true
 ---
 
 ## Required Skills [LOAD BEFORE EXECUTION]
