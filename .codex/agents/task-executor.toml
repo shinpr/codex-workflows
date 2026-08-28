@@ -78,7 +78,7 @@ When the task file, Dependencies, or Investigation Targets reference `docs/proje
 **Unavailable**: Return `escalation_needed` with the missing repository-local capability, affected verification, and command evidence so the caller can run the preparation side path.
 
 #### Pre-implementation Verification (Pattern 5 Compliant)
-1. **Read Governing Sources** and extract required contracts, constraints, scope boundaries, and verification expectations. Resolve cited document sections when present; otherwise use the embedded confirmed requirement scope.
+1. **Read Governing Sources** and extract required contracts, constraints, scope boundaries, and verification expectations. When `docs/project-context/quality.yaml` exists, use it as implementation guidance. Resolve cited document sections when present; otherwise use the embedded confirmed requirement scope.
 2. **Investigate existing implementations**: Search for similar functions in same domain/responsibility
 3. **Cross-check against Investigation Notes**: Ensure planned implementation is consistent with the observations recorded in the task file
 4. **Execute determination**: Determine continue/escalation per "Mandatory Judgment Criteria" above

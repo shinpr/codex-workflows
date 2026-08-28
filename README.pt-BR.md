@@ -71,7 +71,7 @@ O prefixo `$` invoca uma skill explicitamente. Digite `$recipe-` para ver os flu
 | Projetar e construir um frontend web com React / TypeScript | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
 | Entregar juntos uma mudança de backend e outra de frontend React | `$recipe-fullstack-implement` |
 | Revisar uma implementação com base no design | `$recipe-review` ou `$recipe-front-review` |
-| Definir ou atualizar regras de revisão específicas do repositório | `$recipe-quality-profile` |
+| Definir ou atualizar regras de qualidade específicas do repositório | `$recipe-quality-profile` |
 | Investigar um problema sem alterar o código | `$recipe-diagnose` |
 | Fazer um experimento descartável ou um script pontual | Use o Codex diretamente |
 
@@ -124,7 +124,7 @@ Separar os contextos evita que exploração, design, implementação e revisão 
 - **Verificação**: Executar o teste de contrato e observar o formato de resposta documentado
 ```
 
-O [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) leva para a implementação a fonte, o resultado esperado, os arquivos-alvo e uma verificação executável. Ele só acrescenta um `Verification Focus` quando um teste pode passar sem comprovar um comportamento importante. Após a execução, todas as checagens aplicáveis do repositório rodam sobre a mudança completa antes do commit. Os revisores finais comparam o código concluído com os documentos aprovados. Eles também procuram mudanças fora do escopo aprovado e problemas sérios de qualidade do código. Quando uma correção é aceita, a revisão seguinte se concentra nas verificações que ela pode afetar. Execute `$recipe-quality-profile` para definir outras regras de revisão em `docs/project-context/quality.yaml` com base nas evidências do próprio repositório.
+O [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) leva para a implementação a fonte, o resultado esperado, os arquivos-alvo e uma verificação executável. Ele só acrescenta um `Verification Focus` quando um teste pode passar sem comprovar um comportamento importante. Após a execução, todas as checagens aplicáveis do repositório rodam sobre a mudança completa antes do commit. Os revisores finais comparam o código concluído com os documentos aprovados. Eles também procuram mudanças fora do escopo aprovado e problemas sérios de qualidade do código. Quando uma correção é aceita, a revisão seguinte se concentra nas verificações que ela pode afetar. Execute `$recipe-quality-profile` para definir em `docs/project-context/quality.yaml` as regras de qualidade do repositório usadas durante a implementação e a revisão.
 
 ---
 
@@ -201,7 +201,7 @@ No Codex, use `$recipe-name` para invocar um fluxo. Digite `$recipe-` e use o pr
 | `$recipe-prepare-implementation` | Prepara as ferramentas locais já existentes exigidas por um Work Plan aprovado | Pedido explícito de preparação ou recurso necessário indisponível |
 | `$recipe-build` | Executa tarefas de backend com validação entre etapas | Retomar uma implementação de backend |
 | `$recipe-review` | Revisa o escopo de implementação, a conformidade com o Design Doc, a qualidade do código e a segurança; aplica as correções aprovadas pelo usuário | Revisão após a implementação |
-| `$recipe-quality-profile` | Define ou atualiza regras de revisão específicas do repositório em `docs/project-context/quality.yaml` | Configuração e manutenção das regras de revisão |
+| `$recipe-quality-profile` | Define ou atualiza regras de qualidade específicas do repositório em `docs/project-context/quality.yaml` | Configuração e manutenção das regras de qualidade |
 | `$recipe-diagnose` | Investigação → verificação do ponto de falha → solução | Investigação de bugs |
 | `$recipe-reverse-engineer` | Gera PRD e Design Docs com base no código existente | Documentação de sistemas legados |
 | `$recipe-add-integration-tests` | Adiciona testes de integração/E2E a partir do Design Doc | Ampliar a cobertura do código existente |

@@ -71,7 +71,7 @@ $recipe-implement Add user authentication with JWT
 | Design and build a React / TypeScript web frontend | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
 | Deliver a backend and React frontend change together | `$recipe-fullstack-implement` |
 | Review an implementation against its design | `$recipe-review` or `$recipe-front-review` |
-| Define or update repository-specific review rules | `$recipe-quality-profile` |
+| Define or update repository-specific quality rules | `$recipe-quality-profile` |
 | Investigate a problem without changing code | `$recipe-diagnose` |
 | Run a throwaway experiment or one-shot script | Use Codex directly |
 
@@ -124,7 +124,7 @@ Fresh contexts keep exploration, design, implementation, and review from silentl
 - **Verification**: Run the contract test and observe the documented response shape
 ```
 
-The [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) carries the source, intended result, target files, and executable verification into implementation. It adds a `Verification Focus` only when a test could pass without proving one important behavior. After execution, the applicable repository checks run against the complete task change before commit. Final reviewers compare the completed code with the approved documents. They also look for work outside the approved scope and serious code-quality problems. When a correction is accepted, the next review focuses on the checks that correction could affect. Run `$recipe-quality-profile` to define additional review rules in `docs/project-context/quality.yaml` based on evidence from the repository.
+The [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) carries the source, intended result, target files, and executable verification into implementation. It adds a `Verification Focus` only when a test could pass without proving one important behavior. After execution, the applicable repository checks run against the complete task change before commit. Final reviewers compare the completed code with the approved documents. They also look for work outside the approved scope and serious code-quality problems. When a correction is accepted, the next review focuses on the checks that correction could affect. Run `$recipe-quality-profile` to define repository-specific quality rules in `docs/project-context/quality.yaml` for implementation and review.
 
 ---
 
@@ -202,7 +202,7 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 | `$recipe-prepare-implementation` | Prepare existing repository-local tools needed by an approved Work Plan | Explicit setup request or a concrete task capability is unavailable |
 | `$recipe-build` | Execute backend tasks with validation between steps | Resume backend implementation |
 | `$recipe-review` | Review implementation scope, Design Doc compliance, code quality, and security; apply corrections approved by the user | Post-implementation check |
-| `$recipe-quality-profile` | Define or update repository-specific review rules in `docs/project-context/quality.yaml` | Set up or maintain review rules |
+| `$recipe-quality-profile` | Define or update repository-specific quality rules in `docs/project-context/quality.yaml` | Set up or maintain quality rules |
 | `$recipe-diagnose` | Problem investigation → failure-point verification → solution | Bug investigation |
 | `$recipe-reverse-engineer` | Generate PRD + Design Docs from existing code | Legacy system documentation |
 | `$recipe-add-integration-tests` | Add integration/E2E tests from Design Doc | Test coverage for existing code |
