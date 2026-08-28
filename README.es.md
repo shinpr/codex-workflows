@@ -71,7 +71,7 @@ El prefijo `$` invoca una skill de forma explícita. Escribe `$recipe-` para ver
 | Diseñar y construir un frontend web con React / TypeScript | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
 | Entregar juntos un cambio de backend y otro de frontend React | `$recipe-fullstack-implement` |
 | Revisar una implementación frente a su diseño | `$recipe-review` o `$recipe-front-review` |
-| Definir o actualizar reglas de revisión propias del repositorio | `$recipe-quality-profile` |
+| Definir o actualizar reglas de calidad propias del repositorio | `$recipe-quality-profile` |
 | Investigar un problema sin tocar el código | `$recipe-diagnose` |
 | Hacer un experimento desechable o un script puntual | Usa Codex directamente |
 
@@ -124,7 +124,7 @@ Separar los contextos evita que exploración, diseño, implementación y revisi�
 - **Verificación**: Ejecutar la prueba de contrato y comprobar la estructura de respuesta documentada
 ```
 
-El [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) lleva a la implementación la fuente, el resultado esperado, los archivos afectados y una verificación ejecutable. Solo añade un `Verification Focus` cuando una prueba podría pasar sin demostrar un comportamiento importante. Tras ejecutar la tarea, se aplican al cambio completo todos los controles pertinentes del repositorio antes del commit. Los revisores finales comparan el código terminado con los documentos aprobados. También buscan cambios fuera del alcance aprobado y problemas importantes de calidad del código. Cuando se acepta una corrección, la siguiente revisión se centra en los controles que esa corrección podría afectar. Ejecuta `$recipe-quality-profile` para definir reglas de revisión adicionales en `docs/project-context/quality.yaml` a partir de la evidencia del propio repositorio.
+El [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) lleva a la implementación la fuente, el resultado esperado, los archivos afectados y una verificación ejecutable. Solo añade un `Verification Focus` cuando una prueba podría pasar sin demostrar un comportamiento importante. Tras ejecutar la tarea, se aplican al cambio completo todos los controles pertinentes del repositorio antes del commit. Los revisores finales comparan el código terminado con los documentos aprobados. También buscan cambios fuera del alcance aprobado y problemas importantes de calidad del código. Cuando se acepta una corrección, la siguiente revisión se centra en los controles que esa corrección podría afectar. Ejecuta `$recipe-quality-profile` para definir en `docs/project-context/quality.yaml` las reglas de calidad del repositorio que se usarán durante la implementación y la revisión.
 
 ---
 
@@ -201,7 +201,7 @@ Invoca un flujo con `$recipe-name` en Codex. Escribe `$recipe-` y usa el autocom
 | `$recipe-prepare-implementation` | Prepara las herramientas locales ya existentes que necesita un Work Plan aprobado | Petición expresa de preparación o capacidad necesaria no disponible |
 | `$recipe-build` | Ejecuta tareas de backend con validación entre pasos | Retomar una implementación de backend |
 | `$recipe-review` | Revisa el alcance de implementación, el cumplimiento del Design Doc, la calidad del código y la seguridad; aplica las correcciones aprobadas por el usuario | Revisión tras implementar |
-| `$recipe-quality-profile` | Define o actualiza reglas de revisión propias del repositorio en `docs/project-context/quality.yaml` | Configuración y mantenimiento de las reglas de revisión |
+| `$recipe-quality-profile` | Define o actualiza reglas de calidad propias del repositorio en `docs/project-context/quality.yaml` | Configuración y mantenimiento de las reglas de calidad |
 | `$recipe-diagnose` | Investigación → verificación del punto de fallo → solución | Investigación de errores |
 | `$recipe-reverse-engineer` | Genera PRD y Design Docs a partir del código existente | Documentar sistemas heredados |
 | `$recipe-add-integration-tests` | Añade pruebas de integración/E2E a partir del Design Doc | Mejorar la cobertura del código existente |

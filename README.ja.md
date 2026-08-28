@@ -71,7 +71,7 @@ $recipe-implement JWTによるユーザー認証を追加する
 | React / TypeScriptのWebフロントエンドを設計・実装する | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
 | バックエンドとReactフロントエンドをまとめて変更する | `$recipe-fullstack-implement` |
 | 設計どおりに実装されているかレビューする | `$recipe-review` または `$recipe-front-review` |
-| リポジトリ固有のレビュールールを定義・更新する | `$recipe-quality-profile` |
+| リポジトリ固有の品質ルールを定義・更新する | `$recipe-quality-profile` |
 | コードを変えずに問題を調査する | `$recipe-diagnose` |
 | 使い捨ての検証や単発スクリプトを実行する | Codexを直接使う |
 
@@ -124,7 +124,7 @@ ADRを作るのは、現在のスコープに属し、長く残る選択で、�
 - **検証**: 契約テストを実行し、文書どおりのレスポンス形式を確認
 ```
 
-[Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md)は、根拠、期待する結果、対象ファイル、実行可能な検証方法を実装フェーズへ渡します。テストが通っても重要な挙動を証明できないおそれがある場合だけ、`Verification Focus`を追加します。実行後は、コミット前にタスクの変更全体へ該当するリポジトリチェックをかけます。最終レビュアーは、完成したコードを承認済み文書と照合します。さらに、承認範囲を超えた実装や重大なコード品質上の問題がないかも確認します。修正を採用したあとの再レビューでは、その修正の影響を受ける項目に対象を絞ります。`$recipe-quality-profile`を実行すると、リポジトリ内の根拠をもとに、固有のレビュールールを`docs/project-context/quality.yaml`へ追加できます。
+[Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md)は、根拠、期待する結果、対象ファイル、実行可能な検証方法を実装フェーズへ渡します。テストが通っても重要な挙動を証明できないおそれがある場合だけ、`Verification Focus`を追加します。実行後は、コミット前にタスクの変更全体へ該当するリポジトリチェックをかけます。最終レビュアーは、完成したコードを承認済み文書と照合します。さらに、承認範囲を超えた実装や重大なコード品質上の問題がないかも確認します。修正を採用したあとの再レビューでは、その修正の影響を受ける項目に対象を絞ります。`$recipe-quality-profile`を実行すると、実装とレビューで参照するリポジトリ固有の品質ルールを`docs/project-context/quality.yaml`に定義できます。
 
 ---
 
@@ -201,7 +201,7 @@ Codexでは`$recipe-name`でレシピを呼び出します。`$recipe-`まで入
 | `$recipe-prepare-implementation` | 承認済みWork Planに必要な既存のリポジトリ内ツールを準備 | 明示的なセットアップ依頼、または必要なタスク機能が利用できない場合 |
 | `$recipe-build` | ステップ間の検証を含むバックエンドタスクの実行 | バックエンド実装の再開 |
 | `$recipe-review` | 実装範囲、Design Doc準拠、コード品質、セキュリティをレビューし、ユーザーが承認した修正を適用 | 実装後の確認 |
-| `$recipe-quality-profile` | リポジトリ固有のレビュールールを`docs/project-context/quality.yaml`に定義・更新 | レビューポリシーの設定・保守 |
+| `$recipe-quality-profile` | リポジトリ固有の品質ルールを`docs/project-context/quality.yaml`に定義・更新 | 品質ルールの設定・保守 |
 | `$recipe-diagnose` | 問題調査 → 障害点の検証 → 解決策 | 不具合調査 |
 | `$recipe-reverse-engineer` | 既存コードからPRDとDesign Docを生成 | レガシーシステムの文書化 |
 | `$recipe-add-integration-tests` | Design Docをもとに統合/E2Eテストを追加 | 既存コードのテスト拡充 |

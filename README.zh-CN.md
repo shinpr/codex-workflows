@@ -71,7 +71,7 @@ $recipe-implement 使用JWT添加用户认证
 | 设计并实现React / TypeScript Web前端 | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
 | 同时交付后端和React前端改动 | `$recipe-fullstack-implement` |
 | 按照设计评审实现 | `$recipe-review` 或 `$recipe-front-review` |
-| 定义或更新仓库专属评审规则 | `$recipe-quality-profile` |
+| 定义或更新仓库专属质量规则 | `$recipe-quality-profile` |
 | 调查问题但不修改代码 | `$recipe-diagnose` |
 | 做一次性实验或临时脚本 | 直接使用Codex |
 
@@ -124,7 +124,7 @@ flowchart LR
 - **验证**: 运行契约测试，确认响应结构符合文档
 ```
 
-[Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md)会把来源、预期结果、目标文件和可执行的验证方法传递到实现阶段。只有在测试可能通过、却没有证明某项关键行为时，才会增加`Verification Focus`。任务执行完毕后，完整改动必须在提交前通过适用的仓库检查。最终评审者会将完成的代码与已批准文档逐项对照，同时检查是否存在超出批准范围的实现或重大的代码质量问题。接受修正后，下一轮评审只聚焦于可能受该修正影响的检查项。运行`$recipe-quality-profile`，可根据仓库中的依据，在`docs/project-context/quality.yaml`中定义额外的专属评审规则。
+[Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md)会把来源、预期结果、目标文件和可执行的验证方法传递到实现阶段。只有在测试可能通过、却没有证明某项关键行为时，才会增加`Verification Focus`。任务执行完毕后，完整改动必须在提交前通过适用的仓库检查。最终评审者会将完成的代码与已批准文档逐项对照，同时检查是否存在超出批准范围的实现或重大的代码质量问题。接受修正后，下一轮评审只聚焦于可能受该修正影响的检查项。运行`$recipe-quality-profile`，可在`docs/project-context/quality.yaml`中定义实现和评审时使用的仓库专属质量规则。
 
 ---
 
@@ -201,7 +201,7 @@ npx codex-workflows status --user
 | `$recipe-prepare-implementation` | 准备已批准Work Plan所需的现有仓库内工具 | 明确要求准备环境，或任务所需能力不可用 |
 | `$recipe-build` | 执行后端任务，并在各步骤之间验证 | 继续后端实现 |
 | `$recipe-review` | 评审实现范围、Design Doc符合性、代码质量和安全性，并应用用户批准的修正 | 实现后检查 |
-| `$recipe-quality-profile` | 在`docs/project-context/quality.yaml`中定义或更新仓库专属评审规则 | 设置和维护评审策略 |
+| `$recipe-quality-profile` | 在`docs/project-context/quality.yaml`中定义或更新仓库专属质量规则 | 设置和维护质量规则 |
 | `$recipe-diagnose` | 调查问题 → 验证故障点 → 提出解决方案 | 缺陷调查 |
 | `$recipe-reverse-engineer` | 从现有代码生成PRD和Design Doc | 遗留系统文档化 |
 | `$recipe-add-integration-tests` | 根据Design Doc添加集成/E2E测试 | 为现有代码补充测试 |

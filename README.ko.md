@@ -71,7 +71,7 @@ $recipe-implement JWT 사용자 인증 추가
 | React / TypeScript 웹 프런트엔드를 설계하고 구현 | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
 | 백엔드와 React 프런트엔드 변경을 함께 구현 | `$recipe-fullstack-implement` |
 | 설계에 맞게 구현되었는지 리뷰 | `$recipe-review` 또는 `$recipe-front-review` |
-| 저장소별 리뷰 규칙 정의 또는 업데이트 | `$recipe-quality-profile` |
+| 저장소별 품질 규칙 정의 또는 업데이트 | `$recipe-quality-profile` |
 | 코드를 바꾸지 않고 문제 조사 | `$recipe-diagnose` |
 | 일회성 실험이나 단발성 스크립트 실행 | Codex 직접 사용 |
 
@@ -124,7 +124,7 @@ ADR은 현재 범위에 속하고 오래 유지되는 선택에 실질적으로 
 - **검증**: 계약 테스트를 실행하고 문서에 정의된 응답 형태 확인
 ```
 
-[Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md)는 출처, 의도한 결과, 대상 파일, 실행 가능한 검증을 구현 단계로 전달합니다. 테스트가 통과해도 중요한 동작을 증명하지 못할 수 있을 때만 `Verification Focus`를 추가합니다. 실행 후에는 커밋 전에 작업 변경 전체에 해당 저장소 검사를 적용합니다. 최종 리뷰어는 완성된 코드를 승인 문서와 대조합니다. 또한 승인 범위를 벗어난 구현이나 중대한 코드 품질 문제가 있는지 확인합니다. 수정이 채택되면 다음 리뷰에서는 해당 수정의 영향을 받을 수 있는 검사 항목에 집중합니다. `$recipe-quality-profile`을 실행하면 저장소의 근거를 바탕으로 `docs/project-context/quality.yaml`에 리뷰 규칙을 추가할 수 있습니다.
+[Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md)는 출처, 의도한 결과, 대상 파일, 실행 가능한 검증을 구현 단계로 전달합니다. 테스트가 통과해도 중요한 동작을 증명하지 못할 수 있을 때만 `Verification Focus`를 추가합니다. 실행 후에는 커밋 전에 작업 변경 전체에 해당 저장소 검사를 적용합니다. 최종 리뷰어는 완성된 코드를 승인 문서와 대조합니다. 또한 승인 범위를 벗어난 구현이나 중대한 코드 품질 문제가 있는지 확인합니다. 수정이 채택되면 다음 리뷰에서는 해당 수정의 영향을 받을 수 있는 검사 항목에 집중합니다. `$recipe-quality-profile`을 실행하면 구현과 리뷰에서 참고할 저장소별 품질 규칙을 `docs/project-context/quality.yaml`에 정의할 수 있습니다.
 
 ---
 
@@ -201,7 +201,7 @@ Codex에서 `$recipe-name`으로 레시피를 호출합니다. `$recipe-`를 입
 | `$recipe-prepare-implementation` | 승인된 Work Plan에 필요한 기존 저장소 내부 도구 준비 | 명시적인 설정 요청 또는 필요한 작업 기능이 없을 때 |
 | `$recipe-build` | 단계 사이 검증과 함께 백엔드 작업 실행 | 백엔드 구현 재개 |
 | `$recipe-review` | 구현 범위, Design Doc 준수 여부, 코드 품질 및 보안을 리뷰하고 사용자가 승인한 수정 적용 | 구현 후 확인 |
-| `$recipe-quality-profile` | `docs/project-context/quality.yaml`에 저장소별 리뷰 규칙 정의 또는 업데이트 | 리뷰 정책 설정 및 유지보수 |
+| `$recipe-quality-profile` | `docs/project-context/quality.yaml`에 저장소별 품질 규칙 정의 또는 업데이트 | 품질 규칙 설정 및 유지보수 |
 | `$recipe-diagnose` | 문제 조사 → 장애 지점 검증 → 해결책 | 버그 조사 |
 | `$recipe-reverse-engineer` | 기존 코드에서 PRD와 Design Doc 생성 | 레거시 시스템 문서화 |
 | `$recipe-add-integration-tests` | Design Doc에서 통합/E2E 테스트 추가 | 기존 코드의 테스트 범위 확대 |
