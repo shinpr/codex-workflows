@@ -77,7 +77,7 @@ Proposed corrections:
   d) Design-side update
 ```
 
-Apply Review Resolution before presenting results. Recommend a correction route only for findings classified `apply` or `user_decision_required`:
+Apply Review Resolution before presenting results. Recommend a correction route only for findings classified `apply` or `user decision required`:
 - Use `d` when implementation intent matches the requirement but the Design Doc is stale or too narrow.
 - Use `c` when the required correction changes implementation.
 
