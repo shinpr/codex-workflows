@@ -120,7 +120,7 @@ Use agent statuses as routing signals, not as a parser contract. Interpret the r
 
 ### Review Resolution
 
-Use [references/review-resolution.md](references/review-resolution.md) for reviewer findings and verifier discrepancies. The orchestrator decides which findings to apply, decline, or return for a genuine user-owned decision; authors and downstream reviewers receive only resolved evidence relevant to their action.
+The orchestrator loads and applies `reviewee-judgment` through disposition selection before reviewer findings or verifier discrepancies generate author or implementation work. Use [references/review-resolution.md](references/review-resolution.md) to delegate `apply` dispositions and route reruns and handoff. Resolve returned evidence or decision requests through Orchestrator Escalation Resolution.
 
 ### Orchestrator Escalation Resolution [MANDATORY]
 

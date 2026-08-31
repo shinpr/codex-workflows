@@ -64,9 +64,9 @@ Evaluate candidates through these gates in order. A later gate cannot compensate
 
 Establish causal sufficiency before cost can favor a response. A required correction remains required regardless of cost; cost ranks its sufficient responses. Once a discretionary response passes the causal, durable-quality, and verification gates, low cost favors applying it when its observable benefit is positive and its maintenance, verification, and execution risk remain immaterial. When the best structural response lacks adequate verification, retain it as the preferred target, state the exact proof needed to make it safe, and explain the debt carried by any executable interim response.
 
-These gates constrain the decision, not the route used to reach it. They require no fixed number of alternatives, separate decision artifact, or edit for every finding.
-
 ## Resolution Method
+
+Before starting, add steps 1–5 to `update_plan` in order; add step 6 only when execution is authorized. Complete each step before starting the next.
 
 ### 1. Normalize the Findings
 
@@ -102,6 +102,7 @@ Before selecting a response, test it against applicable causal alternatives that
 
 The resulting comparison must make clear:
 
+- whether the reviewed change or mechanism is necessary at all;
 - which cause it resolves;
 - which concepts, responsibilities, or constraints it adds or removes;
 - what same-problem instances remain;
@@ -120,6 +121,8 @@ Assign one disposition to each problem group:
 - **evidence required**: a material unknown could change finding validity, ownership, response selection, or verification. Pause changes for that problem group, continue independent groups, and report the exact evidence needed, its source when known, the decision it controls, and the condition for resuming;
 - **user decision required**: the preferred response changes an approved outcome, architecture, compatibility promise, or scope boundary.
 
+Return `evidence required` and `user decision required` to the skill caller. The caller resolves them when it owns the required evidence or decision and otherwise routes them to the responsible authority.
+
 If an interim patch is the only safely executable response, label it as interim, describe the retained structural problem, and present the enabling work for the preferred response. The user decides whether that tradeoff is worth taking.
 
 ### 6. Execute and Verify
@@ -136,7 +139,7 @@ Findings grouped:
   - <finding ID or source label>: confirmed | unsupported | unresolved
 Evidence: observed | inferred | unknown
 Cause and owner:
-Decision-changing alternatives considered:
+Reviewed change or mechanism necessity and decision-changing alternatives considered:
 Recommendation and disposition:
 Authority: recommend only | execute selected response
 Why it wins in the decision order:
@@ -145,7 +148,7 @@ Required evidence and resume condition, if any:
 User decision, if any:
 ```
 
-Keep the report proportional. Omit fields that have no material content, but always preserve the problem/fix separation, the causal owner, the alternatives that could change the decision, and any user-owned tradeoff.
+Keep the report proportional. Omit fields that have no material content, but always preserve the problem/fix separation, the causal owner, whether the reviewed change or mechanism is necessary, the alternatives that could change the decision, and any user-owned tradeoff.
 
 ## Completion Check
 

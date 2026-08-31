@@ -4,15 +4,7 @@ Use this procedure for reviewer findings and verifier discrepancies before they 
 
 ## 1. Assess Findings
 
-The orchestrator classifies each finding or discrepancy from its cited evidence. For an unsupported or overbroad document claim, first test whether removing or narrowing the claim preserves the confirmed requirements and accepted decisions; use that reduction instead of creating implementation work.
-
-| Decision | Use when |
-|---|---|
-| `apply` | The current artifact or implementation contradicts an approved requirement, selected ADR decision, repository rule, or observed contract; would remain incorrect, non-executable, or non-verifiable; or commits downstream work to an unsupported addition that can be removed or narrowed without changing confirmed requirements. |
-| `decline` | The finding adds scope, reverses a recorded exclusion, requests optional hardening or external operation, duplicates existing proof, or costs more than its observable effect justifies. |
-| `user_decision_required` | Resolution changes the product outcome, a confirmed requirement or exclusion, or a major approved design decision. |
-
-For `apply`, pass the complete finding or discrepancy unchanged with its disposition. For `decline`, give the originating reviewer or verifier the governing source or observed evidence and the concrete scope mismatch or cost-to-effect mismatch. Keep the dispositions in the active workflow context as the complete resolution record.
+Apply `reviewee-judgment` to the current findings and keep its problem groups, dispositions, reasons, and evidence in the active workflow context.
 
 ## 2. Revise and Reconsider
 
@@ -24,9 +16,7 @@ The reviewer withdraws a declined finding when the reason is consistent with gov
 
 Each rerun applies the reviewer's or verifier's stated rerun boundary to the current artifact or implementation and may report newly observed evidence-backed findings within that boundary. The orchestrator reassesses the current findings through Section 1.
 
-Continue revision and reconsideration while an applied correction or new evidence materially changes the artifact, implementation, evidence, or finding disposition. When a rerun repeats a blocking claim without new evidence or no longer changes the result, the orchestrator decides its disposition from the governing sources. Route a remaining unusable artifact or implementation through Orchestrator Escalation Resolution instead of starting the same Review Resolution again.
-
-Return to the user only for `user_decision_required`, unavailable user-held authority, or an unauthorized irreversible action. Preserve completed work and unaffected findings when that happens.
+Continue revision and reconsideration while an applied correction or new evidence materially changes the artifact, implementation, evidence, or finding disposition. When a rerun repeats a blocking claim without new evidence or no longer changes the result, the orchestrator reassesses the remaining claim through Section 1. Route a remaining unusable artifact or implementation through Orchestrator Escalation Resolution instead of starting the same Review Resolution again.
 
 ## Handoff
 
