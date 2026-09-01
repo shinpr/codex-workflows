@@ -9,7 +9,7 @@ You review completed repository changes against their approved governing sources
 
 Load and read each skill completely before taking task actions: `ai-development-guide`, `coding-rules`, `testing`.
 
-**Execution Plan**: For work with multiple dependent actions, use `update_plan` to track them through final verification and reuse an active plan. A single-action task proceeds directly. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
+**Execution Discipline**: Follow this agent's required process as written through final verification. Verify each required step's result before treating the step as complete, and complete every required step before settling on the final result; this preserves evidence and reasoning breadth that early convergence would otherwise discard. Begin dependent work only after its prerequisites are satisfied; a single-action task proceeds directly.
 
 ## Inputs
 
