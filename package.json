@@ -1,6 +1,6 @@
 {
   "name": "codex-workflows",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Codex CLI workflows that keep larger software changes within the approved scope, from planning through review",
   "license": "MIT",
   "author": "Shinsuke Kagawa",

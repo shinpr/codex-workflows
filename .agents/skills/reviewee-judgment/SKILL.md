@@ -66,7 +66,7 @@ Establish causal sufficiency before cost can favor a response. A required correc
 
 ## Resolution Method
 
-Before starting, add steps 1–5 to `update_plan` in order; add step 6 only when execution is authorized. Complete each step before starting the next.
+Follow steps 1–5 in order; perform step 6 only when execution is authorized. Complete each step before starting the next.
 
 ### 1. Normalize the Findings
 
