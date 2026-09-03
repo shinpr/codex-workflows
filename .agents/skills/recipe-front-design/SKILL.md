@@ -99,6 +99,8 @@ After scope confirmation, identify whether a current UI or verification decision
 ### Step 5: Prototype Inquiry
 Use prototype code when the user supplied it or the confirmed UI target references it. Ask for a prototype path only when the UI target cannot otherwise be determined and the answer would change the UI specification. In all other cases set `prototype_path` to unavailable and continue.
 
+When `prototype_path` is available, apply the subagents-orchestration-guide UI Spec rule to resolve `prototype_reference_strength`. Omit the field when no prototype is available.
+
 ### Step 6: UI Fact Gathering Phase
 Use the prototype path as an input when one was provided; otherwise set `prototype_path` to unavailable.
 
@@ -106,7 +108,7 @@ Spawn ui-analyzer agent: "Gather UI facts for frontend design. requirement_analy
 
 ### Step 7: UI Specification Phase
 After UI fact gathering completes, create the UI Specification:
-- Spawn ui-spec-designer agent: "Create UI Spec [from PRD at [path] if PRD exists; read its binding requirements and only Product Context entries they explicitly cite]. Confirmed requirements and exclusions: [Step 3 current requirements and nonGoals]. Codebase analysis: [JSON from codebase-analyzer]. UI analysis: [JSON from ui-analyzer]. [Prototype code is at [user-provided path]. Place prototype in docs/ui-spec/assets/{feature-name}/ | Prototype path unavailable; proceed from PRD/requirements and UI analysis.] External resource refs: [ui_analysis.externalResources.selectedRefs]."
+- Spawn ui-spec-designer agent: "Create UI Spec [from PRD at [path] if PRD exists; read its binding requirements and only Product Context entries they explicitly cite]. Confirmed requirements and exclusions: [Step 3 current requirements and nonGoals]. Codebase analysis: [JSON from codebase-analyzer]. UI analysis: [JSON from ui-analyzer]. [Prototype code is at [user-provided path]. Prototype reference strength: [binding | reference]. Place prototype in docs/ui-spec/assets/{feature-name}/ | Prototype path unavailable; proceed from PRD/requirements and UI analysis.] External resource refs: [ui_analysis.externalResources.selectedRefs]."
 - Spawn document-reviewer agent: "doc_type: UISpec target: [ui-spec path] Review for consistency and completeness"
 - Resolve `needs_revision` through Review Resolution with ui-spec-designer, then review the updated UI Spec. Route governing-source contradictions through Orchestrator Escalation Resolution before the user approval stop.
 

@@ -18,7 +18,7 @@ This reference defines the orchestration flow for projects spanning multiple lay
 | 2 | prd-creator | PRD covering entire feature (all layers) | Single PRD |
 | 3 | document-reviewer | PRD review **[Stop]** | Approval |
 | 4 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
-| 5 | (orchestrator) | Resolve prototype input only when the UI target cannot otherwise be determined | Prototype path or none |
+| 5 | (orchestrator) | Use a supplied or target-referenced prototype; request its path only when the UI target otherwise cannot be determined, then resolve its reference strength | Prototype path plus `binding` or `reference`, or none |
 | 6 | codebase-analyzer x2 + ui-analyzer x1 | Per-layer codebase analysis plus frontend UI analysis | Analysis JSON |
 | 7 | ui-spec-designer | UI Spec from PRD + UI analysis + optional prototype | UI Spec |
 | 8 | document-reviewer | UI Spec review **[Stop]** | Approval |
@@ -39,7 +39,7 @@ This reference defines the orchestration flow for projects spanning multiple lay
 |------|-------|---------|--------|
 | 1 | requirement-analyzer + orchestrator | Compact scope/cost evidence followed by orchestrator convergence and scale determination **[Stop]** | Converged requirements + scale |
 | 2 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
-| 3 | (orchestrator) | Resolve prototype input only when the UI target cannot otherwise be determined | Prototype path or none |
+| 3 | (orchestrator) | Use a supplied or target-referenced prototype; request its path only when the UI target otherwise cannot be determined, then resolve its reference strength | Prototype path plus `binding` or `reference`, or none |
 | 4 | codebase-analyzer x2 + ui-analyzer x1 | Per-layer codebase analysis plus frontend UI analysis | Analysis JSON |
 | 5 | ui-spec-designer | UI Spec from requirements + UI analysis + optional prototype | UI Spec |
 | 6 | document-reviewer | UI Spec review **[Stop]** | Approval |
@@ -58,7 +58,7 @@ This reference defines the orchestration flow for projects spanning multiple lay
 
 Steps marked `x2` run independently per layer and can execute in parallel when supported. `ui-analyzer x1` runs once for the frontend layer alongside frontend codebase analysis and consumes the selected `externalResourceRefs`. For the ADR step, route layer-owned decision points to the matching technical designer and cross-layer points to technical-designer, collect every returned path, and invoke document-reviewer once with `doc_type: ADRBatch` and the complete `targets` array.
 
-External evidence and prototype inputs are conditional. Load `external-resource-context` when external evidence changes the current UI or verification decision; otherwise continue with `none`. Ask the user only when a missing user-held access method or prototype is necessary to determine that decision.
+External evidence and prototype inputs are conditional. Load `external-resource-context` when external evidence changes the current UI or verification decision; otherwise continue with `none`. Prototype input follows the frontend rule: use a supplied or target-referenced prototype, request its path only when the UI target otherwise cannot be determined, and resolve and deliver `prototype_reference_strength` through the shared UI Spec rule.
 
 ### Layer Context in Design Doc Creation
 
@@ -73,7 +73,7 @@ Before spawning, replace every context placeholder with a concrete context objec
 
 **Backend Design Doc**:
 **Agent**: Spawn technical-designer
-> "Create a backend Design Doc. context: [context]. adr_paths: [accepted ADR paths]. decision_materials: [backend analysis material that changes reuse, validity, a selected decision, contract, or verification]."
+> "Create a backend Design Doc. context: [context]. adr_paths: [accepted ADR paths]. decision_materials: [backend analysis material that changes reuse, validity, a selected decision, contract, or verification]. Reference approved UI Spec at [path] only for displayed values whose source data crosses a backend-owned contract."
 
 **Backend Codebase Analysis**:
 **Agent**: Spawn codebase-analyzer

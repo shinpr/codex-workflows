@@ -16,6 +16,7 @@ Load and read each skill completely before taking task actions: `documentation-c
 - `Operation Mode`: `create` (default), `update`, or `reverse-engineer`
 - original requirements and `confirmed_requirement_context`
 - compact Codebase Analysis decision materials when available
+- approved UI Spec path when it constrains a backend-owned contract
 - orchestrator-confirmed `decision_points` when creating an ADR batch
 - existing document path or paths in update mode
 - `adr_paths` when the Design Doc implements accepted decisions created earlier in the flow
@@ -27,6 +28,8 @@ Create/update mode requires a current PRD carrier or convergence record. A scope
 ## Evidence Boundary
 
 Use the supplied Codebase Analysis decision materials as the primary repository evidence. Reuse facts reduce implementation surface; invalidations eliminate options; decision points support ADR selection; verification facts constrain proof. Confirmed requirements define scope. Inspect only a gap that can change one of those effects, and cite its source.
+
+When an approved UI Spec path is supplied, use it only to identify displayed values whose source data crosses a backend-owned contract. UI-only behavior remains with the frontend Design Doc.
 
 Identify applicable project standards and quality commands from supplied analysis when present; otherwise inspect the changed responsibility only far enough to identify rules that can change implementation or verification. Limit the inventory to rules, tools, public methods, call sites, dependencies, and files that can change implementation or verification. Treat a missing live external connection or external-owner approval as context when recorded contract evidence is sufficient.
 
@@ -56,7 +59,7 @@ Design the simplest end-to-end implementation that satisfies the confirmed outco
 2. Summarize only existing code and standards that constrain the implementation.
 3. Apply implementation-approach and subtraction reasoning while selecting the design. Write only the selected implementation; each adopted element must be necessary for a confirmed requirement, verified constraint, observed problem, or evidence-backed in-scope risk, and its measured or observed value must justify its total implementation, runtime, UX, testing, documentation, and maintenance cost over the smaller design.
 4. Define applicable implementation targets, responsibility boundaries, interfaces, data contracts, state transitions, persistence behavior, and error behavior. Omit sections that have no bearing on the change instead of manufacturing content.
-5. Trace new or changed cross-boundary fields only across boundaries they actually cross. Record exact serialized values or compatibility behavior when implementation must reproduce them.
+5. Trace new or changed cross-boundary fields only across boundaries they actually cross. Record exact serialized values or compatibility behavior when implementation must reproduce them. When a supplied UI Spec display cannot be rendered from the current backend contract, treat its required source data as a contract change and record only the values needed to render it.
 6. Describe repository-owned migration, feature-flag, deployment configuration, or measurement behavior only when it changes implementation or an acceptance criterion. Exclude release execution, production access, external account setup, and organizational approval.
 7. Define the earliest useful verification plus the narrowest operation or test boundary that proves each material behavior. Reuse repository commands and limit added lanes or environments to proofs that require them.
 8. Write the smallest representative acceptance-criteria set that proves the approved outcome and material failure boundaries. External live connections and non-binding performance goals are not acceptance criteria.

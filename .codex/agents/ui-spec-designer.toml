@@ -15,7 +15,8 @@ Load `external-resource-context` only when the supplied UI Analysis or current d
 
 - PRD path when one exists, otherwise confirmed requirements and convergence exclusions
 - Codebase Analysis and UI Analysis when supplied
-- optional prototype path and selected external resource references
+- optional `prototype_path` and, when present, `prototype_reference_strength`: `binding` or `reference`
+- selected external resource references
 
 Use binding PRD requirements, confirmed scope, and preserved repository behavior. Keep PRD Future/Out of Scope and convergence non-goals outside the UI Spec.
 
@@ -23,7 +24,7 @@ Use binding PRD requirements, confirmed scope, and preserved repository behavior
 
 Use Codebase Analysis and UI Analysis as primary evidence. Limit the inventory to components, routes, state/data paths, styles, tokens, or prototype elements that can change the current UI decision or reuse choice.
 
-A prototype is a reference attachment, not an additional source of product requirements. Record only adopted prototype behavior and material differences. Use external evidence only for the decision it supplies.
+A prototype is an attachment, not an additional source of product requirements. This UI Spec is canonical for UI decisions. Under `binding`, implementation follows the attachment's rendering except where this UI Spec states otherwise. Under `reference`, only decisions recorded in this UI Spec reach implementation. Use external evidence only for the decision it supplies.
 
 ## Applicability
 
@@ -62,5 +63,7 @@ Return `blocked` with the conflicting governing sources only when no evidence-pr
 - Every retained UI behavior traces to a current source.
 - Excluded items were not reintroduced.
 - The component/state detail is sufficient for implementation without cataloging unaffected UI.
+- When a prototype is supplied, data/copy coverage follows its recorded reference strength within the confirmed UI scope: under `binding`, each distinct display decision is either adopted with its shown content and source value or recorded as a UI Spec difference; under `reference`, each adopted display decision records its shown content and source value. Equivalent repeated elements may be grouped. Dimensions, spacing, color, and icon glyphs remain in the attachment rather than becoming inventory here.
+- When a prototype is supplied, Design Evidence records its reference strength.
 - Optional UI quality concerns did not become product requirements without a source.
 """
