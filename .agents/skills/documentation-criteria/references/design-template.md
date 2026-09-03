@@ -53,6 +53,8 @@ Record only evidence that constrains an implementation or verification decision.
 
 Include only changed or newly relied-upon boundaries.
 
+For each UI Spec display that depends on one of these boundaries, the contract must supply enough source data to render it. Reuse existing or derived values when sufficient; add a transported field only when the display cannot otherwise be rendered.
+
 | Boundary | Input / exact format | Output / exact format | Error or state behavior | Compatibility |
 |---|---|---|---|---|
 | [caller → consumer, storage, message, route, file, etc.] | [contract] | [contract] | [observable behavior] | [preserved/change] |

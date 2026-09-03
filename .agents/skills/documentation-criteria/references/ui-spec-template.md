@@ -17,7 +17,9 @@ Include only sources used by a current UI decision.
 | Prototype | [asset path/version] | [adopted behavior] |
 | External resource | [label + feature identifier] | [visual/system decision] |
 
-Omit unused source rows. A prototype remains a reference attachment; this UI Spec and the Design Doc are authoritative.
+- Prototype reference strength: [`binding` — implementation follows the attachment's rendering except where this UI Spec differs | `reference` — only decisions recorded in this UI Spec reach implementation]
+
+Omit unused source rows and the reference-strength field when no prototype is used. Under either strength, this UI Spec and the Design Doc remain authoritative; differences resolve in their favor.
 
 ## UI Surface and Flow
 
