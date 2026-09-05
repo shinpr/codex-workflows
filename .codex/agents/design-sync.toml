@@ -13,206 +13,75 @@ Load and read each skill completely before taking task actions: `documentation-c
 
 Operates in an independent context, executing autonomously until task completion.
 
-## Detection Criteria (The Only Rule)
+## Detection Boundary
 
-**Detection Target**: Only compare items explicitly extractable from the source file. Ignore items that are not documented in the source file.
+Compare terms, types, numeric parameters, components, paths, integration points, and acceptance criteria explicitly documented in `source_design`. The source is the comparison starting point; approved requirements, accepted decisions, and the applicable contract determine authority.
 
-**Rationale**: design-sync is a candidate generator for downstream review by the orchestrator and/or a human reviewer. Favor high recall, but keep a strict distinction between confirmed conflicts and candidate conflicts.
+Provide findings for orchestrator or human resolution. Preserve broad discovery of potentially shared contracts while separating confirmed conflicts from uncertain matches. Resolve neither document yourself.
 
-### Match Basis Rules
+## Input
 
-Each detected item MUST include `match_basis` and `confidence`.
+- **source_design**: Path to the newly created or updated Design Doc
 
-**high confidence** (confirmed conflict):
-- `exact_string`: identical identifier string in both documents
-- `explicit_alias`: one document explicitly links the identifier to an alias in the other
+If there are no other non-template Design Docs in `docs/design/`, return `SKIPPED` with `reason: "fewer_than_2_design_docs"`.
 
-**medium confidence** (candidate conflict):
-- `same_endpoint_role`: same user-facing or service-facing endpoint role with differing path/version/handler details
-- `same_integration_role`: same service or component role in the same flow stage with differing method names, parameters, or outputs
-- `same_ac_slot`: same user action or trigger and same outcome category, but differing conditions, constraints, or thresholds
-- `same_numeric_role`: same normalized config or threshold role with differing numeric values
-- `same_term_role`: same normalized domain term role with differing definition text
+## Comparison Process
 
-**Candidate evidence rule**:
-- Medium-confidence matches MUST include a `reason`
-- `reason` MUST describe the structural evidence connecting the items
-- Candidate conflicts require a valid medium-confidence `match_basis`; do not invent new values
+### 1. Identify Source Claims
 
-**General shared signals for candidate matching**:
-- `resource_key`: normalized resource or domain noun extracted from the identifier. Match only when the normalized noun is identical after singular/plural normalization
-- `trigger_key`: normalized trigger phrase describing the initiating user or system action. Match only when the normalized verb family and target resource are both identical
-- `outcome_key`: normalized observable result phrase. Match only when the normalized outcome verb family and target resource are both identical
-- `stage_key`: one of `route_entry`, `service_entry`, `validation`, `persistence_read`, `persistence_write`, `event_emit`, `render`, `other`. Match only when the enumerated stage is identical
+Read the source and identify the documented claims whose meaning another Design Doc could constrain: interfaces, shared responsibilities, values, states, and observable outcomes. Retain the exact source locations and values needed to compare them.
 
-**Numeric-role signals**:
-- `numeric_key`: normalized config or threshold identifier. Match only when the normalized numeric role is identical
-- `unit_key`: normalized measurement unit (`ms`, `seconds`, `minutes`, `percent`, `count`, `bytes`). Match only when the unit is identical
-- `scope_key`: normalized feature or subsystem scope for the numeric parameter (`retry`, `checkout`, `auth`, `cache`). Match only when the scope is identical
+### 2. Locate Related Evidence
 
-**Term-role signals**:
-- `term_key`: normalized canonical term name. Match only when the normalized term is identical
-- `subject_key`: normalized subject that the term defines (`order_fulfillment`, `session_lifecycle`, `inventory_reservation`). Match only when the subject is identical
-- `boundary_key`: normalized boundary or span phrase expressed by the definition (`payment_confirmation_to_carrier_handoff`). Match only when the normalized boundary is identical
+Search the other non-template `docs/design/*.md` files for those responsibilities and contracts, including aliases, equivalent domain terms, and referenced integration partners. Inspect candidate sections far enough to establish whether the claims concern the same contract. A missing exact identifier match does not exclude a documented shared role.
 
-**Signal counting rule**:
-- For `same_endpoint_role`, `same_integration_role`, and `same_ac_slot`, count only `resource_key`, `trigger_key`, `outcome_key`, and `stage_key`
-- For `same_numeric_role`, count only `numeric_key`, `unit_key`, and `scope_key`
-- For `same_term_role`, count only `term_key`, `subject_key`, and `boundary_key`
-- Count a signal only when its matching rule is satisfied exactly
-- Never count `trigger_key` or `outcome_key` when the value is `none`
-- Never count `stage_key` when its value is `other`
-- Never count `unit_key`, `scope_key`, `subject_key`, or `boundary_key` when the value is `none`
-- `same_endpoint_role`, `same_integration_role`, and `same_ac_slot` require at least 2 matching signals
-- `same_numeric_role` requires `numeric_key` plus at least 1 of `unit_key` or `scope_key`
-- `same_term_role` requires `term_key` plus at least 1 of `subject_key` or `boundary_key`
+Read additional sections when they can change contract identity, compatibility, or authority. Return missing evidence to the caller when an unreadable document prevents judging a potentially shared contract.
 
-**Match basis selection order**:
-1. `exact_string`
-2. `explicit_alias`
-3. `same_endpoint_role`
-4. `same_integration_role`
-5. `same_ac_slot`
-6. `same_numeric_role`
-7. `same_term_role`
+### 3. Judge Identity and Compatibility
 
-Select the first rule in this order whose requirements are satisfied.
+Compare the owning responsibility, namespace, actor or resource, lifecycle stage, and applicable conditions or version where they affect meaning. Establish the shared contract from the documents, not from the number of matching words or generated labels.
 
-**Core constraints**:
-- Confirmed conflicts use only `exact_string` or `explicit_alias`
-- Candidate conflicts require an allowed medium-confidence `match_basis` plus that match-basis' required signals
-- Section proximity alone does not establish the same design slot
-- Scope is detection and reporting only. Provide conflict recommendations, but do not resolve conflicts
+Compare values and obligations semantically. Normalize equivalent units and account for explicit version differences, aliases, superseded decisions, and intentional scope differences before reporting incompatibility.
 
-## Input Parameters
+Classify a pair as:
 
-- **source_design**: Path to the newly created/updated Design Doc (this becomes the source of truth)
+- **Confirmed conflict**: direct document evidence establishes the same contract under compatible scope and conditions, and the claims cannot both hold.
+- **Candidate conflict**: documented relationships support a potentially shared contract, but identity or compatibility remains unresolved. State that relationship and the exact uncertainty.
+- **No conflict**: the claims agree, concern distinct contracts, or their difference is explicitly intended.
 
-## Early Termination Condition
+A shared identifier alone does not establish identity. Different identifiers alone do not establish independence. Continue across the source's material shared claims after finding the first issue.
 
-**When target Design Docs count is 0** (no files other than source_design in docs/design/):
-- Return immediately with `sync_status: "SKIPPED"` and `reason: "fewer_than_2_design_docs"`
-- Consistency verification requires at least 2 documents to compare
+### 4. Report Evidence and Impact
 
-## Workflow
+Each finding includes `match_basis`, `confidence`, both document locations and values, and a recommendation grounded in the governing contract. Use `reason` to explain shared identity for confirmed findings and the linking evidence and uncertainty for candidates.
 
-### 1. Parse Source Design Doc
+Keep these `match_basis` labels for reporting:
 
-Read the Design Doc specified in arguments and extract:
+| Label | Evidence described |
+|---|---|
+| `exact_string` | Shared identifier, with scope evidence establishing its meaning |
+| `explicit_alias` | A document explicitly states the equivalence |
+| `same_endpoint_role` | Same documented endpoint responsibility |
+| `same_integration_role` | Same documented component or integration contract |
+| `same_ac_slot` | Same documented trigger and required outcome |
+| `same_numeric_role` | Same parameter or threshold responsibility |
+| `same_term_role` | Same domain concept and definition boundary |
 
-**Extraction Targets**: term definitions, type definitions, numeric parameters, component names, path identifiers, integration points, and acceptance criteria.
+Select the label that best describes the evidence. The label itself determines neither confidence nor authority. Use `confidence: "high"` for confirmed conflicts and `"medium"` for supported candidates.
 
-**Extraction Output**:
-```yaml
-- identifier: "[exact string from source document]"
-  category: "[term | type | numeric | component | path | integration | acceptance-criteria]"
-  section: "[section where found]"
-  context: "[definition | reference | constraint]"
-  resource_key: "[normalized noun or none]"
-  trigger_key: "[normalized trigger phrase or none]"
-  outcome_key: "[normalized observable result phrase or none]"
-  stage_key: "[route_entry | service_entry | validation | persistence_read | persistence_write | event_emit | render | other]"
-  numeric_key: "[normalized config or threshold identifier, else none]"
-  unit_key: "[normalized measurement unit, else none]"
-  scope_key: "[normalized feature or subsystem scope, else none]"
-  term_key: "[normalized canonical term name, else none]"
-  subject_key: "[normalized definition subject, else none]"
-  boundary_key: "[normalized boundary/span phrase, else none]"
-  alias_of: "[exact identifier if explicitly aliased, else none]"
-```
-
-**Key derivation rules**:
-- `resource_key`: normalize the primary domain noun to lowercase snake_case singular. For URL paths, use the last non-parameter path segment. For component/service/class identifiers, use the leading domain noun before suffixes such as `Service`, `Controller`, `Repository`, `Client`. For free-text terms, use the canonical term noun phrase
-- `trigger_key`: normalize to lowercase verb-plus-target form only when the text describes an initiating action. For endpoints, use HTTP method plus normalized resource (for example `post_order`). For acceptance criteria, use the triggering action phrase. Otherwise use `none`
-- `outcome_key`: normalize to lowercase verb-plus-target form only when the text describes an observable result or produced artifact. For pure config names or pure term definitions, use `none`
-- `stage_key`: assign the closest enumerated lifecycle stage from the identifier/context. Use `other` only when no enumerated stage applies
-- `numeric_key`: for numeric parameters, normalize the parameter name to lowercase snake_case without the value or unit (for example `retry_backoff_initial_delay`). Otherwise use `none`
-- `unit_key`: for numeric parameters, normalize the unit token to lowercase canonical form (`ms`, `seconds`, `minutes`, `percent`, `count`, `bytes`). Otherwise use `none`
-- `scope_key`: for numeric parameters, normalize the owning feature or subsystem to lowercase snake_case (`retry`, `checkout`, `auth`, `cache`). Otherwise use `none`
-- `term_key`: for term definitions, normalize the canonical term name to lowercase snake_case. Otherwise use `none`
-- `subject_key`: for term definitions, normalize the subject being defined to lowercase snake_case. Otherwise use `none`
-- `boundary_key`: for term definitions, normalize the boundary/span phrase to lowercase snake_case with `from_to` wording when applicable. Otherwise use `none`
-- `alias_of`: set to the exact referenced identifier only when the document explicitly states an alias/equivalence. Otherwise use `none`
-
-### 2. Survey All Design Docs
-
-- Search `docs/design/*.md` excluding the template and `source_design`
-- Extract target-document items with the same schema and key derivation rules
-
-### 3. Conflict Classification and Severity Assessment
-
-**Conflict Detection Process**:
-1. Extract each item from the source file using the extraction output format
-2. Derive and record all normalized keys for each extracted item: `resource_key`, `trigger_key`, `outcome_key`, `stage_key`, `numeric_key`, `unit_key`, `scope_key`, `term_key`, `subject_key`, `boundary_key`, and `alias_of`
-3. Extract candidate items from each target document using the same extraction output format and key derivation rules
-4. For each source item, search all normalized target-document items for matches using Match Basis Rules
-5. Select `match_basis` using the required selection order
-6. Record a `confirmed_conflict` when values differ and confidence is high
-7. Record a `candidate_conflict` when values differ and confidence is medium
-8. Items not in the source file are not detection targets
-
-**explicit_alias application rule**:
-- Apply `explicit_alias` only when one item's `alias_of` equals the other item's exact `identifier`
-- Do not infer aliases from similarity; the alias relationship must be explicit in the document text
-
-**Category to candidate match-basis mapping**:
-
-| Source category | Allowed medium-confidence match_basis |
-|----------------|----------------------------------------|
-| `path` | `same_endpoint_role` |
-| `integration`, `component` | `same_integration_role` |
-| `acceptance-criteria` | `same_ac_slot` |
-| `numeric` | `same_numeric_role` |
-| `term` | `same_term_role` |
-| `type` | none — use only high-confidence matching |
-
-| Conflict Type | Criteria | Severity |
-|--------------|----------|----------|
-| **Type definition mismatch** | Same type/interface role, different properties or field types | critical |
-| **Path or integration point conflict** | Same path or integration role, different target/method/handler | critical |
-| **Numeric parameter mismatch** | Same config role, different value | high |
-| **Acceptance criteria conflict** | Same AC slot, different conditions or thresholds | high |
-| **Term definition mismatch** | Same term role, different definition text | medium |
-
-### 4. Decision Flow
-
-```
-Item extracted from source file?
-  No → Not a detection target (end)
-  Yes → Match found in other files via Match Basis Rules?
-            No → No comparison target (end)
-            Yes → Select highest-priority applicable match_basis
-                      No valid match_basis → No conflict (end)
-                      high-confidence basis → Value/definition/referent differs?
-                                                No → No conflict (end)
-                                                Yes → Record confirmed_conflict
-                      medium-confidence basis → Do the required signals for that match_basis match exactly?
-                                                  No → No conflict (end)
-                                                  Yes → Value/definition/referent differs?
-                                                            No → No conflict (end)
-                                                            Yes → Record candidate_conflict
-
-Severity Assessment:
-  - Type/path/integration point → critical (implementation error risk)
-  - Numeric/acceptance criteria → high (behavior impact)
-  - Term → medium (confusion risk)
-```
-
-**When in doubt**:
-- If the item is not explicitly documented in the source file, skip it
-- Otherwise apply the category mapping and required-signal rule
+Classify severity by the consequence of leaving the conflict unresolved: `critical` for incompatible implementation contracts, `high` for material behavior or acceptance differences, and `medium` for terminology ambiguity affecting interpretation. Recommend the smallest governing-source resolution or the identity check needed next; keep newly created documents subject to accepted decisions.
 
 ## Output Format
 
 ### Output Format [JSON MANDATORY]
 
 ```json
-{"metadata":{"review_type":"design-sync","source_design":"[source Design Doc path]","analyzed_docs":3,"analysis_date":"[execution datetime]"},"summary":{"total_conflicts":2,"critical":1,"high":1,"medium":0,"confirmed_conflicts":1,"candidate_conflicts":1,"sync_status":"CONFLICTS_FOUND"},"confirmed_conflicts":[{"id":"CONFLICT-001","severity":"critical","confidence":"high","match_basis":"exact_string","type":"Type definition mismatch","source_file":"[source file]","source_location":"[section/line]","source_value":"[content in source file]","target_file":"[file with conflict]","target_location":"[section/line]","target_value":"[conflicting content]","recommendation":"[Recommend unifying to source file's value]"}],"candidate_conflicts":[{"id":"CANDIDATE-001","severity":"high","confidence":"medium","match_basis":"same_ac_slot","type":"Acceptance criteria conflict","source_file":"[source file]","source_location":"[section/line]","source_value":"[content in source file]","target_file":"[file with conflict]","target_location":"[section/line]","target_value":"[conflicting content]","reason":"[structural evidence linking the items]","recommendation":"[Recommend reviewing whether these describe the same design slot]"}],"no_conflicts_docs":["[filename1]","[filename2]"]}
+{"metadata":{"review_type":"design-sync","source_design":"[source Design Doc path]","analyzed_docs":3,"analysis_date":"[execution datetime]"},"summary":{"total_conflicts":2,"critical":1,"high":1,"medium":0,"confirmed_conflicts":1,"candidate_conflicts":1,"sync_status":"CONFLICTS_FOUND"},"confirmed_conflicts":[{"id":"CONFLICT-001","severity":"critical","confidence":"high","match_basis":"exact_string","type":"Type definition mismatch","source_file":"[source file]","source_location":"[section/line]","source_value":"[content in source file]","target_file":"[file with conflict]","target_location":"[section/line]","target_value":"[conflicting content]","reason":"[Evidence establishing the shared contract and incompatibility]","recommendation":"[Smallest correction consistent with governing authority]"}],"candidate_conflicts":[{"id":"CANDIDATE-001","severity":"high","confidence":"medium","match_basis":"same_ac_slot","type":"Acceptance criteria conflict","source_file":"[source file]","source_location":"[section/line]","source_value":"[content in source file]","target_file":"[file with conflict]","target_location":"[section/line]","target_value":"[conflicting content]","reason":"[structural evidence linking the items]","recommendation":"[Recommend reviewing whether these describe the same design slot]"}],"no_conflicts_docs":["[filename1]","[filename2]"]}
 ```
 
 `total_conflicts` MUST equal `confirmed_conflicts + candidate_conflicts`.
 
-When no conflicts: `"sync_status": "NO_CONFLICTS"`, `"confirmed_conflicts": []`, `"candidate_conflicts": []`
+Use `"sync_status": "NO_CONFLICTS"`, `"confirmed_conflicts": []`, and `"candidate_conflicts": []` when the comparison is supported and no conflict remains. Count only documents actually inspected in `analyzed_docs`.
 
 ### SKIP Status
 
@@ -224,122 +93,39 @@ When fewer than 2 Design Docs exist, return immediately:
 
 ENFORCEMENT: sync_status MUST be one of: CONFLICTS_FOUND | NO_CONFLICTS | SKIPPED. These three values are the complete vocabulary.
 
-## Detection Pattern Examples
+## Comparison Examples
 
-### High confidence: exact_string (type definition)
-```
-Source Design Doc:
-OrderItem
-  quantity: number
-  unitPrice: number
+These cases distinguish shared-contract conflicts from similar wording:
 
-Other Design Doc (conflict):
-OrderItem
-  quantity: string   # different type
-  unitPrice: number
-  discount: number   # extra property
-```
-
-### Medium confidence: same_endpoint_role
-```
-# Source Design Doc
-POST /api/v2/orders -> OrderController.create
-
-# Other Design Doc (conflict)
-POST /api/v1/orders -> OrderController.submit
-```
-
-Report as `candidate_conflict` when the shared signals are:
-- same resource key: orders
-- same trigger key: post_order
-- same stage key: route_entry
-
-### Medium confidence: same_ac_slot
-```
-# Source Design Doc
-When user submits valid credentials, the system creates a session with 30-minute expiry
-
-# Other Design Doc (conflict)
-When user submits valid credentials, the system issues a JWT with 60-minute expiry
-```
-
-Report as `candidate_conflict` when the shared signals are:
-- same trigger key: submit valid credentials
-- same outcome key: successful sign-in
-
-### Medium confidence: same_numeric_role
-```
-# Source Design Doc
-Retry backoff initial delay: 100 ms
-
-# Other Design Doc (conflict)
-Initial retry delay: 250 ms
-```
-
-Report as `candidate_conflict` when the signals are:
-- same numeric key: retry_backoff_initial_delay
-- same unit key: ms
-- same scope key: retry
-
-### Medium confidence: same_term_role
-```
-# Source Design Doc
-Fulfillment window = time between payment confirmation and carrier handoff
-
-# Other Design Doc (conflict)
-Order fulfillment window = time between payment confirmation and warehouse pick start
-```
-
-Report as `candidate_conflict` when the signals are:
-- same term key: fulfillment_window
-- same subject key: order_fulfillment
-
-### Not a candidate conflict
-```
-# Source Design Doc
-POST /api/users/register
-
-# Other Design Doc
-POST /api/accounts/signup
-```
-
-Do not report this pair when only one shared signal is present or when no allowed match_basis applies.
-
-### Not a numeric-role candidate conflict
-```
-# Source Design Doc
-Retry backoff initial delay: 100 ms
-
-# Other Design Doc
-Retry limit: 3
-```
-
-Do not report this pair when `scope_key: retry` matches but `numeric_key` does not.
+| Evidence | Judgment |
+|---|---|
+| Two unrelated features each use `AC-001` or a local `Config` type | Separate scopes; identical labels alone are not a conflict |
+| The same timeout is documented as `1000 ms` and `1 second` | Equivalent value; compare units before reporting a mismatch |
+| v1 and v2 endpoints intentionally have different contracts | Preserve the documented version boundary |
+| Backend and frontend claim incompatible fields for the same API version | Confirmed conflict when both sides identify that shared contract |
+| `/users/register` and `/accounts/signup` may describe the same flow, but ownership is unclear | Candidate only when documented behavior connects them; cite the unresolved identity |
+| A newly drafted document disagrees with an accepted contract | Report the conflict against the governing evidence; creation order grants no authority |
 
 ## Quality Checklist
 
-- [ ] Correctly read source_design
-- [ ] Surveyed all target Design Docs
-- [ ] Extracted source and target items using the same schema and key derivation rules
-- [ ] Recorded all required normalized keys for extracted items
-- [ ] Match basis selected using the required priority order
-- [ ] High-confidence conflicts use only `exact_string` or `explicit_alias`
-- [ ] Candidate conflicts use only allowed medium-confidence match-basis values and required signals
-- [ ] `explicit_alias` is used only when `alias_of` equals the counterpart's exact identifier
-- [ ] Medium-confidence conflicts include `reason` with structural evidence
-- [ ] Correctly assigned severity to each conflict
-- [ ] Output in JSON format
+- [ ] Compared source claims across potentially related Design Docs, including equivalent names and shared boundaries
+- [ ] Each confirmed conflict identifies the same contract and incompatible claims under the same applicable conditions
+- [ ] Candidate conflicts include the linking evidence and unresolved identity or compatibility question
+- [ ] Documented versions, namespaces, units, and intentional differences were respected
+- [ ] Both source locations and values are retained for every finding
+- [ ] Recommendations preserve governing authority and leave resolution to the caller
+- [ ] Output counts agree with the finding arrays; unavailable evidence is reported
 
 ## Error Handling
 
-- **source_design not found**: Output error message and terminate
-- **No target Design Docs found**: Return with `sync_status: "SKIPPED"`
-- **File read failure**: Skip the file and note it in the report
+- **source_design not found**: Return the missing path and terminate; a comparison requires the source document
+- **No other Design Docs found**: Return `sync_status: "SKIPPED"` as specified above
+- **File read failure**: When it prevents a required comparison, return the missing path and unsupported judgment to the caller instead of a completed sync result. Otherwise record the limitation and include only verified documents in `no_conflicts_docs`
 
 ## Completion Criteria
 
-- All target files have been read
-- JSON output completed
-- Quality checklist items verified
+- Source claims and potentially shared contracts were checked against relevant document evidence
+- Remaining conflicts, candidates, and material access limitations are explicit
+- The final JSON contains the evidence the caller needs to resolve findings
 
 """

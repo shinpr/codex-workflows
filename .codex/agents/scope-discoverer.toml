@@ -77,7 +77,7 @@ When `reference_architecture` is provided:
    - Combine user-value groups and technical boundaries into functional units
    - Each unit MUST represent a coherent feature with identifiable technical scope
    - For each unit, identify its `valueProfile`: who uses it, what goal it serves, and what high-level capability it belongs to
-   - Also assign normalized grouping keys in `valueProfile.groupingKey` for persona, goal, and category; use short stable slugs (`kebab-case`) rather than free-form prose
+   - Summarize persona, goal, and category in `valueProfile.groupingKey` using short stable slugs (`kebab-case`); these labels describe the grouping rather than determine its boundaries
    - Apply Granularity Criteria (see below)
 
 5. **Unit Inventory Enumeration**
@@ -94,13 +94,13 @@ When `reference_architecture` is provided:
    - Identify shared dependencies and cross-cutting concerns
 
 7. **Saturation Check**
-   - Stop discovery when 3 consecutive new sources yield no new units
-   - Mark discovery as saturated in output
+   - Reconcile the target's entry points, public interfaces, and test coverage with `unitInventory` and trace any remaining boundary that could reveal an in-scope unit
+   - Mark `saturationReached: true` when the inventory accounts for the requested scope and further exploration cannot materially change its units or boundaries. Otherwise record the exact coverage limitation and use `false`
 
 8. **PRD Unit Grouping** (execute only after steps 1-7 are fully complete)
    - Using the finalized `discoveredUnits` and their `valueProfile` metadata, group units into PRD-appropriate units
-   - Grouping logic: units with the same `groupingKey.valueCategory` AND the same `groupingKey.userGoal` AND the same `groupingKey.targetPersona` belong to one PRD unit. If any of the three differs, the units become separate PRD units
-   - Free-text fields (`targetPersona`, `userGoal`, `valueCategory`) are explanatory only and MUST NOT be used as grouping keys
+   - Group units whose observed user goals and technical boundaries form one coherent product capability. Keep independently valuable capabilities separate when combining them would obscure their scope or contracts
+   - Use `valueProfile` and repository evidence to judge cohesion; equivalent wording or slug differences alone neither split nor merge units. Record representative grouping labels for the resulting PRD unit
    - Every discovered unit must appear in exactly one PRD unit's `sourceUnits`
    - Output as `prdUnits` alongside `discoveredUnits` (see Output Format)
 
@@ -118,19 +118,20 @@ Each discovered unit MUST represent a Vertical Slice — a coherent functional u
 - Multiple distinct data domains with no shared state
 
 **Cohesion signals** (units that may belong together):
-- Units share >50% of related files
-- One unit cannot function without the other
-- Combined scope is still under 10 files
+- Units share a user goal and the responsibility or state needed to deliver it
+- One unit cannot deliver its user-visible outcome without the other
 
-Note: These signals are informational only during steps 1-6. Keep all discovered units separate and capture accurate value metadata (see `valueProfile` in Output Format). PRD-level grouping is performed in step 7 after discovery is complete, using normalized grouping keys rather than free-text descriptions.
+Note: These signals inform unit boundaries during steps 1-6. Preserve the discovered-unit inventory when forming PRD groups in step 8; `sourceUnits` carries the complete mapping.
 
 ## Confidence Assessment
 
 | Level | Triangulation Strength | Criteria |
 |-------|----------------------|----------|
-| high | strong | 3+ independent sources agree, clear boundaries |
-| medium | moderate | 2 sources agree, boundaries mostly clear |
-| low | weak | Single source only, significant ambiguity |
+| high | strong | Direct authoritative evidence establishes the behavior and boundary without a material unresolved contradiction |
+| medium | moderate | Evidence supports the unit but leaves an inferred boundary or limited corroboration |
+| low | weak | Material behavior or boundary remains ambiguous, indirect, or contradicted |
+
+Report actual `sourceCount` as provenance, not a confidence threshold. Seek independent evidence when it can resolve a material uncertainty; a single authoritative definition can establish a contract.
 
 ## Output Format
 
@@ -158,14 +159,14 @@ Note: These signals are informational only during steps 1-6. Keep all discovered
 - [ ] Documented relationships between units
 - [ ] Reached saturation or documented why not
 - [ ] Listed uncertain areas and limitations
-- [ ] Grouped discovered units into PRD units (step 7, after all discovery steps complete)
+- [ ] Grouped discovered units into PRD units (step 8), preserving every discovered unit in exactly one group
 - [ ] Final response is the JSON output
 
 ## Output Self-Check
 - [ ] Output is limited to scope discovery (no PRD or Design Doc content generated)
 - [ ] Every discovery is backed by evidence (no assumptions without sources)
 - [ ] Low-confidence discoveries are reported with appropriate confidence markers
-- [ ] Triangulation strength reflects actual source count (weak noted when single-source)
+- [ ] Confidence reflects evidence directness, independent corroboration where needed, and unresolved contradictions; sourceCount records actual provenance
 - [ ] Saturation check was performed before concluding discovery
 
 """

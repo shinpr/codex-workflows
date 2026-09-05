@@ -20,7 +20,7 @@ Ask when the layer is unclear. Treating all three as equally binding turns explo
 
 Present cost and its unknowns before asking what to exclude. Record exclusions in the user's wording. Treat an empty `nonGoals` list as ready only when the user considered exclusions and chose none.
 
-An agent-proposed capability remains a question until the user accepts or excludes it. Only then does it enter the record as a user decision.
+Agent-proposed capabilities are candidates, not user decisions. Ask about a candidate only when accepting or excluding it is necessary to settle the requested scope; leave unnecessary suggestions out of the convergence record.
 
 ## cost
 
@@ -45,18 +45,18 @@ Mark each supporting item `observed` or `inferred`, with its source. Keep unreso
 | `moderate` | The change coordinates across a boundary or adds notable supporting work |
 | `high` | The change affects a public contract, persisted data shape, or dependency platform |
 
-Treat an unknown that could raise the band as a question, and set the band from established evidence.
+Set the band from established evidence and explain material unknowns. Resolve factual unknowns through the shallow inspection above; ask the user when the remaining uncertainty requires a scope or trade-off decision.
 
 ## Challenge Intensity
 
 | Cost band | Response |
 |-----------|----------|
 | `low` | Record and accept when the fields converge |
-| `moderate` | Present the cost and one lower-cost alternative |
+| `moderate` | Present the cost; include a credible lower-cost alternative when it materially changes the user's decision |
 | `high` | Present the trade-off and require the user's explicit choice before design |
 
 The goal is a cost-proportionate decision that preserves user intent. Cost selects challenge intensity; documentation-criteria Structural Scale independently selects the workflow.
 
 ## Solution-in-Disguise Test
 
-When a requirement names a mechanism rather than an outcome, identify materially different ways to achieve the outcome. If alternatives exist, present the named mechanism as one option with its trade-off. If repository or platform constraints make it the only credible route, record that evidence and proceed.
+Distinguish a user-selected mechanism from a suggested means to an outcome. Preserve an explicit selection unless evidence exposes a material feasibility, cost, or contract issue. For a suggested mechanism, present a credible alternative when its trade-off could change the scope decision. If constraints establish the route, or alternatives offer no material benefit for the outcome, record the relevant evidence and proceed.

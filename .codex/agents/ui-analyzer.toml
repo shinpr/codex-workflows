@@ -53,9 +53,11 @@ For each supplied `externalResourceRefs` entry, resolve only its feature identif
 
 For large design files, component catalogs, or prototype directories, resolve only the relevant subset. Record unavailable resources with the attempted access method and reason.
 
-When `prototype_path` is provided, read it as analysis input. Asset placement under `docs/ui-spec/assets/` belongs to the UI Spec creation phase.
-
 ### Step 3: UI Surface Discovery in Code
+
+When `prototype_path` is provided, read it as analysis input, including repository-only analysis. Asset placement under `docs/ui-spec/assets/` belongs to the UI Spec creation phase.
+
+Use Steps 4–10 as evidence perspectives for the requested UI decision. Extract details that affect the change, a contract or state it must preserve, reuse, or verification. A component being in scope does not require cataloging all its props, styles, or call sites. Cover states named by confirmed requirements, the UI Spec, or a supplied prototype, and trace display conditions that could alter the requested behavior. Record material missing evidence in `limitations`.
 
 1. Identify UI-rendering files from `requirement_analysis.affectedFiles` and inferred frontend paths.
 2. Build a component-file index using project-appropriate glob patterns.
@@ -63,7 +65,7 @@ When `prototype_path` is provided, read it as analysis input. Asset placement un
 
 ### Step 4: Component Structure Extraction
 
-For each component file in scope, read the file and extract:
+Read the relevant component files and extract decision-relevant structure:
 - component name and export form
 - props interface or parameter shape
 - top-level JSX element and immediate children
@@ -73,24 +75,24 @@ For each component file in scope, read the file and extract:
 
 ### Step 5: Props and Variant Patterns
 
-For each relevant call site:
+For call sites needed to establish usage or compatibility:
 - record literal and computed props
 - group variant, size, color, and state combinations
 - identify canonical usage patterns and outliers with file:line evidence
 
 ### Step 6: CSS Layout State
 
-For each style source in scope:
+For style sources that affect the requested change or preserved layout:
 - class naming convention
 - layout primitives: display, direction, gap, wrap, logical properties
 - state selectors and responsive breakpoints
 
 ### Step 7: State x Display Matrix
 
-For each component in scope:
+For components whose display states affect the requested behavior:
 - infer states from props, hooks, branches, fetch flags, and route context
 - record rendered output for each state
-- record states named by confirmed requirements or an existing UI Spec that lack an observed code path as `unsupportedStates`
+- record states named by confirmed requirements, an existing UI Spec, or a supplied prototype that lack an observed code path as `unsupportedStates`; distinguish prototype observations from approved requirements
 
 ### Step 8: Display Conditions
 
@@ -113,7 +115,7 @@ Produce `candidateWriteSet[]` with likely modified files:
 
 ## Output Format
 
-Return a single JSON object as the final response:
+Return a single JSON object as the final response. Preserve the fields, types, and allowed values shown below for downstream consumers; populate them with decision-relevant facts and leave out-of-scope arrays empty. Use `focusAreas` to connect collected facts to the requested change or a required preservation boundary.
 
 ```json
 {"analysisScope":{"filesAnalyzed":["path/to/component.tsx"],"stylesAnalyzed":["path/to/styles.module.css"],"uiConventions":{"componentExtension":".tsx","styleStrategy":"css-modules|vanilla-css|css-in-js|utility-classes|unknown","storybook":true,"testRunner":"vitest|jest|other|unknown"}},"externalResources":{"status":"resolved|partial|not_recorded","selectedRefs":[{"label":"resource-label","featureIdentifier":"feature identifier or N/A"}],"designOrigin":{"resource_status":"present|existing-implementation|not_applicable","resolution_status":"fetched|inspected_local|recorded_for_manual_confirmation|unavailable|not_applicable","accessMethod":"MCP name | URL | file path | existing implementation","summary":"brief description of resolved content"},"designSystem":{"resource_status":"present|existing-package|not_applicable","resolution_status":"fetched|inspected_local|unavailable|not_applicable","accessMethod":"MCP name | URL | file path | package imports | local docs","summary":"components, tokens, and variants captured"},"guidelines":{"resource_status":"present|project-conventions|not_applicable","resolution_status":"fetched|inspected_local|unavailable|not_applicable","accessMethod":"URL | file path | local docs | project conventions","summary":"rule categories captured"},"visualVerification":{"resource_status":"present|manual-confirmation|not_applicable","resolution_status":"available|recorded_for_manual_confirmation|unavailable|not_applicable","accessMethod":"MCP name | URL | command | manual confirmation","notes":"rendering verification path"},"generatedUiArtifacts":{"resource_status":"present|not_applicable","resolution_status":"inspected_local|available|unavailable|not_applicable","accessMethod":"command | config path | file path | package script","summary":"generated UI artifact source, trigger, and verification path"},"additionalResources":[{"label":"resource-label","description":"resource description","accessMethod":"URL | MCP name | file path | command | notes","resource_status":"present|existing-implementation|existing-package|project-conventions|manual-confirmation","resolution_status":"fetched|inspected_local|recorded_for_manual_confirmation|unavailable","summary":"facts relevant to the requested UI scope"}]},"componentStructure":[{"name":"ComponentName","filePath":"path/to/file:line","propsInterface":"name and brief shape","topLevelElement":"tag or component name","domOrder":["child1","child2"],"conditionalBranches":[{"predicate":"condition","renderedSubtree":"brief description"}],"callSites":["path/to/consumer:line"]}],"propsPatterns":[{"component":"ComponentName","callSite":"path/to/file:line","props":{"variant":"primary"},"computedProps":["onClick"],"groupKey":"primary"}],"cssLayout":[{"filePath":"path/to/styles.module.css","classNamingConvention":"camelCase|kebab-case|BEM|unknown","baseClass":"root","layouts":[{"selector":".root","display":"flex|grid|block|unknown","direction":"row|column|grid-template|unknown","gap":"8px|none|unknown","wrap":"wrap|nowrap|absent|unknown","logicalProperties":true,"stateSelectors":["[data-state=active]"]}],"responsiveBreakpoints":["768px"]}],"stateDisplay":[{"component":"ComponentName","states":[{"name":"loading|empty|partial|error|ready|disabled","trigger":"what causes this state","renders":"brief description"}],"unsupportedStates":["sourced state absent from current component"]}],"displayConditions":[{"component":"ComponentName","condition":"feature_flag|role|route|region|tenant|page_context","predicateLocation":"path/to/file:line","predicate":"expression","gatedSubtree":"brief description"}],"i18n":{"format":"csv|json|code-catalog|other|none","structuralConventions":{},"keyNamingConvention":"","locales":[],"localeGaps":[],"generatedTypings":{"command":"","outputPath":""}},"accessibility":[{"component":"ComponentName","ariaAttributes":["role=button","aria-label from prop"],"keyboardHandling":"Enter and Space trigger action","focusStyling":"focus-visible outline","testCoverage":"axe checks present|absent|unknown"}],"generatedArtifacts":[{"kind":"css-module-typings|message-catalog-typings|route-typings|other","command":"generator command","trigger":"on source change|manual|unknown","consumers":["typecheck","test","build","runtime"],"resourceRef":"externalResources.generatedUiArtifacts"}],"focusAreas":[{"fact_id":"path:identifier","area":"Brief UI area name","evidence":"componentStructure[name=...]","factsToAddress":"Concrete UI facts to respect","risk":"What inconsistency results if omitted"}],"candidateWriteSet":[{"path":"src/components/Card.tsx","reasonRef":"focusAreas[fact_id=...]","confidence":"high|medium|low"}],"limitations":[]}
@@ -124,6 +126,6 @@ Return a single JSON object as the final response:
 - [ ] Each external resource entry records `resource_status` and `resolution_status`
 - [ ] `candidateWriteSet` reflects the requested UI change
 - [ ] Every `focusAreas` entry carries an evidence pointer
-- [ ] Sections outside scope use empty arrays or concise N/A values
+- [ ] Output preserves the declared field types and allowed values; out-of-scope arrays are empty
 - [ ] Final message is a JSON object
 """

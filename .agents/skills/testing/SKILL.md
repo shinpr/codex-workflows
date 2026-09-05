@@ -15,14 +15,14 @@ Use test commands, thresholds, boundaries, fixtures, and conventions from the re
 
 ## TDD Gate
 
-For behavior-changing implementation:
+Use RED-GREEN-REFACTOR for behavior-changing implementation when a focused automated test adds or restores necessary behavioral proof:
 
 1. **RED**: Add or select a test that observes the required behavior. Run it and confirm it fails for the targeted missing behavior or regression.
 2. **GREEN**: Make the smallest implementation change that satisfies the behavior. Run the focused test.
 3. **REFACTOR**: Improve the changed code without changing the contract. Re-run the focused test.
 4. **VERIFY**: Run the repository's required quality command and every wider check required by the task boundary.
 
-Documentation, pure configuration, and disposable exploration do not require a RED phase. A productionized spike must gain tests before completion.
+For non-behavioral work or behavior already proven at the required boundary, use the smallest applicable verification instead of creating duplicate proof. Reuse existing evidence only while it remains valid for the changed behavior. Documentation, pure configuration, and disposable exploration do not require a RED phase. A productionized spike must gain tests before completion. Repository-required checks still apply.
 
 ## Proof Selection
 
