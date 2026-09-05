@@ -19,9 +19,9 @@ The goal is stable downstream execution. The next agent should know the target a
    - Keep a prohibition only when it protects an irreversible boundary or shipped contract. Name the protected condition and the allowed action.
    - Example: `Preserve existing public API behavior across the documented compatibility cases.`
 
-2. **Make vague instructions concrete**
-   - Replace subjective terms with observable conditions, paths, commands, schemas, examples, or decision rules.
-   - Terms that usually need clarification before handoff: `appropriate`, `proper`, `related`, `existing behavior`, `optional`, `as needed`, `if needed`, `per convention`, unresolved alternatives, `TBD`, and `placeholder`.
+2. **Resolve outcome-relevant ambiguity**
+   - Clarify an instruction when plausible interpretations would change correctness, requested scope, downstream usability, or verification. Use the least-restrictive sufficient condition, source, or example.
+   - Leave local, reversible choices to the next agent when the stated outcome, constraints, and repository evidence are sufficient to choose. A subjective word alone does not require another rule or decision.
 
 3. **Specify output shape**
    - Define only the sections or fields the next consumer uses.
@@ -46,19 +46,19 @@ The goal is stable downstream execution. The next agent should know the target a
 
 ## Rewrite Patterns
 
-Use these rewrites before treating a prompt, handoff, or artifact as complete.
+Use these rewrites when an ambiguity materially changes the next action or its result. Retain valid local choices within the stated boundaries.
 
 | Ambiguous form | Rewrite as |
 |---|---|
 | `optional` used as an unresolved choice | Required, omitted, or required only under a named condition |
-| Multiple alternatives that the next agent must choose between | The selected option, or the evidence boundary within which the agent may choose |
+| Alternatives with different scope or contract effects | The accepted decision, or the evidence boundary within which the agent may choose |
 | `as needed` / `if needed` | The triggering condition and required action |
 | `per convention` | The file, function, test, or documented convention to follow |
 | `related files` | Specific paths, globs, or search hints |
 | `existing behavior` | The observable behavior, source file, test, API response, or UI state to preserve |
 | `placeholder` | Exact temporary value or behavior, allowed dependencies, and verification expectation |
 | `TBD` used for required information | A blocking unresolved item with owner, required input, or escalation condition |
-| `appropriate` / `proper` | A measurable criterion or checklist |
+| `appropriate` / `proper` with materially different interpretations | The observable success criterion that distinguishes acceptable results |
 
 ## Handoff Checklist
 
@@ -69,7 +69,7 @@ Before sending a prompt or artifact to another agent, verify:
 - [ ] Accepted decisions and constraints are stated once with stable wording.
 - [ ] The next consumer can identify the artifact or result it needs.
 - [ ] Success criteria are observable.
-- [ ] Ambiguous expressions have been rewritten or marked as unresolved.
+- [ ] Outcome-relevant ambiguities are resolved or identified with their effect; valid local choices remain available.
 - [ ] Every retained prohibition names the protected condition and allowed alternative.
 - [ ] Dependencies needed by the next action are visible.
 - [ ] The next agent can complete its scope or return the unresolved decision with evidence.

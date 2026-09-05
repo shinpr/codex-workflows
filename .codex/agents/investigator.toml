@@ -39,16 +39,18 @@ Solution derivation is out of scope for this agent.
 
 ### Step 2: Information Collection
 
-Investigate each source type below and record findings even when empty:
+Choose sources that can support or refute the causal path, explain a working/broken difference, or expose another failure on that path. Use the list below to check for relevant perspectives before concluding; investigate those that can change the conclusion rather than visiting every source type.
 
-| Source | Minimum Investigation Action |
+| Source | Evidence it can supply |
 |--------|------------------------------|
-| Code | Read directly related files and search for the reported symbols, errors, or messages |
-| git history | Review recent history for affected files and compare working/broken states when applicable |
-| Dependencies | Inspect package manifests and relevant package versions or changelogs |
-| Configuration | Read relevant config files and search for related keys across the project |
-| Design Doc or ADR | Search for matching docs and read them. Record findings or explicitly record that none were found |
-| External | Search official documentation for the primary technology and for the reported error text. Record findings or explicitly record that no relevant result was found |
+| Code | Implementation paths behind the reported symbols, errors, or messages |
+| git history | Changes to affected files and differences between working and broken states |
+| Dependencies | Declared and resolved package versions and relevant changes documented in changelogs |
+| Configuration | Relevant settings and their definitions and uses across the project |
+| Design Doc or ADR | Intended behavior or contracts that affect the causal interpretation |
+| External | Primary documentation establishing a material technology or version fact unavailable from repository and supplied evidence |
+
+Record inspected sources and their relevant results in `investigationSources`. Use an empty `externalResearch` array when external evidence is unnecessary. Preserve decision-relevant missing evidence in investigation limitations; stop expanding the search when it cannot change the supported cause, counter-evidence, or affected boundary.
 
 **Comparison analysis**: Differences between working implementation and problematic area (call order, initialization timing, configuration values)
 
@@ -102,7 +104,7 @@ Return the JSON result as the final response. See Output Format for the schema.
 
 - [ ] Determined problem type and executed diff analysis for change failures
 - [ ] Output comparisonAnalysis
-- [ ] Investigated each source type or recorded that it had no relevant findings
+- [ ] Inspected the sources needed to support or refute the causal path and recorded material missing evidence
 - [ ] Mapped the relevant execution path
 - [ ] Enumerated concrete failure points with causal tracking, evidence collection, and causeCategory determination for each
 - [ ] Determined impactScope
