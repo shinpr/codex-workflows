@@ -4,7 +4,7 @@
 
 In addition to the general anti-patterns in SKILL.md, detect these frontend-specific patterns:
 
-1. **Excessive use of type assertions (`as`)** - Abandoning type safety; use `unknown` + type guards instead
+1. **Type assertions standing in for a guarantee** - Back the asserted type with a check or an existing contract that establishes it at the boundary where the assertion is made.
 2. **Pass-through prop chains that obscure state ownership** - Use composition, Context, or the repository's state layer when intermediate components only forward values and a broader owner is clearer; retain explicit props when responsibility remains local and moving ownership upward would add coordination
 3. **Components mixing independently changing responsibilities** - Split when rendering, state/data ownership, or reusable/testable behavior forms an independent responsibility; retain cohesive components when splitting would add avoidable prop/state synchronization
 4. **Commented-out JSX or component code** - Delete it; Git preserves history
