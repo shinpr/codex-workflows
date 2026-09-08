@@ -62,7 +62,7 @@ Assign work based on each subagent's responsibilities:
 
 ## How to Spawn Agents
 
-Apply `subagent-delegation` and the Spawn rule above. Resolve missing workflow inputs through Orchestrator Escalation Resolution when repository and governing evidence cannot supply them.
+Apply the Spawn rule above. Resolve missing workflow inputs that affect the next action or its verification from repository and governing evidence; route remaining blockers through Orchestrator Escalation Resolution.
 
 ### Spawn Prompt Requirements
 
