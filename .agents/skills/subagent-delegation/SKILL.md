@@ -24,7 +24,7 @@ Research and design also use completion delegation when the child can make the r
 
 ## Waiting and Intervention
 
-While the child works, perform only necessary work outside its delegated responsibility, or wait for its notification. For either delegation level, use the longest wait allowed by the active instructions and tool. A wait timeout or routine progress notification leaves the assignment pending; continue waiting.
+Minimize total parent-and-child token cost while meeting required quality and user time constraints. While the child works, perform only necessary work outside its delegated responsibility, or wait for its notification. For notification-driven waits, use the longest timeout allowed by instructions and tools to reduce repeated parent context processing; notifications wake the parent early. Shorten it only for a concrete earlier parent action whose expected benefit outweighs the extra coordination cost. A wait timeout or routine progress notification leaves the assignment pending; continue waiting.
 
 The child initiates consultation. Inspect its deliverable after receiving the completed result and apply the required verification and review. Intervene during execution for a child decision request, a user change or cancellation, or a material assignment error learned through other necessary work. Base intervention on these notifications and independently acquired evidence.
 
