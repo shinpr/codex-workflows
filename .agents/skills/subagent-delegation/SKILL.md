@@ -5,7 +5,7 @@ description: "Sets delegation scope, child-initiated consultation, and completio
 
 # Subagent Delegation
 
-Apply this skill before delegating work or managing a running subagent. It covers both custom agents and agents created for the current task. Recipe phases, specialist routing, and approval gates belong to `subagents-orchestration-guide` when executing those workflows.
+Apply this skill before delegating work or managing a running subagent. It covers both custom agents and agents created for the current task.
 
 ## Assignment
 
