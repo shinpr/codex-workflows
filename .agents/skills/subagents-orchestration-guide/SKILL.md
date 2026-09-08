@@ -1,9 +1,11 @@
 ---
 name: subagents-orchestration-guide
-description: "Guides subagent coordination through implementation workflows. Use when: orchestrating multiple agents, managing workflow phases, determining autonomous execution mode, or coordinating recipe execution."
+description: "Coordinates custom specialists through workflow phases, artifact handoffs, approval gates, and autonomous implementation. Use when executing a workflow recipe or routing its next specialist."
 ---
 
 # Subagents Orchestration Guide
+
+Load `subagent-delegation` for assignment, waiting, and intervention rules. This guide owns workflow-specific coordination.
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
 
@@ -14,10 +16,6 @@ The orchestrator owns workflow state and directly performs lightweight coordinat
 ### Execution Plans
 
 Reuse one active execution plan for the recipe. When none exists, create it before substantive multi-step work with the recipe phases and final verification, then update the same plan as evidence is produced. Agent-internal execution plans remain local to each agent. Plans prevent skipped work; their wording or presence is not a user approval gate.
-
-### Prompt Construction Rule
-
-Give each subagent the expected action and the artifact paths or evidence needed for that action. Follow the agent's input contract and supply facts not already carried by the artifact. A compatible value under different wording is usable. Resolve a missing input when it would change the action or make its result unverifiable; use Orchestrator Escalation Resolution when repository and governing evidence cannot supply it.
 
 ### Entry Ownership
 
@@ -62,32 +60,12 @@ Assign work based on each subagent's responsibilities:
 - Self-contained processing until fix completion
 - Final approved judgment (only after fixes are complete)
 
-### Subagent Completion Discipline [MANDATORY]
-
-The orchestrator owns subagent completion. Base waiting decisions on assigned responsibility and observed state, not on an expectation of quick completion. Multi-step search, review, verification, generation, implementation, and quality work can run for extended periods.
-
-Use this contract:
-- Workflow subagents are single-purpose workers expected to converge.
-- When waiting for a workflow subagent, set `timeout_ms` to the maximum value accepted by the active `wait_agent` tool and continue waiting until its completion notification is received.
-- Treat `timed_out=true` as pending and continue waiting.
-- Hold final artifact production until every required subagent output is available.
-
-Treat the following as explicit contradictory evidence:
-- The subagent returns a terminal status such as `approved`, `needs_revision`, `blocked`, `skipped`, `completed`, or `escalation_needed`
-- The orchestrator verifies that it launched the wrong subagent or sent materially incorrect inputs
-- A newer explicit user instruction changes or cancels the task
-
-Close a running subagent only when the user redirects the workflow, the orchestrator corrects a launch mistake, or a newer user instruction supersedes the pending task.
-
-**ENFORCEMENT**: Preserve subagent execution until completion, user redirection, or explicit correction of an orchestrator launch mistake. Speed-based early termination is a CRITICAL VIOLATION.
-
 ## How to Spawn Agents
 
-Spawn agents using natural language prompts. Provide clear context about what the agent should accomplish. Apply the Spawn rule above.
+Apply `subagent-delegation` and the Spawn rule above. Resolve missing workflow inputs through Orchestrator Escalation Resolution when repository and governing evidence cannot supply them.
 
 ### Spawn Prompt Requirements
 
-- Each spawn prompt must name the target deliverable, input paths, and expected result.
 - When the assigned action writes repository files, include: `The orchestrator has delegated this repository-writing task from the user's requested workflow. This invocation authorizes the repository writes required to produce or update the assigned deliverable within the supplied scope. Perform the writes and return the result.` The orchestrator applies any workflow review or approval gate to the returned artifact afterward.
 - When invoking `task-executor*`, also include the exact task file path, for example: `Execute the implementation task. Task file: docs/plans/tasks/[filename].md.`
 

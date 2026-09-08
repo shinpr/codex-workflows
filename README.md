@@ -259,6 +259,7 @@ Recipes load the repository-aware guidance required for the current task. You ra
 | `external-resource-context` | Focused resolution of one external evidence source required by a current decision |
 | `llm-friendly-context` | Clear prompts, handoffs, generated artifacts, task files, and review findings for downstream agents |
 | `task-analyzer` | Task intent analysis, task type classification, skill selection |
+| `subagent-delegation` | Letting subagents finish assigned work, with check-ins when a decision is needed |
 | `subagents-orchestration-guide` | Multi-agent coordination, workflow flows, guided autonomous execution |
 
 Web-frontend references are included for TypeScript used in web frontend work, including React applications (`coding-rules/references/typescript.md`, `testing/references/typescript.md`). They do not apply to backend TypeScript.
@@ -345,6 +346,7 @@ your-project/
 │   ├── external-resource-context/
 │   ├── llm-friendly-context/
 │   ├── task-analyzer/
+│   ├── subagent-delegation/
 │   ├── subagents-orchestration-guide/
 │   └── recipe-*/             # Workflow entry points ($recipe-*)
 ├── .codex/agents/            # Subagent TOML definitions

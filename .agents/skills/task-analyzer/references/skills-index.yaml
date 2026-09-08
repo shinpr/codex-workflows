@@ -159,9 +159,20 @@ skills:
     references:
       - "references/e2e-design.md"
 
+  subagent-delegation:
+    skill: "subagent-delegation"
+    tags: [subagents, delegation, spawning, waiting, intervention, consultation, ad-hoc-agents, custom-agents]
+    typical-use: "Assigning work and waiting for completion or child-initiated consultation from any subagent"
+    size: small
+    key-references:
+      - "Assigned scope and parent-owned decisions"
+    sections:
+      - "Assignment"
+      - "Waiting and Intervention"
+
   subagents-orchestration-guide:
     skill: "subagents-orchestration-guide"
-    tags: [orchestration, workflow, subagents, update-plan, context-isolation, autonomous-execution, guided-autonomous-execution, planning, design-flow, implementation-flow, environment-preparation]
+    tags: [orchestration, workflow, specialist-routing, approval-gates, update-plan, context-isolation, autonomous-execution, guided-autonomous-execution, planning, design-flow, implementation-flow, environment-preparation]
     typical-use: "Orchestrating specialists through implementation workflows, approval points, optional environment preparation, and autonomous execution"
     size: large
     key-references:

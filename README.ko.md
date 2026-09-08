@@ -258,6 +258,7 @@ PRD, ADR, UI Spec, Design Doc은 장기 프로젝트 문서이므로 커밋해�
 | `external-resource-context` | 현재 결정에 필요한 외부 근거 하나만 선별해 확인 |
 | `llm-friendly-context` | 후속 에이전트를 위한 명확한 프롬프트, 인수인계, 산출물, Task File, 리뷰 의견 |
 | `task-analyzer` | 작업 의도 분석, 유형 분류, 스킬 선택 |
+| `subagent-delegation` | 하위 에이전트에 작업 완료까지 맡기고, 판단이 필요할 때 상의 |
 | `subagents-orchestration-guide` | 다중 에이전트 조율, 워크플로 진행, 가이드에 따른 자율 실행 |
 
 React 애플리케이션을 포함한 웹 프런트엔드 TypeScript용 참고 자료(`coding-rules/references/typescript.md`, `testing/references/typescript.md`)도 포함됩니다. 백엔드 TypeScript에는 적용되지 않습니다.
@@ -344,6 +345,7 @@ your-project/
 │   ├── external-resource-context/
 │   ├── llm-friendly-context/
 │   ├── task-analyzer/
+│   ├── subagent-delegation/
 │   ├── subagents-orchestration-guide/
 │   └── recipe-*/             # 워크플로 진입점($recipe-*)
 ├── .codex/agents/            # 하위 에이전트 TOML 정의

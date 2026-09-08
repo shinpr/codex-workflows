@@ -258,6 +258,7 @@ PRD、ADR、UI Spec和Design Doc属于需要长期保存的项目文档，应当
 | `external-resource-context` | 针对当前决策，只查找并确认所需的一项外部依据 |
 | `llm-friendly-context` | 供后续代理使用的清晰提示、交接内容、生成文档、Task File和评审意见 |
 | `task-analyzer` | 分析任务意图、任务分类和技能选择 |
+| `subagent-delegation` | 让子代理完成分配的工作，在需要决策时发起讨论 |
 | `subagents-orchestration-guide` | 多代理协调、工作流推进和按既定指引自主执行 |
 
 另有面向Web前端TypeScript（包括React应用）的参考资料：`coding-rules/references/typescript.md`和`testing/references/typescript.md`。这些内容不适用于后端TypeScript。
@@ -344,6 +345,7 @@ your-project/
 │   ├── external-resource-context/
 │   ├── llm-friendly-context/
 │   ├── task-analyzer/
+│   ├── subagent-delegation/
 │   ├── subagents-orchestration-guide/
 │   └── recipe-*/             # 工作流入口（$recipe-*）
 ├── .codex/agents/            # 子代理TOML定义

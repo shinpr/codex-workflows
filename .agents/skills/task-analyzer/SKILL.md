@@ -33,7 +33,9 @@ Extract task tags and match them to `skills-index.yaml`. Consider implicit relat
 | Code implementation or refactoring | `coding-rules`, `testing` |
 | Design or implementation planning | `documentation-criteria`, `implementation-approach` |
 | Real boundary proof | `integration-e2e-testing` |
-| Agent handoff or multi-agent workflow | `llm-friendly-context`, `subagents-orchestration-guide` |
+| Spawning, waiting for, or steering a subagent | `subagent-delegation` |
+| Agent handoff content | `llm-friendly-context` |
+| Workflow phases, specialist routing, or approval gates | `subagents-orchestration-guide` |
 
 Select skills in this priority order:
 
