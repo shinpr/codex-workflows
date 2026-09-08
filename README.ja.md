@@ -258,6 +258,7 @@ PRD、ADR、UI Spec、Design Docは長期的に残すプロジェクト文書で
 | `external-resource-context` | 現在の判断に必要な外部情報源を1つに絞って確認する方法 |
 | `llm-friendly-context` | 後続エージェントが迷わず使える、明確なプロンプト、引き継ぎ、生成物、Task File、レビュー指摘 |
 | `task-analyzer` | タスクの意図分析、種類の分類、スキル選択 |
+| `subagent-delegation` | サブエージェントに作業を最後まで任せ、判断が必要なときに相談を受ける |
 | `subagents-orchestration-guide` | マルチエージェントの連携、ワークフローの進行、指針に沿った自律実行 |
 
 Webフロントエンドで使うTypeScript向けには、Reactアプリケーションを含む追加資料（`coding-rules/references/typescript.md`、`testing/references/typescript.md`）も同梱されています。バックエンドTypeScriptには適用されません。
@@ -344,6 +345,7 @@ your-project/
 │   ├── external-resource-context/
 │   ├── llm-friendly-context/
 │   ├── task-analyzer/
+│   ├── subagent-delegation/
 │   ├── subagents-orchestration-guide/
 │   └── recipe-*/             # ワークフローの入口（$recipe-*）
 ├── .codex/agents/            # サブエージェントのTOML定義

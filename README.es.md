@@ -258,6 +258,7 @@ Cada flujo carga las reglas adaptadas al repositorio que necesita la tarea actua
 | `external-resource-context` | Consulta acotada de una fuente externa necesaria para una decisión concreta |
 | `llm-friendly-context` | Contexto claro para los agentes que lo usarán después: prompts, traspasos, artefactos generados, Task Files y observaciones de revisión |
 | `task-analyzer` | Análisis de intención, clasificación de tareas y selección de skills |
+| `subagent-delegation` | Delegar el trabajo a subagentes hasta que lo terminen, con consultas cuando haga falta una decisión |
 | `subagents-orchestration-guide` | Coordinación multiagente, gestión de flujos y ejecución autónoma guiada |
 
 También se incluyen referencias para TypeScript de frontend web, incluidas aplicaciones React (`coding-rules/references/typescript.md` y `testing/references/typescript.md`). No se aplican a TypeScript de backend.
@@ -344,6 +345,7 @@ your-project/
 │   ├── external-resource-context/
 │   ├── llm-friendly-context/
 │   ├── task-analyzer/
+│   ├── subagent-delegation/
 │   ├── subagents-orchestration-guide/
 │   └── recipe-*/             # Puntos de entrada ($recipe-*)
 ├── .codex/agents/            # Definiciones TOML de subagentes

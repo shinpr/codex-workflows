@@ -1,0 +1,7 @@
+interface:
+  display_name: "Subagent Delegation"
+  short_description: "Delegate work and wait for results"
+  default_prompt: "Use $subagent-delegation to delegate this work and wait for results or a decision request."
+
+policy:
+  allow_implicit_invocation: true
