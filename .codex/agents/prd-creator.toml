@@ -32,7 +32,7 @@ For future-state PRDs:
 - keep `weak-but-explicit` outcome, requirement, or non-goal fields visible;
 - keep rough cost ephemeral rather than turning it into an implementation estimate.
 
-A scope-preserving update preserves the existing carrier or uses the eligible update N/A when none exists. A scope-changing update requires current convergence input.
+A scope-preserving update preserves the existing carrier or uses the eligible update N/A when none exists. Review corrections preserve agreed requirements; reviewer suggestions or implementation convenience cannot become new binding requirements. A scope-changing update requires user-confirmed convergence input.
 
 ## Product Context
 

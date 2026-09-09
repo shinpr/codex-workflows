@@ -58,7 +58,7 @@ Requirements: $ARGUMENTS
 Spawn requirement-analyzer with the original requirements. Treat its request signals, scope evidence, cost evidence, and questions as material; the orchestrator determines requirements, scale, UI scope, and ADR routing.
 
 ### Step 2: Codebase Analysis
-Spawn codebase-analyzer agent: "Analyze the existing codebase to provide compact decision materials for frontend requirement confirmation, ADR selection, minimal Design Doc creation, and verification. requirement_analysis: [Step 1 scopeEvidence]. requirements: [original user requirements]. layer: frontend. target_paths: [Step 1 scopeEvidence.affectedFiles]. focus_areas: component hierarchy, state management, UI interactions, data fetching."
+Spawn codebase-analyzer agent: "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for frontend requirement confirmation, ADR selection, minimal Design Doc creation, and verification. requirement_analysis: [Step 1 scopeEvidence]. requirements: [original user requirements]. layer: frontend. target_paths: [Step 1 scopeEvidence.affectedFiles]. focus_areas: responsibility ownership, state/data paths, contracts, and reuse."
 
 ### Step 3: Scope Confirmation
 After codebase-analyzer returns, confirm requirements, determine Structural Scale, and collect candidate ADR decision points:
@@ -104,7 +104,7 @@ When `prototype_path` is available, apply the subagents-orchestration-guide UI S
 ### Step 6: UI Fact Gathering Phase
 Use the prototype path as an input when one was provided; otherwise set `prototype_path` to unavailable.
 
-Spawn ui-analyzer agent: "Gather UI facts for frontend design. requirement_analysis: { affectedFiles: [confirmed frontend affected files] }. requirements: [Step 3 confirmed current requirements]. target_paths: [confirmed frontend affected files and directories]. target_components: [frontend target components when known]. ui_spec_path: [path if an existing UI Spec covers this feature]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected in Step 4, or []]. Analyze component structure, props patterns, CSS layout, sourced state displays, accessibility, generated artifacts, and candidate write set."
+Spawn ui-analyzer agent: "exploration_mode: [mode from Analysis Assignment]. prior_evidence: [relevant Step 2 findings]. Gather UI facts for frontend design. requirement_analysis: { affectedFiles: [confirmed frontend affected files] }. requirements: [Step 3 confirmed current requirements]. target_paths: [confirmed frontend affected files and directories]. target_components: [frontend target components when known]. ui_spec_path: [path if an existing UI Spec covers this feature]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected in Step 4, or []]. focus_areas: [remaining rendering, interaction, and visual questions]."
 
 ### Step 7: UI Specification Phase
 After UI fact gathering completes, create the UI Specification:
@@ -122,13 +122,13 @@ Create appropriate design documents from confirmed scope and decision materials:
 
   **[STOP -- BLOCKING when ADRs were created]** Wait for one user approval of the reviewed ADR batch before creating the Design Doc.
 
-- Record every approved ADR file as `Accepted` when ADRs were created. For Design Doc, spawn technical-designer-frontend with `document_to_create: DesignDoc`, `adr_paths: [accepted ADR paths or []]`, confirmed requirements, approved UI Spec, and `decision_materials: [only analysis material that changes reuse, implementation validity, a selected ADR decision, a preserved contract, or verification]`. The confirmed requirements define scope, and selected ADR decisions constrain their relevant technical questions.
+- Record every approved ADR file as `Accepted` when ADRs were created. For Design Doc, spawn technical-designer-frontend with `document_to_create: DesignDoc`, `adr_paths: [accepted ADR paths or []]`, confirmed requirements, approved UI Spec, and `decision_materials: [only analysis material that changes reuse, simplification, implementation validity, a selected ADR decision, a preserved contract, or verification]`. The confirmed requirements define scope, and selected ADR decisions constrain their relevant technical questions.
 - Spawn code-verifier agent: "Verify Design Doc against code. doc_type: design-doc. document_path: [document path]. verbose: false."
-- Apply Review Resolution to every code-verifier discrepancy. Pass only the `apply` discrepancies to technical-designer-frontend in update mode, rerun code-verifier, and carry the resolved verification summary, declines with reasons, and material limitations after the `apply` set becomes empty.
+- Apply Review Resolution to every code-verifier discrepancy, using technical-designer-frontend in update mode for selected corrections and its bounded rerun rule. Carry the resolved verification summary, declines with reasons, and material limitations after the `apply` set becomes empty.
 - Review the Design Doc: Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. review_context: creation. target: [Design Doc path]. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. decision_materials: [only analysis material that constrains this design]. verification_resolution: [resolved code-verifier evidence]."
 - Resolve `needs_revision` through Review Resolution with technical-designer-frontend, then review the updated Design Doc. Route governing-source contradictions through Orchestrator Escalation Resolution. Reach the user approval stop after review succeeds.
 
-**[STOP -- BLOCKING]** Present the Design Doc and its recorded trade-offs, then obtain user approval.
+**[STOP -- BLOCKING]** Obtain user approval using the shared Design Approval alignment.
 **CANNOT proceed until user explicitly approves the design document.**
 
 ENFORCEMENT: Every stop point MUST be respected. Skipping user approval invalidates the entire workflow.

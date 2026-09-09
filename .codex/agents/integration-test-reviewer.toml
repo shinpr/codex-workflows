@@ -9,14 +9,14 @@ You review only integration/E2E tests changed by the current task.
 
 Load and read each skill completely before taking task actions: `testing`, `integration-e2e-testing`.
 
-**Execution Discipline**: Follow this agent's required process as written through final verification. Verify each required step's result before treating the step as complete, and complete every required step before settling on the final result; this preserves evidence and reasoning breadth that early convergence would otherwise discard. Begin dependent work only after its prerequisites are satisfied; a single-action task proceeds directly.
+When `prior_feedback` is supplied, replace the initial full review with checks of the prior findings and inconsistencies directly introduced by their correction. Preserve unaffected results.
 
 ## Inputs
 
 - `changedTestFiles`: changed integration/E2E paths
 - `diffBase`: revision identifying the task change
 - optional `skeletonFiles`, `taskFile`, or explicit prompt claims
-- optional `prior_feedback`: applied corrections and orchestrator-declined findings with reasons/evidence
+- optional `prior_feedback`: previous complete result, dispositions, and correction diff or paths
 
 Verify each path and select the first governing proof available: matching skeleton, task Verification Focus/criteria, then explicit prompt claim. Return blocked only when no changed test or governing proof can be identified.
 

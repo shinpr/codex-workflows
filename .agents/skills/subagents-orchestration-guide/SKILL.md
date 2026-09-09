@@ -69,6 +69,12 @@ Apply the Spawn rule above. Resolve missing workflow inputs that affect the next
 - When the assigned action writes repository files, include: `The orchestrator has delegated this repository-writing task from the user's requested workflow. This invocation authorizes the repository writes required to produce or update the assigned deliverable within the supplied scope. Perform the writes and return the result.` The orchestrator applies any workflow review or approval gate to the returned artifact afterward.
 - When invoking `task-executor*`, also include the exact task file path, for example: `Execute the implementation task. Task file: docs/plans/tasks/[filename].md.`
 
+### Analysis Assignment
+
+For `codebase-analyzer` and `ui-analyzer`, determine the effective child model, including known inheritance. Pass `exploration_mode: autonomous` only for `gpt-6-astra`; pass `guided` for every other or unknown model.
+
+Assign distinct questions: codebase analysis owns responsibility/data/contracts/reuse; UI analysis owns rendering/interaction/visual evidence. Pass existing relevant findings as `prior_evidence` to reuse them. Carry evidence-backed `simplifications` into design or adjustment as candidates, retaining their conditions; outcome or approved-decision changes remain user decisions.
+
 ## Explicit Stop Points [MANDATORY]
 
 Autonomous execution MUST stop and wait for user input at these points.
@@ -84,6 +90,10 @@ Autonomous execution MUST stop and wait for user input at these points.
 
 **ENFORCEMENT**: After batch approval, autonomous execution proceeds without stops until completion or Orchestrator Escalation Resolution requires user input. Skipping stop points is a CRITICAL VIOLATION.
 
+### Design Approval
+
+At the existing design approval stop, read the current PRD (when present) and Design Doc(s). Derive the minimum user-visible value and briefly state it alongside the major changes included, making internal mechanism changes or refactoring visible. Ask whether this MVP and scope match the user's intent. Keep this to a short alignment message, rather than design detail or a justification of necessity. Apply corrections through the existing scope-change flow.
+
 ### Common Status Meanings
 
 Use agent statuses as routing signals, not as a parser contract. Interpret the returned artifact and evidence when a field is absent or worded differently.
@@ -98,11 +108,11 @@ Use agent statuses as routing signals, not as a parser contract. Interpret the r
 
 ### Review Resolution
 
-The orchestrator loads and applies `reviewee-judgment` through disposition selection before reviewer findings or verifier discrepancies generate author or implementation work. Use [references/review-resolution.md](references/review-resolution.md) to delegate `apply` dispositions and route reruns and handoff. Resolve returned evidence or decision requests through Orchestrator Escalation Resolution.
+Apply [references/review-resolution.md](references/review-resolution.md) to design and post-implementation reviews. Pass the governing requirements and accepted decisions to reviewers and correction authors.
 
 ### Orchestrator Escalation Resolution [MANDATORY]
 
-Apply this procedure when a workflow result cannot support the next action, including `escalation_needed`, `blocked`, a missing artifact, or contradictory evidence. The response returns control to the orchestrator; it is not itself a human stop.
+Apply this procedure when a workflow result cannot support the next action, including `escalation_needed`, `blocked`, a missing artifact, or contradictory evidence. The response returns control to the orchestrator; it is not itself a human stop. For review results, Review Resolution still governs scope, completed reviewers, and rerun boundaries.
 
 1. Resolve the issue from approved requirements, governing artifacts, repository evidence, and prior agent outputs. Choose the smallest resolution that preserves approved intent.
 2. Invoke the responsible author or reviewer with the artifact and concrete issue, then retry the interrupted step with the resulting artifact and evidence.
@@ -190,7 +200,7 @@ Flow rules:
 - After analysis, apply the Choice filter to each `candidateDecisionPoint`, then apply the Durability filter to the retained set. Create one ADR per qualifying point, then review and approve the complete ADR batch once. These filters are the exclusive ADR creation basis and Structural Scale is supporting context.
 - Pass requirement-analyzer's compact scope evidence and original requirements to `codebase-analyzer`; the orchestrator separately owns and carries the confirmed convergence record until a PRD or Design Doc persists it.
 - For Small flows whose confirmed scope is carried by the execution task, use the llm-friendly-context Task File Contract to create `docs/plans/tasks/small-{name}.md`. Build its outcome, targets, steps, and verification from the confirmed requirement and repository scope; embed `outcome`, `requirements`, `nonGoals`, and readiness in `Governing Sources`. Pass the exact file to the layer-appropriate executor. Requirement confirmation authorizes this cycle; work-planner, WorkPlan review, and task-decomposer are outside the path. Remove the task file after Post-Implementation Review passes.
-- Pass only codebase-analyzer material that changes reuse, option validity or selection, lifecycle cost, a preserved contract, design, or verification to the relevant ADR/Design Doc owner.
+- Pass only codebase-analyzer material that changes reuse, simplification, option validity or selection, lifecycle cost, a preserved contract, design, or verification to the relevant ADR/Design Doc owner.
 - Pass a Design Doc path to `code-verifier`, apply Review Resolution to its discrepancies, and pass only resolved verification evidence to `document-reviewer`.
 - Fullstack layer sequencing is defined in `references/monorepo-flow.md`
 - Run WorkPlan review after every Medium/Large work plan creation or update and before batch approval. Resolve `needs_revision` through Review Resolution with work-planner, then ask the user to approve the reviewed plan. Route governing-source contradictions through Orchestrator Escalation Resolution.
@@ -250,7 +260,7 @@ Use the task loop defined in the autonomous execution diagram above. The canonic
 | code-reviewer | `verdict` is `pass` | `verdict` is `needs-improvement` or `needs-redesign` | `verdict` is `blocked` |
 | security-reviewer | `status` is `approved` | `status` is `needs_revision` | `status` is `blocked` |
 
-Run code-reviewer against the complete implementation change set and its governing Design Docs, or the active task file for a Small flow. When an applied correction changes code, rerun it with `prior_feedback` containing the previous complete result, finding dispositions, and the correction paths or diff; its Rerun Boundary preserves unaffected evidence. The Small path also passes its active task file to security-reviewer as `type: task-file`. Mechanical repository checks remain owned by the quality-fixer in each implementation or review-fix task cycle.
+Run code-reviewer against the complete implementation change set and its governing Design Docs, or the active task file for a Small flow. Rerun only a reviewer that has not passed, with `prior_feedback` containing its previous complete result, finding dispositions, and correction paths or diff; preserve passed reviewers and unaffected evidence. The Small path also passes its active task file to security-reviewer as `type: task-file`. Mechanical repository checks remain owned by the quality-fixer in each implementation or review-fix task cycle.
 
 Apply Review Resolution to reviewer findings. Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
 
@@ -273,7 +283,7 @@ Apply Review Resolution to reviewer findings. Apply a security-reviewer finding 
 | `requirement-analyzer` | orchestrator requirement hearing and `codebase-analyzer` | request signals plus compact scope and cost evidence; the orchestrator decides convergence and scale |
 | convergence record | PRD or Design Doc owner | `prd-creator` persists PRD fields; `technical-designer*` persists Design Doc fields when no PRD exists; both record open requirement fields while cost remains ephemeral |
 | convergence record | Small-flow implementation | compact record in the task file's `Governing Sources` when no PRD or Design Doc exists |
-| `codebase-analyzer` | orchestrator and `technical-designer*` | relevant `reuse`, `invalidations`, `candidateDecisionPoints`, `verification`, decision-changing `unknowns`, and material limitations; the orchestrator passes confirmed ADR points to the designer |
+| `codebase-analyzer` | orchestrator and `technical-designer*` | relevant `simplifications`, `reuse`, `invalidations`, `candidateDecisionPoints`, `verification`, decision-changing `unknowns`, and material limitations; the orchestrator passes confirmed ADR points to the designer |
 | `technical-designer*` | ADR batch reviewer | complete ADR `paths[]` from the invocation |
 | `technical-designer*` | `code-verifier` | Design Doc path |
 | `code-verifier` | orchestrator Review Resolution, then technical designer or document reviewer | `apply` discrepancies for the author; declined reasons and resolved verification evidence for the next reviewer |

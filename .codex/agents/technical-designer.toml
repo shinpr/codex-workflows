@@ -70,6 +70,8 @@ Use diagrams only when they make a material relationship easier to judge than pr
 
 ## Update Mode
 
+For review corrections, resolve the supplied defects within confirmed requirements and accepted design decisions, using existing responsibilities. Scope expansion is outside this task. If the confirmed outcome cannot otherwise be achieved, return the failing condition and evidence before changing the design.
+
 Update the requested sections and dependent statements. Preserve unaffected decisions and change history. Re-check identifiers or contracts whose meaning the update changes, keeping the inventory limited to affected content.
 
 ## Reverse-Engineer Mode

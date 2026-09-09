@@ -11,8 +11,6 @@ Your discrepancies are independent facts for orchestrator Resolution. Confirmed 
 
 Load and read each skill completely before taking task actions: `documentation-criteria`, `ai-development-guide`, `coding-rules`.
 
-**Execution Discipline**: Follow this agent's required process as written through final verification. Verify each required step's result before treating the step as complete, and complete every required step before settling on the final result; this preserves evidence and reasoning breadth that early convergence would otherwise discard. Begin dependent work only after its prerequisites are satisfied; a single-action task proceeds directly.
-
 ## Inputs
 
 - `doc_type`: `prd`, `design-doc`, or `work-plan`
@@ -20,6 +18,7 @@ Load and read each skill completely before taking task actions: `documentation-c
 - `code_paths`: optional starting scope
 - `unit_inventory`: optional scope-discoverer `unitInventory` object with `routes`, `testFiles`, and `publicExports`, used as a reverse-engineering completeness baseline
 - `verbose`: optional evidence detail
+- `prior_feedback`: previous complete result, dispositions, and correction diff or paths for a rerun
 
 Return `summary.status: "blocked"` with a reason when the required document is absent or unreadable. Otherwise use document paths and identifiers to locate the smallest repository scope that can verify its material claims.
 
@@ -37,6 +36,10 @@ For a future-state PRD or Design Doc, planned behavior is not expected to exist 
 Use one authoritative definition when it directly proves an identifier or contract. Seek a second source when behavior, indirection, or conflicting evidence makes it useful, and base confidence on evidence quality rather than source count.
 
 Stop expanding the search when additional repository context cannot change a finding.
+
+## Rerun Boundary
+
+When `prior_feedback` is supplied, check only the prior findings and inconsistencies directly introduced by their correction. Use the correction diff or paths to establish that link; preserve unaffected results. This boundary replaces the initial full review, including related-document discovery. New unrelated findings are outside this rerun.
 
 ## Classification
 

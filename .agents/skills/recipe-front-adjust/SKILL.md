@@ -36,11 +36,11 @@ Identify whether the requested adjustment depends on an external design or verif
 
 Spawn `ui-analyzer`:
 
-`requirement_analysis: { affectedFiles: [files inferred from request], purpose: "UI adjustment", technicalConsiderations: [] }. requirements: [adjustment request]. target_paths: [paths named or inferred from request]. target_components: [components named in request]. ui_spec_path: [path if available]. externalResourceRefs: [{label, featureIdentifier} selected in Step 1, or []]. Analyze existing UI code and populate candidateWriteSet[].`
+`exploration_mode: [mode from Analysis Assignment]. requirement_analysis: { affectedFiles: [files inferred from request], purpose: "UI adjustment", technicalConsiderations: [] }. requirements: [adjustment request]. target_paths: [paths named or inferred from request]. target_components: [components named in request]. ui_spec_path: [path if available]. externalResourceRefs: [{label, featureIdentifier} selected in Step 1, or []]. Analyze existing UI code and populate candidateWriteSet[].`
 
 ### Step 3: Resolve Write Set and Route
 
-Resolve the smallest write set supported by the request, `candidateWriteSet[]`, and repository evidence. Search by component ownership and call sites when the first candidates are incomplete; ask the user only when the requested UI target still cannot be identified.
+Resolve the smallest write set supported by the request, `candidateWriteSet[]`, repository evidence, and applicable `simplifications[]` with their conditions. Search by component ownership and call sites when the first candidates are incomplete; ask the user only when the requested UI target still cannot be identified.
 
 - Existing component architecture, state ownership, routing, and API contracts remain unchanged: proceed to Step 4.
 - Any of those design contracts changes: hand the request, resolved write set, and relevant `focusAreas[]` to `recipe-front-design`, then end this recipe.
@@ -49,7 +49,7 @@ Concise adjustment context:
 - request
 - resolved write set
 - relevant `focusAreas[]`
-- relevant external resource summaries and access methods
+- relevant external resource entries with summaries and access methods
 
 ### Step 4: Adjustment and Verification
 

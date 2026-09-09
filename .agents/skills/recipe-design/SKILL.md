@@ -70,7 +70,7 @@ Execute the process below within design scope.
 Spawn requirement-analyzer with the original requirements. Treat exact user quotes according to their returned signal type: implementation requirements and exclusions can enter confirmed scope; evaluation requests, speculation, and prescribed mechanisms remain non-binding until the orchestrator resolves them against the user's wording. Treat scope evidence, cost evidence, and questions as material; the orchestrator determines requirements, scale, and ADR routing.
 
 ### Step 2: Codebase Analysis
-Spawn codebase-analyzer agent: "Analyze the existing codebase to provide compact decision materials for requirement confirmation, ADR selection, minimal Design Doc creation, and verification. requirement_analysis: [Step 1 scopeEvidence]. requirements: $ARGUMENTS. target_paths: [Step 1 scopeEvidence.affectedFiles]."
+Spawn codebase-analyzer agent: "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for requirement confirmation, ADR selection, minimal Design Doc creation, and verification. requirement_analysis: [Step 1 scopeEvidence]. requirements: $ARGUMENTS. target_paths: [Step 1 scopeEvidence.affectedFiles]."
 
 ### Step 3: Scope Confirmation
 After codebase-analyzer returns, confirm the requirements, determine Structural Scale, and identify qualifying ADR decision points:
@@ -107,16 +107,16 @@ When Step 3 marked an existing PRD for update, spawn prd-creator in update mode 
 **[STOP — BLOCKING when a PRD was updated]** Wait for user approval of the updated PRD.
 
 Create documents according to `documentTypeRationale`:
-- When `adrDecisionPoints` is non-empty, spawn technical-designer once with `document_to_create: ADRBatch`, `decision_points: [adrDecisionPoints]`, confirmed requirements, and `decision_materials: [only the Step 2 reuse, invalidation, option/cost, contract, and decision-changing unknown material relevant to those points]`. Review all returned `paths[]` in one document-reviewer invocation using `doc_type: ADRBatch` and `targets: [all paths]`. Apply Review Resolution to the batch, rerun the batch review when an accepted correction changes a file, then present one ADR-batch approval request.
+- When `adrDecisionPoints` is non-empty, spawn technical-designer once with `document_to_create: ADRBatch`, `decision_points: [adrDecisionPoints]`, confirmed requirements, and `decision_materials: [only the Step 2 simplification, reuse, invalidation, option/cost, contract, and decision-changing unknown material relevant to those points]`. Review all returned `paths[]` in one document-reviewer invocation using `doc_type: ADRBatch` and `targets: [all paths]`. Apply Review Resolution to the batch, rerun the batch review when an accepted correction changes a file, then present one ADR-batch approval request.
 
 **[STOP — BLOCKING when ADRs were created]** Wait for one user approval of the reviewed ADR batch before creating the Design Doc.
 
-Record every approved ADR file as `Accepted` when ADRs were created. Spawn technical-designer with `document_to_create: DesignDoc`, `adr_paths: [accepted ADR paths or []]`, the confirmed requirement carrier, and `decision_materials: [only Step 2 material that changes reuse, implementation validity, a selected ADR decision, a preserved contract, or verification]`. The confirmed requirements define scope, and selected ADR decisions constrain their relevant technical questions.
+Record every approved ADR file as `Accepted` when ADRs were created. Spawn technical-designer with `document_to_create: DesignDoc`, `adr_paths: [accepted ADR paths or []]`, the confirmed requirement carrier, and `decision_materials: [only Step 2 material that changes reuse, simplification, implementation validity, a selected ADR decision, a preserved contract, or verification]`. The confirmed requirements define scope, and selected ADR decisions constrain their relevant technical questions.
 
 ### Step 5: Code Verification
 Spawn code-verifier agent: "Verify the Design Doc against the current codebase. document_path: [Design Doc path from Step 4]. doc_type: design-doc."
 
-Apply Review Resolution to every discrepancy before document review. Pass only the `apply` discrepancies to technical-designer in update mode, then rerun code-verifier. When the `apply` set is empty, carry the resolved verification summary, declines with reasons, and material limitations to Step 6.
+Apply Review Resolution to every discrepancy before document review, using technical-designer in update mode for selected corrections and its bounded rerun rule. When the `apply` set is empty, carry the resolved verification summary, declines with reasons, and material limitations to Step 6.
 
 ### Step 6: Document Review
 Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. review_context: creation. target: [Design Doc path]. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. decision_materials: [only Step 2 material that constrains this design]. verification_resolution: [resolved Step 5 evidence]."
@@ -130,6 +130,8 @@ Route the result before consistency verification:
 Spawn design-sync agent: "Verify consistency of the design document with other existing design documents and project constraints."
 
 **Note**: design-sync returns `sync_status: "SKIPPED"` when only 1 Design Doc exists. This is distinct from `NO_CONFLICTS` and MUST be reported as such to the user.
+
+Request user approval using the shared Design Approval alignment.
 
 ## Completion Criteria
 

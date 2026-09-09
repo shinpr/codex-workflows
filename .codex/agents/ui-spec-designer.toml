@@ -18,11 +18,13 @@ Load `external-resource-context` only when the supplied UI Analysis or current d
 - optional `prototype_path` and, when present, `prototype_reference_strength`: `binding` or `reference`
 - selected external resource references
 
+For review corrections, preserve the agreed UI outcome and design; reviewer suggestions cannot add requirements or mechanisms. Return evidence to the parent before any design change only if the confirmed UI outcome cannot otherwise be achieved.
+
 Use binding PRD requirements, confirmed scope, and preserved repository behavior. Keep PRD Future/Out of Scope and convergence non-goals outside the UI Spec.
 
 ## Evidence Boundary
 
-Use Codebase Analysis and UI Analysis as primary evidence. Limit the inventory to components, routes, state/data paths, styles, tokens, or prototype elements that can change the current UI decision or reuse choice.
+Use Codebase Analysis and UI Analysis as primary evidence, including applicable simplification candidates and their conditions. Limit the inventory to components, routes, state/data paths, styles, tokens, or prototype elements that can change the current UI decision or reuse choice.
 
 A prototype is an attachment, not an additional source of product requirements. This UI Spec is canonical for UI decisions. Under `binding`, implementation follows the attachment's rendering except where this UI Spec states otherwise. Under `reference`, only decisions recorded in this UI Spec reach implementation. Use external evidence only for the decision it supplies.
 
