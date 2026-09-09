@@ -1,6 +1,6 @@
 ---
 name: subagent-delegation
-description: "Sets delegation scope, child-initiated consultation, and completion waiting. Use when spawning, waiting for, or steering any subagent, including a single ad hoc agent or a custom workflow agent."
+description: "Sets delegation scope, completion waiting, and evidence-based intervention. Use when spawning, waiting for, or steering any subagent, including a single ad hoc agent or a custom workflow agent."
 ---
 
 # Subagent Delegation
@@ -24,8 +24,10 @@ Research and design also use completion delegation when the child can make the r
 
 ## Waiting and Intervention
 
-Minimize total parent-and-child token cost while meeting required quality and user time constraints. While the child works, perform only necessary work outside its delegated responsibility, or wait for its notification. Notification-driven subagent waits resume on child notifications or user input, preserving the user's ability to intervene; the 60-second blocking-wait guidance does not apply to these interruptible waits. The user prioritizes preserving their usage budget over routine progress updates. Use waits longer than 60 seconds, increasing the duration with the child's delegated autonomy and expected task duration. Shorten it only for a concrete earlier parent action whose expected benefit outweighs the extra coordination cost. A wait timeout or routine progress notification leaves the assignment pending; continue waiting.
+Minimize total parent-and-child token cost while meeting required quality and user time constraints. While the child works, perform only necessary work outside its delegated responsibility, or wait for its notification. Notification-driven subagent waits resume on child notifications or user input, preserving the user's ability to intervene; the 60-second blocking-wait guidance does not apply to these interruptible waits. The user prioritizes preserving their usage budget over routine progress updates. Use waits longer than 60 seconds, increasing the duration with the child's delegated autonomy and expected task duration. Shorten it only for a concrete earlier parent action whose expected benefit outweighs the extra coordination cost.
 
-The child initiates consultation. Inspect its deliverable after receiving the completed result and apply the required verification and review. Intervene during execution for a child decision request, a user change or cancellation, or a material assignment error learned through other necessary work. Base intervention on these notifications and independently acquired evidence.
+On a timeout or notification, assess the available evidence of progress against the expected task duration. After a long wait, obtain enough information to judge whether continued waiting is useful: ask the child for its current operation, latest results, and next step when the available evidence is insufficient. A running status alone does not establish progress. Continue long waits when the evidence supports the child's approach.
 
-Preserve the running assignment until completion or a correction or redirection makes it obsolete. Elapsed time alone leaves it pending. Receive every required child result before producing the final deliverable.
+Intervene during execution for a child decision request, a user change or cancellation, a material assignment error learned through other necessary work, or evidence that the child's approach is ineffective or progress has stalled. Investigate enough to provide an actionable correction or diagnostic approach before resuming the wait. Return in-scope execution to the child once the next step addresses the problem.
+
+Preserve the running assignment until completion or a correction or redirection makes it obsolete. Inspect the deliverable after receiving the completed result and apply the required verification and review. Receive every required child result before producing the final deliverable.
