@@ -73,19 +73,19 @@ Before spawning, replace every context placeholder with a concrete context objec
 
 **Backend Design Doc**:
 **Agent**: Spawn technical-designer
-> "Create a backend Design Doc. context: [context]. adr_paths: [accepted ADR paths]. decision_materials: [backend analysis material that changes reuse, validity, a selected decision, contract, or verification]. Reference approved UI Spec at [path] only for displayed values whose source data crosses a backend-owned contract."
+> "Create a backend Design Doc. context: [context]. adr_paths: [accepted ADR paths]. decision_materials: [backend analysis material that changes reuse, simplification, validity, a selected decision, contract, or verification]. Reference approved UI Spec at [path] only for displayed values whose source data crosses a backend-owned contract."
 
 **Backend Codebase Analysis**:
 **Agent**: Spawn codebase-analyzer
-> "Analyze the existing codebase to provide compact decision materials for requirement confirmation, ADR selection, minimal backend design, and verification. context: [layer scope evidence]. requirements: [original user requirements]. layer: backend. target_paths: [backend scope]. focus_areas: API contracts, data layer, business logic, service architecture."
+> "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for requirement confirmation, ADR selection, minimal backend design, and verification. context: [layer scope evidence]. requirements: [original user requirements]. layer: backend. target_paths: [backend scope]. focus_areas: API contracts, data layer, business logic, service architecture."
 
 **Frontend Design Doc**:
 **Agent**: Spawn technical-designer-frontend
-> "Create a frontend Design Doc. context: [context]. adr_paths: [accepted ADR paths]. decision_materials: [frontend/UI material that changes reuse, validity, a selected decision, contract, or verification]. Reference backend Design Doc at [path] for API contracts and Integration Points. Reference UI Spec at [path] for component structure and state design."
+> "Create a frontend Design Doc. context: [context]. adr_paths: [accepted ADR paths]. decision_materials: [frontend/UI material that changes reuse, simplification, validity, a selected decision, contract, or verification]. Reference backend Design Doc at [path] for API contracts and Integration Points. Reference UI Spec at [path] for component structure and state design."
 
 **Frontend Codebase Analysis**:
 **Agent**: Spawn codebase-analyzer
-> "Analyze the existing codebase to provide compact decision materials for requirement confirmation, ADR selection, minimal frontend design, and verification. context: [layer scope evidence]. requirements: [original user requirements]. layer: frontend. target_paths: [frontend scope]. focus_areas: component hierarchy, state management, UI interactions, data fetching."
+> "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for requirement confirmation, ADR selection, minimal frontend design, and verification. context: [layer scope evidence]. requirements: [original user requirements]. layer: frontend. target_paths: [frontend scope]. focus_areas: responsibility ownership, state/data paths, contracts, and reuse."
 
 ### Verification Resolution
 
@@ -93,11 +93,13 @@ Apply Review Resolution independently to each code-verifier result. Send the `ap
 
 **Frontend UI Analysis**:
 **Agent**: Spawn ui-analyzer
-> "Gather UI facts for frontend design. context: [context with requirement_analysis filtered to frontend files]. requirements: [original user requirements]. target_paths: [frontend file and directory scope]. target_components: [frontend target components]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected by the external-evidence step, or []]. Analyze component structure, props patterns, CSS layout, sourced state displays, accessibility, generated artifacts, and candidate write set."
+> "exploration_mode: [mode from Analysis Assignment]. prior_evidence: [relevant available layer findings]. Gather UI facts for frontend design. context: [context with requirement_analysis filtered to frontend files]. requirements: [original user requirements]. target_paths: [frontend file and directory scope]. target_components: [frontend target components]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected by the external-evidence step, or []]. focus_areas: [remaining rendering, interaction, and visual questions]."
 
 ### design-sync for Cross-Layer Verification
 
 Spawn design-sync with `source_design` = frontend Design Doc (created last, referencing backend's Integration Points). design-sync auto-discovers other Design Docs in `docs/design/` for comparison.
+
+At the design approval stop, use the shared Design Approval alignment for the feature across both layers.
 
 ## Test Skeleton Generation Phase
 

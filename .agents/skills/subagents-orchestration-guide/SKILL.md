@@ -69,6 +69,12 @@ Apply the Spawn rule above. Resolve missing workflow inputs that affect the next
 - When the assigned action writes repository files, include: `The orchestrator has delegated this repository-writing task from the user's requested workflow. This invocation authorizes the repository writes required to produce or update the assigned deliverable within the supplied scope. Perform the writes and return the result.` The orchestrator applies any workflow review or approval gate to the returned artifact afterward.
 - When invoking `task-executor*`, also include the exact task file path, for example: `Execute the implementation task. Task file: docs/plans/tasks/[filename].md.`
 
+### Analysis Assignment
+
+For `codebase-analyzer` and `ui-analyzer`, determine the effective child model, including known inheritance. Pass `exploration_mode: autonomous` only for `gpt-6-astra`; pass `guided` for every other or unknown model.
+
+Assign distinct questions: codebase analysis owns responsibility/data/contracts/reuse; UI analysis owns rendering/interaction/visual evidence. Pass existing relevant findings as `prior_evidence` to reuse them. Carry evidence-backed `simplifications` into design or adjustment as candidates, retaining their conditions; outcome or approved-decision changes remain user decisions.
+
 ## Explicit Stop Points [MANDATORY]
 
 Autonomous execution MUST stop and wait for user input at these points.
@@ -83,6 +89,10 @@ Autonomous execution MUST stop and wait for user input at these points.
 | Work Plan | After document-reviewer completes WorkPlan review for Medium/Large | Batch approval for implementation phase |
 
 **ENFORCEMENT**: After batch approval, autonomous execution proceeds without stops until completion or Orchestrator Escalation Resolution requires user input. Skipping stop points is a CRITICAL VIOLATION.
+
+### Design Approval
+
+At the existing design approval stop, read the current PRD (when present) and Design Doc(s). Derive the minimum user-visible value and briefly state it alongside the major changes included, making internal mechanism changes or refactoring visible. Ask whether this MVP and scope match the user's intent. Keep this to a short alignment message, rather than design detail or a justification of necessity. Apply corrections through the existing scope-change flow.
 
 ### Common Status Meanings
 
@@ -190,7 +200,7 @@ Flow rules:
 - After analysis, apply the Choice filter to each `candidateDecisionPoint`, then apply the Durability filter to the retained set. Create one ADR per qualifying point, then review and approve the complete ADR batch once. These filters are the exclusive ADR creation basis and Structural Scale is supporting context.
 - Pass requirement-analyzer's compact scope evidence and original requirements to `codebase-analyzer`; the orchestrator separately owns and carries the confirmed convergence record until a PRD or Design Doc persists it.
 - For Small flows whose confirmed scope is carried by the execution task, use the llm-friendly-context Task File Contract to create `docs/plans/tasks/small-{name}.md`. Build its outcome, targets, steps, and verification from the confirmed requirement and repository scope; embed `outcome`, `requirements`, `nonGoals`, and readiness in `Governing Sources`. Pass the exact file to the layer-appropriate executor. Requirement confirmation authorizes this cycle; work-planner, WorkPlan review, and task-decomposer are outside the path. Remove the task file after Post-Implementation Review passes.
-- Pass only codebase-analyzer material that changes reuse, option validity or selection, lifecycle cost, a preserved contract, design, or verification to the relevant ADR/Design Doc owner.
+- Pass only codebase-analyzer material that changes reuse, simplification, option validity or selection, lifecycle cost, a preserved contract, design, or verification to the relevant ADR/Design Doc owner.
 - Pass a Design Doc path to `code-verifier`, apply Review Resolution to its discrepancies, and pass only resolved verification evidence to `document-reviewer`.
 - Fullstack layer sequencing is defined in `references/monorepo-flow.md`
 - Run WorkPlan review after every Medium/Large work plan creation or update and before batch approval. Resolve `needs_revision` through Review Resolution with work-planner, then ask the user to approve the reviewed plan. Route governing-source contradictions through Orchestrator Escalation Resolution.
@@ -273,7 +283,7 @@ Apply Review Resolution to reviewer findings. Apply a security-reviewer finding 
 | `requirement-analyzer` | orchestrator requirement hearing and `codebase-analyzer` | request signals plus compact scope and cost evidence; the orchestrator decides convergence and scale |
 | convergence record | PRD or Design Doc owner | `prd-creator` persists PRD fields; `technical-designer*` persists Design Doc fields when no PRD exists; both record open requirement fields while cost remains ephemeral |
 | convergence record | Small-flow implementation | compact record in the task file's `Governing Sources` when no PRD or Design Doc exists |
-| `codebase-analyzer` | orchestrator and `technical-designer*` | relevant `reuse`, `invalidations`, `candidateDecisionPoints`, `verification`, decision-changing `unknowns`, and material limitations; the orchestrator passes confirmed ADR points to the designer |
+| `codebase-analyzer` | orchestrator and `technical-designer*` | relevant `simplifications`, `reuse`, `invalidations`, `candidateDecisionPoints`, `verification`, decision-changing `unknowns`, and material limitations; the orchestrator passes confirmed ADR points to the designer |
 | `technical-designer*` | ADR batch reviewer | complete ADR `paths[]` from the invocation |
 | `technical-designer*` | `code-verifier` | Design Doc path |
 | `code-verifier` | orchestrator Review Resolution, then technical designer or document reviewer | `apply` discrepancies for the author; declined reasons and resolved verification evidence for the next reviewer |
