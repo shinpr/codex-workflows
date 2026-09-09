@@ -108,11 +108,11 @@ Use agent statuses as routing signals, not as a parser contract. Interpret the r
 
 ### Review Resolution
 
-The orchestrator loads and applies `reviewee-judgment` through disposition selection before reviewer findings or verifier discrepancies generate author or implementation work. Use [references/review-resolution.md](references/review-resolution.md) to delegate `apply` dispositions and route reruns and handoff. Resolve returned evidence or decision requests through Orchestrator Escalation Resolution.
+Use [references/review-resolution.md](references/review-resolution.md) for design and post-implementation reviews. Review findings and corrections stay within the agreed MVP and design. Scope expansion is neither a recommendation nor an eligible correction; only evidence that the MVP cannot be achieved within that boundary warrants a user decision before changing the design. A passing reviewer/verifier is complete for that review cycle; other reviewers' corrections do not reopen it. Pass the review boundary to correction authors, and resolve findings through `reviewee-judgment` within it.
 
 ### Orchestrator Escalation Resolution [MANDATORY]
 
-Apply this procedure when a workflow result cannot support the next action, including `escalation_needed`, `blocked`, a missing artifact, or contradictory evidence. The response returns control to the orchestrator; it is not itself a human stop.
+Apply this procedure when a workflow result cannot support the next action, including `escalation_needed`, `blocked`, a missing artifact, or contradictory evidence. The response returns control to the orchestrator; it is not itself a human stop. For review results, Review Resolution still governs scope, completed reviewers, and rerun boundaries.
 
 1. Resolve the issue from approved requirements, governing artifacts, repository evidence, and prior agent outputs. Choose the smallest resolution that preserves approved intent.
 2. Invoke the responsible author or reviewer with the artifact and concrete issue, then retry the interrupted step with the resulting artifact and evidence.
@@ -260,7 +260,7 @@ Use the task loop defined in the autonomous execution diagram above. The canonic
 | code-reviewer | `verdict` is `pass` | `verdict` is `needs-improvement` or `needs-redesign` | `verdict` is `blocked` |
 | security-reviewer | `status` is `approved` | `status` is `needs_revision` | `status` is `blocked` |
 
-Run code-reviewer against the complete implementation change set and its governing Design Docs, or the active task file for a Small flow. When an applied correction changes code, rerun it with `prior_feedback` containing the previous complete result, finding dispositions, and the correction paths or diff; its Rerun Boundary preserves unaffected evidence. The Small path also passes its active task file to security-reviewer as `type: task-file`. Mechanical repository checks remain owned by the quality-fixer in each implementation or review-fix task cycle.
+Run code-reviewer against the complete implementation change set and its governing Design Docs, or the active task file for a Small flow. Rerun only a reviewer that has not passed, with `prior_feedback` containing its previous complete result, finding dispositions, and correction paths or diff; preserve passed reviewers and unaffected evidence. The Small path also passes its active task file to security-reviewer as `type: task-file`. Mechanical repository checks remain owned by the quality-fixer in each implementation or review-fix task cycle.
 
 Apply Review Resolution to reviewer findings. Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
 

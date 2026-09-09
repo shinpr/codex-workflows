@@ -18,6 +18,8 @@ Load `external-resource-context` only when the supplied UI Analysis or current d
 - optional `prototype_path` and, when present, `prototype_reference_strength`: `binding` or `reference`
 - selected external resource references
 
+For review corrections, preserve the agreed UI outcome and design; reviewer suggestions cannot add requirements or mechanisms. Return evidenced MVP infeasibility to the parent before any design change.
+
 Use binding PRD requirements, confirmed scope, and preserved repository behavior. Keep PRD Future/Out of Scope and convergence non-goals outside the UI Spec.
 
 ## Evidence Boundary

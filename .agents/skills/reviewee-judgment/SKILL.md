@@ -41,7 +41,7 @@ Extract the reported behavior, its evidence, and its consequence independently f
 
 Group findings when they arise from the same responsibility, contract, decision, state transition, or causal rule. Similar wording, syntax, file shape, or patch mechanics alone does not establish the same problem.
 
-Search for other instances of the confirmed underlying problem. Apply a shared response only when the instances share the responsible cause; otherwise preserve their intentional differences.
+Inspect other instances only when they affect the current correction within the agreed scope. On a rerun, retain resolved findings and examine only the correction and inconsistencies it directly introduced.
 
 ### Local Defect and Structural Defect
 
@@ -53,16 +53,16 @@ A structural defect is owned by a misplaced responsibility, contradictory contra
 
 Evaluate candidates through these gates in order. A later gate cannot compensate for a failure at an earlier gate.
 
-1. **Outcome boundary**: Preserve the requested outcome, governing constraints, explicit exclusions, and compatibility obligations.
+1. **Outcome boundary**: Preserve the agreed MVP, design, exclusions, and compatibility obligations. Review correction has no authority to expand them. Compare only in-boundary responses; technical improvement never makes expansion eligible. Escalate a design change only with evidence that the MVP cannot be achieved within the agreed boundary.
 2. **Finding validity**: Confirm the reported behavior and its material effect. Base validity on that evidence, and record the reviewer's priority and proposed fix separately as context.
 3. **Cause and ownership**: Identify the underlying problem and the artifact or responsibility that owns it.
 4. **Causal sufficiency**: Compare responses that resolve the owner, including subtraction, simplification, reuse, correction of an existing structure, redesign, and a local patch when each is applicable.
 5. **Durable quality**: Apply the matching reference's Quality Objective and Candidate Comparison. Prefer the candidate that improves the artifact's long-term quality without adding unnecessary concepts or parallel sources of truth.
 6. **Verification safety**: Determine whether the change and its affected boundaries can be proved safe with available evidence.
 7. **Lifecycle value**: Compare implementation, verification, migration, maintenance, execution risk, and retained-debt cost only among candidates that passed the earlier gates. When the artifact contradicts the requested outcome, a governing constraint, an explicit exclusion, or a compatibility obligation, or has materially incorrect, non-executable, or non-verifiable behavior at a required boundary, use lifecycle value to select a sufficient response while the correction remains required. For a discretionary improvement, establish benefit with evidence of an observable effect on the outcome, maintainability, execution precision, or decision integrity. Treat reviewer preference as context rather than benefit evidence. A small supported benefit is sufficient when the response is correspondingly cheap, safe, and keeps persistent surface unchanged.
-8. **Authority**: Execute only changes already authorized; surface product, architecture, compatibility, or scope decisions to the user.
+8. **Authority**: Execute only authorized corrections within gate 1; report unavailable authority or access as the specific blocker.
 
-Establish causal sufficiency before cost can favor a response. A required correction remains required regardless of cost; cost ranks its sufficient responses. Once a discretionary response passes the causal, durable-quality, and verification gates, low cost favors applying it when its observable benefit is positive and its maintenance, verification, and execution risk remain immaterial. When the best structural response lacks adequate verification, retain it as the preferred target, state the exact proof needed to make it safe, and explain the debt carried by any executable interim response.
+Establish causal sufficiency before cost can favor a response. A required correction remains required regardless of cost; cost ranks its sufficient responses. Once a discretionary response passes the causal, durable-quality, and verification gates, low cost favors applying it when its observable benefit is positive and its maintenance, verification, and execution risk remain immaterial. Missing verification warrants an evidence request for the in-scope correction, not a structural-improvement target.
 
 ## Resolution Method
 
@@ -119,11 +119,11 @@ Assign one disposition to each problem group:
 - **apply**: the problem or improvement is confirmed and the selected response passed all gates. A required correction is apply when a sufficient, safe response passes the gates; lifecycle cost ranks the eligible responses. A discretionary improvement is apply when its observable benefit exceeds its total change cost. The Authority gate separately determines whether to recommend or execute it;
 - **decline**: evidence establishes no outcome-relevant problem or observable quality benefit, the finding is outside the outcome boundary or reverses an exclusion, or a discretionary improvement's maintenance, verification, or execution cost equals or exceeds its supported benefit;
 - **evidence required**: a material unknown could change finding validity, ownership, response selection, or verification. Pause changes for that problem group, continue independent groups, and report the exact evidence needed, its source when known, the decision it controls, and the condition for resuming;
-- **user decision required**: the preferred response changes an approved outcome, architecture, compatibility promise, or scope boundary.
+- **user decision required**: evidence shows the agreed MVP cannot be achieved within the agreed design; report the failing condition before any design change. Optional expansion is declined, not escalated.
 
 Return `evidence required` and `user decision required` to the skill caller. The caller resolves them when it owns the required evidence or decision and otherwise routes them to the responsible authority.
 
-If an interim patch is the only safely executable response, label it as interim, describe the retained structural problem, and present the enabling work for the preferred response. The user decides whether that tradeoff is worth taking.
+An interim correction must also satisfy the agreed boundary. Report a required unresolved result and its evidence; optional structural improvements remain outside the correction.
 
 ### 6. Execute and Verify
 

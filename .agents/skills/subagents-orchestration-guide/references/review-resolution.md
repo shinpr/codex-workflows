@@ -1,29 +1,17 @@
 # Review Resolution
 
-Use this procedure for reviewer findings and verifier discrepancies before they reach an author or another reviewer. It keeps independent evidence useful while the approved requirements and selected ADR decisions remain the scope boundary.
+Review and correction preserve the agreed MVP and design. Added requirements, responsibilities, layers, services, operations, or proof obligations are outside this authority: neither recommend nor adopt them. Escalate a design change only when concrete evidence shows the MVP cannot be achieved within the agreed boundary; report the failing condition before making that change. Technical preference or optional improvement is insufficient.
 
 ## 1. Assess Findings
 
-Apply `reviewee-judgment` to the current findings and keep its problem groups, dispositions, reasons, and evidence in the active workflow context.
+Apply `reviewee-judgment` within this boundary. Separate each evidenced defect from its proposed fix. Select only in-scope corrections; decline expansion instead of forwarding it as work. Existing required verification remains binding.
 
-## 2. Revise and Reconsider
+## 2. Correct and Recheck
 
-Invoke the responsible author when at least one `apply` finding or discrepancy exists, and pass only the `apply` findings or discrepancies. Then rerun the same reviewer or verifier with its original governing inputs, the changed artifact or implementation, and the rerun evidence required by that agent. When that agent accepts `prior_feedback`, include applied corrections and declined reasons; add the previous result and correction paths or diff only when its rerun boundary consumes them. Otherwise keep the dispositions in the active workflow context for orchestrator reassessment. An empty `apply` set proceeds directly to the next workflow step.
+Pass the agreed boundary and selected corrections to the responsible author. Retain each passing reviewer/verifier as complete for this review cycle, including after another reviewer's correction. Rerun only the still-unpassed reviewer that owns the findings being resolved.
 
-The reviewer withdraws a declined finding when the reason is consistent with governing evidence. It may maintain the finding when existing or newly observed governing evidence still shows the result is incorrect, non-executable, or non-verifiable. A maintained non-blocking recommendation does not prevent progression.
+Supply its original governing inputs, previous complete result, dispositions, and correction diff or paths. Recheck only resolution of those findings and inconsistencies directly introduced by the correction; carry forward unaffected evidence. This replaces the initial full review. A new finding needs a causal link to the correction, not merely a newly noticed pre-existing problem.
 
-## 3. Converge Internally
+## 3. Finish
 
-Each rerun applies the reviewer's or verifier's stated rerun boundary to the current artifact or implementation and may report newly observed evidence-backed findings within that boundary. The orchestrator reassesses the current findings through Section 1.
-
-Continue revision and reconsideration while an applied correction or new evidence materially changes the artifact, implementation, evidence, or finding disposition. When a rerun repeats a blocking claim without new evidence or no longer changes the result, the orchestrator reassesses the remaining claim through Section 1. Route a remaining unusable artifact or implementation through Orchestrator Escalation Resolution instead of starting the same Review Resolution again.
-
-## Handoff
-
-Pass only:
-
-- artifact or implementation path or ADR batch paths;
-- complete `apply` findings or discrepancies unchanged with their dispositions;
-- declined finding IDs with reasons and evidence;
-- the previous complete result when the rerun contract uses it to preserve unaffected evidence;
-- the observable condition the rerun must judge.
+Advance when no blocking in-scope finding remains. A supported decline or non-blocking recommendation permits progression. A repeated unresolved claim goes to orchestrator disposition rather than restarting the review chain; only evidenced MVP infeasibility warrants scope-change escalation. Missing authority or access is handled as that specific blocker, not as permission to expand the design.
