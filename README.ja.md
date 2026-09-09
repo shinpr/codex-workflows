@@ -66,10 +66,10 @@ $recipe-implement JWTによるユーザー認証を追加する
 
 | やりたいこと | 最初に使うもの |
 |---|---|
-| バックエンド、API、CLI、または一般的な変更を一貫して仕上げる | `$recipe-implement` |
+| 変更を一貫して仕上げ、バックエンド・フロントエンド・フルスタックの振り分けを任せる | `$recipe-implement` |
 | 先に設計し、実装はあとで行う | `$recipe-design` → `$recipe-plan` → `$recipe-build` |
 | React / TypeScriptのWebフロントエンドを設計・実装する | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
-| バックエンドとReactフロントエンドをまとめて変更する | `$recipe-fullstack-implement` |
+| バックエンドとReactフロントエンドを別々に設計するフローへ直接進む | `$recipe-fullstack-implement` |
 | 設計どおりに実装されているかレビューする | `$recipe-review` または `$recipe-front-review` |
 | リポジトリ固有の品質ルールを定義・更新する | `$recipe-quality-profile` |
 | コードを変えずに問題を調査する | `$recipe-diagnose` |
@@ -109,7 +109,7 @@ ADRを作るのは、現在のスコープに属し、長く残る選択で、�
 
 実装範囲が承認されると、オーケストレーターがタスク、対象を絞った検証、該当するリポジトリチェック、タスクごとの実装コミットを実行します。問題はまず、承認済み文書とリポジトリの根拠に基づいて解決します。ユーザーから見える挙動はプロダクト上の境界であり、内部的な整合性のために実装側が勝手に変えてよいものではありません。オーケストレーターが確認を求めるのは、新しいプロダクト要件、承認済みの主要設計判断の変更、ユーザーだけが持つ権限、または未承認の不可逆操作が必要になったときだけです。
 
-専門エージェントには、担当作業に必要な文書とパスだけを渡します。エージェントは焦点を絞った根拠を提供しますが、承認済みの成果を広げる権限までは持ちません。
+各専門エージェントには、範囲を明確にした担当作業、関連する文書とパス、求める結果を渡します。専門エージェントは担当作業を完了まで進め、メインセッションはプロダクトとワークフローに関する判断を担います。メインセッションが介入するのは、判断や具体的な行き詰まりへの対応が必要なときだけで、次のフェーズへ進む前に結果を検証します。これにより、専門エージェントの裁量を保ちながら、承認済みの成果を広げる権限までは渡しません。
 
 ### 新しいコンテキストへ判断を引き継ぐ仕組み
 
@@ -157,6 +157,10 @@ npx codex-workflows install --user
 ```
 
 スキルは`$CODEX_HOME/skills/`、エージェントは`$CODEX_HOME/agents/`へインストールされます。`CODEX_HOME`が未設定の場合は`~/.codex`が使われます。
+
+### エージェントをカスタマイズする
+
+エージェント定義は通常のTOMLファイルです。プロジェクト単位でインストールした場合は`.codex/agents/`、ユーザー単位でインストールした場合は`$CODEX_HOME/agents/`のファイルを編集します。`model`、`sandbox_mode`、`developer_instructions`を変更できます。編集したファイルは、後述のとおりアップデート時にも保持されます。
 
 ### 更新
 
@@ -367,41 +371,9 @@ your-project/
 
 ---
 
-## 連携できるツール
+## エコシステム
 
-プロダクトのアイデアをさらに探索・検証したい場合は、[Nautilus](https://github.com/shinpr/nautilus)を使って前提を確かめ、その結果をPRDにまとめられます。承認後は、そのPRDを`$recipe-implement`または`$recipe-design`へ渡せます。
-
-要件がすでにLinearや既存のPRDにまとまっている場合は、[linear-prism](https://github.com/shinpr/linear-prism)を使うと、コードベースを読みながら実装可能なLinearのissueへ分解し、依存関係を明示できます。承認したissueは`$recipe-design`の入力にできます。
-
----
-
-## FAQ
-
-**Q: どのモデルで使えますか？**
-
-A: 現行のGPTモデル向けに設計されています。エージェントごとにTOMLファイルでモデルを設定できます。
-
-**Q: エージェントをカスタマイズできますか？**
-
-A: はい。`.codex/agents/`のTOMLファイルを編集すると、`model`、`sandbox_mode`、`developer_instructions`を変更できます。各エージェントが必要とするスキルは`developer_instructions`に記載されています。ローカルで変更したファイルは、`npx codex-workflows update`を実行しても保持されます。
-
-ユーザー単位でインストールした場合は、`$CODEX_HOME/agents/`のファイルを編集し、`npx codex-workflows update --user`を使ってください。インストール後に変更したユーザー単位のファイルも同様に保持されます。
-
-**Q: `$recipe-implement`と`$recipe-fullstack-implement`の違いは？**
-
-A: `$recipe-implement`は汎用の入口です。最初にrequirement-analyzerを実行し、依頼内容とリポジトリの範囲から影響するレイヤーを判定して、バックエンド、フロントエンド、フルスタックのいずれかへ自動的に振り分けます。`$recipe-fullstack-implement`はこの判定を省き、フルスタックフロー（レイヤーごとのDesign Doc、design-sync、レイヤーに応じたタスク実行）へ直接進みます。判断がつかない場合は`$recipe-implement`、機能が両レイヤーにまたがると最初からわかっている場合は`$recipe-fullstack-implement`を使ってください。
-
-**Q: MCPサーバーと一緒に使えますか？**
-
-A: はい。Codexのスキルとサブエージェントは、[MCP](https://developers.openai.com/codex/mcp)と併用できます。スキルは指示レイヤー、MCPはツール転送レイヤーで動作します。エージェントのTOMLで`mcp_servers`を省略すると、カスタムエージェントは親の`mcp_servers`を引き継ぎます。エージェント固有のサーバーやツール制限が必要な場合だけ、個別のMCP設定を追加してください。
-
-**Q: claude-code-workflowsとの関係は？**
-
-A: [claude-code-workflows](https://github.com/shinpr/claude-code-workflows)はClaude Code版にあたります。共通のワークフロー思想を、それぞれのツールが持つ拡張機構に合わせて実装しています。codex-workflowsはエージェント定義を`.codex/agents/`へ、Claude Codeは独自の`.claude/`配下へ配置するため、同じプロジェクト内で併用できます。
-
-**Q: サブエージェントが止まっているように見えたら？**
-
-A: 進行を管理するのはメインのCodexセッションです。返された根拠を確認し、使えない結果なら再実行または修正し、影響を受けない作業はそのまま進めます。1つのサブエージェントの結果だけでワークフロー全体が止まることはありません。
+[Nautilus](https://github.com/shinpr/nautilus)はプロダクトのアイデアを検証してPRDにまとめ、[linear-prism](https://github.com/shinpr/linear-prism)は承認済みの要件を実装可能なLinearのissueへ整理します。[claude-code-workflows](https://github.com/shinpr/claude-code-workflows)は同じアプローチをClaude Code向けに提供し、codex-workflowsと同じプロジェクトにインストールできます。
 
 ---
 

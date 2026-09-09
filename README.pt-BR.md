@@ -66,10 +66,10 @@ O prefixo `$` invoca uma skill explicitamente. Digite `$recipe-` para ver os flu
 
 | O que você precisa? | Comece por |
 |---|---|
-| Entregar de ponta a ponta uma mudança de backend, API, CLI ou de propósito geral | `$recipe-implement` |
+| Entregar uma mudança de ponta a ponta e deixar o fluxo escolher entre backend, frontend e fullstack | `$recipe-implement` |
 | Projetar agora e implementar depois | `$recipe-design` → `$recipe-plan` → `$recipe-build` |
 | Projetar e construir um frontend web com React / TypeScript | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
-| Entregar juntos uma mudança de backend e outra de frontend React | `$recipe-fullstack-implement` |
+| Iniciar diretamente com fluxos de design separados para o backend e o frontend React | `$recipe-fullstack-implement` |
 | Revisar uma implementação com base no design | `$recipe-review` ou `$recipe-front-review` |
 | Definir ou atualizar regras de qualidade específicas do repositório | `$recipe-quality-profile` |
 | Investigar um problema sem alterar o código | `$recipe-diagnose` |
@@ -109,7 +109,7 @@ Somente decisões que afetam o produto ou a implementação do repositório segu
 
 Depois da aprovação do escopo, o orquestrador executa as tarefas, as verificações específicas, as checagens aplicáveis do repositório e um commit de implementação por tarefa. Primeiro, resolve problemas com base nos documentos aprovados e nas evidências do repositório. O comportamento percebido pelo usuário continua sendo um limite de produto: a implementação não pode ajustá-lo por conta própria em nome da consistência interna. O orquestrador só consulta o usuário quando avançar exige um novo requisito de produto, uma mudança em uma decisão principal já aprovada, uma autorização que apenas o usuário possui ou uma ação irreversível que não foi autorizada.
 
-Os agentes especialistas recebem exatamente os documentos e caminhos necessários para o trabalho. Eles apresentam evidências específicas, mas não têm autoridade para ampliar o resultado aprovado.
+Cada especialista recebe um trabalho com escopo definido, os documentos e caminhos relevantes e um resultado claro para entregar. O especialista conduz esse trabalho até o fim, enquanto a sessão principal mantém as decisões de produto e do fluxo, só intervém diante de uma decisão ou bloqueio concreto e verifica o resultado antes da próxima fase. Assim, os especialistas têm espaço para trabalhar sem receber autoridade para ampliar o resultado aprovado.
 
 ### Como as decisões sobrevivem à troca de contexto
 
@@ -157,6 +157,10 @@ npx codex-workflows install --user
 ```
 
 As skills são instaladas em `$CODEX_HOME/skills/` e os agentes em `$CODEX_HOME/agents/`. Quando `CODEX_HOME` não está definido, o padrão é `~/.codex`.
+
+### Personalizar agentes
+
+As definições dos agentes são arquivos TOML comuns. Em uma instalação de projeto, edite os arquivos em `.codex/agents/`; em uma instalação de usuário, edite os arquivos em `$CODEX_HOME/agents/`. É possível alterar `model`, `sandbox_mode` ou `developer_instructions`. Os arquivos editados são preservados nas atualizações, conforme explicado a seguir.
 
 ### Atualizar
 
@@ -367,41 +371,9 @@ your-project/
 
 ---
 
-## Ferramentas relacionadas
+## Ecossistema
 
-Quando uma ideia de produto ainda precisa de descoberta ou validação, o [Nautilus](https://github.com/shinpr/nautilus) pode testar as premissas por trás dela e transformar os resultados em um PRD. Depois da aprovação, passe o PRD para `$recipe-implement` ou `$recipe-design`.
-
-Se os requisitos já estiverem no Linear ou em um PRD existente, o [linear-prism](https://github.com/shinpr/linear-prism) pode ler o código, dividir o trabalho em issues do Linear prontas para implementação e registrar as dependências entre elas. Use uma issue aprovada como entrada para `$recipe-design`.
-
----
-
-## Perguntas frequentes
-
-**P: Com quais modelos funciona?**
-
-R: O projeto foi criado para os modelos GPT atuais. O modelo pode ser configurado por agente nos arquivos TOML.
-
-**P: Posso personalizar os agentes?**
-
-R: Sim. Edite os arquivos TOML em `.codex/agents/` para alterar `model`, `sandbox_mode` ou `developer_instructions`. As skills obrigatórias de cada agente aparecem em `developer_instructions`. Os arquivos modificados localmente são preservados ao executar `npx codex-workflows update`.
-
-Em uma instalação de usuário, edite os arquivos em `$CODEX_HOME/agents/` e use `npx codex-workflows update --user`. Arquivos de usuário alterados após a instalação são preservados da mesma forma.
-
-**P: Qual é a diferença entre `$recipe-implement` e `$recipe-fullstack-implement`?**
-
-R: `$recipe-implement` é o ponto de entrada universal. Primeiro ele executa requirement-analyzer, identifica as camadas afetadas com base no pedido e no escopo do repositório e encaminha automaticamente para o fluxo backend, frontend ou fullstack. `$recipe-fullstack-implement` pula essa detecção e entra direto no fluxo fullstack: Design Docs separados por camada, design-sync e execução de tarefas de acordo com a camada. Use `$recipe-implement` quando não tiver certeza e `$recipe-fullstack-implement` quando já souber que a funcionalidade envolve as duas camadas.
-
-**P: Funciona com servidores MCP?**
-
-R: Sim. As skills e os subagentes do Codex funcionam junto com o [MCP](https://developers.openai.com/codex/mcp). As skills operam na camada de instruções, enquanto o MCP opera na camada de transporte de ferramentas. Se o TOML do agente não definir `mcp_servers`, o agente personalizado herda os `mcp_servers` do pai. Adicione configuração MCP específica ao agente apenas quando precisar de servidores próprios ou filtragem de ferramentas.
-
-**P: Como este projeto se relaciona com o claude-code-workflows?**
-
-R: [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) é o projeto equivalente para Claude Code. Os dois repositórios compartilham a mesma filosofia de fluxo, adaptada aos pontos de extensão nativos de cada ferramenta. Eles podem coexistir no mesmo projeto porque o codex-workflows instala as definições em `.codex/agents/`, enquanto o Claude Code usa seu próprio diretório `.claude/`.
-
-**P: O que fazer se um subagente parecer travado?**
-
-R: A sessão principal do Codex é responsável pelo andamento. Ela inspeciona as evidências recebidas, repete ou corrige resultados inutilizáveis e continua o trabalho não afetado. O resultado de um subagente, por si só, não interrompe o fluxo.
+O [Nautilus](https://github.com/shinpr/nautilus) valida ideias de produto e gera PRDs, enquanto o [linear-prism](https://github.com/shinpr/linear-prism) transforma requisitos aprovados em issues do Linear prontas para implementação. O [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) aplica a mesma abordagem ao Claude Code e pode ser instalado no mesmo projeto que o codex-workflows.
 
 ---
 

@@ -66,10 +66,10 @@ $recipe-implement 使用JWT添加用户认证
 
 | 你的目标 | 从这里开始 |
 |---|---|
-| 完整交付后端、API、CLI或一般改动 | `$recipe-implement` |
+| 端到端交付改动，由工作流自动选择后端、前端或全栈路径 | `$recipe-implement` |
 | 先完成设计，稍后再实现 | `$recipe-design` → `$recipe-plan` → `$recipe-build` |
 | 设计并实现React / TypeScript Web前端 | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
-| 同时交付后端和React前端改动 | `$recipe-fullstack-implement` |
+| 直接进入后端与React前端分别设计的流程 | `$recipe-fullstack-implement` |
 | 按照设计评审实现 | `$recipe-review` 或 `$recipe-front-review` |
 | 定义或更新仓库专属质量规则 | `$recipe-quality-profile` |
 | 调查问题但不修改代码 | `$recipe-diagnose` |
@@ -109,7 +109,7 @@ flowchart LR
 
 实现范围获批后，编排器会执行任务、针对性验证、适用的仓库检查，并为每项任务生成一次实现提交。遇到问题时，它会优先根据已批准的文档和仓库证据自行解决。用户可见行为始终是产品边界，不能为了内部一致性而由实现擅自调整。只有当继续推进需要新增产品需求、改变已批准的主要设计决策、使用只有你拥有的权限，或执行未经授权且无法撤销的操作时，编排器才会询问你。
 
-专业代理只会收到为各自工作明确指定的文档和路径。它们负责提供与任务直接相关的依据，但无权扩大已经批准的目标。
+每个专业代理都会拿到边界明确的任务、相关文档和路径，以及需要返回的明确结果。专业代理负责把任务执行到完成；主会话保留产品和工作流决策权，只在需要决策或遇到具体阻碍时介入，并在进入下一阶段前检查结果。这样既让专业代理有足够空间完成工作，也不会让它们擅自扩大已批准的目标。
 
 ### 如何让决策在新上下文中继续生效
 
@@ -157,6 +157,10 @@ npx codex-workflows install --user
 ```
 
 技能会安装到`$CODEX_HOME/skills/`，代理会安装到`$CODEX_HOME/agents/`。未设置`CODEX_HOME`时，默认使用`~/.codex`。
+
+### 自定义代理
+
+代理定义都是普通的TOML文件。项目级安装请编辑`.codex/agents/`中的文件；用户级安装请编辑`$CODEX_HOME/agents/`中的文件。你可以修改`model`、`sandbox_mode`或`developer_instructions`。按照下文说明，更新程序会保留已编辑的文件。
 
 ### 更新
 
@@ -367,41 +371,9 @@ your-project/
 
 ---
 
-## 配套工具
+## 生态系统
 
-产品想法还需要进一步探索或验证时，可以用[Nautilus](https://github.com/shinpr/nautilus)检验相关假设，并将结果整理成PRD。PRD获批后，可将其交给`$recipe-implement`或`$recipe-design`。
-
-如果需求已经记录在Linear或现有PRD中，[linear-prism](https://github.com/shinpr/linear-prism)可以结合代码库，将工作拆成可直接实施的Linear任务，并明确任务之间的依赖关系。获批的任务可作为`$recipe-design`的输入。
-
----
-
-## 常见问题
-
-**问：支持哪些模型？**
-
-答：本项目面向当前的GPT模型设计。每个代理使用的模型都可以在TOML文件中配置。
-
-**问：可以自定义代理吗？**
-
-答：可以。编辑`.codex/agents/`中的TOML文件，即可修改`model`、`sandbox_mode`或`developer_instructions`。每个代理所需的技能都列在`developer_instructions`中。本地修改过的文件会在运行`npx codex-workflows update`时保留。
-
-如果采用用户级安装，请编辑`$CODEX_HOME/agents/`中的文件，并使用`npx codex-workflows update --user`。安装后修改的用户级文件也会以同样方式保留。
-
-**问：`$recipe-implement`和`$recipe-fullstack-implement`有什么区别？**
-
-答：`$recipe-implement`是通用入口。它会先运行requirement-analyzer，根据需求和仓库范围判断受影响的层，再自动进入后端、前端或全栈流程。`$recipe-fullstack-implement`跳过判断，直接进入全栈流程（每层单独的Design Doc、design-sync，以及按层分配任务）。如果不确定该走哪条路径，请使用`$recipe-implement`；如果一开始就知道功能横跨前后端，请使用`$recipe-fullstack-implement`。
-
-**问：能与MCP服务器一起使用吗？**
-
-答：可以。Codex技能和子代理可以与[MCP](https://developers.openai.com/codex/mcp)同时使用。技能位于指令层，MCP位于工具传输层。代理TOML没有设置`mcp_servers`时，自定义代理会继承父级的`mcp_servers`；只有代理需要专属服务器或工具过滤时，才需要添加代理级MCP配置。
-
-**问：它与claude-code-workflows有什么关系？**
-
-答：[claude-code-workflows](https://github.com/shinpr/claude-code-workflows)是面向Claude Code的对应项目。两个仓库采用相同的工作流理念，再针对各自工具原生的扩展方式进行适配。它们可以安装在同一项目中，因为codex-workflows把代理定义放在`.codex/agents/`，Claude Code则使用自己的`.claude/`目录。
-
-**问：子代理似乎卡住了怎么办？**
-
-答：主Codex会话负责推进工作。它会检查返回的证据，对无法使用的结果重新尝试或修正，同时继续不受影响的其他工作。单个子代理的结果本身不会让整个工作流停止。
+[Nautilus](https://github.com/shinpr/nautilus)用于验证产品想法并产出PRD，[linear-prism](https://github.com/shinpr/linear-prism)则把已批准的需求整理成可直接实施的Linear任务。[claude-code-workflows](https://github.com/shinpr/claude-code-workflows)在Claude Code中采用同样的方法，并可与codex-workflows安装在同一项目中。
 
 ---
 

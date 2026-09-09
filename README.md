@@ -66,10 +66,10 @@ $recipe-implement Add user authentication with JWT
 
 | What do you need? | Start with |
 |---|---|
-| Deliver a backend, API, CLI, or general change end to end | `$recipe-implement` |
+| Deliver a change end to end and let the workflow choose the backend, frontend, or fullstack path | `$recipe-implement` |
 | Design first and implement later | `$recipe-design` → `$recipe-plan` → `$recipe-build` |
 | Design and build a React / TypeScript web frontend | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
-| Deliver a backend and React frontend change together | `$recipe-fullstack-implement` |
+| Start directly with separate backend and React frontend design flows | `$recipe-fullstack-implement` |
 | Review an implementation against its design | `$recipe-review` or `$recipe-front-review` |
 | Define or update repository-specific quality rules | `$recipe-quality-profile` |
 | Investigate a problem without changing code | `$recipe-diagnose` |
@@ -109,7 +109,7 @@ Only decisions that affect the product or repository implementation are carried 
 
 After the implementation scope is approved, the orchestrator runs the tasks, focused verification, applicable repository checks, and one implementation commit per task. It resolves problems from the approved documents and repository evidence first. User-visible behavior remains a product boundary rather than something the implementation may adjust for internal consistency. The orchestrator asks you only when progress requires a new product requirement, a change to a major approved design decision, authority only you hold, or an irreversible action you did not authorize.
 
-Specialist agents receive the exact documents and paths needed for their work. They supply focused evidence without inheriting authority to expand the approved outcome.
+Each specialist gets a bounded job, the relevant documents and paths, and a clear result to return. The specialist carries that job through completion while the main session keeps product and workflow decisions, steps in only for a decision or concrete blocker, and checks the result before the next phase. This gives specialists room to work without giving them authority to widen the approved outcome.
 
 ### How decisions survive fresh contexts
 
@@ -158,6 +158,10 @@ npx codex-workflows install --user
 
 This installs skills into `$CODEX_HOME/skills/` and agents into
 `$CODEX_HOME/agents/`. When `CODEX_HOME` is not set, it defaults to `~/.codex`.
+
+### Customize agents
+
+Agent definitions are regular TOML files. For a project installation, edit files in `.codex/agents/`; for a user-level installation, edit files in `$CODEX_HOME/agents/`. You can change the `model`, `sandbox_mode`, or `developer_instructions`. Updates preserve files you have edited, as described below.
 
 ### Update
 
@@ -368,43 +372,9 @@ your-project/
 
 ---
 
-## Works With
+## Ecosystem
 
-When a product idea still needs discovery or validation, [Nautilus](https://github.com/shinpr/nautilus) can test the assumptions behind it and turn the results into a PRD. Pass the approved PRD to `$recipe-implement` or `$recipe-design`.
-
-If requirements already live in Linear or an existing PRD, [linear-prism](https://github.com/shinpr/linear-prism) can read the codebase, split the work into implementation-ready Linear issues, and record blocking relationships. Use an approved issue as input to `$recipe-design`.
-
----
-
-## FAQ
-
-**Q: What models does this work with?**
-
-A: Designed for current GPT models. Models are configurable per agent in the TOML files.
-
-**Q: Can I customize the agents?**
-
-A: Yes. Edit the TOML files in `.codex/agents/` to change `model`, `sandbox_mode`, or `developer_instructions`. Each agent names its required skills in `developer_instructions`. Files you modify locally are preserved during `npx codex-workflows update`.
-
-For a user-level installation, edit the files in `$CODEX_HOME/agents/` and use
-`npx codex-workflows update --user`. User-level files modified after installation
-are preserved in the same way.
-
-**Q: What's the difference between `$recipe-implement` and `$recipe-fullstack-implement`?**
-
-A: `$recipe-implement` is the universal entry point. It runs requirement-analyzer first, uses the request and repository scope to identify affected layers, and automatically routes to backend, frontend, or fullstack flow. `$recipe-fullstack-implement` skips the detection and goes straight into the fullstack flow (separate Design Docs per layer, design-sync, layer-aware task execution). Use `$recipe-implement` when you're not sure; use `$recipe-fullstack-implement` when you know upfront that the feature spans both layers.
-
-**Q: Does this work with MCP servers?**
-
-A: Yes. Codex skills and subagents work alongside [MCP](https://developers.openai.com/codex/mcp). Skills operate at the instruction layer, while MCP operates at the tool transport layer. Custom agents inherit parent `mcp_servers` when the agent TOML omits `mcp_servers`; add agent-local MCP config only for agent-specific servers or tool filtering.
-
-**Q: How is this related to claude-code-workflows?**
-
-A: [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) is the Claude Code counterpart. The repositories share the same workflow philosophy, adapted to each tool's native extension points. They can coexist in the same project because codex-workflows installs its agent definitions under `.codex/agents/` and Claude Code uses its own `.claude/` files.
-
-**Q: What if a subagent seems stuck?**
-
-A: The main Codex session owns progress. It inspects the returned evidence, retries or repairs unusable results, and continues unaffected work. A subagent result does not stop the workflow by itself.
+[Nautilus](https://github.com/shinpr/nautilus) validates product ideas and produces PRDs, while [linear-prism](https://github.com/shinpr/linear-prism) turns approved requirements into implementation-ready Linear issues. [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) brings the same approach to Claude Code and can be installed alongside codex-workflows.
 
 ---
 
