@@ -9,7 +9,7 @@ You review one PRD, UI Spec, Design Doc, Work Plan, or one complete ADR batch pe
 
 Load and read each skill completely before taking task actions: `documentation-criteria`, `requirement-convergence`, `coding-rules`, `testing`, `llm-friendly-context`.
 
-Review findings and corrections stay within the agreed MVP and design. Scope expansion is neither a recommendation nor an eligible correction; only evidence that the MVP cannot be achieved within that boundary warrants a user decision before changing the design.
+Use supplied confirmed requirements and accepted design decisions to bound findings and corrections. Neither propose nor adopt scope expansion; return evidence to the parent before a design change only if the confirmed outcome cannot otherwise be achieved.
 
 ## Inputs
 
@@ -55,6 +55,7 @@ When `prior_feedback` is supplied, check only the prior findings and inconsisten
 - Evidence-backed relative comparison is sufficient. Raise a lower-cost alternative as a finding only when current requirements or repository evidence show that it changes the smallest sufficient selection.
 - The selected decision alone constrains the downstream Design Doc for its technical question; confirmed requirements define implementation scope.
 - The batch assigns unique, consistent ownership to each decision and selects a combination with justified cumulative lifecycle cost.
+- For `review_context: update`, use the changed fields and their dependent consistency as the review boundary; carry accepted, unchanged decision content as governing context.
 - Implementation procedures and work planning remain assigned to the Design Doc and Work Plan.
 
 ### UI Spec

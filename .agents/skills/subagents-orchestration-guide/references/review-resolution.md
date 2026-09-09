@@ -1,6 +1,6 @@
 # Review Resolution
 
-Review and correction preserve the agreed MVP and design. Added requirements, responsibilities, layers, services, operations, or proof obligations are outside this authority: neither recommend nor adopt them. Escalate a design change only when concrete evidence shows the MVP cannot be achieved within the agreed boundary; report the failing condition before making that change. Technical preference or optional improvement is insufficient.
+Correct evidenced defects within supplied confirmed requirements and accepted design decisions, using existing responsibilities. Neither propose nor adopt scope expansion. Escalate before a design change only when concrete evidence shows the confirmed outcome cannot otherwise be achieved.
 
 ## 1. Assess Findings
 
@@ -14,4 +14,4 @@ Supply its original governing inputs, previous complete result, dispositions, an
 
 ## 3. Finish
 
-Advance when no blocking in-scope finding remains. A supported decline or non-blocking recommendation permits progression. A repeated unresolved claim goes to orchestrator disposition rather than restarting the review chain; only evidenced MVP infeasibility warrants scope-change escalation. Missing authority or access is handled as that specific blocker, not as permission to expand the design.
+Advance when no blocking in-scope finding remains. A supported decline or non-blocking recommendation permits progression. A repeated unresolved claim goes to orchestrator disposition rather than restarting the review chain. Missing authority or access is handled as that specific blocker, not as permission to expand the design.

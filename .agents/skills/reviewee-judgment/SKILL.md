@@ -53,7 +53,7 @@ A structural defect is owned by a misplaced responsibility, contradictory contra
 
 Evaluate candidates through these gates in order. A later gate cannot compensate for a failure at an earlier gate.
 
-1. **Outcome boundary**: Preserve the agreed MVP, design, exclusions, and compatibility obligations. Review correction has no authority to expand them. Compare only in-boundary responses; technical improvement never makes expansion eligible. Escalate a design change only with evidence that the MVP cannot be achieved within the agreed boundary.
+1. **Outcome boundary**: Preserve supplied confirmed requirements, accepted design decisions, exclusions, and compatibility obligations. Review correction has no authority to expand them. Compare only in-boundary responses; technical improvement never makes expansion eligible.
 2. **Finding validity**: Confirm the reported behavior and its material effect. Base validity on that evidence, and record the reviewer's priority and proposed fix separately as context.
 3. **Cause and ownership**: Identify the underlying problem and the artifact or responsibility that owns it.
 4. **Causal sufficiency**: Compare responses that resolve the owner, including subtraction, simplification, reuse, correction of an existing structure, redesign, and a local patch when each is applicable.
@@ -119,7 +119,7 @@ Assign one disposition to each problem group:
 - **apply**: the problem or improvement is confirmed and the selected response passed all gates. A required correction is apply when a sufficient, safe response passes the gates; lifecycle cost ranks the eligible responses. A discretionary improvement is apply when its observable benefit exceeds its total change cost. The Authority gate separately determines whether to recommend or execute it;
 - **decline**: evidence establishes no outcome-relevant problem or observable quality benefit, the finding is outside the outcome boundary or reverses an exclusion, or a discretionary improvement's maintenance, verification, or execution cost equals or exceeds its supported benefit;
 - **evidence required**: a material unknown could change finding validity, ownership, response selection, or verification. Pause changes for that problem group, continue independent groups, and report the exact evidence needed, its source when known, the decision it controls, and the condition for resuming;
-- **user decision required**: evidence shows the agreed MVP cannot be achieved within the agreed design; report the failing condition before any design change. Optional expansion is declined, not escalated.
+- **user decision required**: evidence shows the confirmed outcome cannot be achieved within the accepted design; report the failing condition before any design change. Optional expansion is declined, not escalated.
 
 Return `evidence required` and `user decision required` to the skill caller. The caller resolves them when it owns the required evidence or decision and otherwise routes them to the responsible authority.
 

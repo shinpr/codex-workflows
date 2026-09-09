@@ -35,7 +35,7 @@ Correct the responsible statement within the agreed design. Propagate only to st
 Compare specification candidates using this sequence after the core outcome and validity gates:
 
 1. Does the change occur in the artifact that owns the decision?
-2. Does it preserve the agreed MVP, design, and exclusions?
+2. Does it preserve confirmed requirements, accepted design decisions, and exclusions?
 3. Does it eliminate conflicting sources of truth and hidden assumptions?
 4. Can downstream consumers execute without inventing product or architecture decisions?
 5. Can acceptance and verification evidence prove the revised decision chain?

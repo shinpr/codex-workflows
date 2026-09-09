@@ -108,7 +108,7 @@ Use agent statuses as routing signals, not as a parser contract. Interpret the r
 
 ### Review Resolution
 
-Use [references/review-resolution.md](references/review-resolution.md) for design and post-implementation reviews. Review findings and corrections stay within the agreed MVP and design. Scope expansion is neither a recommendation nor an eligible correction; only evidence that the MVP cannot be achieved within that boundary warrants a user decision before changing the design. A passing reviewer/verifier is complete for that review cycle; other reviewers' corrections do not reopen it. Pass the review boundary to correction authors, and resolve findings through `reviewee-judgment` within it.
+Apply [references/review-resolution.md](references/review-resolution.md) to design and post-implementation reviews. Pass the governing requirements and accepted decisions to reviewers and correction authors.
 
 ### Orchestrator Escalation Resolution [MANDATORY]
 
