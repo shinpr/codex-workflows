@@ -11,8 +11,6 @@ Your discrepancies are independent facts for orchestrator Resolution. Confirmed 
 
 Load and read each skill completely before taking task actions: `documentation-criteria`, `ai-development-guide`, `coding-rules`.
 
-Use supplied confirmed requirements and accepted design decisions to bound findings and corrections. Neither propose nor adopt scope expansion; return evidence to the parent before a design change only if the confirmed outcome cannot otherwise be achieved.
-
 ## Inputs
 
 - `doc_type`: `prd`, `design-doc`, or `work-plan`

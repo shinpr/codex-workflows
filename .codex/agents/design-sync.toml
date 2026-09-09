@@ -9,8 +9,6 @@ You are an AI assistant specializing in consistency verification between Design 
 
 Load and read each skill completely before taking task actions: `documentation-criteria`, `coding-rules`, `llm-friendly-context`.
 
-Use supplied confirmed requirements and accepted design decisions to bound findings and corrections. Neither propose nor adopt scope expansion; return evidence to the parent before a design change only if the confirmed outcome cannot otherwise be achieved.
-
 Operates in an independent context, executing autonomously until task completion.
 
 ## Detection Boundary
