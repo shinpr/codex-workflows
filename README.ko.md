@@ -66,10 +66,10 @@ $recipe-implement JWT 사용자 인증 추가
 
 | 필요한 작업 | 시작할 레시피 |
 |---|---|
-| 백엔드, API, CLI 또는 일반 변경을 처음부터 끝까지 구현 | `$recipe-implement` |
+| 변경을 처음부터 끝까지 진행하고 백엔드, 프런트엔드 또는 풀스택 경로 선택은 워크플로에 맡기기 | `$recipe-implement` |
 | 먼저 설계하고 나중에 구현 | `$recipe-design` → `$recipe-plan` → `$recipe-build` |
 | React / TypeScript 웹 프런트엔드를 설계하고 구현 | `$recipe-front-design` → `$recipe-front-plan` → `$recipe-front-build` |
-| 백엔드와 React 프런트엔드 변경을 함께 구현 | `$recipe-fullstack-implement` |
+| 백엔드와 React 프런트엔드를 각각 설계하는 흐름으로 바로 시작 | `$recipe-fullstack-implement` |
 | 설계에 맞게 구현되었는지 리뷰 | `$recipe-review` 또는 `$recipe-front-review` |
 | 저장소별 품질 규칙 정의 또는 업데이트 | `$recipe-quality-profile` |
 | 코드를 바꾸지 않고 문제 조사 | `$recipe-diagnose` |
@@ -109,7 +109,7 @@ ADR은 현재 범위에 속하고 오래 유지되는 선택에 실질적으로 
 
 구현 범위가 승인되면 오케스트레이터가 작업, 작업에 맞춘 검증, 적용 가능한 저장소 검사, 작업별 구현 커밋을 실행합니다. 문제는 먼저 승인 문서와 저장소 근거를 사용해 해결합니다. 사용자에게 보이는 동작은 제품 경계이므로 내부 일관성을 위해 구현이 임의로 조정할 수 없습니다. 새로운 제품 요구사항, 승인된 주요 설계 결정 변경, 사용자만 가진 권한, 승인하지 않은 되돌릴 수 없는 작업이 필요할 때만 사용자에게 묻습니다.
 
-전문 에이전트는 작업에 꼭 필요한 문서와 경로만 받습니다. 필요한 범위의 구체적인 근거를 제공하지만 승인된 결과를 넓힐 권한은 없습니다.
+각 전문 에이전트에는 범위가 분명한 작업, 관련 문서와 경로, 반환해야 할 명확한 결과를 제공합니다. 전문 에이전트가 작업을 완료까지 맡는 동안 메인 세션은 제품과 워크플로에 관한 결정을 담당하고, 결정이 필요하거나 구체적인 장애물이 생겼을 때만 개입하며, 다음 단계로 넘어가기 전에 결과를 확인합니다. 따라서 전문 에이전트는 충분한 재량으로 일하되 승인된 결과를 넓힐 권한은 갖지 않습니다.
 
 ### 새 컨텍스트에서도 결정이 유지되는 방식
 
@@ -157,6 +157,10 @@ npx codex-workflows install --user
 ```
 
 스킬은 `$CODEX_HOME/skills/`에, 에이전트는 `$CODEX_HOME/agents/`에 설치됩니다. `CODEX_HOME`이 없으면 기본값은 `~/.codex`입니다.
+
+### 에이전트 사용자 정의
+
+에이전트 정의는 일반 TOML 파일입니다. 프로젝트 수준 설치에서는 `.codex/agents/`의 파일을, 사용자 수준 설치에서는 `$CODEX_HOME/agents/`의 파일을 수정하세요. `model`, `sandbox_mode`, `developer_instructions`를 변경할 수 있습니다. 수정한 파일은 아래 설명처럼 업데이트 시에도 보존됩니다.
 
 ### 업데이트
 
@@ -367,41 +371,9 @@ your-project/
 
 ---
 
-## 함께 사용할 수 있는 도구
+## 에코시스템
 
-제품 아이디어를 더 탐색하거나 검증해야 한다면 [Nautilus](https://github.com/shinpr/nautilus)로 관련 가설을 확인하고 그 결과를 PRD로 정리할 수 있습니다. 승인된 PRD를 `$recipe-implement`나 `$recipe-design`에 전달하세요.
-
-요구사항이 이미 Linear나 기존 PRD에 있다면 [linear-prism](https://github.com/shinpr/linear-prism)이 코드베이스를 읽어 구현 가능한 Linear 이슈로 나누고 이슈 간 의존 관계를 기록할 수 있습니다. 승인된 이슈를 `$recipe-design`의 입력으로 사용하세요.
-
----
-
-## 자주 묻는 질문
-
-**Q: 어떤 모델에서 사용할 수 있나요?**
-
-A: 현재 GPT 모델을 기준으로 설계되었습니다. 에이전트별 TOML 파일에서 모델을 설정할 수 있습니다.
-
-**Q: 에이전트를 사용자 정의할 수 있나요?**
-
-A: 네. `.codex/agents/`의 TOML 파일을 편집해 `model`, `sandbox_mode`, `developer_instructions`를 바꿀 수 있습니다. 각 에이전트의 필수 스킬은 `developer_instructions`에 적혀 있습니다. 로컬에서 수정한 파일은 `npx codex-workflows update`를 실행해도 보존됩니다.
-
-사용자 수준 설치에서는 `$CODEX_HOME/agents/`의 파일을 편집하고 `npx codex-workflows update --user`를 사용하세요. 설치 후 수정한 사용자 수준 파일도 같은 방식으로 보존됩니다.
-
-**Q: `$recipe-implement`와 `$recipe-fullstack-implement`는 무엇이 다른가요?**
-
-A: `$recipe-implement`는 범용 진입점입니다. 먼저 requirement-analyzer를 실행하고 요청과 저장소 범위에서 영향을 받는 계층을 확인한 다음 백엔드, 프런트엔드, 풀스택 흐름으로 자동 분기합니다. `$recipe-fullstack-implement`는 판별을 생략하고 풀스택 흐름(계층별 Design Doc, design-sync, 계층 맞춤 작업 실행)으로 바로 들어갑니다. 잘 모르겠다면 `$recipe-implement`를, 기능이 두 계층에 걸친다는 사실을 알고 있다면 `$recipe-fullstack-implement`를 사용하세요.
-
-**Q: MCP 서버와 함께 사용할 수 있나요?**
-
-A: 네. Codex 스킬과 하위 에이전트는 [MCP](https://developers.openai.com/codex/mcp)와 함께 작동합니다. 스킬은 지침 계층에서, MCP는 도구 전송 계층에서 작동합니다. 에이전트 TOML에 `mcp_servers`가 없으면 사용자 정의 에이전트가 부모의 `mcp_servers`를 상속합니다. 에이전트 전용 서버나 도구 필터링이 필요할 때만 에이전트별 MCP 설정을 추가하세요.
-
-**Q: claude-code-workflows와는 어떤 관계인가요?**
-
-A: [claude-code-workflows](https://github.com/shinpr/claude-code-workflows)는 Claude Code용 대응 프로젝트입니다. 두 저장소는 같은 워크플로 철학을 공유하되 각 도구의 기본 확장 지점에 맞게 구현되어 있습니다. codex-workflows는 에이전트 정의를 `.codex/agents/`에, Claude Code는 자체 `.claude/` 디렉터리에 설치하므로 한 프로젝트에서 함께 사용할 수 있습니다.
-
-**Q: 하위 에이전트가 멈춘 것처럼 보이면 어떻게 하나요?**
-
-A: 메인 Codex 세션이 진행을 책임집니다. 반환된 근거를 확인하고, 사용할 수 없는 결과는 다시 시도하거나 수정하며, 영향받지 않은 작업은 계속 진행합니다. 하위 에이전트 하나의 결과만으로 워크플로가 중단되지는 않습니다.
+[Nautilus](https://github.com/shinpr/nautilus)는 제품 아이디어를 검증해 PRD로 만들고, [linear-prism](https://github.com/shinpr/linear-prism)은 승인된 요구사항을 바로 구현할 수 있는 Linear 이슈로 정리합니다. [claude-code-workflows](https://github.com/shinpr/claude-code-workflows)는 같은 접근 방식을 Claude Code에 적용하며 codex-workflows와 같은 프로젝트에 설치할 수 있습니다.
 
 ---
 
