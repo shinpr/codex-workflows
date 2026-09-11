@@ -412,7 +412,7 @@ path = "/absolute/path/to/your-project/.agents/skills/subagent-delegation/SKILL.
 enabled = false
 ```
 
-Troque os caminhos pelos seus e escreva-os completos. `~` e variáveis de ambiente não funcionam aqui, e nos dois casos a entrada vai no `~/.codex/config.toml` do usuário.
+Escreva o caminho completo: `~` e variáveis de ambiente não funcionam aqui.
 
 A forma de usar os fluxos não muda. As skills são carregadas no momento certo e cada tarefa roda no modelo adequado.
 

@@ -412,7 +412,7 @@ path = "/absolute/path/to/your-project/.agents/skills/subagent-delegation/SKILL.
 enabled = false
 ```
 
-경로는 자신의 환경에 맞게 바꾸고 전체 경로로 적습니다. `~`나 환경 변수는 쓸 수 없습니다. 두 경우 모두 사용자 수준 `~/.codex/config.toml`에 넣습니다.
+경로는 전체 경로로 적습니다. `~`나 환경 변수는 쓸 수 없습니다.
 
 워크플로 사용 방식은 그대로입니다. 스킬이 필요한 시점에 로드되고, 작업에 맞는 모델이 사용됩니다.
 

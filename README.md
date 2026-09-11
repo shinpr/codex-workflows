@@ -413,7 +413,7 @@ path = "/absolute/path/to/your-project/.agents/skills/subagent-delegation/SKILL.
 enabled = false
 ```
 
-Replace the paths above with your own, written out in full. `~` and environment variables do not work here, and both cases go in `~/.codex/config.toml`.
+Write the path out in full: `~` and environment variables do not work here.
 
 Nothing changes in how you use the workflows. The plugin's skills load when they apply, and each task runs on a model that fits it.
 

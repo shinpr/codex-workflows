@@ -412,7 +412,7 @@ path = "/absolute/path/to/your-project/.agents/skills/subagent-delegation/SKILL.
 enabled = false
 ```
 
-把路径换成你自己的，并写成完整路径，这里不能用`~`或环境变量。两种情况都写在用户级`~/.codex/config.toml`里。
+路径要写完整，这里不能用`~`或环境变量。
 
 工作流的使用方式不变。技能会在需要时加载，每个任务都用合适的模型执行。
 

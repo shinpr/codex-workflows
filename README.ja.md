@@ -412,7 +412,7 @@ path = "/absolute/path/to/your-project/.agents/skills/subagent-delegation/SKILL.
 enabled = false
 ```
 
-パスは自分の環境のものに置き換え、フルパスで書きます。`~`や環境変数は使えません。どちらの場合もユーザー単位の`~/.codex/config.toml`に書きます。
+パスはフルパスで書きます。`~`や環境変数は使えません。
 
 ワークフローの使い方は変わりません。スキルが適切なタイミングで読み込まれ、タスクに合ったモデルが使われます。
 
