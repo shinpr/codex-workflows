@@ -408,11 +408,11 @@ Se instalou em um projeto:
 
 ```toml
 [[skills.config]]
-path = "/Users/you/your-project/.agents/skills/subagent-delegation/SKILL.md"
+path = "/absolute/path/to/your-project/.agents/skills/subagent-delegation/SKILL.md"
 enabled = false
 ```
 
-Troque `/Users/you` pelo seu próprio caminho e escreva-o completo, sem `~` nem variáveis de ambiente. Nos dois casos a entrada vai no `~/.codex/config.toml` do usuário: o `.codex/config.toml` do projeto não funciona, porque o Codex ignora as entradas `[[skills.config]]` ali ([openai/codex#24237](https://github.com/openai/codex/issues/24237)).
+Troque os caminhos pelos seus e escreva-os completos. `~` e variáveis de ambiente não funcionam aqui, e nos dois casos a entrada vai no `~/.codex/config.toml` do usuário.
 
 A forma de usar os fluxos não muda. As skills são carregadas no momento certo e cada tarefa roda no modelo adequado.
 

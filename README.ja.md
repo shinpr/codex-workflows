@@ -408,11 +408,11 @@ enabled = false
 
 ```toml
 [[skills.config]]
-path = "/Users/you/your-project/.agents/skills/subagent-delegation/SKILL.md"
+path = "/absolute/path/to/your-project/.agents/skills/subagent-delegation/SKILL.md"
 enabled = false
 ```
 
-`/Users/you`は自分のパスに置き換え、`~`や環境変数を使わずフルパスで書きます。どちらの場合もユーザー単位の`~/.codex/config.toml`に書きます。プロジェクト側の`.codex/config.toml`では動きません。Codexはそこに書かれた`[[skills.config]]`を無視します（[openai/codex#24237](https://github.com/openai/codex/issues/24237)）。
+パスは自分の環境のものに置き換え、フルパスで書きます。`~`や環境変数は使えません。どちらの場合もユーザー単位の`~/.codex/config.toml`に書きます。
 
 ワークフローの使い方は変わりません。スキルが適切なタイミングで読み込まれ、タスクに合ったモデルが使われます。
 
