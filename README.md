@@ -409,11 +409,11 @@ If you installed into a project:
 
 ```toml
 [[skills.config]]
-path = "/Users/you/your-project/.agents/skills/subagent-delegation/SKILL.md"
+path = "/absolute/path/to/your-project/.agents/skills/subagent-delegation/SKILL.md"
 enabled = false
 ```
 
-Replace `/Users/you` with your own path and write it out in full, with no `~` or environment variables. Both cases go in `~/.codex/config.toml`: a project's own `.codex/config.toml` will not work, because Codex ignores `[[skills.config]]` there ([openai/codex#24237](https://github.com/openai/codex/issues/24237)).
+Write the path out in full: `~` and environment variables do not work here.
 
 Nothing changes in how you use the workflows. The plugin's skills load when they apply, and each task runs on a model that fits it.
 

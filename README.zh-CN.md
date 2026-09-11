@@ -408,11 +408,11 @@ enabled = false
 
 ```toml
 [[skills.config]]
-path = "/Users/you/your-project/.agents/skills/subagent-delegation/SKILL.md"
+path = "/absolute/path/to/your-project/.agents/skills/subagent-delegation/SKILL.md"
 enabled = false
 ```
 
-把`/Users/you`换成你自己的路径，并写成完整路径，不要用`~`或环境变量。两种情况都写在用户级`~/.codex/config.toml`里；项目自己的`.codex/config.toml`不生效，因为Codex会忽略那里的`[[skills.config]]`（[openai/codex#24237](https://github.com/openai/codex/issues/24237)）。
+路径要写完整，这里不能用`~`或环境变量。
 
 工作流的使用方式不变。技能会在需要时加载，每个任务都用合适的模型执行。
 

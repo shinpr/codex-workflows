@@ -408,11 +408,11 @@ enabled = false
 
 ```toml
 [[skills.config]]
-path = "/Users/you/your-project/.agents/skills/subagent-delegation/SKILL.md"
+path = "/absolute/path/to/your-project/.agents/skills/subagent-delegation/SKILL.md"
 enabled = false
 ```
 
-`/Users/you`는 자신의 경로로 바꾸고, `~`나 환경 변수 없이 전체 경로로 적습니다. 두 경우 모두 사용자 수준 `~/.codex/config.toml`에 넣어야 합니다. 프로젝트의 `.codex/config.toml`에서는 동작하지 않습니다. Codex가 그곳의 `[[skills.config]]`를 무시하기 때문입니다([openai/codex#24237](https://github.com/openai/codex/issues/24237)).
+경로는 전체 경로로 적습니다. `~`나 환경 변수는 쓸 수 없습니다.
 
 워크플로 사용 방식은 그대로입니다. 스킬이 필요한 시점에 로드되고, 작업에 맞는 모델이 사용됩니다.
 
