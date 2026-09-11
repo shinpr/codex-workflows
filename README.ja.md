@@ -375,6 +375,49 @@ your-project/
 
 [Nautilus](https://github.com/shinpr/nautilus)はプロダクトのアイデアを検証してPRDにまとめ、[linear-prism](https://github.com/shinpr/linear-prism)は承認済みの要件を実装可能なLinearのissueへ整理します。[claude-code-workflows](https://github.com/shinpr/claude-code-workflows)は同じアプローチをClaude Code向けに提供し、codex-workflowsと同じプロジェクトにインストールできます。
 
+### Astraを効率よく使いたい場合
+
+ワークフロー全体をAstraで走らせると、利用枠をすぐ使い切ります。[codex-subagent-playbook](https://github.com/shinpr/codex-subagent-playbook)はサブエージェントごとにモデルを選ぶCodexプラグインで、結果に差が出る場面だけでAstraを使えます。
+
+<details>
+<summary>セットアップ（2ステップ）</summary>
+
+オーケストレーターはSol、またはAstraをlow reasoning effortで動かします。どのサブエージェントにAstraを割り当て、どれを軽いモデルで動かすかはプラグインのスキルが判断します。実装はLunaが担当します。
+
+**1. プラグインをインストールする**
+
+```bash
+codex plugin marketplace add shinpr/codex-subagent-playbook
+```
+
+`/plugins`を開き、**Subagent Playbook**を選んでインストールします。
+
+**2. このリポジトリの`subagent-delegation`スキルを無効化する**
+
+このリポジトリとプラグインは、どちらも委譲用のスキルを持ちます。優先順位はなく、どちらが読み込まれるかはセッションごとに変わります。どちらが読み込まれたかは表示されず、エラーにもならないため、実行するたびに挙動が変わります。`~/.codex/config.toml`を開き、インストールした`subagent-delegation`スキルを指すエントリを1つ追加します。
+
+`--user`でインストールした場合:
+
+```toml
+[[skills.config]]
+path = "/Users/you/.codex/skills/subagent-delegation/SKILL.md"
+enabled = false
+```
+
+プロジェクトへインストールした場合:
+
+```toml
+[[skills.config]]
+path = "/Users/you/your-project/.agents/skills/subagent-delegation/SKILL.md"
+enabled = false
+```
+
+`/Users/you`は自分のパスに置き換え、`~`や環境変数を使わずフルパスで書きます。どちらの場合もユーザー単位の`~/.codex/config.toml`に書きます。プロジェクト側の`.codex/config.toml`では動きません。Codexはそこに書かれた`[[skills.config]]`を無視します（[openai/codex#24237](https://github.com/openai/codex/issues/24237)）。
+
+ワークフローの使い方は変わりません。スキルが適切なタイミングで読み込まれ、タスクに合ったモデルが使われます。
+
+</details>
+
 ---
 
 ## 設計の背景

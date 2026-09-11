@@ -376,6 +376,49 @@ your-project/
 
 [Nautilus](https://github.com/shinpr/nautilus) validates product ideas and produces PRDs, while [linear-prism](https://github.com/shinpr/linear-prism) turns approved requirements into implementation-ready Linear issues. [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) brings the same approach to Claude Code and can be installed alongside codex-workflows.
 
+### Want to use Astra here?
+
+Running a whole workflow on Astra burns through usage fast. [codex-subagent-playbook](https://github.com/shinpr/codex-subagent-playbook) is a Codex plugin that picks a model per subagent, so Astra is used only where it changes the outcome.
+
+<details>
+<summary>Setup (2 steps)</summary>
+
+Run the orchestrator on Sol, or on Astra at low reasoning effort. The plugin's skills decide which subagents get Astra and which run on a cheaper model, and implementation goes to Luna.
+
+**1. Install the plugin**
+
+```bash
+codex plugin marketplace add shinpr/codex-subagent-playbook
+```
+
+Open `/plugins`, find **Subagent Playbook**, and install it.
+
+**2. Disable this repository's `subagent-delegation` skill**
+
+This repository and the plugin each ship a delegation skill, and neither takes priority. Which one a session loads varies, and nothing reports it or errors out, so behavior drifts between runs. Open `~/.codex/config.toml` and add one entry pointing at the `subagent-delegation` skill you installed.
+
+If you installed with `--user`:
+
+```toml
+[[skills.config]]
+path = "/Users/you/.codex/skills/subagent-delegation/SKILL.md"
+enabled = false
+```
+
+If you installed into a project:
+
+```toml
+[[skills.config]]
+path = "/Users/you/your-project/.agents/skills/subagent-delegation/SKILL.md"
+enabled = false
+```
+
+Replace `/Users/you` with your own path and write it out in full, with no `~` or environment variables. Both cases go in `~/.codex/config.toml`: a project's own `.codex/config.toml` will not work, because Codex ignores `[[skills.config]]` there ([openai/codex#24237](https://github.com/openai/codex/issues/24237)).
+
+Nothing changes in how you use the workflows. The plugin's skills load when they apply, and each task runs on a model that fits it.
+
+</details>
+
 ---
 
 ## Design Rationale

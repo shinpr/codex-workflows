@@ -375,6 +375,49 @@ your-project/
 
 O [Nautilus](https://github.com/shinpr/nautilus) valida ideias de produto e gera PRDs, enquanto o [linear-prism](https://github.com/shinpr/linear-prism) transforma requisitos aprovados em issues do Linear prontas para implementação. O [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) aplica a mesma abordagem ao Claude Code e pode ser instalado no mesmo projeto que o codex-workflows.
 
+### Quer usar o Astra aqui?
+
+Rodar um fluxo inteiro no Astra esgota o limite de uso rapidamente. O [codex-subagent-playbook](https://github.com/shinpr/codex-subagent-playbook) é um plugin do Codex que escolhe o modelo de cada subagente, então o Astra só é usado onde realmente faz diferença no resultado.
+
+<details>
+<summary>Configuração (2 passos)</summary>
+
+Rode a sessão principal no Sol, ou no Astra com reasoning effort baixo. As skills do plugin decidem quais subagentes usam o Astra e quais rodam em um modelo mais barato; a implementação fica com o Luna.
+
+**1. Instale o plugin**
+
+```bash
+codex plugin marketplace add shinpr/codex-subagent-playbook
+```
+
+Abra `/plugins`, encontre **Subagent Playbook** e instale.
+
+**2. Desative a skill `subagent-delegation` deste repositório**
+
+Este repositório e o plugin trazem cada um uma skill de delegação, e nenhuma tem prioridade. A skill carregada pode variar de uma sessão para outra, e nada indica qual delas foi usada nem acusa erro, então o comportamento também muda entre execuções. Abra `~/.codex/config.toml` e adicione uma entrada apontando para a skill `subagent-delegation` que você instalou.
+
+Se instalou com `--user`:
+
+```toml
+[[skills.config]]
+path = "/Users/you/.codex/skills/subagent-delegation/SKILL.md"
+enabled = false
+```
+
+Se instalou em um projeto:
+
+```toml
+[[skills.config]]
+path = "/Users/you/your-project/.agents/skills/subagent-delegation/SKILL.md"
+enabled = false
+```
+
+Troque `/Users/you` pelo seu próprio caminho e escreva-o completo, sem `~` nem variáveis de ambiente. Nos dois casos a entrada vai no `~/.codex/config.toml` do usuário: o `.codex/config.toml` do projeto não funciona, porque o Codex ignora as entradas `[[skills.config]]` ali ([openai/codex#24237](https://github.com/openai/codex/issues/24237)).
+
+A forma de usar os fluxos não muda. As skills são carregadas no momento certo e cada tarefa roda no modelo adequado.
+
+</details>
+
 ---
 
 ## Fundamentos do design

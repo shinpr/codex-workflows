@@ -375,6 +375,49 @@ your-project/
 
 [Nautilus](https://github.com/shinpr/nautilus)用于验证产品想法并产出PRD，[linear-prism](https://github.com/shinpr/linear-prism)则把已批准的需求整理成可直接实施的Linear任务。[claude-code-workflows](https://github.com/shinpr/claude-code-workflows)在Claude Code中采用同样的方法，并可与codex-workflows安装在同一项目中。
 
+### 想在这里用Astra？
+
+整个工作流都用Astra跑，用量很快就会见底。[codex-subagent-playbook](https://github.com/shinpr/codex-subagent-playbook)是一个Codex插件，按子代理挑选模型，只在会改变结果的环节使用Astra。
+
+<details>
+<summary>设置（2步）</summary>
+
+编排器用Sol，或者把Astra的reasoning effort调低。哪些子代理用Astra、哪些用更便宜的模型，由插件的技能决定；实现交给Luna。
+
+**1. 安装插件**
+
+```bash
+codex plugin marketplace add shinpr/codex-subagent-playbook
+```
+
+打开`/plugins`，找到**Subagent Playbook**并安装。
+
+**2. 关闭本仓库的`subagent-delegation`技能**
+
+本仓库和插件各自都带了委派技能，两者没有优先级之分。每个会话加载哪一个并不固定，也不会有任何提示或报错，因此每次运行的行为都可能不一样。打开`~/.codex/config.toml`，添加一条指向已安装的`subagent-delegation`技能的配置。
+
+使用`--user`安装时：
+
+```toml
+[[skills.config]]
+path = "/Users/you/.codex/skills/subagent-delegation/SKILL.md"
+enabled = false
+```
+
+安装到项目时：
+
+```toml
+[[skills.config]]
+path = "/Users/you/your-project/.agents/skills/subagent-delegation/SKILL.md"
+enabled = false
+```
+
+把`/Users/you`换成你自己的路径，并写成完整路径，不要用`~`或环境变量。两种情况都写在用户级`~/.codex/config.toml`里；项目自己的`.codex/config.toml`不生效，因为Codex会忽略那里的`[[skills.config]]`（[openai/codex#24237](https://github.com/openai/codex/issues/24237)）。
+
+工作流的使用方式不变。技能会在需要时加载，每个任务都用合适的模型执行。
+
+</details>
+
 ---
 
 ## 设计思路
