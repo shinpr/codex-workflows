@@ -199,7 +199,6 @@ Codex에서 `$recipe-name`으로 레시피를 호출합니다. `$recipe-`를 입
 | 레시피 | 기능 | 사용 시점 |
 |--------|------|-----------|
 | `$recipe-implement` | 계층 판별을 포함한 전체 수명 주기(백엔드/프런트엔드/풀스택) | 새 기능(범용 진입점) |
-| `$recipe-task` | 규칙 선택을 포함한 단일 작업 | 버그 수정, 작은 변경 |
 | `$recipe-design` | 요구사항 → 규모에 맞춘 제품 및 설계 문서 | 제품 및 아키텍처 설계 |
 | `$recipe-plan` | Design Doc → 필요한 통합/E2E 골격 → Work Plan | 승인된 Design Doc에서 계획 수립 |
 | `$recipe-prepare-implementation` | 승인된 Work Plan에 필요한 기존 저장소 내부 도구 준비 | 명시적인 설정 요청 또는 필요한 작업 기능이 없을 때 |
@@ -244,7 +243,7 @@ PRD, ADR, UI Spec, Design Doc은 장기 프로젝트 문서이므로 커밋해�
 
 ## 포함된 가이드
 
-레시피는 현재 작업에 필요한 저장소 맞춤형 지침을 불러옵니다. 보통은 이 스킬들을 직접 선택할 필요가 없습니다.
+이 지침은 레시피를 쓰지 않을 때도 적용됩니다. 일반 대화에서도 Codex가 불러오기 때문에, 간단한 버그 수정에도 전체 워크플로와 같은 근본 원인·범위·검증 기준이 적용됩니다.
 
 <details>
 <summary>기초 스킬 보기</summary>
@@ -261,7 +260,6 @@ PRD, ADR, UI Spec, Design Doc은 장기 프로젝트 문서이므로 커밋해�
 | `integration-e2e-testing` | 필요한 실제 상호작용을 증명하는 통합/E2E 테스트만 선택하고 설계 |
 | `external-resource-context` | 현재 결정에 필요한 외부 근거 하나만 선별해 확인 |
 | `llm-friendly-context` | 후속 에이전트를 위한 명확한 프롬프트, 인수인계, 산출물, Task File, 리뷰 의견 |
-| `task-analyzer` | 작업 의도 분석, 유형 분류, 스킬 선택 |
 | `subagent-delegation` | 하위 에이전트에 작업 완료까지 맡기고, 판단이 필요할 때 상의 |
 | `subagents-orchestration-guide` | 다중 에이전트 조율, 워크플로 진행, 가이드에 따른 자율 실행 |
 
@@ -312,7 +310,6 @@ React 애플리케이션을 포함한 웹 프런트엔드 TypeScript용 참고 �
 | `code-reviewer` | 완성된 구현을 승인 범위 및 기준 문서와 대조하고 중대한 코드 품질 문제를 확인 |
 | `code-verifier` | 문서와 코드 일치 검증 |
 | `security-reviewer` | 구현 후 보안 준수 리뷰 |
-| `rule-advisor` | 레시피 밖의 단독 작업을 위한 스킬 선택 |
 | `scope-discoverer` | 역문서화를 위한 코드베이스 범위 조사와 PRD 단위 구성 |
 | `technical-spike` | 설계 판단에 영향을 주는 효과나 비용 한 가지를 제한된 범위에서 검증 |
 
@@ -348,7 +345,6 @@ your-project/
 │   ├── integration-e2e-testing/
 │   ├── external-resource-context/
 │   ├── llm-friendly-context/
-│   ├── task-analyzer/
 │   ├── subagent-delegation/
 │   ├── subagents-orchestration-guide/
 │   └── recipe-*/             # 워크플로 진입점($recipe-*)

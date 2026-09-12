@@ -199,7 +199,6 @@ npx codex-workflows status --user
 | 工作流 | 功能 | 适用场景 |
 |--------|------|----------|
 | `$recipe-implement` | 完整生命周期，并根据层次分流（后端/前端/全栈） | 新功能（通用入口） |
-| `$recipe-task` | 单项任务，并自动选择规则 | 修复缺陷、小改动 |
 | `$recipe-design` | 需求 → 根据规模选择产品和设计文档 | 产品与架构设计 |
 | `$recipe-plan` | Design Doc → 按需生成集成/E2E测试骨架 → Work Plan | 根据已批准的Design Doc制定计划 |
 | `$recipe-prepare-implementation` | 准备已批准Work Plan所需的现有仓库内工具 | 明确要求准备环境，或任务所需能力不可用 |
@@ -244,7 +243,7 @@ PRD、ADR、UI Spec和Design Doc属于需要长期保存的项目文档，应当
 
 ## 内置指导原则
 
-工作流会自动加载当前任务所需、并且了解仓库约定的指导原则。通常不需要手动选择这些技能。
+不必调用工作流，也能用上这些指导原则。普通对话中 Codex 同样会加载它们，所以小的缺陷修复也会遵循和完整工作流相同的根因、范围和验证标准。
 
 <details>
 <summary>查看基础技能</summary>
@@ -261,7 +260,6 @@ PRD、ADR、UI Spec和Design Doc属于需要长期保存的项目文档，应当
 | `integration-e2e-testing` | 只选择和设计能够证明必要真实交互的集成/E2E测试 |
 | `external-resource-context` | 针对当前决策，只查找并确认所需的一项外部依据 |
 | `llm-friendly-context` | 供后续代理使用的清晰提示、交接内容、生成文档、Task File和评审意见 |
-| `task-analyzer` | 分析任务意图、任务分类和技能选择 |
 | `subagent-delegation` | 让子代理完成分配的工作，在需要决策时发起讨论 |
 | `subagents-orchestration-guide` | 多代理协调、工作流推进和按既定指引自主执行 |
 
@@ -312,7 +310,6 @@ PRD、ADR、UI Spec和Design Doc属于需要长期保存的项目文档，应当
 | `code-reviewer` | 对照批准范围和约束文档检查最终实现，并指出重大的代码质量问题 |
 | `code-verifier` | 验证文档与代码的一致性 |
 | `security-reviewer` | 实现后进行安全符合性评审 |
-| `rule-advisor` | 为不受现有工作流管理的独立任务选择技能 |
 | `scope-discoverer` | 为逆向文档发现代码库范围，并整理PRD单元 |
 | `technical-spike` | 在有限范围内验证一项可能影响设计决策的效果或成本 |
 
@@ -348,7 +345,6 @@ your-project/
 │   ├── integration-e2e-testing/
 │   ├── external-resource-context/
 │   ├── llm-friendly-context/
-│   ├── task-analyzer/
 │   ├── subagent-delegation/
 │   ├── subagents-orchestration-guide/
 │   └── recipe-*/             # 工作流入口（$recipe-*）

@@ -54,7 +54,7 @@ Target document -> Clarify changes -> update agent
 
 **Out of scope** (redirect to appropriate skills):
 - New document design -> $recipe-design
-- Work planning or implementation -> $recipe-plan or $recipe-task
+- Work planning or implementation -> $recipe-plan or $recipe-implement
 
 **Responsibility Boundary**: This skill completes with updated document approval.
 

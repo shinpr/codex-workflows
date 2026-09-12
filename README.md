@@ -200,7 +200,6 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 | Recipe | What it does | When to use |
 |--------|-------------|-------------|
 | `$recipe-implement` | Full lifecycle with layer routing (backend/frontend/fullstack) | New features (universal entry point) |
-| `$recipe-task` | Single task with rule selection | Bug fixes, small changes |
 | `$recipe-design` | Requirements → scale-selected product and design documents | Product and architecture design |
 | `$recipe-plan` | Design Doc → selective integration/E2E skeletons → work plan | Planning phase from an approved Design Doc |
 | `$recipe-prepare-implementation` | Prepare existing repository-local tools needed by an approved Work Plan | Explicit setup request or a concrete task capability is unavailable |
@@ -245,7 +244,7 @@ PRDs, ADRs, UI Specs, and Design Docs are durable project documents and are inte
 
 ## Included Guidance
 
-Recipes load the repository-aware guidance required for the current task. You rarely need to select these skills directly.
+You don't need a recipe to benefit from these. Codex loads them in ordinary conversation too, so a quick bug fix gets the same root-cause, scope, and verification standards as a full workflow.
 
 <details>
 <summary>View foundational skills</summary>
@@ -262,7 +261,6 @@ Recipes load the repository-aware guidance required for the current task. You ra
 | `integration-e2e-testing` | Selecting and designing only integration/E2E tests that prove a necessary real interaction |
 | `external-resource-context` | Focused resolution of one external evidence source required by a current decision |
 | `llm-friendly-context` | Clear prompts, handoffs, generated artifacts, task files, and review findings for downstream agents |
-| `task-analyzer` | Task intent analysis, task type classification, skill selection |
 | `subagent-delegation` | Letting subagents finish assigned work and ask for input when a decision is needed |
 | `subagents-orchestration-guide` | Multi-agent coordination, workflow flows, guided autonomous execution |
 
@@ -313,7 +311,6 @@ Codex spawns these as needed during recipe execution. You do not need to learn t
 | `code-reviewer` | Checks the completed implementation against the approved scope and documents, and flags serious code-quality problems |
 | `code-verifier` | Document-code consistency verification |
 | `security-reviewer` | Security compliance review after implementation |
-| `rule-advisor` | Skill selection for standalone work not already governed by a recipe |
 | `scope-discoverer` | Codebase scope discovery for reverse docs, including PRD unit grouping |
 | `technical-spike` | Bounded empirical evidence for one design-changing effect or cost |
 
@@ -349,7 +346,6 @@ your-project/
 │   ├── integration-e2e-testing/
 │   ├── external-resource-context/
 │   ├── llm-friendly-context/
-│   ├── task-analyzer/
 │   ├── subagent-delegation/
 │   ├── subagents-orchestration-guide/
 │   └── recipe-*/             # Workflow entry points ($recipe-*)

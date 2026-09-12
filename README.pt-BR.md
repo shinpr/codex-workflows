@@ -199,7 +199,6 @@ No Codex, use `$recipe-name` para invocar um fluxo. Digite `$recipe-` e use o pr
 | Fluxo | O que faz | Quando usar |
 |-------|-----------|-------------|
 | `$recipe-implement` | Ciclo completo com escolha de camada (backend/frontend/fullstack) | Novas funcionalidades (entrada universal) |
-| `$recipe-task` | Uma tarefa com seleção de regras | Correções e mudanças pequenas |
 | `$recipe-design` | Requisitos → documentos de produto e design conforme o porte | Design de produto e arquitetura |
 | `$recipe-plan` | Design Doc → estruturas seletivas de testes de integração/E2E → Work Plan | Planejamento a partir de um Design Doc aprovado |
 | `$recipe-prepare-implementation` | Prepara as ferramentas locais já existentes exigidas por um Work Plan aprovado | Pedido explícito de preparação ou recurso necessário indisponível |
@@ -244,7 +243,7 @@ PRDs, ADRs, UI Specs e Design Docs são documentos permanentes do projeto e deve
 
 ## Orientações incluídas
 
-Cada fluxo carrega as orientações adaptadas ao repositório de que a tarefa atual precisa. Raramente é necessário selecionar essas skills manualmente.
+Não é preciso invocar um fluxo para aproveitar essas skills. O Codex também as carrega em conversas comuns, então uma correção pequena segue os mesmos critérios de causa raiz, escopo e verificação usados em um fluxo completo.
 
 <details>
 <summary>Ver skills fundamentais</summary>
@@ -261,7 +260,6 @@ Cada fluxo carrega as orientações adaptadas ao repositório de que a tarefa at
 | `integration-e2e-testing` | Seleção e design apenas dos testes de integração/E2E que comprovam uma interação real necessária |
 | `external-resource-context` | Consulta direcionada a uma fonte externa necessária para a decisão atual |
 | `llm-friendly-context` | Contexto claro para os agentes que o usarão depois: prompts, repasses, artefatos gerados, Task Files e observações de revisão |
-| `task-analyzer` | Análise de intenção, classificação de tarefas e seleção de skills |
 | `subagent-delegation` | Delegar o trabalho a subagentes até a conclusão, com consultas quando for preciso tomar uma decisão |
 | `subagents-orchestration-guide` | Coordenação de múltiplos agentes, condução dos fluxos e execução autônoma guiada |
 
@@ -312,7 +310,6 @@ O Codex cria esses agentes conforme a necessidade durante a execução dos fluxo
 | `code-reviewer` | Compara a implementação concluída com o escopo e os documentos aprovados, e aponta problemas sérios de qualidade do código |
 | `code-verifier` | Verifica a consistência entre documentos e código |
 | `security-reviewer` | Revisa a segurança depois da implementação |
-| `rule-advisor` | Seleciona skills para tarefas avulsas fora dos fluxos existentes |
 | `scope-discoverer` | Descobre o escopo do código para documentação reversa e agrupa unidades de PRD |
 | `technical-spike` | Executa um teste empírico limitado para medir um efeito ou custo que pode mudar uma decisão de design |
 
@@ -348,7 +345,6 @@ your-project/
 │   ├── integration-e2e-testing/
 │   ├── external-resource-context/
 │   ├── llm-friendly-context/
-│   ├── task-analyzer/
 │   ├── subagent-delegation/
 │   ├── subagents-orchestration-guide/
 │   └── recipe-*/             # Pontos de entrada ($recipe-*)

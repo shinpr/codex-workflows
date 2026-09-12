@@ -199,7 +199,6 @@ Codexでは`$recipe-name`でレシピを呼び出します。`$recipe-`まで入
 | レシピ | 内容 | 用途 |
 |--------|------|------|
 | `$recipe-implement` | レイヤー判定を含む開発ライフサイクル全体（バックエンド/フロントエンド/フルスタック） | 新機能（汎用エントリーポイント） |
-| `$recipe-task` | ルール選択を含む単一タスク | バグ修正、小規模な変更 |
 | `$recipe-design` | 要件 → 規模に応じたプロダクト・設計文書 | プロダクト設計、アーキテクチャ設計 |
 | `$recipe-plan` | Design Doc → 必要な統合/E2Eテストのひな型 → Work Plan | 承認済みDesign Docからの計画 |
 | `$recipe-prepare-implementation` | 承認済みWork Planに必要な既存のリポジトリ内ツールを準備 | 明示的なセットアップ依頼、または必要なタスク機能が利用できない場合 |
@@ -244,7 +243,7 @@ PRD、ADR、UI Spec、Design Docは長期的に残すプロジェクト文書で
 
 ## 同梱のガイダンス
 
-レシピは、現在のタスクに必要な、リポジトリの状況を踏まえたガイダンスを読み込みます。通常、これらのスキルを直接選ぶ必要はありません。
+レシピを使わない通常の対話でも、これらのガイダンスはCodexに読み込まれます。ちょっとしたバグ修正にも、フルワークフローと同じ根本原因・スコープ・検証の基準が適用されます。
 
 <details>
 <summary>基礎スキルを表示</summary>
@@ -261,7 +260,6 @@ PRD、ADR、UI Spec、Design Docは長期的に残すプロジェクト文書で
 | `integration-e2e-testing` | 必要な実連携を証明する統合/E2Eテストだけを選び、設計する方法 |
 | `external-resource-context` | 現在の判断に必要な外部情報源を1つに絞って確認する方法 |
 | `llm-friendly-context` | 後続エージェントが迷わず使える、明確なプロンプト、引き継ぎ、生成物、Task File、レビュー指摘 |
-| `task-analyzer` | タスクの意図分析、種類の分類、スキル選択 |
 | `subagent-delegation` | サブエージェントに作業を最後まで任せ、判断が必要なときに相談を受ける |
 | `subagents-orchestration-guide` | マルチエージェントの連携、ワークフローの進行、指針に沿った自律実行 |
 
@@ -312,7 +310,6 @@ Webフロントエンドで使うTypeScript向けには、Reactアプリケー�
 | `code-reviewer` | 完成した実装を承認範囲や準拠すべき文書と照合し、重大なコード品質上の問題を確認 |
 | `code-verifier` | 文書とコードの整合性を検証 |
 | `security-reviewer` | 実装後のセキュリティ準拠をレビュー |
-| `rule-advisor` | レシピの管理外にある単独タスクのスキルを選定 |
 | `scope-discoverer` | 既存システムの文書化に向けてコードベースの範囲を調査し、PRDの単位を整理 |
 | `technical-spike` | 設計判断を左右する効果やコストを、対象を1つに絞って実測 |
 
@@ -348,7 +345,6 @@ your-project/
 │   ├── integration-e2e-testing/
 │   ├── external-resource-context/
 │   ├── llm-friendly-context/
-│   ├── task-analyzer/
 │   ├── subagent-delegation/
 │   ├── subagents-orchestration-guide/
 │   └── recipe-*/             # ワークフローの入口（$recipe-*）

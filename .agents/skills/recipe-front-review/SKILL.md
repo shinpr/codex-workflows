@@ -97,8 +97,6 @@ After any code fix, both review agents must re-run.
 
 Apply Review Resolution to rerun findings. Its convergence rule governs any further correction and rerun; code-reviewer receives the latest complete result and the next correction paths or diff.
 
-ENFORCEMENT: Auto-fixes MUST go through quality-fixer-frontend before re-validation. Skipping quality checks invalidates fixes.
-
 ### Final Report
 Delete the review-fix task file this recipe created, if present. Its work is committed; `docs/plans/` is ephemeral working state.
 
