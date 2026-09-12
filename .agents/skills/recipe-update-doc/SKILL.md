@@ -52,10 +52,6 @@ Target document -> Clarify changes -> update agent
 - Document review with document-reviewer
 - Consistency verification with design-sync (Design Doc only)
 
-**Out of scope** (redirect to appropriate skills):
-- New document design -> $recipe-design
-- Work planning or implementation -> $recipe-plan or $recipe-implement
-
 **Responsibility Boundary**: This skill completes with updated document approval.
 
 Target document: $ARGUMENTS
