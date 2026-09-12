@@ -71,8 +71,6 @@ Branch on `verdict.decision`:
 
 After explicit approval, record the plan-level status as approved.
 
-ENFORCEMENT: Plan content MUST be approved before declaring completion. Unapproved plans are invalid.
-
 ## Completion Criteria
 
 - [ ] Design document selected

@@ -1,6 +1,6 @@
 {
   "name": "codex-workflows",
-  "version": "1.3.11",
+  "version": "1.4.0",
   "description": "Codex CLI workflows that keep larger software changes within the approved scope, from planning through review",
   "license": "MIT",
   "author": "Shinsuke Kagawa",
@@ -9,8 +9,6 @@
     "url": "git+https://github.com/shinpr/codex-workflows.git"
   },
   "scripts": {
-    "check:skills-index": "node scripts/check-skills-index.mjs",
-    "hooks:install": "git config core.hooksPath scripts/hooks",
     "test": "node --test scripts/tests/cli.test.js"
   },
   "bin": {

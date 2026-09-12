@@ -9,6 +9,35 @@
           "to": ".agents/skills/llm-friendly-context/references/task-template.md"
         }
       ]
+    },
+    {
+      "version": "1.4.0",
+      "operations": [
+        {
+          "type": "delete",
+          "path": ".agents/skills/recipe-task/SKILL.md"
+        },
+        {
+          "type": "delete",
+          "path": ".agents/skills/recipe-task/agents/openai.yaml"
+        },
+        {
+          "type": "delete",
+          "path": ".agents/skills/task-analyzer/SKILL.md"
+        },
+        {
+          "type": "delete",
+          "path": ".agents/skills/task-analyzer/agents/openai.yaml"
+        },
+        {
+          "type": "delete",
+          "path": ".agents/skills/task-analyzer/references/skills-index.yaml"
+        },
+        {
+          "type": "delete",
+          "path": ".codex/agents/rule-advisor.toml"
+        }
+      ]
     }
   ]
 }

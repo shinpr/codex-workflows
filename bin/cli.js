@@ -543,15 +543,77 @@ function planUpdate({ installation, installedHashes, version, files, changes }) 
   return actions;
 }
 
-function executeUpdateActions(actions, dryRun) {
+function isInside(child, parent) {
+  const relative = path.relative(parent, child);
+  return relative !== "" && !relative.startsWith("..") && !path.isAbsolute(relative);
+}
+
+function managedRootFor(installation, manifestPath) {
+  const destinationPath = path.join(installation.targetDir, manifestPath);
+  for (const mapping of installation.copyMappings) {
+    const root = path.join(installation.targetDir, mapping.destination);
+    if (isInside(destinationPath, root)) return root;
+  }
+  return null;
+}
+
+function directoriesStillShipped(installation, files) {
+  const shipped = new Set();
+  for (const file of files) {
+    let current = path.dirname(file.destinationPath);
+    while (isInside(current, installation.targetDir)) {
+      shipped.add(current);
+      current = path.dirname(current);
+    }
+  }
+  return shipped;
+}
+
+function pruneVacatedDirs(candidates, vacated, shipped, dryRun) {
+  const pruned = [];
+  const deepestFirst = [...candidates].sort((left, right) => right.dir.length - left.dir.length);
+
+  for (const { dir, root } of deepestFirst) {
+    let current = dir;
+    while (isInside(current, root)) {
+      if (shipped.has(current)) break;
+      if (vacated.has(current) || !fs.existsSync(current)) {
+        current = path.dirname(current);
+        continue;
+      }
+      // vacated covers entries a dry run leaves on disk
+      const remaining = fs
+        .readdirSync(current)
+        .map(name => path.join(current, name))
+        .filter(entry => !vacated.has(entry));
+      if (remaining.length > 0) break;
+      if (!dryRun) fs.rmdirSync(current);
+      vacated.add(current);
+      pruned.push(current);
+      current = path.dirname(current);
+    }
+  }
+  return pruned;
+}
+
+function executeUpdateActions(actions, dryRun, installation, files) {
   const counts = {
     added: 0,
     moved: 0,
     preserved: 0,
     removed: 0,
+    prunedDirs: 0,
     skipped: 0,
     updated: 0,
   };
+  const vacated = new Set();
+  const pruneCandidates = [];
+
+  function markVacated(destinationPath, manifestPath) {
+    vacated.add(destinationPath);
+    const root = managedRootFor(installation, manifestPath);
+    if (root) pruneCandidates.push({ dir: path.dirname(destinationPath), root });
+  }
 
   for (const action of actions) {
     switch (action.type) {
@@ -561,6 +623,7 @@ function executeUpdateActions(actions, dryRun) {
           fs.mkdirSync(path.dirname(action.to), { recursive: true });
           fs.renameSync(action.from, action.to);
         }
+        markVacated(action.from, action.fromManifestPath);
         counts.moved++;
         break;
       case "remove":
@@ -568,6 +631,7 @@ function executeUpdateActions(actions, dryRun) {
         if (!dryRun && fs.existsSync(action.destinationPath)) {
           fs.unlinkSync(action.destinationPath);
         }
+        markVacated(action.destinationPath, action.manifestPath);
         counts.removed++;
         break;
       case "preserve-retired":
@@ -578,6 +642,7 @@ function executeUpdateActions(actions, dryRun) {
           fs.mkdirSync(path.dirname(action.backupPath), { recursive: true });
           fs.renameSync(action.destinationPath, action.backupPath);
         }
+        markVacated(action.destinationPath, action.manifestPath);
         counts.preserved++;
         break;
       case "add":
@@ -602,6 +667,13 @@ function executeUpdateActions(actions, dryRun) {
         break;
     }
   }
+
+  const shipped = directoriesStillShipped(installation, files);
+  for (const dir of pruneVacatedDirs(pruneCandidates, vacated, shipped, dryRun)) {
+    console.log(`  - ${path.relative(installation.targetDir, dir)}/ (removed)`);
+    counts.prunedDirs++;
+  }
+
   return counts;
 }
 
@@ -619,7 +691,7 @@ function update(installation, dryRun) {
   const files = collectManagedFiles(installation);
   const changes = readUpdateHistory(installation.sourceDir, manifest.version, version);
   const actions = planUpdate({ installation, installedHashes, version, files, changes });
-  const counts = executeUpdateActions(actions, dryRun);
+  const counts = executeUpdateActions(actions, dryRun, installation, files);
 
   if (!dryRun) {
     const fileHashes = Object.fromEntries(
@@ -638,6 +710,7 @@ function printUpdateSummary(counts, dryRun) {
   ];
   if (counts.moved > 0) parts.push(`${counts.moved} moved`);
   if (counts.removed > 0) parts.push(`${counts.removed} removed`);
+  if (counts.prunedDirs > 0) parts.push(`${counts.prunedDirs} empty dirs removed`);
   if (counts.preserved > 0) {
     parts.push(`${counts.preserved} preserved (local changes)`);
   }

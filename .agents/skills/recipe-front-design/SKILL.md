@@ -131,8 +131,6 @@ Create appropriate design documents from confirmed scope and decision materials:
 **[STOP -- BLOCKING]** Obtain user approval using the shared Design Approval alignment.
 **CANNOT proceed until user explicitly approves the design document.**
 
-ENFORCEMENT: Every stop point MUST be respected. Skipping user approval invalidates the entire workflow.
-
 ## Completion Criteria
 
 - [ ] Obtained compact scope and cost evidence while retaining requirement, scale, UI scope, and ADR decisions in the orchestrator

@@ -1,7 +1,0 @@
-interface:
-  display_name: "recipe-task"
-  short_description: "Metacognitive task execution with rule selection"
-  default_prompt: "Use $recipe-task to execute: "
-
-policy:
-  allow_implicit_invocation: false

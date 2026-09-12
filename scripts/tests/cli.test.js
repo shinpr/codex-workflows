@@ -393,3 +393,137 @@ test("rejects unsupported options instead of ignoring them", () => {
   assert.match(result.stderr, /unknown option/i);
   assert.equal(fs.existsSync(path.join(cwd, ".agents")), false);
 });
+
+test("removes an emptied skill directory tree while sibling skills stay installed", () => {
+  const cwd = makeTemporaryDirectory("codex-workflows-project");
+  const retiredFiles = {
+    ".agents/skills/retired/SKILL.md": "retired\n",
+    ".agents/skills/retired/references/notes.md": "notes\n",
+  };
+  const keptPath = ".agents/skills/kept/SKILL.md";
+  const packageFixture = createPackageFixture({
+    version: "2.0.0",
+    files: { [keptPath]: "kept\n" },
+    changes: [
+      {
+        version: "2.0.0",
+        operations: Object.keys(retiredFiles).map(retiredPath => ({
+          type: "delete",
+          path: retiredPath,
+        })),
+      },
+    ],
+  });
+  writeInstalledFixture({
+    cwd,
+    version: "1.0.0",
+    files: { ...retiredFiles, [keptPath]: "kept\n" },
+  });
+
+  const result = runCli(["update"], { cwd, cliPath: packageFixture.cliPath });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(fs.existsSync(path.join(cwd, ".agents/skills/retired")), false);
+  assert.equal(fs.readFileSync(path.join(cwd, keptPath), "utf8"), "kept\n");
+});
+
+test("keeps a retired skill directory that still holds a user file", () => {
+  const cwd = makeTemporaryDirectory("codex-workflows-project");
+  const retiredFiles = {
+    ".agents/skills/retired/SKILL.md": "retired\n",
+    ".agents/skills/retired/references/notes.md": "notes\n",
+  };
+  const userPath = ".agents/skills/retired/my-notes.md";
+  const packageFixture = createPackageFixture({
+    version: "2.0.0",
+    files: {},
+    changes: [
+      {
+        version: "2.0.0",
+        operations: Object.keys(retiredFiles).map(retiredPath => ({
+          type: "delete",
+          path: retiredPath,
+        })),
+      },
+    ],
+  });
+  writeInstalledFixture({ cwd, version: "1.0.0", files: retiredFiles });
+  fs.writeFileSync(path.join(cwd, userPath), "mine\n");
+
+  const result = runCli(["update"], { cwd, cliPath: packageFixture.cliPath });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(fs.readFileSync(path.join(cwd, userPath), "utf8"), "mine\n");
+  assert.equal(fs.existsSync(path.join(cwd, ".agents/skills/retired/references")), false);
+});
+
+test("dry run lists each emptied directory once and leaves them on disk", () => {
+  const cwd = makeTemporaryDirectory("codex-workflows-project");
+  const retiredFiles = {
+    ".agents/skills/retired/SKILL.md": "retired\n",
+    ".agents/skills/retired/references/notes.md": "notes\n",
+    ".agents/skills/retired/agents/openai.yaml": "config\n",
+  };
+  const keptPath = ".agents/skills/kept/SKILL.md";
+  const packageFixture = createPackageFixture({
+    version: "2.0.0",
+    files: { [keptPath]: "kept\n" },
+    changes: [
+      {
+        version: "2.0.0",
+        operations: Object.keys(retiredFiles).map(retiredPath => ({
+          type: "delete",
+          path: retiredPath,
+        })),
+      },
+    ],
+  });
+  writeInstalledFixture({
+    cwd,
+    version: "1.0.0",
+    files: { ...retiredFiles, [keptPath]: "kept\n" },
+  });
+
+  const result = runCli(["update", "--dry-run"], { cwd, cliPath: packageFixture.cliPath });
+
+  assert.equal(result.status, 0, result.stderr);
+  const reported = result.stdout
+    .split("\n")
+    .filter(line => line.includes("/ (removed)"))
+    .map(line => line.trim());
+  assert.deepEqual(reported.slice().sort(), [
+    "- .agents/skills/retired/ (removed)",
+    "- .agents/skills/retired/agents/ (removed)",
+    "- .agents/skills/retired/references/ (removed)",
+  ]);
+  assert.equal(fs.existsSync(path.join(cwd, ".agents/skills/retired/SKILL.md")), true);
+});
+
+test("removes an emptied skill directory after preserving a locally modified file", () => {
+  const cwd = makeTemporaryDirectory("codex-workflows-project");
+  const modifiedPath = ".agents/skills/retired/SKILL.md";
+  const packageFixture = createPackageFixture({
+    version: "2.0.0",
+    files: {},
+    changes: [
+      {
+        version: "2.0.0",
+        operations: [{ type: "delete", path: modifiedPath }],
+      },
+    ],
+  });
+  writeInstalledFixture({ cwd, version: "1.0.0", files: { [modifiedPath]: "retired\n" } });
+  fs.writeFileSync(path.join(cwd, modifiedPath), "locally edited\n");
+
+  const result = runCli(["update"], { cwd, cliPath: packageFixture.cliPath });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(fs.existsSync(path.join(cwd, ".agents/skills/retired")), false);
+  assert.equal(
+    fs.readFileSync(
+      path.join(cwd, ".codex-workflows-preserved/2.0.0", modifiedPath),
+      "utf8"
+    ),
+    "locally edited\n"
+  );
+});

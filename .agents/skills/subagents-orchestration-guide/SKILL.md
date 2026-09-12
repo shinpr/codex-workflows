@@ -308,8 +308,6 @@ Handoff rules:
 - **Flow confirmation**: After approval, select the next step from the active recipe and current artifact state
 - **Consistency verification**: If subagent determinations contradict, MUST prioritize the constraints and decision rules defined in this orchestration guide
 
-**ENFORCEMENT**: Violating ANY constraint requires immediate correction
-
 ## Required Dialogue Points with Humans [MANDATORY]
 
 ### Basic Principles

@@ -27,9 +27,6 @@ description: "Execute from codebase-scoped analysis to design document creation.
    - **[STOP — BLOCKING]** At every `[Stop: ...]` marker -> Present status to user for confirmation. **CANNOT proceed until user explicitly confirms.**
 3. **Scope**: Complete when design documents receive approval
 
-**CRITICAL**: MUST execute document-reviewer and all stopping points. MUST execute design-sync for Design Docs. Each serves as a quality gate.
-ENFORCEMENT: Skipping any quality gate invalidates the design output.
-
 ## Workflow Overview
 
 ```
