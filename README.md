@@ -26,14 +26,14 @@ codex-workflows controls that expansion throughout the run:
 
 | Control | What changes |
 |---|---|
-| Scope | The workflow compares the request with the desired outcome, explicit exclusions, the existing code, and rough implementation cost. Work that does not earn its cost is removed before it becomes architecture. |
+| Scope | The workflow compares the request with the desired outcome, explicit exclusions, the existing code, and rough implementation cost. Work that does not earn its cost is removed before it becomes architecture, and cut back later if it got in anyway. |
 | Phase gates | Requirements, design, and planning outputs are checked before they can authorize the next phase. Fresh agents read the approved decisions and evidence they need instead of reconstructing intent from a long conversation. |
-| Execution | After implementation approval, Codex executes the task set autonomously. Each task passes its focused verification and applicable repository checks before its implementation commit. |
+| Execution | Once you authorize implementation, Codex executes the task set autonomously. Each task passes its focused verification and applicable repository checks before its implementation commit. |
 | Completion | Independent code and security reviews check that the completed change stays within the approved scope and has no serious problems. Required corrections return through the same implementation and quality cycle. |
 
 This workflow uses more agent calls and tokens than direct execution. Use it when protecting the approved outcome is worth that cost.
 
-An edge case does not require work simply because Codex can handle it. Additional validation, deterministic behavior, or a new abstraction must protect an approved requirement, an observable contract, or a demonstrated failure.
+An edge case does not require work simply because Codex can handle it. Additional validation, deterministic behavior, or a new abstraction must protect an approved requirement, an observable contract, or a demonstrated failure. This cuts both ways: when a design decision turns out to carry more than the outcome needs, the workflow removes it instead of defending it because a document already named it.
 
 ### A real workflow run
 
@@ -87,7 +87,7 @@ flowchart LR
     S --> L[Complete]
     C -->|No| D[Inspect, design, and review]
     D --> E[Plan dependent work]
-    E --> F[Approve implementation scope]
+    E --> F[Authorize implementation]
     F --> H[Per task: implement, verify, quality-check, commit]
     H --> K[Independent code and security review]
     K -->|Correction| H
@@ -101,13 +101,13 @@ The number of independent product and design decisions determines the route, not
 |-------|-----------------------|--------------|
 | Small | One outcome that follows an existing pattern in one part of the system | Confirmed task → implementation → quality and security checks |
 | Medium | One outcome that needs coordination across parts of the system or a lasting design decision | Reviewed Design Doc, plus UI Spec / ADR when required → selected integration/E2E proof → reviewed Work Plan → autonomous task cycles → final verification |
-| Large | Multiple outcomes that need separate design decisions | Reviewed PRD and Design Docs, plus UI Spec / ADR when required → selected integration/E2E proof → reviewed Work Plan → autonomous task cycles → final verification |
+| Large | Multiple outcomes that need separate design decisions | Reviewed Design Docs, plus a PRD unless you choose to skip it, and UI Spec / ADR when required → selected integration/E2E proof → reviewed Work Plan → autonomous task cycles → final verification |
 
 An ADR is created only for a durable current-scope choice with at least two materially distinct options. When several choices qualify, their ADRs are reviewed together. An integration or E2E test is selected only when a cheaper test cannot prove the required interaction. Some changes need neither.
 
 Only decisions that affect the product or repository implementation are carried forward in durable project documents. Third-party approval, production access, release execution, and unrelated operational work do not become implementation gates.
 
-After the implementation scope is approved, the orchestrator runs the tasks, focused verification, applicable repository checks, and one implementation commit per task. It resolves problems from the approved documents and repository evidence first. User-visible behavior remains a product boundary rather than something the implementation may adjust for internal consistency. The orchestrator asks you only when progress requires a new product requirement, a change to a major approved design decision, authority only you hold, or an irreversible action you did not authorize.
+Once implementation is authorized, the orchestrator runs the tasks, focused verification, applicable repository checks, and one implementation commit per task. It resolves problems from the approved documents and repository evidence first. User-visible behavior remains a product boundary rather than something the implementation may adjust for internal consistency. The orchestrator asks you only when progress requires a new product requirement, a change to something you asked for or ruled out, authority only you hold, or an irreversible action you did not authorize. Finding a smaller way to reach the same outcome is not one of those, and neither is re-confirming permission you have already given.
 
 Each specialist gets a bounded job, the relevant documents and paths, and a clear result to return. The specialist carries that job through completion while the main session keeps product and workflow decisions, steps in only for a decision or concrete blocker, and checks the result before the next phase. This gives specialists room to work without giving them authority to widen the approved outcome.
 
@@ -354,7 +354,7 @@ your-project/
 │   ├── technical-designer.toml
 │   ├── ui-analyzer.toml
 │   ├── task-executor.toml
-│   └── ... (26 agents total)
+│   └── ... (25 agents total)
 └── docs/                     # Created as you use the recipes
     ├── prd/
     ├── design/
