@@ -16,7 +16,7 @@ Load `external-resource-context` in Step 1 only when a named external source is 
 
 ## Execution Pattern
 
-**Core Identity**: "I am a guided executor. I run the UI adjustment and verification loop in the parent session."
+**Parent responsibility**: Run the UI adjustment and verification loop in the parent session.
 
 **Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
@@ -42,29 +42,32 @@ Spawn `ui-analyzer`:
 
 Resolve the smallest write set supported by the request, `candidateWriteSet[]`, repository evidence, and applicable `simplifications[]` with their conditions. Search by component ownership and call sites when the first candidates are incomplete; ask the user only when the requested UI target still cannot be identified.
 
-- Existing component architecture, state ownership, routing, and API contracts remain unchanged: proceed to Step 4.
-- Any of those design contracts changes: hand the request, resolved write set, and relevant `focusAreas[]` to `recipe-front-design`, then end this recipe.
+- The requested outcome and actual consumer obligations can be preserved by the local adjustment, including removing unwanted UI and now-unused code: proceed to Step 4 and update affected local design statements.
+- An unresolved user-outcome decision or wider design coordination is needed: return the concrete issue through Orchestrator Escalation Resolution. Use `recipe-front-design` only when that coordination needs it; an internal component or routing reduction alone does not require restarting design.
 
 Concise adjustment context:
 - request
 - resolved write set
 - relevant `focusAreas[]`
 - relevant external resource entries with summaries and access methods
+- repository paths changed while recording a required external resource
 
 ### Step 4: Adjustment and Verification
 
 For each adjustment unit:
-1. Start the Per-Task Change Set and plan the edit from `focusAreas[]`, resolved write set, and relevant external resource summaries.
+1. Start the Per-Task Change Set with any repository paths changed in Step 1, then plan the edit from `focusAreas[]`, resolved write set, and relevant external resource summaries.
 2. Apply the edit in the parent session and add its paths and generated artifacts to `taskWriteSet`.
 3. Verify against declared access methods:
    - design origin: compare implementation target to the recorded design source
    - visual verification: use the recorded browser, test runner, Storybook, dev server, or manual confirmation path
    - design system: confirm tokens, variants, and usage rules through the recorded source
-4. Refine until the implemented UI matches the design source or the user-confirmed adjustment target.
+4. Correct differences required by the design source or user-confirmed target, then stop when the selected verification observes that result. Report a remaining evidence or authority limitation through Orchestrator Escalation Resolution.
 
 ### Step 5: Quality Verification
 
-For each unit, spawn `quality-fixer-frontend` with `filesModified: taskWriteSet` and the Step 4 verification evidence. Repair reported stubs in the parent session, accumulate every repair and quality-fixer path, and rerun quality-fixer. On approval, reconcile and commit the Per-Task Change Set; resolve blocked results through Orchestrator Escalation Resolution.
+**Review reception:** Unnecessary repairs create lasting work. Before assigning a fix, use Review Resolution to judge no change, removal or narrowing, and reuse first; record why any retained or added mechanism is necessary.
+
+For each unit, spawn `quality-fixer-frontend` with `filesModified: taskWriteSet` and the Step 4 verification evidence. Repair reported stubs in the parent session, accumulate every repair and quality-fixer path, and rerun quality-fixer. On pass, reconcile and commit the Per-Task Change Set; resolve blocked results through Orchestrator Escalation Resolution.
 
 ## Completion Criteria
 
@@ -72,7 +75,7 @@ For each unit, spawn `quality-fixer-frontend` with `filesModified: taskWriteSet`
 - [ ] `ui-analyzer` returned JSON with external resource status and `candidateWriteSet`
 - [ ] The write set is supported by the request and repository evidence
 - [ ] Route completed:
-  - Direct adjustment: edits verified, quality-fixer approved, and units committed
+  - Direct adjustment: edits verified, quality-fixer passed, and units committed
   - Frontend design: request, resolved write set, and relevant `focusAreas[]` handed to `recipe-front-design`
 
 ## Output Example

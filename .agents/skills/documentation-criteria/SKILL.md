@@ -19,7 +19,7 @@ description: "Determines which PRD, ADR, UI Spec, Design Doc, and Work Plan a ch
 |------------------|----------------|----------------|
 | Small | None | N/A |
 | Medium | Design Doc -> Work Plan | Start with Design Doc |
-| Large | PRD -> Design Doc -> Work Plan | Continue after PRD approval |
+| Large | PRD* -> Design Doc -> Work Plan | Continue after product-scope approval |
 
 Build one path in this order:
 
@@ -27,7 +27,7 @@ Build one path in this order:
 2. Frontend or fullstack scope inserts UI Spec immediately before the Design Doc.
 3. One or more qualifying ADR decision points insert an ADR batch immediately before the Design Doc. A qualifying decision point sets the scale floor to Medium.
 
-**ENFORCEMENT**: EVALUATE structural scale and ADR conditions BEFORE starting implementation
+\* A design recipe that does not create PRDs may carry the confirmed convergence record directly only after the user explicitly authorizes proceeding without a PRD.
 
 ## Structural Scale
 
@@ -56,16 +56,16 @@ Qualifying durable choices include:
 
 - introducing or replacing a technology, library, platform, storage model, or external dependency;
 - changing ownership, dependency direction, trust boundary, or a shared public contract in a way with credible materially different alternatives;
-- reversing or superseding an accepted architecture decision;
+- replacing an accepted architecture decision with a new choice that passes both filters;
 - choosing an irreversible or high-cost-to-reverse data or compatibility strategy.
 
 A local contract, data-flow, state, or component change that follows an accepted design, has one evident repository-supported implementation, or remains cheaply reversible belongs in the Design Doc. Counts of files, consumers, nesting levels, states, steps, and Structural Scale remain supporting evidence rather than ADR criteria.
 
-## What Each Document Fixes
+## What Each Document Records
 
-Each document fixes one class of decision needed by its downstream consumer. The decision matrix determines whether the document is required; the applicable template defines its content.
+Each document records one class of decision needed by its downstream consumer. Phase passage permits progression, not permanent preservation of its technical means. For reductions, preserve user outcomes and explicit constraints and update affected sources and proof. The decision matrix determines whether the document is required; the template defines its content.
 
-| Document | Decision it fixes | Consumer and effect when missing |
+| Document | Decision it records | Consumer and effect when missing |
 |----------|-------------------|----------------------------------|
 | PRD | Confirmed product outcome, requirements, acceptance criteria, and exclusions | Design and test selection would have to infer product scope |
 | ADR | One qualifying durable technical choice and the alternatives it resolves | Design and future changes could not distinguish an accepted decision from a local implementation choice |

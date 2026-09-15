@@ -68,7 +68,7 @@ Execute the registered steps:
 Spawn investigator agent with the following prompt:
 
 ```text
-Comprehensively collect information related to the following phenomenon.
+Collect decision-relevant information about the following phenomenon.
 
 Phenomenon: [Problem reported by user]
 
@@ -102,10 +102,7 @@ Spawn verifier agent: "Verify the following investigation results. Investigation
 
 **Expected output**: Path coverage findings, independent failure-point evaluation, final conclusion, coverageAssessment/finalStatus
 
-**Coverage Criteria**:
-- **sufficient**: No major uncovered boundary affects solution selection or implementation
-- **partial**: Some uncertainty remains, but the cause, applicable contract or expected behavior, and affected boundary are usable; verifier states which response-selection constraints remain uncertain
-- **insufficient**: Fundamental information gap exists on the relevant path
+Use the verifier's `coverageAssessment` and its Coverage Determination Criteria as the single coverage definition.
 
 ### Step 4: Solution Derivation (solver)
 

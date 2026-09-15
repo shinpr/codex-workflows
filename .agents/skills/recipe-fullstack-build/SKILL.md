@@ -15,7 +15,7 @@ Every `spawn_agent` call uses `fork_turns="none"` and supplies exact artifact pa
 
 ## Orchestrator Role
 
-The orchestrator owns plan selection, approval dialogue, task-set computation, filename routing, commits, and completion reporting. Invoke specialist agents for task decomposition, implementation, test review, quality repair, and final verification. A user-requested plan revision follows Work Plan Approval.
+The orchestrator owns plan selection, approval dialogue, task-set computation, filename routing, commits, and completion reporting. Invoke specialist agents for task decomposition, implementation, test review, quality repair, and final verification. A user-requested plan revision follows Work Plan Authorization.
 
 Work plan: $ARGUMENTS
 
@@ -27,11 +27,11 @@ Report a missing Work Plan as the exact missing prerequisite.
 
 ## 2. Approval Gate
 
-Apply subagents-orchestration-guide `Work Plan Approval`. When plan-level user approval is absent or ambiguous, ask before agent invocation or task analysis:
+Apply subagents-orchestration-guide `Work Plan Authorization`. When user authorization to implement is absent from both the conversation and plan, ask before agent invocation or task analysis:
 
 > Approve this Work Plan as the implementation scope and authorize task decomposition, implementation, quality fixes, and per-task commits? `[path]`
 
-Record approval in the plan's existing plan-level status field and proceed to Step 3. A requested change returns through work-planner and document review before this gate.
+Record the user's instruction and scope in Implementation Authorization and proceed to Step 3. A requested change returns through work-planner and document review before this gate.
 
 ## 3. Conditional Environment Preparation
 
@@ -61,7 +61,9 @@ Route `*-frontend-task-*` to frontend agents and backend/shared task names to ge
 
 ## 7. Autonomous Task Cycle
 
-Execute each pending task through the `subagents-orchestration-guide` autonomous task cycle using the filename-routed executor and quality fixer. Pass the exact task file and preserve the canonical Per-Task Change Set. After quality approval and a successful implementation commit, update the Task File, corresponding Work Plan task and phase, and execution plan locally; keep Task Files and the Work Plan outside the implementation commit.
+**Review reception:** Unnecessary repairs create lasting work. Before assigning a fix, use Review Resolution to judge no change, removal or narrowing, and reuse first; record why any retained or added mechanism is necessary.
+
+Execute each pending task through the `subagents-orchestration-guide` autonomous task cycle using the filename-routed executor and quality fixer. Pass the exact task file and preserve the canonical Per-Task Change Set. After quality pass and a successful implementation commit, update the Task File, corresponding Work Plan task and phase, and execution plan locally; keep Task Files and the Work Plan outside the implementation commit.
 
 ## 8. Requirement Changes During Build
 

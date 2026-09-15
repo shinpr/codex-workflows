@@ -17,12 +17,12 @@ Apply only rules relevant to the changed code and prefer repository configuratio
 - Guard asynchronous effects against stale results and post-unmount updates using the repository's established mechanism.
 - Use class components only where the repository or framework requires them, such as an existing Error Boundary contract.
 
-Do not introduce a state library, server-state library, component hierarchy, alias convention, memoization strategy, or code-splitting pattern merely because it is common elsewhere.
+Introduce a state library, server-state library, component hierarchy, alias convention, memoization strategy, or code-splitting pattern only when the confirmed outcome and repository evidence require it.
 
 ## Environment and Security
 
 - Read client environment values through the configured build-tool interface.
-- Only expose variables explicitly intended for the client; never place secrets in frontend configuration or bundles.
+- Expose only variables explicitly intended for the client and keep secrets outside frontend configuration and bundles.
 - Surface missing required configuration as the governing contract specifies.
 - Keep sensitive values out of UI errors and logs.
 

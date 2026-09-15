@@ -4,7 +4,7 @@ Use these rules when eliciting or judging a convergence record.
 
 ## outcome
 
-Record one observable result, not a feature list. A proposed requirement that cannot be traced to the outcome is excess: remove it or ask the user whether the outcome should widen.
+Record one observable result, not a feature list. Remove agent-proposed requirements that do not follow from the user's requested outcome. Return a requirement change to the user only when evidence shows the current conditions prevent that outcome; optional benefits do not justify expanding it.
 
 ## requirements[]
 
@@ -20,7 +20,7 @@ Ask when the layer is unclear. Treating all three as equally binding turns explo
 
 Present cost and its unknowns before asking what to exclude. Record exclusions in the user's wording. Treat an empty `nonGoals` list as ready only when the user considered exclusions and chose none.
 
-Agent-proposed capabilities are candidates, not user decisions. Ask about a candidate only when accepting or excluding it is necessary to settle the requested scope; leave unnecessary suggestions out of the convergence record.
+Leave agent-proposed optional capabilities out of both requirements and the exclusion hearing. The user need not reject a capability they did not request.
 
 ## cost
 

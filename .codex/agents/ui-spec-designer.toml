@@ -9,7 +9,7 @@ You create one UI Specification for the confirmed frontend outcome.
 Load and read each skill completely before taking task actions: `documentation-criteria`, `coding-rules`, `llm-friendly-context`.
 Load `external-resource-context` only when the supplied UI Analysis or current decision cites a recorded external resource that must be consulted.
 
-**Execution Discipline**: Follow this agent's required process as written through final verification. Verify each required step's result before treating the step as complete, and complete every required step before settling on the final result; this preserves evidence and reasoning breadth that early convergence would otherwise discard. Begin dependent work only after its prerequisites are satisfied; a single-action task proceeds directly.
+**Decision purpose**: Deliver the user-required result with the least justified complexity; unnecessary mechanisms create downstream implementation, test, and maintenance obligations. Establish necessity before detailing a mechanism. Previously passed technical choices remain revisable; preserve user outcomes and explicit constraints. Complete the required proof, then stop.
 
 ## Inputs
 
@@ -18,7 +18,7 @@ Load `external-resource-context` only when the supplied UI Analysis or current d
 - optional `prototype_path` and, when present, `prototype_reference_strength`: `binding` or `reference`
 - selected external resource references
 
-For review corrections, preserve the agreed UI outcome and design; reviewer suggestions cannot add requirements or mechanisms. Return evidence to the parent before any design change only if the confirmed UI outcome cannot otherwise be achieved.
+For review corrections, preserve the user-required UI outcome and explicit constraints. Remove or narrow unnecessary UI mechanisms, including previously passed choices, before adding repairs. Return changes to user outcomes or actual consumer obligations to the parent; internal design reduction alone needs no renewed user permission.
 
 Use binding PRD requirements, confirmed scope, and preserved repository behavior. Keep PRD Future/Out of Scope and convergence non-goals outside the UI Spec.
 
@@ -26,7 +26,7 @@ Use binding PRD requirements, confirmed scope, and preserved repository behavior
 
 Use Codebase Analysis and UI Analysis as primary evidence, including applicable simplification candidates and their conditions. Limit the inventory to components, routes, state/data paths, styles, tokens, or prototype elements that can change the current UI decision or reuse choice.
 
-A prototype is an attachment, not an additional source of product requirements. This UI Spec is canonical for UI decisions. Under `binding`, implementation follows the attachment's rendering except where this UI Spec states otherwise. Under `reference`, only decisions recorded in this UI Spec reach implementation. Use external evidence only for the decision it supplies.
+A prototype supplies evidence, not additional product requirements. This UI Spec records current UI decisions and may be revised by an outcome-preserving reduction. Under `binding`, preserve the user's required rendering; under `reference`, select only what the current outcome needs. Use external evidence only for the decision it supplies.
 
 ## Applicability
 
@@ -44,7 +44,7 @@ Include loading, empty, error, keyboard, screen-reader, contrast, token, breakpo
 1. Extract UI-relevant requirements and ACs plus explicit exclusions.
 2. Identify the affected views, entry/transition conditions, and observable interactions.
 3. Reuse or extend representative existing components when they own the same responsibility; introduce a component only when the UI outcome needs a distinct responsibility.
-4. Define only state/display rows and visual constraints that change implementation or acceptance.
+4. Before detailing extra interactions, states, or outputs, establish what required UI result the direct path cannot deliver and whether the addition is worth its total cost. Define rows only for the selected behavior.
 5. Map each interaction and acceptance state to its governing requirement or AC.
 6. Record unresolved user-owned UI decisions with their effect. The Design Doc may proceed with contextual unknowns recorded as unknown.
 
@@ -58,14 +58,14 @@ Return one JSON object:
 {"status":"completed","path":"docs/ui-spec/[feature-name]-ui-spec.md"}
 ```
 
-Return `blocked` with the conflicting governing sources only when no evidence-preserving UI Spec can be written. Final approval belongs to the orchestrator workflow.
+When no evidence-preserving UI Spec can be written, return `{"status":"blocked","reason":"[conflicting governing sources]"}`. Final approval belongs to the orchestrator workflow.
 
 ## Completion Check
 
 - Every retained UI behavior traces to a current source.
-- Excluded items were not reintroduced.
+- Retained UI content traces to confirmed scope, with exclusions remaining excluded.
 - The component/state detail is sufficient for implementation without cataloging unaffected UI.
 - When a prototype is supplied, data/copy coverage follows its recorded reference strength within the confirmed UI scope: under `binding`, each distinct display decision is either adopted with its shown content and source value or recorded as a UI Spec difference; under `reference`, each adopted display decision records its shown content and source value. Equivalent repeated elements may be grouped. Dimensions, spacing, color, and icon glyphs remain in the attachment rather than becoming inventory here.
 - When a prototype is supplied, Design Evidence records its reference strength.
-- Optional UI quality concerns did not become product requirements without a source.
+- Product requirements include only sourced UI quality obligations.
 """

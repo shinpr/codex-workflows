@@ -1,15 +1,15 @@
 # Work Plan: [Feature Name] Implementation
 
 Created Date: YYYY-MM-DD
-Type: feature|fix|refactor
+Type: feature|fix|refactor|performance|security
 Related Issue/PR: #XXX (if any)
 Review Scope: [repository responsibilities or expected files derived from the Design Doc]
 
-## WorkPlan Review
+## Implementation Authorization
 
-Plan creation and material updates set this to `pending`. Record `approved` after the user approves the reviewed implementation scope.
+The orchestrator records user authority here; review results stay in the reviewer response. Technical revisions retain existing authorization.
 
-- **Status**: pending|approved
+- **Authorization**: [not yet granted, or the user's instruction and authorized scope]
 
 ## Governing Documents
 
@@ -65,5 +65,7 @@ Use the implementation approach and dependency order from the Design Doc. Each p
 - [ ] Every task cites each directly constraining governing section and its applicable ACs
 - [ ] Every task produces a repository implementation outcome required by the Design Doc
 - [ ] Dependencies permit execution in the listed order
+- [ ] Task order exposes the first vertical slice's representative acceptance criteria at the earliest dependency-valid verification point
+- [ ] Each supplied test skeleton path is assigned unchanged to the earliest task where its real boundary becomes executable
 - [ ] Verification is executable from repository artifacts or the task's own output
 - [ ] Task verification passes and the cited acceptance criteria are satisfied

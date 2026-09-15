@@ -4,11 +4,11 @@ Use these axes when frontend UI work depends on resources outside the repository
 
 | Axis | Purpose | Presence Choices | Access Method Examples |
 |------|---------|------------------|------------------------|
-| Design Origin | Canonical visual or interaction source | Present / Existing implementation / N/A | Figma MCP, public URL, exported file path |
-| Design System | Component catalog, tokens, variants, usage rules | Present / Existing package only / N/A | Storybook URL, package docs, MCP, local docs |
-| Guidelines | Accessibility, responsive, copy, brand, i18n, or platform rules | Present / Project conventions only / N/A | URL, file path, wiki export |
-| Visual Verification Environment | Rendered UI inspection path | Present / Manual confirmation / N/A | browser MCP, Playwright command, Storybook URL, dev server URL |
-| Generated UI Artifacts | Generated CSS typings, route typings, message catalogs, snapshots | Present / N/A | generator command, config path |
+| Design Origin | Canonical visual or interaction source | present / existing-implementation / N/A | Figma MCP, public URL, exported file path |
+| Design System | Component catalog, tokens, variants, usage rules | present / existing-package / N/A | Storybook URL, package docs, MCP, local docs |
+| Guidelines | Accessibility, responsive, copy, brand, i18n, or platform rules | present / project-conventions / N/A | URL, file path, wiki export |
+| Visual Verification Environment | Rendered UI inspection path | present / manual-confirmation / N/A | browser MCP, Playwright command, Storybook URL, dev server URL |
+| Generated UI Artifacts | Generated CSS typings, route typings, message catalogs, snapshots | present / N/A | generator command, config path |
 
 ## Question Template
 

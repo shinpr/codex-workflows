@@ -13,6 +13,7 @@ Task files are ephemeral execution carriers. Write them under `docs/plans/tasks/
 
 ## Template
 
+```markdown
 # Task: [Task Name]
 
 Metadata:
@@ -86,3 +87,4 @@ Include this section only when a material false-green state exists or a generate
 ## Notes
 
 - [Execution-relevant information only]
+```

@@ -4,6 +4,8 @@
 
 [Proposed | Accepted | Deprecated | Superseded | Rejected]
 
+`Accepted` records the current selected means, not an obligation to retain it. Later evidence may justify a smaller sufficient choice; update or supersede the affected decision while preserving user outcomes and explicit constraints.
+
 ## Context
 
 [Describe the background and reasons why this decision is needed. Include the essence of the problem, current challenges, and constraints]
@@ -44,17 +46,7 @@ Compare every credible materially distinct option supported by current requireme
 
 ## Consequences
 
-### Positive Consequences
-
-- [List positive impacts on the project or system]
-
-### Negative Consequences
-
-- [List negative impacts or trade-offs that need to be accepted]
-
-### Neutral Consequences
-
-[List decision-relevant neutral changes, or N/A]
+- [List decision-relevant positive, negative, or neutral consequences and the affected owner; omit empty categories]
 
 ## Architecture Impact
 

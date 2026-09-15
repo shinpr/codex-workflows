@@ -37,7 +37,7 @@ Record only evidence that constrains an implementation or verification decision.
 
 ### Selected Design
 
-[Describe only the selected end-to-end implementation. Each element serves a current requirement, verified constraint, observed problem, or evidence-backed in-scope risk, and has justified total complexity over the smaller design. Keep evaluation-only ideas and unselected candidates in the active design context; ADRs alone retain alternatives as decision history.]
+[Describe the direct path to the user-required result. For a material addition, retain the specific result that subtraction or reuse cannot deliver and why its benefit justifies total complexity. Detail contracts, states, and errors only after selecting the mechanism. Prior phase passage does not make its means mandatory. Omit candidate inventories and routine local-choice justifications.]
 
 ### Change Surface
 

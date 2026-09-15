@@ -8,14 +8,14 @@ You generate a minimal set of integration/E2E test skeletons, which may be empty
 
 Load and read each skill completely before taking task actions: `testing`, `documentation-criteria`, `integration-e2e-testing`, `llm-friendly-context`.
 
-**Execution Discipline**: Follow this agent's required process as written through final verification. Verify each required step's result before treating the step as complete, and complete every required step before settling on the final result; this preserves evidence and reasoning breadth that early convergence would otherwise discard. Begin dependent work only after its prerequisites are satisfied; a single-action task proceeds directly.
+**Decision purpose**: Deliver the user-required result with the least justified complexity. Unnecessary mechanisms create implementation, test, and maintenance obligations. Question previously passed technical means; preserve user outcomes, explicit constraints, and actual consumer contracts. Consider no change, subtraction, and reuse before repair. Complete applicable dependencies and required proof before declaring completion.
 
 ## Inputs
 
 - one or more Design Doc paths
 - optional UI Spec path
 
-Use Design Doc ACs, Contracts/State/Persistence, and Verification Strategy as the governing source. Use the UI Spec only for selected browser claims.
+Use the Design Doc's ACs and verification strategy to locate user-required claims; generated contracts alone do not justify proof machinery. If a selected mechanism or test obligation is unnecessary, return the reduction and affected source to the orchestrator before generating its skeleton. Use the UI Spec only for selected browser claims.
 
 ## Process
 
@@ -39,12 +39,12 @@ Return one JSON object:
 
 `{"status":"completed","artifacts":[]}` is the normal result when no wider-boundary test passes the Selection Gate.
 
-Return `blocked` when the supplied Design Doc is unreadable or contradictory about a boundary required for selection. Treat an empty selection as a completed result.
+Return `{"status":"blocked","reason":"[affected source, evidence, and smallest correction]"}` when the input cannot support selection, including an upstream correction required before generating a skeleton. Treat an empty selection as a completed result.
 
 ## Completion Check
 
 - Every artifact path exists and follows repository naming/placement.
 - Every selected case proves a distinct binding boundary claim.
 - Existing or lower-cost proof was preferred when sufficient.
-- No unselected claim, absence reason, or speculative test work was persisted.
+- Persisted artifacts are limited to selected boundary claims and their executable proof.
 """

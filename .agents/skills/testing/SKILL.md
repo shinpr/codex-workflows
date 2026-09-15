@@ -44,7 +44,7 @@ Evidence is substantive only when an executed assertion observes the exact consu
 
 - Keep tests deterministic, isolated, and active.
 - Use meaningful assertions on results, state, or observable effects.
-- Keep each existing test active with its required behavior and failure sensitivity. Change an expectation only when a cited governing source changes that behavior; replace the test only when a stronger proof covers the same failure boundary.
+- Preserve proof of user-required behavior and actual consumer contracts. When an authorized reduction removes an internal mechanism or unwanted behavior, remove or update its obsolete tests together with the affected design; tests do not make that mechanism mandatory. Verify the retained outcome and changed boundary rather than weakening assertions to hide a remaining defect.
 - Use project-scoped setup and guaranteed cleanup for mutated state or external resources.
 - Treat coverage as diagnostic unless a governing source defines a threshold.
 
@@ -54,5 +54,5 @@ Evidence is substantive only when an executed assertion observes the exact consu
 - [ ] Required integration/E2E boundary is exercised
 - [ ] Every cited behavior has a consumer-visible capability probe
 - [ ] Repository-defined quality commands pass
-- [ ] No required test is skipped, hollow, or dependent on execution order
+- [ ] Required tests are active, substantive, isolated, and order-independent
 - [ ] Mutated state and resources are restored

@@ -10,49 +10,51 @@ This reference defines the orchestration flow for projects spanning multiple lay
 
 ## Design Phase
 
+The tables show agent work and results. User confirmation and implementation authority follow the shared Explicit Stop Points and Work Plan Authorization; a review result grants neither.
+
 ### Large Structural Scale Fullstack - 18 Steps
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
-| 1 | requirement-analyzer + orchestrator | Compact scope/cost evidence followed by orchestrator convergence and scale determination **[Stop]** | Converged requirements + scale |
+| 1 | requirement-analyzer + orchestrator | Compact scope/cost evidence followed by orchestrator convergence and scale determination | Converged requirements + scale |
 | 2 | prd-creator | PRD covering entire feature (all layers) | Single PRD |
-| 3 | document-reviewer | PRD review **[Stop]** | Approval |
+| 3 | document-reviewer | PRD review | Review result |
 | 4 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
 | 5 | (orchestrator) | Use a supplied or target-referenced prototype; request its path only when the UI target otherwise cannot be determined, then resolve its reference strength | Prototype path plus `binding` or `reference`, or none |
 | 6 | codebase-analyzer x2 + ui-analyzer x1 | Per-layer codebase analysis plus frontend UI analysis | Analysis JSON |
 | 7 | ui-spec-designer | UI Spec from PRD + UI analysis + optional prototype | UI Spec |
-| 8 | document-reviewer | UI Spec review **[Stop]** | Approval |
+| 8 | document-reviewer | UI Spec review | Review result |
 | 9 | orchestrator + technical-designer* | Apply both ADR filters and create one ADR per qualifying decision point | Created ADR paths or `[]` |
-| 10 | document-reviewer | Review the complete ADR batch together **[Stop when batch exists]** | Batch approval |
+| 10 | document-reviewer | Review the complete ADR batch together | Review result |
 | 11 | technical-designer | **Backend** Design Doc | Backend Design Doc |
 | 12 | technical-designer-frontend | **Frontend** Design Doc (references backend Integration Points + UI Spec + UI analysis) | Frontend Design Doc |
 | 13 | code-verifier x2 + orchestrator | Verify each Design Doc and apply Review Resolution | Resolved verification evidence |
 | 14 | document-reviewer x2 | Review each Design Doc with resolved verification evidence | Reviews |
-| 15 | design-sync | Cross-layer consistency verification (source: frontend Design Doc) **[Stop]** | Sync status |
+| 15 | design-sync | Cross-layer consistency verification (source: frontend Design Doc) | Sync status |
 | 16 | acceptance-test-generator | Integration/E2E test skeleton from cross-layer contracts | Test skeletons |
 | 17 | work-planner | Work plan from all Design Docs | Work plan |
-| 18 | document-reviewer | WorkPlan review **[Stop: Batch approval]** | Approval |
+| 18 | document-reviewer | WorkPlan review | Review result |
 
 ### Medium Structural Scale Fullstack - 16 Steps
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
-| 1 | requirement-analyzer + orchestrator | Compact scope/cost evidence followed by orchestrator convergence and scale determination **[Stop]** | Converged requirements + scale |
+| 1 | requirement-analyzer + orchestrator | Compact scope/cost evidence followed by orchestrator convergence and scale determination | Converged requirements + scale |
 | 2 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
 | 3 | (orchestrator) | Use a supplied or target-referenced prototype; request its path only when the UI target otherwise cannot be determined, then resolve its reference strength | Prototype path plus `binding` or `reference`, or none |
 | 4 | codebase-analyzer x2 + ui-analyzer x1 | Per-layer codebase analysis plus frontend UI analysis | Analysis JSON |
 | 5 | ui-spec-designer | UI Spec from requirements + UI analysis + optional prototype | UI Spec |
-| 6 | document-reviewer | UI Spec review **[Stop]** | Approval |
+| 6 | document-reviewer | UI Spec review | Review result |
 | 7 | orchestrator + technical-designer* | Apply both ADR filters and create one ADR per qualifying decision point | Created ADR paths or `[]` |
-| 8 | document-reviewer | Review the complete ADR batch together **[Stop when batch exists]** | Batch approval |
+| 8 | document-reviewer | Review the complete ADR batch together | Review result |
 | 9 | technical-designer | **Backend** Design Doc | Backend Design Doc |
 | 10 | technical-designer-frontend | **Frontend** Design Doc (references backend Integration Points + UI Spec + UI analysis) | Frontend Design Doc |
 | 11 | code-verifier x2 + orchestrator | Verify each Design Doc and apply Review Resolution | Resolved verification evidence |
 | 12 | document-reviewer x2 | Review each Design Doc with resolved verification evidence | Reviews |
-| 13 | design-sync | Cross-layer consistency verification (source: frontend Design Doc) **[Stop]** | Sync status |
+| 13 | design-sync | Cross-layer consistency verification (source: frontend Design Doc) | Sync status |
 | 14 | acceptance-test-generator | Integration/E2E test skeleton from cross-layer contracts | Test skeletons |
 | 15 | work-planner | Work plan from all Design Docs | Work plan |
-| 16 | document-reviewer | WorkPlan review **[Stop: Batch approval]** | Approval |
+| 16 | document-reviewer | WorkPlan review | Review result |
 
 ### Parallelization in Multi-Agent Steps
 
@@ -87,19 +89,19 @@ Before spawning, replace every context placeholder with a concrete context objec
 **Agent**: Spawn codebase-analyzer
 > "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for requirement confirmation, ADR selection, minimal frontend design, and verification. context: [layer scope evidence]. requirements: [original user requirements]. layer: frontend. target_paths: [frontend scope]. focus_areas: responsibility ownership, state/data paths, contracts, and reuse."
 
-### Verification Resolution
-
-Apply Review Resolution independently to each code-verifier result, using the matching technical designer for selected corrections and its bounded rerun rule. Provide document-reviewer with resolved verification evidence after each `apply` set becomes empty.
-
 **Frontend UI Analysis**:
 **Agent**: Spawn ui-analyzer
 > "exploration_mode: [mode from Analysis Assignment]. prior_evidence: [relevant available layer findings]. Gather UI facts for frontend design. context: [context with requirement_analysis filtered to frontend files]. requirements: [original user requirements]. target_paths: [frontend file and directory scope]. target_components: [frontend target components]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected by the external-evidence step, or []]. focus_areas: [remaining rendering, interaction, and visual questions]."
+
+### Verification Resolution
+
+Apply Review Resolution independently to each code-verifier result, using the matching technical designer for selected corrections and its bounded rerun rule. Provide document-reviewer with resolved verification evidence after each `apply` set becomes empty.
 
 ### design-sync for Cross-Layer Verification
 
 Spawn design-sync with `source_design` = frontend Design Doc (created last, referencing backend's Integration Points). design-sync auto-discovers other Design Docs in `docs/design/` for comparison.
 
-At the design approval stop, use the shared Design Approval alignment for the feature across both layers.
+At Design Confirmation, use the shared alignment for the feature across both layers.
 
 ## Test Skeleton Generation Phase
 
@@ -115,13 +117,13 @@ Spawn work-planner with all Design Docs:
 
 > "Create an implementation-focused work plan from the following documents: PRD: [path] (Large Scale only), Design Doc (backend): [path], Design Doc (frontend): [path], UI Spec: [path] (if exists). Test skeleton artifact paths from acceptance-test-generator: [artifacts[].path]. Compose phases around shared backend/frontend verification points and plan only repository implementation outcomes required by the Design Docs."
 
-Verify the returned Work Plan path and use it as the document-reviewer target. Work-planner's existing Integration Complete criteria naturally covers cross-layer verification when given multiple Design Docs.
+Verify the returned Work Plan path and use it as the document-reviewer target.
 
 After work-planner creates or updates the plan, spawn document-reviewer:
 
 > "Review the fullstack work plan. doc_type: WorkPlan. target: [work plan path]. Verify Design Doc and UI Spec implementation coverage, repository-only scope, cross-layer dependency order, executable verification, optional Verification Focus, and Review Scope."
 
-On `needs_revision`, apply Review Resolution with work-planner and review the updated plan. Route governing-source contradictions through Orchestrator Escalation Resolution. Stop for batch approval after WorkPlan review succeeds; after explicit user approval, record the plan-level status as approved.
+On `needs_revision`, apply Review Resolution with work-planner and review the updated plan. Route governing-source contradictions through Orchestrator Escalation Resolution. After WorkPlan review passes, apply Work Plan Authorization: use existing user authorization or obtain it when absent, and record the user's instruction and scope in Implementation Authorization.
 
 ## Task Decomposition Phase
 
