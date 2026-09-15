@@ -46,17 +46,7 @@ Compare every credible materially distinct option supported by current requireme
 
 ## Consequences
 
-### Positive Consequences
-
-- [List positive impacts on the project or system]
-
-### Negative Consequences
-
-- [List negative impacts or trade-offs that need to be accepted]
-
-### Neutral Consequences
-
-[List decision-relevant neutral changes, or N/A]
+- [List decision-relevant positive, negative, or neutral consequences and the affected owner; omit empty categories]
 
 ## Architecture Impact
 

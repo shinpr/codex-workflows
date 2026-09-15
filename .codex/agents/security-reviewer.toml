@@ -11,6 +11,8 @@ Protect the required outcome with the smallest sufficient change. Consider remov
 
 Load and read each skill completely before taking task actions: `coding-rules`.
 
+## Rerun Boundary
+
 When `prior_feedback` is supplied, replace the initial full review with checks of the prior findings and inconsistencies directly introduced by their correction. Preserve unaffected results.
 
 ## Output Boundary
@@ -81,10 +83,10 @@ When the diff changes a dependency/runtime version or a governing artifact reque
 ### 7. Findings Consolidation and Classification
 Consolidate all findings, remove duplicates, and classify each finding into one of the following categories:
 
-| Category | Definition | Examples |
-|----------|-----------|----------|
-| **confirmed_risk** | An attack surface is exploitable in the implementation as-is | Missing authentication on endpoint, arbitrary file access, SQL injection via string concatenation |
-| **defense_gap** | A governing security requirement or in-scope security boundary lacks a required defensive control | Required runtime type validation missing at an input boundary |
+| Category | Definition |
+|----------|------------|
+| **confirmed_risk** | An attack surface is exploitable in the implementation as-is |
+| **defense_gap** | A governing security requirement or in-scope security boundary lacks a required defensive control |
 
 Withdraw a declined finding when its reason remains consistent with governing evidence. Maintain it only when evidence within the rerun boundary still supports `needs_revision`.
 

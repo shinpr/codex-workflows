@@ -20,7 +20,7 @@ Load and read each skill completely before taking task actions: `documentation-c
 - the user-derived requirement boundary or relevant source wording and constraints; analysis and code-verification evidence when they affect the judgment
 - `prior_feedback`: previous complete result, dispositions, and correction diff or paths for a rerun
 
-For future-state design, when missing requirement provenance prevents judging necessity, return that specific gap to the parent as `blocked`; do not infer a requirement from the mechanism being reviewed. In reverse-engineer mode, judge faithful as-is coverage from code evidence. Verify the target or every ADR batch target exists. Follow sources only when they can change an in-scope finding.
+For future-state design, when missing requirement provenance prevents judging necessity, return that specific gap to the parent as `blocked`; treat the reviewed mechanism as unconfirmed until provenance establishes the requirement. In reverse-engineer mode, judge faithful as-is coverage from code evidence. Verify the target or every ADR batch target exists. Follow sources only when they can change an in-scope finding.
 
 ## Review Boundary
 
@@ -42,7 +42,7 @@ When `prior_feedback` is supplied, check only the prior findings and inconsisten
 ### PRD
 
 - Future-state creation contains one confirmed outcome, buildable current requirements, representative acceptance criteria, and user-decided exclusions or confirmed none.
-- Product Context preserves provenance and does not fabricate unknown business, UX, success, or feasibility claims.
+- Product Context preserves provenance and labels unknown business, UX, success, or feasibility claims as unknown.
 - Contextual unknowns permit approval; block only for an unresolved user decision that changes the outcome, requirement, exclusion, or AC.
 - Reverse-engineered/as-is PRDs may mark convergence fields N/A and record user decisions only when supplied by the user.
 
@@ -62,7 +62,7 @@ When `prior_feedback` is supplied, check only the prior findings and inconsisten
 
 - Screens/components, transitions, state/display behavior, interactions, and visual acceptance needed by confirmed requirements are implementable and traceable.
 - Loading, empty, error, responsive, accessibility, token, and browser behavior is required only when supported by a confirmed requirement, approved UI direction, preserved behavior, or applicable repository/design-system rule.
-- Speculative UI states and user-decided exclusions are not reintroduced.
+- UI states trace to the confirmed scope, with user-decided exclusions remaining excluded.
 
 ### Design Doc
 
@@ -73,7 +73,7 @@ When `prior_feedback` is supplied, check only the prior findings and inconsisten
 - A premise that can change design selection is supported by repository evidence or a bounded technical spike. Material Risks are limited to residual implementation uncertainty whose handling cannot change the selected design or add optional scope.
 - Changed responsibility, interfaces, data/state/persistence flow, exact boundary values, migration/flag behavior, security boundary, and verification are documented when applicable.
 - Acceptance criteria and verification use the smallest representative boundary that can prove the approved outcome.
-- Release execution, production access, external account setup, organizational approval, and unrelated operations are not implementation gates.
+- Implementation gates are limited to repository work and verification controlled by the implementation workflow; release execution, production access, external account setup, organizational approval, and unrelated operations remain separate.
 - Reverse-engineered/as-is Design Docs describe observed code with evidence and are exempt from future-state convergence and design-choice requirements.
 
 ### Work Plan
@@ -130,7 +130,7 @@ Use an empty `issues` array when none remain. Accept equivalent wording when the
 - The correct document type and next consumer were used.
 - An ADR batch was reviewed as one decision set rather than as independent files.
 - Every blocking issue identifies a listed artifact defect or the missing input preventing judgment.
-- No recommendation expands the current implementation scope through the approval gate.
+- Recommendations remain within the current implementation scope through the approval gate.
 - Prior declines were reconsidered against evidence rather than repeated automatically.
 - The final response is one usable JSON object.
 """

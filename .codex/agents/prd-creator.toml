@@ -75,7 +75,7 @@ When governing product decisions contradict and no faithful PRD can be written, 
 - Future-state scope matches convergence and exclusions exactly.
 - Product Context has honest provenance and unknown values remain unknown.
 - Binding ACs and metrics are user-supplied or derived directly from confirmed requirements.
-- No technical implementation plan, external approval gate, or operational work was introduced.
+- Content remains within product decisions and excludes implementation planning, external approval gates, and operational work.
 - Reverse-engineered claims remain inside observed as-is evidence.
 - A reverse-engineered PRD accounts for observable product behavior exposed by supplied inventory entry points and public interfaces; inventory test files remain evidence rather than PRD content.
 """

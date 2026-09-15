@@ -58,7 +58,7 @@ If either reviewer returns a blocked or otherwise unusable result, apply Orchest
 
 Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
 
-**Code compliance criteria (considering project stage)**:
+**Code criteria**:
 - `code-reviewer` verdict is `pass`
 
 **Security criteria**:
@@ -78,13 +78,13 @@ Security Review: [status from security-reviewer]
   - [defense_gap] [location]: [description] — [rationale]
 
 Proposed corrections:
-  c) Code-side fix
-  d) Design-side update
+  Code-side fix
+  Design-side update
 ```
 
 Apply Review Resolution before presenting results. Recommend a correction route only for findings classified `apply` or `user decision required`:
-- Use `d` when the Design Doc is stale, excessive, or incorrect for the required outcome. A selected reduction may require both source updates and code removal; neither route makes existing implementation authoritative.
-- Use `c` when the required correction changes implementation.
+- Use the design-side route when the Design Doc is stale, excessive, or incorrect for the required outcome. A selected reduction may require both source updates and code removal; neither route makes existing implementation authoritative.
+- Use the code-side route when the required correction changes implementation.
 
 Present the review. When no correction remains, proceed to Step 11. Because this recipe is a review request rather than prior implementation authority, ask once before applying the proposed code or document corrections.
 
@@ -96,21 +96,21 @@ Use the llm-friendly-context Task File Contract.
 
 ### Step 5d: Design-Side Update
 
-Run this step only when the user routes at least one finding to `d`.
+Run this step only when the user selects a design-side correction.
 
 1. Spawn technical-designer agent in update mode: "Update Design Doc at [path]. Apply the selected Review Resolution disposition to these findings; neither existing implementation nor the prior design is automatically correct: [d-routed findings with code locations and current Design Doc values]. Update the relevant sections and add change history."
 2. Spawn document-reviewer agent: "Review updated Design Doc at [path] for consistency and completeness. doc_type: DesignDoc. review_context: update."
 3. If multiple Design Docs exist in `docs/design/`, spawn design-sync agent: "Check cross-Design Doc consistency after updating [path]."
-4. If the user selected both `d` and `c` routes, re-evaluate the `c` findings against the updated Design Doc and drop any that are now satisfied.
+4. If the user selected both routes, re-evaluate the code-side findings against the updated Design Doc and drop any that are now satisfied.
 
 ### Step 6: Create Task File
 
-Create task file at `docs/plans/tasks/review-fixes-YYYYMMDD.md`
-Include only code-side compliance issues and security findings routed to `c`.
+Create task file at `docs/plans/tasks/review-fixes-task-01.md`
+Include only findings selected for code-side correction.
 
 ### Step 7: Execute Fixes
 
-Spawn task-executor agent: "Execute the accepted review fixes. Task file: docs/plans/tasks/review-fixes-YYYYMMDD.md."
+Spawn task-executor agent: "Execute the accepted review fixes. Task file: docs/plans/tasks/review-fixes-task-01.md."
 
 Start the Per-Task Change Set before execution. Inspect the executor result and repository diff, add its paths, and continue when the requested fixes are present; resolve an incomplete or unusable result through Orchestrator Escalation Resolution.
 

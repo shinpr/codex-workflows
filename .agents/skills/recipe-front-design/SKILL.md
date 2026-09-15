@@ -115,7 +115,7 @@ After UI fact gathering completes, create the UI Specification:
 - Resolve `needs_revision` through Review Resolution with ui-spec-designer, then review the updated UI Spec. Route governing-source contradictions through Orchestrator Escalation Resolution before the user confirmation stop.
 
 **[STOP -- BLOCKING]** Present UI Spec for user confirmation.
-**CANNOT proceed until user explicitly confirms the UI Spec.**
+Proceed after the user explicitly confirms the UI Spec.
 
 ### Step 8: Design Document Creation Phase
 Create appropriate design documents from confirmed scope and decision materials:
@@ -125,13 +125,13 @@ Create appropriate design documents from confirmed scope and decision materials:
   **[STOP -- BLOCKING when ADRs were created]** Wait for one user confirmation of the reviewed ADR batch before creating the Design Doc.
 
 - Record every approved ADR file as `Accepted` when ADRs were created. For Design Doc, spawn technical-designer-frontend with `document_to_create: DesignDoc`, `adr_paths: [accepted ADR paths or []]`, confirmed requirements, approved UI Spec, and `decision_materials: [only analysis material that changes reuse, simplification, implementation validity, a selected ADR decision, a preserved contract, or verification]`. The confirmed requirements define scope, and selected ADR decisions supply the current technical choices, revisable when a smaller sufficient design is supported.
-- Spawn code-verifier agent: "Verify Design Doc against code. doc_type: design-doc. document_path: [document path]. verbose: false."
+- Spawn code-verifier agent: "Verify Design Doc against code. doc_type: design-doc. document_path: [document path]."
 - Apply Review Resolution to every code-verifier discrepancy, using technical-designer-frontend in update mode for selected corrections and its bounded rerun rule. Carry the resolved verification summary, declines with reasons, and material limitations after the `apply` set becomes empty.
 - Review the Design Doc: Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. review_context: creation. target: [Design Doc path]. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. decision_materials: [only analysis material that constrains this design]. verification_resolution: [resolved code-verifier evidence]."
 - Resolve `needs_revision` through Review Resolution with technical-designer-frontend, then review the updated Design Doc. Route governing-source contradictions through Orchestrator Escalation Resolution. Reach the user confirmation stop after review succeeds.
 
 **[STOP -- BLOCKING]** Obtain user confirmation using the shared Design Confirmation alignment.
-**CANNOT proceed until user explicitly confirms the design document.**
+Proceed after the user explicitly confirms the design document.
 
 ## Completion Criteria
 

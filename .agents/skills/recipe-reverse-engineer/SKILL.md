@@ -31,11 +31,7 @@ Target: $ARGUMENTS
 
 ### 0.1 Scope Confirmation
 
-Ask the user to confirm:
-1. **Target path**: Which directory/module to document
-2. **Depth**: PRD only, or PRD + Design Docs
-3. **Reference Architecture**: layered / mvc / clean / hexagonal / none
-4. **Human review**: Yes (recommended) / No (fully autonomous)
+Resolve the target path and requested document depth from `$ARGUMENTS`. Ask only for either value that remains ambiguous. Use `reference_architecture: none` unless the user supplied an architecture hint. Enable human review when requested; otherwise continue autonomously.
 
 ### 0.2 Output Configuration
 
@@ -72,10 +68,9 @@ Spawn scope-discoverer agent: "Discover functional scope targets in the codebase
 - No units discovered -> ask user for hints
 - `$STEP_1_OUTPUT.prdUnits` exists
 - All `sourceUnits` across `prdUnits` (flattened, deduplicated) match the set of `discoveredUnits` IDs — no unit missing, no unit duplicated
-- Each discovered unit's `unitInventory` has at least one non-empty category. If all categories are empty, re-run discovery with focus on that unit
+- Each discovered unit's `unitInventory` records observed entries and any material coverage limitation; an evidence-backed empty category is valid
 
-**[STOP — BLOCKING]** If human review enabled: Present `$STEP_1_OUTPUT.prdUnits` with their source unit mapping to user for confirmation.
-**CANNOT proceed until user explicitly confirms.**
+**[STOP — BLOCKING]** If human review is enabled, present `$STEP_1_OUTPUT.prdUnits` with their source unit mapping and proceed after the user explicitly confirms.
 
 ### Step 2-5: Per-Unit Processing
 
@@ -95,7 +90,7 @@ Spawn prd-creator agent: "Create reverse-engineered PRD for the following featur
 
 **Prerequisite**: $STEP_2_OUTPUT (PRD path from Step 2)
 
-Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. code_paths: $PRD_UNIT_COMBINED_RELATED_FILES. unit_inventory: $PRD_UNIT_INVENTORY. verbose: false."
+Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. code_paths: $PRD_UNIT_COMBINED_RELATED_FILES. unit_inventory: $PRD_UNIT_INVENTORY."
 
 Apply Review Resolution to every discrepancy. Pass the `apply` discrepancies to prd-creator in update mode, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$STEP_3_RESOLUTION` after the `apply` set becomes empty. A blocked or unusable result enters Orchestrator Escalation Resolution.
 
@@ -112,13 +107,7 @@ If `verdict.decision` is `rejected`, apply Orchestrator Escalation Resolution. C
 #### Step 5: Revision (conditional)
 
 - If `verdict.decision` is `needs_revision`, apply Review Resolution with prd-creator, then retain the review of the updated artifact as the current review.
-- After the applicable revision bullets complete, continue to Unit Completion.
-
-#### Unit Completion
-
-- [ ] Human review passed (if enabled in Step 0)
-
-**Next**: Proceed to next unit. After all units -> Phase 2.
+- After the applicable revision bullets complete, proceed to the next unit. After all units, continue to Phase 2.
 
 ## Phase 2: Design Doc Generation
 
@@ -197,7 +186,7 @@ Spawn technical-designer agent: "Create Design Doc for the following feature bas
 
 #### Step 8: Code Verification
 
-Spawn code-verifier agent: "Verify consistency between Design Doc and code implementation. doc_type: design-doc. document_path: $STEP_7_OUTPUT. code_paths: $UNIT_SCOPE_BOUNDARY. unit_inventory: $UNIT_INVENTORY. verbose: false."
+Spawn code-verifier agent: "Verify consistency between Design Doc and code implementation. doc_type: design-doc. document_path: $STEP_7_OUTPUT. code_paths: $UNIT_SCOPE_BOUNDARY. unit_inventory: $UNIT_INVENTORY."
 
 Apply Review Resolution to every discrepancy. Pass the `apply` discrepancies to technical-designer in update mode, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$STEP_8_RESOLUTION` after the `apply` set becomes empty. A blocked or unusable result enters Orchestrator Escalation Resolution.
 
@@ -214,13 +203,7 @@ If `verdict.decision` is `rejected`, apply Orchestrator Escalation Resolution. C
 #### Step 10: Revision (conditional)
 
 - If `verdict.decision` is `needs_revision`, apply Review Resolution with technical-designer, then retain the review of the updated artifact as the current review.
-- After the applicable revision bullets complete, continue to Unit Completion.
-
-#### Unit Completion
-
-- [ ] Human review passed (if enabled in Step 0)
-
-**Next**: Proceed to next unit. After all units -> Final Report.
+- After the applicable revision bullets complete, proceed to the next unit. After all units, continue to Final Report.
 
 ## Final Report
 
@@ -234,13 +217,13 @@ Output summary including:
 | Error | Action |
 |-------|--------|
 | Discovery finds nothing | Ask user for project structure hints |
-| Generation fails | Log failure, continue with other units, report in summary |
+| Generation fails | Continue independent units and report the failed unit and reason in the final summary |
 | Code verification is blocked or unusable | Apply Orchestrator Escalation Resolution with the exact input or evidence problem |
 | Review Resolution requires a user-owned decision | Apply Orchestrator Escalation Resolution |
 
 ## Completion Criteria
 
-- [ ] Scope confirmed with user (target path, depth, architecture, human review preference)
+- [ ] Target path and document depth were resolved; any requested architecture hint or human review was applied
 - [ ] Output directories verified/created
 - [ ] Phase 1: All PRD units discovered and processed (generation -> verification -> review -> revision)
 - [ ] Phase 2: All Design Doc units processed (if requested)

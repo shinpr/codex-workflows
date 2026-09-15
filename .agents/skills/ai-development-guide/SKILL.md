@@ -13,7 +13,7 @@ Read [references/frontend.md](references/frontend.md) only for React or TypeScri
 
 Deliver the user's required outcome with the least justified total complexity. Unnecessary implementation creates maintenance, verification, operational, and review obligations. Every role is responsible for avoiding those obligations, including by correcting upstream choices.
 
-Phase passage permits progress; it does not prove a technical means is necessary. Reconsider and remove or supersede means recorded in a Design Doc, ADR, plan, AC, or test when the required outcome remains satisfied. Preserve user-required outcomes, explicit constraints, actual consumer contracts, and external-action authority. For authorized feature removal, check remaining consumers; the removed entry point and its now-unused backend do not create a preservation obligation. Coordinate affected source and consumer updates through the orchestrator; prior passage alone does not require another user decision.
+Phase passage permits progress; technical necessity remains a separate evidence-backed lifecycle decision. Reconsider and remove or supersede means recorded in a Design Doc, ADR, plan, AC, or test when the required outcome remains satisfied. Preserve user-required outcomes, explicit constraints, actual consumer contracts, and external-action authority. For authorized feature removal, check remaining consumers; the removed entry point and its now-unused backend create no preservation obligation. Coordinate affected source and consumer updates through the orchestrator; existing execution authority continues for outcome-preserving technical reductions.
 
 Investigate, repair, refactor, and verify only as far as one of these requires:
 
@@ -22,7 +22,7 @@ Investigate, repair, refactor, and verify only as far as one of these requires:
 - an observed failure or contradiction in the changed path;
 - an evidence-backed material risk created or exposed by the change.
 
-Evidence establishes a candidate, not an obligation. Adopt work only when it is necessary now and its benefit justifies total lifecycle cost over no change, subtraction, or reuse. A required outcome defect still needs a sufficient response. Keep unrelated debt outside the change.
+Evidence makes a candidate evaluable. Adopt work only when it is necessary now and its benefit justifies total lifecycle cost over no change, subtraction, or reuse. A required outcome defect still needs a sufficient response. Keep unrelated debt outside the change.
 
 ## Root-Cause Discipline
 
@@ -55,7 +55,7 @@ For an observed bug or regression, inspect adjacent cases that share its support
 - Reuse or extend an existing element when it owns the same responsibility and represents the repository’s current pattern.
 - Keep similar local code separate when its responsibilities may evolve independently or abstraction adds more contract surface than it removes.
 - Introduce shared state, public fields, modes, flags, fallbacks, abstractions, services, or dependencies only when current evidence requires them.
-- Resolve technical reductions within the authorized outcome, updating affected design assumptions and proof. Return changes to user-required outcomes, explicit constraints, actual consumer obligations, or irreversible-action authority to the orchestrator; an internal architecture change alone is not a user approval gate.
+- Resolve technical reductions within the authorized outcome and existing execution authority, updating affected design assumptions and proof. Return changes to user-required outcomes, explicit constraints, actual consumer obligations, or irreversible-action authority to the orchestrator for user approval.
 
 ## Error and Fallback Safety
 
@@ -77,7 +77,7 @@ Fix failures caused by the current change and failures within required dependenc
 
 - [ ] The implementation maps to the confirmed outcome or an evidence-backed required dependency or risk.
 - [ ] An observed defect was corrected at its supported cause rather than hidden.
-- [ ] An observed failure does not remain active in an adjacent in-scope case that shares the same supported cause.
+- [ ] Adjacent in-scope cases sharing the supported cause are corrected or evidenced unaffected.
 - [ ] Public, persistent, security, and error boundaries affected by the change remain correct.
 - [ ] Applicable focused and repository-required checks pass, or an exact environmental limitation is reported.
 - [ ] Every added mechanism or cleanup item is required by the confirmed outcome or its evidence-backed dependency or risk.

@@ -48,7 +48,7 @@ For `blocked`, state the affected source and smallest correction, or the missing
 ## Completion Check
 
 - The supplied taskWriteSet was the primary quality scope.
-- Applicable repository checks pass; unrelated checks were neither invented nor silently treated as required.
+- Applicable repository checks pass, with the required set grounded in the task, changed files, manifests, configuration, or CI.
 - Required operation evidence remains valid after quality fixes.
 - `filesModified` contains every file changed by this quality pass.
 - The final response is one usable JSON object.

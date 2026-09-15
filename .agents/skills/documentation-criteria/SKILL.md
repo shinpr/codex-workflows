@@ -19,7 +19,7 @@ description: "Determines which PRD, ADR, UI Spec, Design Doc, and Work Plan a ch
 |------------------|----------------|----------------|
 | Small | None | N/A |
 | Medium | Design Doc -> Work Plan | Start with Design Doc |
-| Large | PRD -> Design Doc -> Work Plan | Continue after PRD approval |
+| Large | PRD* -> Design Doc -> Work Plan | Continue after product-scope approval |
 
 Build one path in this order:
 
@@ -27,7 +27,7 @@ Build one path in this order:
 2. Frontend or fullstack scope inserts UI Spec immediately before the Design Doc.
 3. One or more qualifying ADR decision points insert an ADR batch immediately before the Design Doc. A qualifying decision point sets the scale floor to Medium.
 
-**ENFORCEMENT**: EVALUATE structural scale and ADR conditions BEFORE starting implementation
+\* A design recipe that does not create PRDs may carry the confirmed convergence record directly only after the user explicitly authorizes proceeding without a PRD.
 
 ## Structural Scale
 

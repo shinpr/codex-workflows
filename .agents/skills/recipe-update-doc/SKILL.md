@@ -27,7 +27,6 @@ description: "Update existing design documents (Design Doc / PRD / ADR) with rev
 3. **Scope**: Return the reviewed update through Step 6
 
 Execute document-reviewer before completion; Step 6 owns finalization.
-ENFORCEMENT: Skipping document-reviewer risks propagating inconsistencies to downstream workflows.
 
 ## Workflow Overview
 
@@ -69,7 +68,7 @@ Check for existing documents in docs/design/, docs/prd/, docs/adr/.
 | $ARGUMENTS specifies a path | Use specified document |
 | $ARGUMENTS describes a topic | Search documents matching the topic |
 | Multiple candidates found | Present options to user |
-| No documents found | Report and end (suggest $recipe-design instead) |
+| No documents found | Report that the requested update target does not exist and end |
 
 ### Step 2: Document Type and Layer Determination
 
@@ -108,7 +107,7 @@ For a minor ADR change, spawn the update agent with `Operation Mode: update`, th
 
 For Design Doc updates, first verify the updated document against code:
 
-Spawn code-verifier agent: "Verify the updated Design Doc against current code. doc_type: design-doc. document_path: [path from Step 1]. verbose: false. Focus especially on literal identifier referential integrity for concrete paths, endpoints, type names, config keys, and other exact identifiers changed in this update."
+Spawn code-verifier agent: "Verify the updated Design Doc against current code. doc_type: design-doc. document_path: [path from Step 1]. Focus especially on literal identifier referential integrity for concrete paths, endpoints, type names, config keys, and other exact identifiers changed in this update."
 
 Apply Review Resolution to every discrepancy. Pass the `apply` discrepancies to the update agent, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$VERIFICATION_RESOLUTION` after the `apply` set becomes empty.
 
@@ -140,7 +139,7 @@ For Design Doc, spawn design-sync agent: "Verify consistency of the updated Desi
 
 | Error | Action |
 |-------|--------|
-| Target document not found | Report and end (suggest $recipe-design instead) |
+| Target document not found | Report that the requested update target does not exist and end |
 | Sub-agent update fails or returns an unusable result | Apply Orchestrator Escalation Resolution |
 | Review Resolution requires a user-owned decision | Apply Orchestrator Escalation Resolution |
 | design-sync detects conflicts | Apply Orchestrator Escalation Resolution against the governing sources |

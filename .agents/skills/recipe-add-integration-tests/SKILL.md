@@ -20,8 +20,6 @@ description: "Add integration/E2E tests to existing codebase using Design Docs."
 
 **Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
-**Why Spawn**: Orchestrator's context is shared across all steps. Direct implementation consumes context needed for review and quality check phases. Task files create context boundaries. Subagents work in isolated context.
-
 **Execution Method**:
 - Skeleton generation -> Spawn acceptance-test-generator agent
 - Task file creation -> Orchestrator creates directly (minimal context usage)
@@ -44,15 +42,7 @@ Use the llm-friendly-context Task File Contract in Step 3.
 
 ### Step 1: Discover and Validate Documents
 
-```bash
-# Verify at least one document path was provided
-test -n "$ARGUMENTS" || { echo "ERROR: No document paths provided"; exit 1; }
-
-# Verify provided paths exist
-ls $ARGUMENTS
-```
-
-Treat the user-provided paths in `$ARGUMENTS` as the complete document selection.
+Require at least one supplied, readable document path. Treat the user-provided paths in `$ARGUMENTS` as the complete document selection.
 
 Treat paths under `docs/ui-spec/` as UI Specs and the supplied `docs/design/` paths as Design Docs. When a filename is unclear, use the document title and content; layer classification is not an execution gate because the generator returns each artifact's implementation kind.
 
@@ -81,8 +71,8 @@ Group the returned artifacts by `implementationKind` and create at most one task
 
 | implementationKind | Task file | Executor | Quality fixer |
 |---|---|---|---|
-| `general` | `docs/plans/tasks/integration-tests-task-YYYYMMDD.md` | `task-executor` | `quality-fixer` |
-| `frontend` | `docs/plans/tasks/integration-tests-frontend-task-YYYYMMDD.md` | `task-executor-frontend` | `quality-fixer-frontend` |
+| `general` | `docs/plans/tasks/integration-tests-task-01.md` | `task-executor` | `quality-fixer` |
+| `frontend` | `docs/plans/tasks/integration-tests-frontend-task-01.md` | `task-executor-frontend` | `quality-fixer-frontend` |
 
 Populate the llm-friendly-context Task File Contract with:
 

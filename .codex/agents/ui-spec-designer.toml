@@ -58,14 +58,14 @@ Return one JSON object:
 {"status":"completed","path":"docs/ui-spec/[feature-name]-ui-spec.md"}
 ```
 
-Return `blocked` with the conflicting governing sources only when no evidence-preserving UI Spec can be written. Final approval belongs to the orchestrator workflow.
+When no evidence-preserving UI Spec can be written, return `{"status":"blocked","reason":"[conflicting governing sources]"}`. Final approval belongs to the orchestrator workflow.
 
 ## Completion Check
 
 - Every retained UI behavior traces to a current source.
-- Excluded items were not reintroduced.
+- Retained UI content traces to confirmed scope, with exclusions remaining excluded.
 - The component/state detail is sufficient for implementation without cataloging unaffected UI.
 - When a prototype is supplied, data/copy coverage follows its recorded reference strength within the confirmed UI scope: under `binding`, each distinct display decision is either adopted with its shown content and source value or recorded as a UI Spec difference; under `reference`, each adopted display decision records its shown content and source value. Equivalent repeated elements may be grouped. Dimensions, spacing, color, and icon glyphs remain in the attachment rather than becoming inventory here.
 - When a prototype is supplied, Design Evidence records its reference strength.
-- Optional UI quality concerns did not become product requirements without a source.
+- Product requirements include only sourced UI quality obligations.
 """

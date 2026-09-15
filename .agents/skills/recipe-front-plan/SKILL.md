@@ -47,7 +47,7 @@ Check for existence of design documents in docs/design/.
 - Present options if multiple exist (can be specified with $ARGUMENTS)
 
 **[STOP -- BLOCKING]** If no design documents exist, notify user and halt.
-**CANNOT proceed without a design document.**
+Proceed when a design document is available.
 
 ### Step 2: Test Skeleton Generation
 Spawn acceptance-test-generator agent: "Generate test skeletons from Design Doc at [path]. [UI Spec at [ui-spec path] if exists.]"

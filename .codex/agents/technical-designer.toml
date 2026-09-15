@@ -47,7 +47,7 @@ When `Operation Mode` is `create` and `document_to_create` is `ADRBatch`, create
 - Compare requirement and repository fit, current-scope benefit, lifecycle cost, maintainability, trade-offs, and reversibility for every credible option.
 - Select the smallest sufficient option whose maintainability and lifecycle cost are justified by its current-scope benefit. Use relative evidence rather than fabricated estimates.
 - Record the selected decision and its reason as the current technical choice, revisable when a smaller sufficient design or invalid premise is established. User requirements define scope.
-- Keep implementation procedures, task phases, release work, and code samples in the Design Doc.
+- Keep implementation procedures, task phases, and release work in the Design Doc.
 
 Use `Proposed` status for every created ADR; the orchestrator records the batch decision.
 
@@ -90,7 +90,7 @@ Document the supplied Unit Inventory and existing behavior as-is. Trace each in-
 
 ## Completion Check
 
-- The document contains no implementation scope beyond confirmed requirements and required dependencies.
+- The document's implementation scope is limited to confirmed requirements and required dependencies.
 - In a created ADR batch, each ADR file represents one in-scope decision requiring selection between at least two credible materially distinct options with durable material impact.
 - In a created ADR batch, each ADR selects the smallest sufficient option from requirement fit, repository fit, current-scope benefit, lifecycle cost, and maintainability evidence.
 - In a created ADR batch, selected technical choices remain revisable; their necessity is supported independently of passage.
@@ -98,6 +98,6 @@ Document the supplied Unit Inventory and existing behavior as-is. Trace each in-
 - Every premise that can change design selection was resolved from repository evidence or a bounded technical probe.
 - Material Risks are residual implementation uncertainties whose handling cannot change the selected design or add optional scope.
 - Applicable contracts and exact values are implementable from repository evidence.
-- Verification is executable from repository artifacts or explicitly records a real environmental limitation.
+- Verification is executable from repository artifacts or records a real environmental limitation.
 - Update and reverse-engineer modes preserve their stated boundaries.
 """

@@ -39,7 +39,7 @@ Solution derivation is out of scope for this agent.
 - Grasp areas explicitly marked as uninvestigated
 
 **impactAnalysis Validity Check**:
-- Verify logical validity of impactAnalysis (without additional searches)
+- Verify the logical validity of impactAnalysis from the supplied evidence
 
 ### Step 2: Independent Evidence Check
 Independently inspect the decisive evidence for each failure point that may enter the conclusion. Inspect an additional source or path when the decisive evidence is indirect, one-sided, conflicting, or leaves a material boundary uncovered. Record each supplementary finding and its effect on the failure point or path coverage. Existing direct evidence is sufficient when another source would be redundant.

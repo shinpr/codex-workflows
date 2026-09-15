@@ -44,12 +44,9 @@ Use locators in this priority order:
 | Tablet | 768px | UI Spec defines tablet layout differences |
 | Desktop | 1280px | The selected UI claim requires a desktop journey |
 
-### E2E Budget
+### E2E Selection
 
-- Limit fixture-e2e to 3 tests and service-integration-e2e to 1-2 tests per feature
-- Treat limits as ceilings, not reserved slots or targets
-- Apply the integration-e2e-testing Selection Gate before generating any browser test
-- Prefer fewer comprehensive journey tests over many granular tests
+Apply the integration-e2e-testing Selection Gate and its lane ceilings before generating a browser test. Prefer the fewest journeys that prove distinct required boundaries.
 
 ### Test Isolation
 

@@ -22,7 +22,6 @@ Load and read each skill completely before taking task actions: `documentation-c
   - `clean`: Clean Architecture (entities/use-cases/adapters/frameworks)
   - `hexagonal`: Hexagonal/Ports-and-Adapters
   - `none`: Pure bottom-up discovery (default)
-- **verbose**: Output detail level (optional, default: false)
 
 ## Output Scope
 
@@ -37,21 +36,6 @@ When `reference_architecture` is provided:
 - Use its layer definitions to classify discovered code into layers
 - Validate unit boundaries against those expectations
 - Record deviations in `uncertainAreas`
-
-### Discovery Sources
-
-| Source | Priority | Perspective | What to Look For |
-|--------|----------|-------------|------------------|
-| Routing/Entry Points | 1 | User-value | URL patterns, API endpoints, CLI commands |
-| Test Files | 2 | User-value | E2E tests, integration tests (often named by feature) |
-| User-facing Components | 3 | User-value | Pages, screens, major UI components |
-| Module Structure | 4 | Technical | Service classes, controllers, repositories |
-| Public Interfaces | 5 | Technical | Public APIs, exported functions, data shapes/schemas |
-| Dependency Graph | 6 | Technical | Import/export relationships, DI configurations |
-| Directory Structure | 7 | Both | Feature-based directories, domain directories |
-| Data Flow | 8 | Technical | Data transformations, state management |
-| Documentation | 9 | Both | README, existing docs, comments |
-| Infrastructure | 10 | Technical | Database schemas, external service integrations |
 
 ### Execution Steps
 
@@ -137,7 +121,7 @@ Report actual `sourceCount` as provenance, not a confidence threshold. Seek inde
 
 **JSON format is mandatory.**
 
-### Essential Output
+### Result Schema
 
 ```json
 {"targetPath":"/path/to/project","referenceArchitecture":"layered|mvc|clean|hexagonal|none","existingPrd":"path or null","saturationReached":true,"discoveredUnits":[{"id":"UNIT-001","name":"Unit Name","description":"Brief description","confidence":"high|medium|low","triangulationStrength":"strong|moderate|weak","sourceCount":3,"entryPoints":["/path1","/path2"],"relatedFiles":["src/feature/*"],"dependencies":["UNIT-002"],"valueProfile":{"targetPersona":"Who this feature serves (e.g., 'end user', 'admin', 'developer')","userGoal":"What the user is trying to accomplish with this feature","valueCategory":"High-level capability this belongs to (e.g., 'Authentication', 'Content Management', 'Reporting')","groupingKey":{"targetPersona":"end-user","userGoal":"sign-in","valueCategory":"authentication"}},"technicalProfile":{"primaryModules":["src/auth/service.ts","src/auth/controller.ts"],"publicInterfaces":["AuthService.login()","AuthController.handleLogin()"],"dataFlowSummary":"Request → Controller → Service → Repository → DB","infrastructureDeps":["database","redis-cache"]},"unitInventory":{"routes":["POST /login -> AuthController.handleLogin (src/auth/controller.ts:24)"],"testFiles":["src/auth/service.test.ts"],"publicExports":["AuthService (src/auth/service.ts:10)"]}}],"relationships":[{"from":"UNIT-001","to":"UNIT-002","type":"depends_on|extends|shares_data"}],"uncertainAreas":[{"area":"Area name","reason":"Why uncertain","suggestedAction":"What to do"}],"prdUnits":[{"id":"PRD-001","name":"PRD unit name (user-value level)","description":"What this capability delivers to the user","groupingKey":{"targetPersona":"end-user","userGoal":"sign-in","valueCategory":"authentication"},"sourceUnits":["UNIT-001","UNIT-003"],"combinedRelatedFiles":["src/feature-a/*","src/feature-b/*"],"combinedEntryPoints":["/path1","/path2","/path3"]}],"limitations":["What could not be discovered and why"]}
@@ -145,28 +129,12 @@ Report actual `sourceCount` as provenance, not a confidence threshold. Seek inde
 
 ## Completion Criteria
 
-- [ ] Analyzed routing/entry points
-- [ ] Identified user-facing components
-- [ ] Reviewed test structure for feature organization
-- [ ] Detected module/service boundaries
-- [ ] Mapped public interfaces
-- [ ] Enumerated per-unit inventory for routes, test files, and public exports
-- [ ] Analyzed dependency graph
-- [ ] Applied granularity criteria (split/merge as needed)
-- [ ] Identified value profile (persona, goal, category) for each unit
-- [ ] Mapped discovered units to evidence sources
-- [ ] Assessed triangulation strength for each unit
-- [ ] Documented relationships between units
+- [ ] Each unit has an evidence-backed user-value and technical boundary
+- [ ] `unitInventory` accounts for the routes, test files, and public exports found within the requested scope
 - [ ] Reached saturation or documented why not
-- [ ] Listed uncertain areas and limitations
 - [ ] Grouped discovered units into PRD units (step 8), preserving every discovered unit in exactly one group
+- [ ] Confidence marks evidence directness, corroboration where needed, and unresolved contradictions; `sourceCount` records actual provenance
+- [ ] Output is limited to evidence-backed scope discovery
 - [ ] Final response is the JSON output
-
-## Output Self-Check
-- [ ] Output is limited to scope discovery (no PRD or Design Doc content generated)
-- [ ] Every discovery is backed by evidence (no assumptions without sources)
-- [ ] Low-confidence discoveries are reported with appropriate confidence markers
-- [ ] Confidence reflects evidence directness, independent corroboration where needed, and unresolved contradictions; sourceCount records actual provenance
-- [ ] Saturation check was performed before concluding discovery
 
 """

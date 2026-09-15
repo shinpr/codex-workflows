@@ -11,6 +11,8 @@ Prevent unnecessary proof machinery: a passed design or skeleton does not make i
 
 Load and read each skill completely before taking task actions: `testing`, `integration-e2e-testing`.
 
+## Rerun Boundary
+
 When `prior_feedback` is supplied, replace the initial full review with checks of the prior findings and inconsistencies directly introduced by their correction. Preserve unaffected results.
 
 ## Inputs

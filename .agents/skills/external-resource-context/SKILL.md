@@ -52,7 +52,7 @@ Load the domain reference matching the current task:
 | Infrastructure or deployment | [references/infra.md](references/infra.md) |
 | Fullstack | Load each relevant domain reference |
 
-Each domain reference defines candidate axes and question templates. Record only the axes selected for the current decision; use `N/A` when an inspected axis is outside the current project.
+Each domain reference defines candidate axes and question templates. Record only the axes selected for the current decision.
 
 ### Focused Hearing
 
@@ -77,8 +77,6 @@ Consumers resolve external context in this order:
 1. Read the matching label from `docs/project-context/external-resources.md`.
 2. Read the matching feature identifier from the target UI Spec or Design Doc when present.
 3. Fetch or inspect only the resource needed by the current decision.
-
-Codex custom agents inherit parent `mcp_servers` when the agent file omits `mcp_servers`. Preserve that inheritance for agents that may need project-specific MCP tools. Reserve MCP `enabled_tools` for a deliberately narrow server-level allow list.
 
 ## Output Format
 

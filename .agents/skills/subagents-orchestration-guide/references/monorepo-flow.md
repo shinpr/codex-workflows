@@ -89,13 +89,13 @@ Before spawning, replace every context placeholder with a concrete context objec
 **Agent**: Spawn codebase-analyzer
 > "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for requirement confirmation, ADR selection, minimal frontend design, and verification. context: [layer scope evidence]. requirements: [original user requirements]. layer: frontend. target_paths: [frontend scope]. focus_areas: responsibility ownership, state/data paths, contracts, and reuse."
 
-### Verification Resolution
-
-Apply Review Resolution independently to each code-verifier result, using the matching technical designer for selected corrections and its bounded rerun rule. Provide document-reviewer with resolved verification evidence after each `apply` set becomes empty.
-
 **Frontend UI Analysis**:
 **Agent**: Spawn ui-analyzer
 > "exploration_mode: [mode from Analysis Assignment]. prior_evidence: [relevant available layer findings]. Gather UI facts for frontend design. context: [context with requirement_analysis filtered to frontend files]. requirements: [original user requirements]. target_paths: [frontend file and directory scope]. target_components: [frontend target components]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected by the external-evidence step, or []]. focus_areas: [remaining rendering, interaction, and visual questions]."
+
+### Verification Resolution
+
+Apply Review Resolution independently to each code-verifier result, using the matching technical designer for selected corrections and its bounded rerun rule. Provide document-reviewer with resolved verification evidence after each `apply` set becomes empty.
 
 ### design-sync for Cross-Layer Verification
 
@@ -117,7 +117,7 @@ Spawn work-planner with all Design Docs:
 
 > "Create an implementation-focused work plan from the following documents: PRD: [path] (Large Scale only), Design Doc (backend): [path], Design Doc (frontend): [path], UI Spec: [path] (if exists). Test skeleton artifact paths from acceptance-test-generator: [artifacts[].path]. Compose phases around shared backend/frontend verification points and plan only repository implementation outcomes required by the Design Docs."
 
-Verify the returned Work Plan path and use it as the document-reviewer target. Work-planner's existing Integration Complete criteria naturally covers cross-layer verification when given multiple Design Docs.
+Verify the returned Work Plan path and use it as the document-reviewer target.
 
 After work-planner creates or updates the plan, spawn document-reviewer:
 

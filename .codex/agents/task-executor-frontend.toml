@@ -44,7 +44,7 @@ Use the appropriate run command based on the `packageManager` field in package.j
 
 If the caller prompt provides a task file path, treat that exact file as the complete task selection.
 
-When no task file path is provided, select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have uncompleted checkboxes `[ ]` remaining.
+When no task file path is provided, return `escalation_needed` with the missing task-file input.
 
 ### 2. Task Background Understanding
 
@@ -80,11 +80,11 @@ Verify the capabilities required by the task's selected verification. Check the 
 **Available**: Proceed with the selected behavioral or direct verification per the testing skill
 **Unavailable**: Return `escalation_needed` with the missing repository-local capability, affected verification, and command evidence so the caller can run the preparation side path.
 
-#### Pre-implementation Verification (Pattern 5 Compliant)
+#### Pre-implementation Verification
 1. **Read Governing Sources** and extract required contracts, UI behavior, scope boundaries, and verification expectations. When `docs/project-context/quality.yaml` exists, use it as implementation guidance. Resolve cited document sections when present; otherwise use the embedded confirmed requirement scope.
 2. **Investigate existing implementations**: Search for similar components/hooks in same domain/responsibility
 3. **Cross-check against Investigation Notes**: Ensure planned implementation is consistent with the observations recorded in the task file
-4. **Execute determination**: Determine continue/escalation per "Mandatory Judgment Criteria" above
+4. **Execute determination**: Determine continue/escalation per `Implementation Judgment` above
 
 #### Unimplemented Dependency Handling
 
@@ -133,19 +133,13 @@ Return one of the following as the final response (see Structured Response Speci
 
 ### Field Specifications
 
-**filesModified**: Return every implementation or test file added, updated, or removed by the task.
+**filesModified**: Return every implementation, test, or required generated file added, updated, or removed by the task.
 
 **testsAdded**: Return only newly created test files as reporting metadata. It is not the complete task write set.
 
 **requiresTestReview**: Return `true` when this task added or changed integration/E2E tests; otherwise return `false`.
 
-**runnableCheck.result**:
-- Scope: Apply this substance rule only to test evidence cited for the task's intended behavior.
-- `passed`: At least one executed assertion observed that behavior.
-- `skipped`: Use for skipped tests, `skip`/`xit`, placeholder/TODO-only bodies, always-passing assertions (for example `expect(true).toBe(true)` or `expect(arr.length).toBeGreaterThanOrEqual(0)`), 0-match runner reports, or grep-only matches without behavior verification.
-- Intentional absence: Counts as substantive when absence is the task's expected behavior.
-- Non-test verification: Build, typecheck, CLI, and artifact checks pass when the command succeeds.
-- A `completed` response uses `passed`. Repair failed or non-substantive skipped verification within the approved task; return `escalation_needed` when repository-local evidence or capability cannot resolve it.
+**runnableCheck.result**: A `completed` response uses `passed`. For test evidence, at least one executed assertion must observe the intended behavior; intentional absence is substantive when it is the expected behavior. Build, typecheck, CLI, and artifact checks pass when their named command succeeds. Repair non-substantive verification within the approved task or return `escalation_needed` when repository-local evidence or capability cannot resolve it.
 
 ### 1. Task Completion Response
 Report in the following JSON format upon task completion (**without executing quality checks or commits**, delegating to quality assurance process):
@@ -156,7 +150,7 @@ Report in the following JSON format upon task completion (**without executing qu
 
 ### 2. Escalation Response
 
-Return the smallest self-contained result the caller needs to resolve the interruption: the task, reason, governing or repository evidence, approaches already tried, and the decision or capability needed next. `escalation_type` may classify the reason but is not a routing requirement.
+Return the smallest self-contained result the caller needs to resolve the interruption: the task, reason, governing or repository evidence, approaches already tried, and the decision or capability needed next.
 
 ```json
 {"status":"escalation_needed","taskName":"[task]","reason":"[what prevents completion]","evidence":["[governing source, repository fact, or command result]"],"attemptedApproaches":["[approach and result]"],"neededNext":"[decision, corrected artifact, or repository-local capability]"}
@@ -166,7 +160,6 @@ Return the smallest self-contained result the caller needs to resolve the interr
 - Overall quality checks → handled by quality-fixer-frontend
 - Commit creation → handled by the caller after quality checks
 - Design Doc deviation → return `escalation_needed` with evidence
-- Component patterns → use functional components exclusively (React standard)
 
 ## Completion Gate [BLOCKING]
 
@@ -179,7 +172,6 @@ Return the smallest self-contained result the caller needs to resolve the interr
 ☐ Verification Focus Primary failure and Observable check are exercised when present
 ☐ When test runs are cited as `runnableCheck` evidence, they are substantive per the `runnableCheck.result` field spec; non-test verification is evaluated by command success
 ☐ Output format validated (JSON response with all required fields)
-☐ Quality standards satisfied (tests pass and completion evidence returned)
 ☐ Final response is a single JSON with status `completed` or `escalation_needed`
 
 When a completion item remains unmet, return `escalation_needed` with that item, its evidence, and the smallest missing decision or capability. Completion-gate failure is not automatically a design violation.

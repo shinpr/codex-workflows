@@ -5,7 +5,7 @@ description: "Orchestrate the complete implementation lifecycle from requirement
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
-1. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and workflow flows
+1. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and workflow routing
 2. [LOAD IF NOT ACTIVE] `documentation-criteria` — scale-selected document path
 3. [LOAD IF NOT ACTIVE] `requirement-convergence` — outcome, exclusion, and rough-cost convergence before design
 4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — cross-agent handoffs and task carrier
@@ -28,7 +28,7 @@ Spawn requirement-analyzer for compact request signals, scope evidence, cost evi
 
 At the requirements stop, the orchestrator applies subagents-orchestration-guide `Requirement Convergence` from the user's wording and supplied evidence, resolves material questions, determines Structural Scale and affected layers, and selects the canonical route.
 
-**[STOP — BLOCKING]** Present the converged requirement record, scale, affectedLayers, and scope to the user for confirmation. **CANNOT proceed until user explicitly confirms.**
+**[STOP — BLOCKING]** Present the converged requirement record, scale, affectedLayers, and scope to the user for confirmation, then proceed after explicit confirmation.
 
 ## Step 2: Canonical Workflow Routing
 
@@ -44,11 +44,11 @@ The scale-selected Large, Medium, or Small flow remains authoritative for docume
 
 ## Autonomous Execution Mode
 
-Enter autonomous execution when the subagents-orchestration-guide `Authority Grant` is satisfied.
+Enter autonomous execution when the subagents-orchestration-guide `Work Plan Authorization` is satisfied.
 
 ### Per-Task Execution Cycle
 
-For a fullstack task set, apply the Fullstack Flow filename routing exposed by `subagents-orchestration-guide`. For a single-layer task set, use the executor and quality fixer selected by `affectedLayers`. Execute each task through the canonical autonomous task cycle.
+For a fullstack task set, apply the [Fullstack (Monorepo) Flow](../subagents-orchestration-guide/references/monorepo-flow.md) filename routing. For a single-layer task set, use the executor and quality fixer selected by `affectedLayers`. Execute each task through the canonical autonomous task cycle.
 
 ### Post-Implementation Review (After All Tasks Complete)
 

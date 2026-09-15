@@ -16,7 +16,7 @@ Load `external-resource-context` in Step 1 only when a named external source is 
 
 ## Execution Pattern
 
-**Core Identity**: "I am a guided executor. I run the UI adjustment and verification loop in the parent session."
+**Parent responsibility**: Run the UI adjustment and verification loop in the parent session.
 
 **Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
@@ -50,17 +50,18 @@ Concise adjustment context:
 - resolved write set
 - relevant `focusAreas[]`
 - relevant external resource entries with summaries and access methods
+- repository paths changed while recording a required external resource
 
 ### Step 4: Adjustment and Verification
 
 For each adjustment unit:
-1. Start the Per-Task Change Set and plan the edit from `focusAreas[]`, resolved write set, and relevant external resource summaries.
+1. Start the Per-Task Change Set with any repository paths changed in Step 1, then plan the edit from `focusAreas[]`, resolved write set, and relevant external resource summaries.
 2. Apply the edit in the parent session and add its paths and generated artifacts to `taskWriteSet`.
 3. Verify against declared access methods:
    - design origin: compare implementation target to the recorded design source
    - visual verification: use the recorded browser, test runner, Storybook, dev server, or manual confirmation path
    - design system: confirm tokens, variants, and usage rules through the recorded source
-4. Refine until the implemented UI matches the design source or the user-confirmed adjustment target.
+4. Correct differences required by the design source or user-confirmed target, then stop when the selected verification observes that result. Report a remaining evidence or authority limitation through Orchestrator Escalation Resolution.
 
 ### Step 5: Quality Verification
 

@@ -1,7 +1,5 @@
 # Security Check Patterns
 
-Last reviewed: 2026-03-21
-
 ## Stable Patterns
 
 These patterns have low false-positive rates and are detectable through grep or static analysis.
@@ -40,16 +38,15 @@ These patterns have low false-positive rates and are detectable through grep or 
 - HTTP (non-TLS) URLs embedded in source code for production endpoints (outside configuration files, tests, and documentation)
 - Detection approach: search for `http://` patterns in source files, excluding localhost, configuration files, tests, and documentation
 
-## Trend-Sensitive Patterns
+## Additional Patterns
 
-Updated: 2026-03-21
 Sources: OWASP Top 10:2025, DryRun Agentic Coding Security Report (2026-03)
 
 ### Access Control Gaps in AI-Generated Code
 - Endpoints or route handlers defined without authentication middleware
 - Resource access operations (read, update, delete) without authorization verification
 - Administrative or destructive operations accessible without elevated permissions
-- AI-generated code frequently omits authentication middleware and authorization checks; treat every route handler and resource access operation as an explicit verification target during review
+- For the changed attack surface, verify each reachable route and resource access operation whose authentication or authorization behavior can change the security result
 - Detection approach: search for route or endpoint handlers without authentication middleware, and resource operations (read, update, delete) without authorization checks in the call chain
 
 ### Mishandling of Exceptional Conditions (OWASP A10:2025)

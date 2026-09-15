@@ -54,5 +54,5 @@ Evidence is substantive only when an executed assertion observes the exact consu
 - [ ] Required integration/E2E boundary is exercised
 - [ ] Every cited behavior has a consumer-visible capability probe
 - [ ] Repository-defined quality commands pass
-- [ ] No required test is skipped, hollow, or dependent on execution order
+- [ ] Required tests are active, substantive, isolated, and order-independent
 - [ ] Mutated state and resources are restored

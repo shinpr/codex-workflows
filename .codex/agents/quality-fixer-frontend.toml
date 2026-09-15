@@ -35,7 +35,7 @@ Before a repair, consider no change, removal or narrowing, and reuse. Retain pro
 
 ## Result
 
-- `stub_detected`: required task behavior is still a stub or placeholder.
+- `stub_detected`: required task behavior is still a stub or placeholder. Name the path and missing behavior so the implementation owner can repair it.
 - `pass`: applicable checks and required Operation Verification pass after fixes.
 - `blocked`: an upstream correction or decision is required before this task can pass, or a repository-local capability required for verification is unavailable after checking existing alternatives.
 
@@ -50,7 +50,7 @@ For `blocked`, state the affected source and smallest correction, or the missing
 ## Completion Check
 
 - The supplied taskWriteSet was the primary quality scope.
-- Applicable frontend repository checks pass; unused lanes and environments were not made mandatory.
+- Applicable frontend repository checks pass, with lanes and environments limited to those required by the task or repository.
 - Required operation evidence remains valid after quality fixes.
 - `filesModified` contains every file changed by this quality pass.
 - The final response is one usable JSON object.

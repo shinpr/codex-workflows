@@ -42,8 +42,9 @@ A PRD is both a binding product contract and a Product Context carrier. Downstre
 During flow execution, compare a user addition with the approved outcome, requirements, and exclusions:
 
 - A clarification that preserves all three is applied by the orchestrator to the active artifact or task.
+- A change to the approved outcome, requirements, or exclusions returns to Requirement Convergence, then resumes from the earliest affected artifact after confirmation.
 
-Resume from the earliest artifact affected by a confirmed scope change while preserving completed unaffected work.
+Preserve completed unaffected work on either route.
 
 ## Orchestration Principles
 
@@ -60,7 +61,6 @@ Assign work based on each subagent's responsibilities:
 **What to spawn task-executor for**:
 - Implementation work and test addition
 - Confirmation of added tests passing (existing tests are not covered)
-- Spawn quality-fixer exclusively for quality assurance
 
 **What to spawn quality-fixer for**:
 - Applicable repository checks discovered from the task, changed files, manifests, configuration, and CI
@@ -147,11 +147,11 @@ Use documentation-criteria Structural Scale as the single scale definition.
 |-------|-----|-----|------------|-----------|
 | Small | None | None | None | None |
 | Medium | Update* | Conditional batch** | **Required** | **Required** |
-| Large | **Required*** | Conditional batch** | **Required** | **Required** |
+| Large | **Required or user-authorized convergence carrier*** | Conditional batch** | **Required** | **Required** |
 
 \* Update if PRD exists for the relevant feature
 \*\* One ADR per durable technical choice that requires comparison between at least two credible materially distinct options; the Choice and Durability filters determine qualification independently of scale
-\*\*\* New creation/update existing/reverse PRD (when no existing PRD)
+\*\*\* Create, update, or reverse-engineer the PRD in flows that own it. A design recipe that does not create PRDs may use its confirmed convergence carrier after the user explicitly authorizes that route.
 
 ## Using Agent Results
 
@@ -188,7 +188,7 @@ Pass requirement changes to requirement-analyzer as complete self-contained inpu
 Integrate initial requirements and later additions as complete sentences, preserving all contextual information communicated by the user. The updated input must remain self-contained without relying on prior conversation turns.
 
 ### Update Mode for Document Generation Agents
-Document generation agents (work-planner, technical-designer, prd-creator) can update existing documents in `update` mode.
+Document generation agents invoked in `update` mode can update their existing target documents.
 
 - **Initial creation**: Create new document in create (default) mode
 - **On requirement change**: Edit existing document and add history in update mode
@@ -199,7 +199,7 @@ After the selected entry recipe completes its requirement stop, follow the minim
 
 | Scale | Required flow |
 |-------|---------------|
-| Large | scope evidence + orchestrator convergence **[Stop]** -> `prd-creator` -> `document-reviewer` **[Stop]** -> layer analysis -> frontend/fullstack UI Spec + `document-reviewer` **[Stop]** -> optional ADR batch + one batch `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` + Review Resolution -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
+| Large | scope evidence + orchestrator convergence **[Stop]** -> PRD creation/review **[Stop]** when the active recipe owns it; otherwise its user-authorized convergence carrier -> layer analysis -> frontend/fullstack UI Spec + `document-reviewer` **[Stop]** -> optional ADR batch + one batch `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` + Review Resolution -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
 | Medium | scope evidence + orchestrator convergence **[Stop]** -> layer analysis -> frontend/fullstack UI Spec + `document-reviewer` **[Stop]** -> optional ADR batch + one batch `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` + Review Resolution -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
 | Small | scope evidence + orchestrator convergence **[Stop]** -> one standard task file -> task execution cycle |
 
@@ -212,7 +212,6 @@ Flow rules:
 - For Small flows whose confirmed scope is carried by the execution task, use the llm-friendly-context Task File Contract to create `docs/plans/tasks/small-{name}.md`. Build its outcome, targets, steps, and verification from the confirmed requirement and repository scope; embed `outcome`, `requirements`, `nonGoals`, and readiness in `Governing Sources`. Pass the exact file to the layer-appropriate executor. Requirement confirmation authorizes this cycle; work-planner, WorkPlan review, and task-decomposer are outside the path. Remove the task file after Post-Implementation Review passes.
 - Pass only codebase-analyzer material that changes reuse, simplification, option validity or selection, lifecycle cost, a preserved contract, design, or verification to the relevant ADR/Design Doc owner.
 - Pass a Design Doc path to `code-verifier`, apply Review Resolution to its discrepancies, and pass only resolved verification evidence to `document-reviewer`.
-- Fullstack layer sequencing is defined in `references/monorepo-flow.md`
 - Run WorkPlan review after every Medium/Large work plan creation or update. Resolve `needs_revision` through Review Resolution with work-planner, then apply Work Plan Authorization. Route governing-source contradictions through Orchestrator Escalation Resolution.
 
 ## Autonomous Execution Mode
@@ -225,7 +224,7 @@ Build recipes proceed with the approved task set. `recipe-prepare-implementation
 
 Within execution authority established by Work Plan Authorization or the Small flow, autonomously execute:
 
-```
+```text
 Authorized scope -> task decomposition when needed -> each task:
 implementation -> optional integration-test review -> quality-fixer -> commit
 -> final code/security review -> completion report
@@ -233,7 +232,7 @@ implementation -> optional integration-test review -> quality-fixer -> commit
 
 Reviewer findings in this mode are candidates, not work orders; create repair work only from the Review Resolution `apply` set.
 
-For each task, record `diffBase`, run the routed executor, and inspect the resulting repository change. Add each execution or repair result to the Per-Task Change Set. Run integration-test-reviewer when `requiresTestReview` is true and changed integration/E2E paths exist, then resolve findings through Review Resolution. Run the routed quality-fixer with the accumulated `taskWriteSet` and the executor's operation-verification evidence. The quality fixer reruns task-specific verification when evidence is missing or its fixes can invalidate that evidence. On quality pass, add its changed paths to the set and commit the implementation files. After the commit succeeds, mark the Task File's satisfied Completion Criteria and the corresponding Work Plan task and phase complete, then update the active execution plan. Repair `stub_detected` through the same implementation owner. Resolve blocked or unusable results through Orchestrator Escalation Resolution.
+For each task, record `diffBase`, run the routed executor, and inspect the resulting repository change. Add each execution or repair result to the Per-Task Change Set. Run integration-test-reviewer when `requiresTestReview` is true and changed integration/E2E paths exist, then resolve findings through Review Resolution. Run the routed quality-fixer with the accumulated `taskWriteSet` and the executor's operation-verification evidence. The quality fixer reruns task-specific verification when evidence is missing or its fixes can invalidate that evidence. On quality pass, add its changed paths to the set and commit the reconciled Per-Task Change Set. After the commit succeeds, mark the Task File's satisfied Completion Criteria and the corresponding Work Plan task and phase complete, then update the active execution plan. Repair `stub_detected` through the same implementation owner. Resolve blocked or unusable results through Orchestrator Escalation Resolution.
 
 ### Conditions for Stopping Autonomous Execution
 
@@ -254,7 +253,7 @@ Use the task loop defined in the autonomous execution diagram above. The canonic
 1. capture `diffBase`, execute the task, and accumulate its change set
 2. resolve escalation or integration-test review when applicable
 3. run the quality fixer on the accumulated change set and resolve findings until the required checks pass
-4. commit implementation files, then record Task File, Work Plan task/phase, and execution-plan completion locally
+4. commit the reconciled Per-Task Change Set, then record Task File, Work Plan task/phase, and execution-plan completion locally
 
 ### Post-Implementation Review
 

@@ -24,7 +24,7 @@ description: "Execute from codebase-scoped analysis to design document creation.
 1. **Spawn agents for analysis and document work** -- your role is to invoke sub-agents, select from their compact evidence against governing requirements, pass the selected material onward, and report results.
 2. **Run the design flow below in order**:
    - Execute: scope evidence -> codebase-analyzer -> [Stop: Scope confirmation] -> optional PRD update/review/[Stop: PRD confirmation] -> optional ADR batch/batch review/[Stop: ADR-batch confirmation] -> Design Doc -> code-verifier/Review Resolution -> document-reviewer -> design-sync -> [Stop: Design confirmation]
-   - **[STOP — BLOCKING]** At every `[Stop: ...]` marker -> Present status to user for confirmation. **CANNOT proceed until user explicitly confirms.**
+   - **[STOP — BLOCKING]** At every `[Stop: ...]` marker -> Present status to user for confirmation and proceed after explicit confirmation.
 3. **Scope**: Complete when design documents pass review and receive user confirmation
 
 ## Workflow Overview
