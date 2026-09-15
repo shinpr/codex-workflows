@@ -26,14 +26,14 @@ O codex-workflows controla esse crescimento de escopo ao longo de toda a execuç
 
 | Controle | O que muda |
 |---|---|
-| Escopo | O fluxo compara o pedido com o resultado desejado, as exclusões explícitas, o código existente e o custo aproximado de implementação. O trabalho que não justifica seu custo é removido antes de virar arquitetura. |
+| Escopo | O fluxo compara o pedido com o resultado desejado, as exclusões explícitas, o código existente e o custo aproximado de implementação. O trabalho que não justifica seu custo é removido antes de virar arquitetura e, se mesmo assim entrou, é cortado depois. |
 | Controles entre fases | Os resultados de requisitos, design e planejamento são revisados antes de autorizar a próxima fase. Novos agentes leem as decisões aprovadas e as evidências necessárias, em vez de reconstruir a intenção a partir de uma conversa longa. |
-| Execução | Depois que o escopo de implementação é aprovado, o Codex executa o conjunto de tarefas de forma autônoma. Cada tarefa passa por sua verificação específica e pelas checagens aplicáveis do repositório antes do commit de implementação. |
+| Execução | Depois que você autoriza a implementação, o Codex executa o conjunto de tarefas de forma autônoma. Cada tarefa passa por sua verificação específica e pelas checagens aplicáveis do repositório antes do commit de implementação. |
 | Conclusão | Revisões independentes de código e segurança confirmam que a mudança concluída permanece dentro do escopo aprovado e não contém falhas graves. As correções obrigatórias voltam ao mesmo ciclo de implementação e qualidade. |
 
 Esse fluxo usa mais chamadas de agentes e mais tokens do que uma execução direta. Use-o quando proteger o resultado aprovado valer esse custo.
 
-Um caso extremo não exige trabalho só porque o Codex sabe resolvê-lo. Validações adicionais, comportamento determinístico ou uma nova abstração precisam servir para proteger um requisito aprovado ou um contrato observável, ou para corrigir uma falha comprovada.
+Um caso extremo não exige trabalho só porque o Codex sabe resolvê-lo. Validações adicionais, comportamento determinístico ou uma nova abstração precisam servir para proteger um requisito aprovado ou um contrato observável, ou para corrigir uma falha comprovada. E isso vale nos dois sentidos: se uma decisão de design acaba abrangendo mais do que o resultado exige, o fluxo a remove em vez de defendê-la só porque já está escrita em algum documento.
 
 ### Um caso real
 
@@ -87,7 +87,7 @@ flowchart LR
     S --> L[Concluído]
     C -->|Não| D[Inspeção, design e revisão]
     D --> E[Planejar trabalhos dependentes]
-    E --> F[Aprovar o escopo da implementação]
+    E --> F[Autorizar a implementação]
     F --> H[Por tarefa: implementar, verificar, checar qualidade e fazer commit]
     H --> K[Revisão independente de código e segurança]
     K -->|Correção| H
@@ -101,13 +101,13 @@ O caminho depende da quantidade de decisões independentes de produto e design, 
 |---------|-----------------------|----------------|
 | Pequeno | Um resultado que segue um padrão existente em uma parte do sistema | Tarefa confirmada → implementação → checagens de qualidade e segurança |
 | Médio | Um resultado que exige coordenação entre partes do sistema ou uma decisão de design duradoura | Design Doc revisado, mais UI Spec / ADR quando necessário → verificação de integração/E2E selecionada → Work Plan revisado → ciclos autônomos de tarefas → verificação final |
-| Grande | Vários resultados que exigem decisões de design separadas | PRD e Design Docs revisados, mais UI Spec / ADR quando necessário → verificação de integração/E2E selecionada → Work Plan revisado → ciclos autônomos de tarefas → verificação final |
+| Grande | Vários resultados que exigem decisões de design separadas | Design Docs revisados, mais um PRD, a menos que você opte por omiti-lo, e UI Spec / ADR quando necessário → verificação de integração/E2E selecionada → Work Plan revisado → ciclos autônomos de tarefas → verificação final |
 
 Um ADR só é criado para uma escolha duradoura dentro do escopo atual quando existem pelo menos duas opções materialmente diferentes. Se várias escolhas atenderem a esses critérios, seus ADRs são revisados em conjunto. Um teste de integração ou E2E só é escolhido quando um teste mais barato não consegue comprovar a interação necessária. Algumas mudanças não exigem nenhum dos dois.
 
 Somente decisões que afetam o produto ou a implementação do repositório seguem para documentos permanentes do projeto. Aprovação de terceiros, acesso à produção, execução de releases e tarefas operacionais sem relação com a mudança não se tornam bloqueios de implementação.
 
-Depois da aprovação do escopo, o orquestrador executa as tarefas, as verificações específicas, as checagens aplicáveis do repositório e um commit de implementação por tarefa. Primeiro, resolve problemas com base nos documentos aprovados e nas evidências do repositório. O comportamento percebido pelo usuário continua sendo um limite de produto: a implementação não pode ajustá-lo por conta própria em nome da consistência interna. O orquestrador só consulta o usuário quando avançar exige um novo requisito de produto, uma mudança em uma decisão principal já aprovada, uma autorização que apenas o usuário possui ou uma ação irreversível que não foi autorizada.
+Depois que a implementação é autorizada, o orquestrador executa as tarefas, as verificações específicas, as checagens aplicáveis do repositório e um commit de implementação por tarefa. Primeiro, resolve problemas com base nos documentos aprovados e nas evidências do repositório. O comportamento percebido pelo usuário continua sendo um limite de produto: a implementação não pode ajustá-lo por conta própria em nome da consistência interna. O orquestrador só consulta você quando avançar exige um novo requisito de produto, uma mudança em algo que você pediu ou descartou, uma autorização que só você tem ou uma ação irreversível que você não autorizou. Encontrar uma forma mais enxuta de chegar ao mesmo resultado não entra nessa lista, e pedir novamente uma permissão que você já concedeu também não.
 
 Cada especialista recebe um trabalho com escopo definido, os documentos e caminhos relevantes e um resultado claro para entregar. O especialista conduz esse trabalho até o fim, enquanto a sessão principal mantém as decisões de produto e do fluxo, só intervém diante de uma decisão ou bloqueio concreto e verifica o resultado antes da próxima fase. Assim, os especialistas têm espaço para trabalhar sem receber autoridade para ampliar o resultado aprovado.
 
@@ -353,7 +353,7 @@ your-project/
 │   ├── technical-designer.toml
 │   ├── ui-analyzer.toml
 │   ├── task-executor.toml
-│   └── ... (26 agentes no total)
+│   └── ... (25 agentes no total)
 └── docs/                     # Criado conforme os fluxos são usados
     ├── prd/
     ├── design/
