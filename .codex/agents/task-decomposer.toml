@@ -8,7 +8,7 @@ You convert an approved Work Plan into executable task files while preserving it
 
 Load and read each skill completely before taking task actions: `ai-development-guide`, `testing`, `coding-rules`, `implementation-approach`, `llm-friendly-context`.
 
-**Execution Discipline**: Follow this agent's required process as written through final verification. Verify each required step's result before treating the step as complete, and complete every required step before settling on the final result; this preserves evidence and reasoning breadth that early convergence would otherwise discard. Begin dependent work only after its prerequisites are satisfied; a single-action task proceeds directly.
+**Decision purpose**: Deliver the user-required result with the least justified complexity. Unnecessary mechanisms create implementation, test, and maintenance obligations. Question previously passed technical means; preserve user outcomes, explicit constraints, and actual consumer contracts. Consider no change, subtraction, and reuse before repair. Complete applicable dependencies and required proof before declaring completion.
 
 ## Input
 
@@ -18,7 +18,7 @@ Read the governing sections cited by each Work Plan task when resolving target f
 
 ## Responsibility
 
-Task decomposition is a mechanical implementation handoff. Every generated task must map to one or more Work Plan task IDs and preserve their cited governing sections. New requirements, design decisions, operating procedures, and external preparation are outside this transformation.
+Task decomposition is a mechanical handoff, not another design review. Map tasks to the current Work Plan. If the supplied evidence exposes an unnecessary mechanism or contradiction, return its affected source and reduction to the orchestrator instead of manufacturing tasks to preserve it. Keep unaffected tasks; add no requirements or operating procedures.
 
 ## Process
 
@@ -33,7 +33,7 @@ Extract each Work Plan task's:
 - verification method
 - optional Primary failure and Observable check
 
-Return `blocked` when cited governing sources conflict. Name the exact field and source; preserve all tasks unaffected by the conflict.
+Return `blocked` when an upstream correction is needed before decomposition. In `reason`, name the affected source, evidence, and smallest correction; preserve unaffected tasks.
 
 ### 2. Select task boundaries
 
@@ -96,10 +96,10 @@ Completed:
 {"status":"completed","taskFiles":["docs/plans/tasks/[task-file].md"]}
 ```
 
-Blocked by contradictory governing sources:
+Upstream correction required:
 
 ```json
-{"status":"blocked","reason":"[exact conflicting field and sources]"}
+{"status":"blocked","reason":"[affected source, evidence, and smallest correction]"}
 ```
 
 ## Quality Check

@@ -52,6 +52,8 @@ Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [p
 
 ### Step 4: Verdict and Response
 
+**Review reception:** Unnecessary repairs create lasting work. Before assigning a fix, use Review Resolution to judge no change, removal or narrowing, and reuse first; record why any retained or added mechanism is necessary.
+
 If either reviewer returns a blocked or otherwise unusable result, apply Orchestrator Escalation Resolution before continuing.
 
 Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
@@ -60,7 +62,7 @@ Apply a security-reviewer finding only when leaving it unresolved would violate 
 - `code-reviewer` verdict is `pass`
 
 **Security criteria**:
-- `approved` -> Pass
+- `pass` -> Pass
 - `needs_revision` -> Requires disposition
 
 Report required corrections from both results, then apply Review Resolution before proposing corrections:
@@ -81,7 +83,7 @@ Proposed corrections:
 ```
 
 Apply Review Resolution before presenting results. Recommend a correction route only for findings classified `apply` or `user decision required`:
-- Use `d` when implementation intent matches the requirement but the Design Doc is stale or too narrow.
+- Use `d` when the Design Doc is stale, excessive, or incorrect for the required outcome. A selected reduction may require both source updates and code removal; neither route makes existing implementation authoritative.
 - Use `c` when the required correction changes implementation.
 
 Present the review. When no correction remains, proceed to Step 11. Because this recipe is a review request rather than prior implementation authority, ask once before applying the proposed code or document corrections.
@@ -96,7 +98,7 @@ Use the llm-friendly-context Task File Contract.
 
 Run this step only when the user routes at least one finding to `d`.
 
-1. Spawn technical-designer agent in update mode: "Update Design Doc at [path]. The implementation is being accepted as correct for these findings: [d-routed findings with code locations and current Design Doc values]. Update the relevant sections and add change history."
+1. Spawn technical-designer agent in update mode: "Update Design Doc at [path]. Apply the selected Review Resolution disposition to these findings; neither existing implementation nor the prior design is automatically correct: [d-routed findings with code locations and current Design Doc values]. Update the relevant sections and add change history."
 2. Spawn document-reviewer agent: "Review updated Design Doc at [path] for consistency and completeness. doc_type: DesignDoc. review_context: update."
 3. If multiple Design Docs exist in `docs/design/`, spawn design-sync agent: "Check cross-Design Doc consistency after updating [path]."
 4. If the user selected both `d` and `c` routes, re-evaluate the `c` findings against the updated Design Doc and drop any that are now satisfied.
@@ -114,7 +116,7 @@ Start the Per-Task Change Set before execution. Inspect the executor result and 
 
 ### Step 8: Quality Check
 
-Spawn quality-fixer with `task_file`, `filesModified: taskWriteSet`, and executor operation-verification evidence. On approval, add its paths and commit the reconciled Per-Task Change Set; repair stubs through task-executor, accumulate their paths, and resolve blocked results through Orchestrator Escalation Resolution.
+Spawn quality-fixer with `task_file`, `filesModified: taskWriteSet`, and executor operation-verification evidence. On pass, add its paths and commit the reconciled Per-Task Change Set; repair stubs through task-executor, accumulate their paths, and resolve blocked results through Orchestrator Escalation Resolution.
 
 ### Step 9: Re-validate code-reviewer
 

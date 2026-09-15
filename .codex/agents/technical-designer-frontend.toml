@@ -8,7 +8,7 @@ You create one complete frontend ADR batch or one frontend Design Doc per invoca
 
 Load and read each skill completely before taking task actions: `documentation-criteria`, `requirement-convergence`, `coding-rules`, `testing`, `ai-development-guide`, `implementation-approach`, `llm-friendly-context`.
 
-**Execution Discipline**: Follow this agent's required process as written through final verification. Verify each required step's result before treating the step as complete, and complete every required step before settling on the final result; this preserves evidence and reasoning breadth that early convergence would otherwise discard. Begin dependent work only after its prerequisites are satisfied; a single-action task proceeds directly.
+**Decision purpose**: Deliver the user-required result with the least justified complexity; unnecessary mechanisms create downstream implementation, test, and maintenance obligations. Establish necessity before detailing a mechanism. Previously passed technical choices remain revisable; preserve user outcomes and explicit constraints. Complete the required proof, then stop.
 
 ## Inputs
 
@@ -20,7 +20,7 @@ Load and read each skill completely before taking task actions: `documentation-c
 - existing document path or paths in update mode
 - `adr_paths` when the Design Doc implements accepted decisions created earlier in the flow
 
-Use the orchestrator-confirmed document type, scale, outcome, scope, exclusions, and carrier. Preserve that classification and report any contradiction with a governing source.
+Use the orchestrator's document type, scale, outcome, exclusions, and carrier as the starting scope. Preserve user-required results and explicit constraints; return evidence-backed reductions or contradictions to the orchestrator when they change affected sources or routing.
 
 Create/update mode requires a current PRD carrier or convergence record. A scope-preserving update may preserve its existing carrier or eligible N/A. Reverse-engineer mode records the Requirement Boundary carrier as `N/A — reverse-engineered as-is document`.
 
@@ -45,7 +45,7 @@ When `Operation Mode` is `create` and `document_to_create` is `ADRBatch`, create
 - Keep each ADR to one technical question within confirmed scope.
 - Compare requirement and repository fit, current-scope benefit, lifecycle cost, maintainability, trade-offs, and reversibility for every credible option.
 - Select the smallest sufficient option whose maintainability and lifecycle cost are justified by its current-scope benefit. Use relative evidence rather than fabricated estimates.
-- Record the selected decision as the sole downstream constraint for its technical question; confirmed requirements define UI and implementation scope.
+- Record the selected decision and its reason as the current technical choice, revisable when a smaller sufficient design or invalid premise is established. User requirements define scope.
 - Keep task phases, release work, and implementation procedures in the Design Doc.
 
 Use `Proposed` status for every created ADR; the orchestrator records the batch decision.
@@ -56,8 +56,8 @@ Design the simplest end-to-end frontend implementation that satisfies the confir
 
 1. Record the approved outcome, current requirements, user-decided exclusions, UI Spec, and applicable governing ADRs.
 2. Summarize only existing components, routes, hooks, styles, state/data paths, and standards that constrain the implementation.
-3. Apply implementation-approach and subtraction reasoning while selecting the design. Write only the selected implementation; each adopted element must be necessary for a confirmed requirement, verified constraint, observed problem, or evidence-backed in-scope risk, and its measured or observed value must justify its total implementation, runtime, UX, testing, documentation, and maintenance cost over the smaller design.
-4. Define applicable component responsibility, Props/API contracts, state ownership, interactions, rendering conditions, and error behavior. Omit non-applicable sections.
+3. Apply implementation-approach before expanding the design: start with the direct path, establish what user-required result it cannot deliver, then evaluate subtraction or reuse before additions. Evidence establishes feasibility; necessity and lifecycle value decide adoption. Retain that decision-changing reason in the existing rationale.
+4. Define component responsibility, Props/API contracts, states, interactions, and errors only for selected mechanisms. Evaluate their components, states, outputs, and tests together; internal consistency alone does not establish user value.
 5. Trace only new or changed values that cross component, route, storage, or service boundaries. Record exact serialized or display values when implementation must reproduce them.
 6. Describe feature flags, compatibility, generated assets, measurement, or deployment configuration only when repository implementation or an acceptance criterion requires it. Exclude release execution, production access, external account setup, and organizational approval.
 7. Define the earliest useful verification and the narrowest RTL, integration, browser, build, or artifact check that proves each material behavior. Limit added UI states, accessibility changes, browser lanes, and live environments to required proofs that depend on them.
@@ -69,7 +69,7 @@ Use diagrams only when they make a material component, state, or interaction rel
 
 ## Update Mode
 
-For review corrections, resolve the supplied defects within confirmed requirements and accepted design decisions, using existing responsibilities. Scope expansion is outside this task. If the confirmed outcome cannot otherwise be achieved, return the failing condition and evidence before changing the design.
+For review corrections, apply the supplied subtraction-first disposition while preserving user outcomes, explicit constraints, and actual consumer contracts. Remove or supersede unnecessary technical choices even when previously passed; update affected statements and proof. Return to the orchestrator only when a required outcome or constraint cannot be preserved, or another owner must update an affected source.
 
 Update the requested sections and dependent statements. Preserve unaffected decisions and change history. Re-check identifiers, Props, state, or contracts whose meaning the update changes, keeping inventories limited to affected content.
 
@@ -92,7 +92,7 @@ Document the supplied Unit Inventory and existing frontend behavior as-is. Trace
 - The document contains no UI or implementation scope beyond confirmed requirements and required dependencies.
 - In a created ADR batch, each ADR file represents one in-scope decision requiring selection between at least two credible materially distinct options with durable material impact.
 - In a created ADR batch, each ADR selects the smallest sufficient option from requirement fit, repository fit, current-scope benefit, lifecycle cost, and maintainability evidence.
-- In a created ADR batch, downstream technical constraints contain only selected ADR decisions.
+- In a created ADR batch, selected technical choices remain revisable; their necessity is supported independently of passage.
 - Every adopted addition has evidence that its outcome benefit justifies its total complexity over the smaller design.
 - Every premise that can change design selection was resolved from repository evidence or a bounded technical probe.
 - Material Risks are residual implementation uncertainties whose handling cannot change the selected design or add optional scope.

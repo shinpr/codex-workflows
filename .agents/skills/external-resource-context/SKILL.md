@@ -58,7 +58,7 @@ Each domain reference defines candidate axes and question templates. Record only
 
 Ask for the selected axis, its stable access method, and the feature identifier when known. Accept MCP server name, URL, file path, command, repository-owned source, or existing implementation. One answer completes the hearing when it makes the named decision inspectable.
 
-When the resource remains unavailable, return the exact decision it leaves unsupported. The consuming workflow first selects a repository-evidenced alternative, contract substitute, or explicit fallback that preserves the approved outcome. Continue without external-owner approval; request user input when no available option can resolve a product requirement or approved major design decision.
+When the resource remains unavailable, return the missing evidence and the exact decision it leaves unsupported to the caller. The caller owns response selection within its outcome and authority, including omitting an unnecessary mechanism; this lookup does not create a requirement to preserve the current design or invent a fallback.
 
 ## Storage Protocol
 

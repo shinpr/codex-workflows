@@ -120,17 +120,19 @@ Consume the reviewer decision, actionable findings, and governing basis. Apply O
 
 ### Step 6: Apply Review Fixes
 
-Proceed when the review is approved. When it contains actionable revision findings, apply Review Resolution with the layer-appropriate executor, add repair paths to `taskWriteSet`, and rerun the reviewer.
+**Review reception:** Unnecessary repairs create lasting work. Before assigning a fix, use Review Resolution to judge no change, removal or narrowing, and reuse first; record why any retained or added mechanism is necessary.
+
+Proceed when the review passes. When it contains actionable revision findings, apply Review Resolution with the layer-appropriate executor, add repair paths to `taskWriteSet`, and rerun the reviewer.
 
 ### Step 7: Quality Check
 
 Spawn the quality fixer from the current task's Step 3 table row with `task_file`, `filesModified: taskWriteSet`, and the executor's operation-verification evidence.
 
-**Expected output**: `status` (`stub_detected`/`approved`/`blocked`)
+**Expected output**: `status` (`stub_detected`/`pass`/`blocked`)
 
 ### Step 8: Commit
 
-On quality approval, add its `filesModified`, reconcile and commit the Per-Task Change Set, then mark the temporary task file complete. Repair stubs through the current task's executor and accumulate their paths; resolve blocked results through Orchestrator Escalation Resolution.
+On quality pass, add its `filesModified`, reconcile and commit the Per-Task Change Set, then mark the temporary task file complete. Repair stubs through the current task's executor and accumulate their paths; resolve blocked results through Orchestrator Escalation Resolution.
 
 ## Completion Criteria
 

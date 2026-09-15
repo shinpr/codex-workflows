@@ -66,7 +66,7 @@ Before sending a prompt or artifact to another agent, verify:
 
 - [ ] The target action is explicit.
 - [ ] Required input paths and source artifacts are named.
-- [ ] Accepted decisions and constraints are stated once with stable wording.
+- [ ] User constraints are distinguished from revisable technical choices; include the necessity of selected means where the next decision depends on it.
 - [ ] The next consumer can identify the artifact or result it needs.
 - [ ] Success criteria are observable.
 - [ ] Outcome-relevant ambiguities are resolved or identified with their effect; valid local choices remain available.
@@ -82,7 +82,7 @@ Before writing or finalizing a generated document:
 - [ ] Every executable instruction names the target, action, and expected result.
 - [ ] Verification steps say what to run or observe and what result proves success.
 - [ ] Every retained prohibition names the protected condition and allowed alternative.
-- [ ] Derived artifacts preserve copied decisions with the same wording and meaning as their source artifacts.
+- [ ] Derived artifacts preserve user-required outcomes and explicit constraints. When superseding a technical choice, identify and reconcile affected sources rather than copying an obsolete obligation.
 - [ ] Blocking missing information records the missing input and escalation condition.
 
 ## References

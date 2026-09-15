@@ -34,9 +34,9 @@ The orchestrator invokes these specialists and directly handles deterministic co
 - Test skeleton generation with acceptance-test-generator
 - Work plan creation with work-planner
 - Work plan review with document-reviewer
-- Plan approval obtainment
+- Implementation authorization resolution
 
-**Responsibility Boundary**: This skill completes with work plan approval.
+**Responsibility Boundary**: This skill completes with a reviewed plan and resolved implementation authority.
 
 Create frontend work plan with the following process:
 
@@ -58,18 +58,19 @@ Spawn work-planner agent: "Create an implementation-focused work plan from Desig
 Verify the returned Work Plan path and use it as the Step 4 review target.
 
 ### Step 4: Work Plan Review
+
+**Review reception:** Unnecessary repairs create lasting work. Before assigning a fix, use Review Resolution to judge no change, removal or narrowing, and reuse first; record why any retained or added mechanism is necessary.
 Spawn document-reviewer agent: "Review the frontend work plan. doc_type: WorkPlan. target: [work-planner completed path]. Verify Design Doc and UI Spec implementation coverage, absence of added operational scope, dependency order, executable verification, optional Verification Focus, and Review Scope."
 
 Branch on `verdict.decision`:
-- `approved` -> proceed to Step 5 with the plan-level status pending
+- `pass` -> proceed to Step 5
 - `needs_revision` -> apply Review Resolution with work-planner, then review the updated plan
 - `rejected` -> apply Orchestrator Escalation Resolution using the cited governing sources
 
-### Step 5: Plan Approval
-**[STOP -- BLOCKING]** Present the implementation task set and any material choice, then obtain approval for the plan content.
-**CANNOT proceed until user explicitly approves the work plan.**
+### Step 5: Plan Authorization
+Present the implementation task set and any material user-owned choice. Apply Work Plan Authorization: obtain implementation authority when absent; retain authority already granted for outcome-preserving technical revisions.
 
-After explicit approval, record the plan-level status as approved.
+After explicit authorization, record the user's instruction and scope in Implementation Authorization.
 
 ## Completion Criteria
 
@@ -77,11 +78,12 @@ After explicit approval, record the plan-level status as approved.
 - [ ] Test skeletons generated
 - [ ] Work plan created
 - [ ] Work plan reviewed via document-reviewer
-- [ ] User approved plan content
+- [ ] User authorization for the implementation scope is recorded
 
 ## Output Example
 Frontend planning phase completed.
 - Work plan: docs/plans/[plan-name].md
-- Status: Approved
+- Review: pass
+- Implementation authorization: [user instruction and scope]
 
-Please provide separate instructions for implementation.
+Continue implementation when already requested; otherwise this planning recipe is complete.

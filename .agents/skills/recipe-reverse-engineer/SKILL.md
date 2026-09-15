@@ -91,6 +91,8 @@ Spawn prd-creator agent: "Create reverse-engineered PRD for the following featur
 
 #### Step 3: Code Verification
 
+**Review reception:** Record the Review Resolution disposition before assigning document corrections. Consider no change, removal of unsupported claims, and reuse of existing evidence first. Preserve faithful as-is coverage: this recipe does not authorize code changes or omission of observed behavior to simplify the design. Apply this to each review or verification result that could generate work.
+
 **Prerequisite**: $STEP_2_OUTPUT (PRD path from Step 2)
 
 Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. code_paths: $PRD_UNIT_COMBINED_RELATED_FILES. unit_inventory: $PRD_UNIT_INVENTORY. verbose: false."

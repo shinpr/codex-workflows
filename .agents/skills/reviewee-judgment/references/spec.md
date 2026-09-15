@@ -28,20 +28,20 @@ Classify it as local when one authoritative statement is incomplete or incorrect
 
 For a newly introduced artifact or section that creates inconsistency, compare removing it, merging its unique decision into the existing authority, or redefining its consumer contract before adding cross-document patches.
 
-Correct the responsible statement within the agreed design. Propagate only to statements needed for the current deliverable; finding stale related documents does not authorize their general repair or a change of ownership.
+Correct or remove the responsible technical choice, including a previously passed choice, while preserving the user-required outcome and explicit constraints. Propagate only to statements needed for the current deliverable and affected consumers; unrelated document debt remains outside scope.
 
 ## Candidate Comparison
 
 Compare specification candidates using this sequence after the core outcome and validity gates:
 
 1. Does the change occur in the artifact that owns the decision?
-2. Does it preserve confirmed requirements, accepted design decisions, and exclusions?
+2. Does it preserve user-required outcomes, explicit constraints, actual consumer obligations, and exclusions while allowing unnecessary technical decisions to be superseded?
 3. Does it eliminate conflicting sources of truth and hidden assumptions?
 4. Can downstream consumers execute without inventing product or architecture decisions?
 5. Can acceptance and verification evidence prove the revised decision chain?
 6. Among candidates that satisfy the above, which has the best lifecycle value?
 
-Use the existing decision owner. A correction is sufficient when the current deliverable and its required consumers can follow the agreed design; unrelated document debt is outside the repair.
+Use the existing decision owner to update affected sources and consumers. A correction is sufficient when they can deliver and verify the required outcome with the selected reduction. Previous passage does not require reproducing the original design.
 
 ## Verification Safety
 
@@ -54,4 +54,3 @@ Verify the changed decision from source to consumer:
 - state unresolved evidence needs without filling them with plausible prose.
 
 Recheck the corrected statements and inconsistencies directly introduced by the correction. Preserve unaffected review evidence.
-

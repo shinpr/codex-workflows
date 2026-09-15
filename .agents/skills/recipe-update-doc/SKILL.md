@@ -23,10 +23,10 @@ description: "Update existing design documents (Design Doc / PRD / ADR) with rev
 1. Invoke the named author and reviewer for document judgment; perform artifact selection, routing, explicit-answer application, and status updates directly
 2. **Execute update flow**:
    - Identify target -> Clarify changes -> Update document -> Review -> Consistency check
-   - Ask for missing change intent only when it cannot be recovered from the request and target document; obtain one document approval after review and applicable consistency verification
-3. **Scope**: Complete when updated document receives approval
+   - Ask for missing change intent only when it cannot be recovered from the request and target document
+3. **Scope**: Return the reviewed update through Step 6
 
-**CRITICAL**: MUST execute document-reviewer and all stopping points -- each serves as a quality gate for document accuracy.
+Execute document-reviewer before completion; Step 6 owns finalization.
 ENFORCEMENT: Skipping document-reviewer risks propagating inconsistencies to downstream workflows.
 
 ## Workflow Overview
@@ -40,7 +40,7 @@ Target document -> Clarify changes -> update agent
                                       |
                          [Design Doc: design-sync]
                                       |
-                        [Stop: Document approval]
+                        [Step 6: Finalize update]
 ```
 
 ## Scope Boundaries
@@ -52,7 +52,7 @@ Target document -> Clarify changes -> update agent
 - Document review with document-reviewer
 - Consistency verification with design-sync (Design Doc only)
 
-**Responsibility Boundary**: This skill completes with updated document approval.
+**Responsibility Boundary**: This skill completes with the reviewed update finalized under Step 6.
 
 Target document: $ARGUMENTS
 
@@ -100,9 +100,11 @@ For PRD or Design Doc updates, apply the confirmed changes to the target documen
 
 For PRD or Design Doc, spawn [Update Agent from Step 2]: "Operation Mode: update. Existing Document: [path from Step 1]. Changes Required: [Changes clarified in Step 3]. confirmed_requirement_context: [Step 3 current context]. Update the document to reflect the specified changes. Add change history entry."
 
-For a minor ADR change, spawn the update agent with `Operation Mode: update`, the existing path, confirmed changes, and `confirmed_requirement_context: N/A — ADR update`. For a major ADR change, leave this update path and use the normal ADR creation and approval flow to create the superseding ADR.
+For a minor ADR change, spawn the update agent with `Operation Mode: update`, the existing path, confirmed changes, and `confirmed_requirement_context: N/A — ADR update`. For a major ADR change, apply documentation-criteria's choice and durability filters. Update or retire an unnecessary choice in the existing record; create a superseding ADR only for a qualifying new decision. Existing execution authority remains valid for outcome-preserving technical reductions.
 
 ### Step 5: Document Review
+
+**Review reception:** Unnecessary repairs create lasting work. Before assigning a fix, use Review Resolution to judge no change, removal or narrowing, and reuse first; record why any retained or added mechanism is necessary.
 
 For Design Doc updates, first verify the updated document against code:
 
@@ -118,19 +120,21 @@ For PRD updates, spawn document-reviewer with the target and `confirmed_requirem
 **Store output as**: `$STEP_5_OUTPUT`
 
 **On review result**:
-- `approved` -> proceed to Step 6
+- `pass` -> proceed to Step 6
 - `needs_revision` -> Apply Review Resolution with the update agent, then review the updated document
 - `rejected` -> Apply Orchestrator Escalation Resolution. Continue after self-resolution; ask the user only when that procedure reaches a user-decision condition
 
-### Step 6: Consistency Verification and Approval
+### Step 6: Consistency Verification and Finalization
 
-For PRD or ADR, skip design-sync and present the reviewed document for user approval.
+For PRD or ADR, proceed directly to finalization below.
 
 For Design Doc, spawn design-sync agent: "Verify consistency of the updated Design Doc with other design documents. Updated document: [path from Step 1]"
 
 **On consistency result**:
-- No conflicts -> Present the reviewed and consistency-checked document for user approval
-- Conflicts detected -> Apply Orchestrator Escalation Resolution using both governing documents. Return to the responsible author when one document can be corrected without changing an approved decision; ask the user only when a governing decision must change
+- No conflicts -> Finalize the update below
+- Conflicts detected -> Apply Orchestrator Escalation Resolution using both governing documents. Return affected sources to their responsible authors, including previously passed technical decisions; ask the user only when required outcomes, explicit constraints, or execution authority must change
+
+**Finalize the update:** Return an outcome-preserving technical correction to its calling workflow under existing authority. For a standalone update or a changed user-owned decision, present the reviewed result and obtain any confirmation still required by the shared Explicit Stop Points. Report whether the update returned to its caller or received that confirmation.
 
 ## Error Handling
 
@@ -150,9 +154,9 @@ For Design Doc, spawn design-sync agent: "Verify consistency of the updated Desi
 - [ ] Applied Review Resolution to code-verifier discrepancies before document-reviewer for Design Doc updates
 - [ ] Spawned document-reviewer and addressed feedback
 - [ ] Spawned design-sync for consistency verification (Design Doc only)
-- [ ] Obtained user approval for updated document
+- [ ] Finalized the update under Step 6
 
 ## Output Example
 Document update completed.
 - Updated document: docs/design/[document-name].md
-- Approval status: User approved
+- Continuation: [returned to calling workflow / user confirmation received]

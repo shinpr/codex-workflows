@@ -16,7 +16,7 @@ Apply this skill to future-state Design Doc and implementation flows. Reverse-en
 | Field | Pass condition |
 |-------|----------------|
 | `outcome` | One observable result. Every buildable requirement serves it. |
-| `requirements[]` | Every item is labeled `current-state`, `desired-future`, or `speculative`. |
+| `requirements[]` | Every item is labeled `current-state`, `desired-future`, or `speculative`; buildable outcomes and explicit constraints trace to the user's request. Agent-selected means remain design choices. |
 | `nonGoals[]` | The user decided each exclusion or explicitly stated there are none. |
 | `cost` | A rough band with structural evidence and remaining unknowns. |
 
@@ -30,7 +30,7 @@ Use [references/criteria.md](references/criteria.md) to judge each field.
 
 The orchestrator owns user interaction. It runs the hearing after an analysis step has produced scope facts.
 
-1. Present observed scope facts separately from their inferred implications.
+1. Present observed scope facts separately from their inferred implications. Keep agent-proposed capabilities, guarantees, outputs, and operating obligations out of requirements. Escalate a requirement change only when concrete evidence shows the requested outcome cannot be achieved under the current conditions; name the failing premise, smallest change, and trade-off for the user's decision.
 2. Ask only about fields below `ready`, at most two questions per message.
 3. Record answers in the user's wording.
 4. If an answer still fails its pass condition, ask once more. Mark it `weak-but-explicit` only when the user agrees to proceed unresolved.
@@ -45,12 +45,12 @@ The orchestrator owns user interaction. It runs the hearing after an analysis st
 | Design Doc is the first durable document | `Overview` holds `outcome`; `Requirement Boundary` holds current requirements and user-decided `nonGoals` |
 | Small direct implementation | Compact record embedded in the single task file's `Governing Sources` |
 
-Persist `weak-but-explicit` outcome, current requirements, and non-goals as open questions. Keep speculative ideas, evaluation requests, prescribed mechanisms, and unselected candidates in the active convergence context only until scope is confirmed; durable downstream documents contain the resulting current requirements and selected conclusions. `cost` is also ephemeral: use it for the requirements challenge, then let Structural Scale select the workflow and let design or planning produce later estimates. A Small-flow task file carries only `outcome`, current requirements, `nonGoals`, and their readiness in `Governing Sources`; its executor receives only that task path. After PRD or Design Doc persistence, downstream agents receive the document path. The persistence reviewer may receive the object once to verify fidelity.
+Persist `weak-but-explicit` outcome, current requirements, and non-goals as open questions. Keep speculative ideas, evaluation requests, prescribed mechanisms, and unselected candidates in the active convergence context only until scope is confirmed; durable downstream documents contain the resulting current requirements and selected conclusions. `cost` is also ephemeral: use it for the requirements challenge, then let Structural Scale select the workflow and let design or planning produce later estimates. A Small-flow task file carries only `outcome`, current requirements, `nonGoals`, and their readiness in `Governing Sources`; its executor receives only that task path. Keep relevant user wording and explicit constraints in that existing requirement boundary, distinct from technical means. Downstream agents can then use the document path; before persistence or when provenance is missing, pass the relevant source excerpt.
 
 ## Downstream Contract
 
 1. Read the convergence record from the current handoff or its durable document.
-2. Build the current change from `desired-future` requirements and keep recorded `nonGoals` outside implementation. A speculative item becomes buildable only after the user promotes it to `desired-future`; until then it remains outside durable implementation documents.
+2. Build the current change from user-selected `desired-future` outcomes and keep recorded `nonGoals` outside implementation. Technical means remain revisable after phase passage when user-required outcomes and explicit constraints remain satisfied; reconcile affected sources and proof. A speculative capability becomes buildable only when the user explicitly requests that scope change.
 3. Keep `weak-but-explicit` fields visible as open questions. Escalate only when the current work depends on resolving one.
 
 ## Quality Checklist

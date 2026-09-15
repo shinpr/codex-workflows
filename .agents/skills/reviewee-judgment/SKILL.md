@@ -11,7 +11,7 @@ Treat review findings as evidence about an artifact, not as work orders. A findi
 
 This skill prevents automatic finding-closure and automatic rejection from replacing product judgment. It preserves the requested outcome while favoring durable quality: maintainability for code, execution precision for prompts, and decision integrity for specifications. It also makes structural debt, verification limits, and user-owned tradeoffs visible before implementation begins.
 
-Apply, decline, reuse, and no change are candidates; none is the default. Justify the response from governing obligations, expected effect, durable quality, and total lifecycle cost in that order.
+Consider no change, removal or narrowing, and reuse before a mechanism-preserving or additive repair. Unnecessary repairs create their own contracts, tests, and maintenance burden. Prior phase passage does not exempt a mechanism from this judgment.
 
 Use this process before planning or performing changes derived from received review results. Success is an evidence-backed response to the underlying problems, not a larger change set or a higher count of closed findings.
 
@@ -21,7 +21,7 @@ The flow is: establish the outcome boundary, separate each problem from its prop
 
 ## Artifact Context
 
-Read the current artifact, the received findings, and the governing outcome, constraints, exclusions, and contracts. Mark material claims as observed, inferred, or unknown.
+Read the current artifact, received findings, user-required outcome, explicit constraints, exclusions, and actual consumer contracts. Mark material claims as observed, inferred, or unknown. Treat upstream implementation choices as revisable within that outcome boundary; a generated document or test is not evidence that the user needs its mechanism.
 
 Load the reference that matches each reviewed artifact:
 
@@ -53,16 +53,16 @@ A structural defect is owned by a misplaced responsibility, contradictory contra
 
 Evaluate candidates through these gates in order. A later gate cannot compensate for a failure at an earlier gate.
 
-1. **Outcome boundary**: Preserve supplied confirmed requirements, accepted design decisions, exclusions, and compatibility obligations. Review correction has no authority to expand them. Compare only in-boundary responses; technical improvement never makes expansion eligible.
+1. **Outcome boundary**: Preserve user-required outcomes, explicit constraints, exclusions, and actual consumer obligations. Reconsider upstream technical means even when previously passed. Escalate a requirement change only when evidence shows the current conditions cannot deliver the required outcome; optional capabilities remain unadopted.
 2. **Finding validity**: Confirm the reported behavior and its material effect on the requested outcome or the matching reference's Quality Objective. When the material effect is a lifecycle cost, record its evidenced frequency or magnitude for gate 7 to compare against response cost. Base validity on that evidence, and record the reviewer's priority and proposed fix separately as context.
 3. **Cause and ownership**: Identify the underlying problem and the artifact or responsibility that owns it.
-4. **Causal sufficiency**: Compare responses that resolve the owner, including subtraction, simplification, reuse, correction of an existing structure, redesign, and a local patch when each is applicable.
+4. **Subtraction first**: If no required defect or worthwhile in-scope improvement remains, decline. Otherwise test removal or narrowing, then reuse, before a retaining or additive repair. Identify a response that resolves the cause within the outcome boundary, then evaluate it through gates 5–8. Expand alternatives only when those checks make another candidate decision-relevant.
 5. **Durable quality**: Apply the matching reference's Quality Objective and Candidate Comparison. Prefer the candidate that improves the artifact's long-term quality without adding unnecessary concepts or parallel sources of truth.
 6. **Verification safety**: Determine whether the change and its affected boundaries can be proved safe with available evidence.
-7. **Lifecycle value**: Compare implementation, verification, migration, maintenance, review attention, execution risk, and retained-debt cost only among candidates that passed the earlier gates. When the artifact contradicts the requested outcome, a governing constraint, an explicit exclusion, or a compatibility obligation, or has materially incorrect, non-executable, or non-verifiable behavior at a required boundary, use lifecycle value to select a sufficient response while the correction remains required. For a discretionary improvement, compare the material effect established at gate 2 with its total lifecycle cost. Treat reviewer preference as context rather than benefit evidence.
+7. **Lifecycle value**: Evidence makes an option evaluable, not mandatory. Compare the supported effect from gate 2 with implementation, verification, migration, maintenance, review, execution, and retained-debt cost. A required outcome defect needs a sufficient response, including removal when it resolves the defect. Decline discretionary work whose benefit does not justify that cost. A document discrepancy alone does not require preserving the documented mechanism.
 8. **Authority**: Execute only authorized corrections within gate 1; report unavailable authority or access as the specific blocker.
 
-Establish causal sufficiency before cost can favor a response. A required correction remains required regardless of cost; cost ranks its sufficient responses. Missing verification warrants an evidence request for the in-scope correction, not a structural-improvement target.
+Confirm that the response resolves the cause before cost ranks candidates. Stop when a sufficient response passes the remaining gates; a required defect still needs correction. Missing verification warrants the evidence needed for that correction, not a new improvement target.
 
 ## Resolution Method
 
@@ -90,7 +90,7 @@ Preserve supplied finding identifiers within each group. For every source findin
 Classify each problem group by the responsibility that owns the cause. When evidence supports more than one layer, retain the causal chain and evaluate the highest owner whose correction can remove the downstream failures.
 
 - **New mechanism**: the recently introduced mechanism creates its own inconsistency or duplicates an existing responsibility. Compare removing or simplifying it, redesigning it at the owner, and using the existing structure before considering patches inside it.
-- **Existing structure**: the pre-existing responsibility, contract, or decision is the cause. Compare correcting that structure alone, correcting it before adding the requested behavior, and changing its ownership when justified.
+- **Existing structure**: the pre-existing responsibility, contract, or decision is the cause. Consider removal or narrowing when it preserves the user-required outcome, including when the user requested removing the feature. Inspect actual remaining consumers rather than assuming existence creates a preservation obligation.
 - **Local unit**: one otherwise sound unit owns the entire problem. A local correction is eligible when no instance of the same causal failure remains.
 - **No confirmed defect**: evidence does not establish an outcome-relevant problem. Decline the finding when the available evidence is sufficient, or request the material evidence needed to resolve it. End candidate comparison for this group because no confirmed cause is available to resolve.
 
@@ -98,7 +98,7 @@ This classification selects candidates; it does not predetermine the answer. Str
 
 ### 4. Compare Complete Candidates
 
-Before selecting a response, test it against applicable causal alternatives that could change the decision: subtraction, reuse, correction of an existing owner, structural change, and a bounded patch. Expand the comparison only when evidence makes an alternative decision-relevant.
+Use gate 4's order before selecting a response. For a repair that retains or adds a mechanism, state why no change, removal or narrowing, and existing behavior cannot deliver the required result. This is a selection condition, not a requirement to enumerate alternatives for every finding.
 
 The resulting comparison must make clear:
 
@@ -119,7 +119,7 @@ Assign one disposition to each problem group:
 - **apply**: the problem or improvement is confirmed and the selected response passed all gates. A required correction is apply when a sufficient, safe response passes the gates; lifecycle cost ranks the eligible responses. A discretionary improvement is apply when the material effect established at gate 2 exceeds its total lifecycle cost. The Authority gate separately determines whether to recommend or execute it;
 - **decline**: evidence establishes no material effect at gate 2, the finding is outside the outcome boundary or reverses an exclusion, or a discretionary improvement's total lifecycle cost equals or exceeds its material effect;
 - **evidence required**: a material unknown could change finding validity, ownership, response selection, or verification. Pause changes for that problem group, continue independent groups, and report the exact evidence needed, its source when known, the decision it controls, and the condition for resuming;
-- **user decision required**: evidence shows the confirmed outcome cannot be achieved within the accepted design; report the failing condition before any design change. Optional expansion is declined, not escalated.
+- **user decision required**: evidence shows the required outcome cannot be achieved without changing a user requirement, explicit constraint, actual consumer obligation, or available authority. A technical reduction alone returns to the orchestrator for affected artifact updates, not renewed user approval. Optional expansion is declined.
 
 Return `evidence required` and `user decision required` to the skill caller. The caller resolves them when it owns the required evidence or decision and otherwise routes them to the responsible authority.
 
@@ -148,7 +148,7 @@ Required evidence and resume condition, if any:
 User decision, if any:
 ```
 
-Keep the report proportional. Omit fields that have no material content, but always preserve the problem/fix separation, the causal owner, whether the reviewed change or mechanism is necessary, the alternatives that could change the decision, and any user-owned tradeoff.
+Keep the report proportional. Use the existing response to retain the disposition and reason; for a mechanism-preserving or additive repair, include the required result that subtraction cannot deliver. Keep the problem/fix separation, causal owner, and any user-owned tradeoff. No separate plan tool, file, or alternative inventory is required.
 
 ## Completion Check
 
@@ -156,7 +156,7 @@ Keep the report proportional. Omit fields that have no material content, but alw
 - Every supplied finding identifier remains traceable to its source assessment and problem group.
 - Required corrections were identified before lifecycle comparison, and lifecycle cost selected among their sufficient responses.
 - Every discretionary apply names its material effect and why it exceeds the total lifecycle cost.
-- Apply, decline, reuse, and no change each have evidence at the gates that determine the response.
+- Selected repairs explain why declining, removing or narrowing, and reusing are insufficient for the required result.
 - Reviewer-proposed fixes were evaluated as candidates rather than inherited as requirements.
 - Same-problem instances were grouped by cause, not by surface similarity.
 - Candidate selection followed the fixed decision order without using cost to skip causal or quality analysis.

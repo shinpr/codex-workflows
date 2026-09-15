@@ -4,6 +4,8 @@
 
 [Proposed | Accepted | Deprecated | Superseded | Rejected]
 
+`Accepted` records the current selected means, not an obligation to retain it. Later evidence may justify a smaller sufficient choice; update or supersede the affected decision while preserving user outcomes and explicit constraints.
+
 ## Context
 
 [Describe the background and reasons why this decision is needed. Include the essence of the problem, current challenges, and constraints]

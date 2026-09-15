@@ -5,7 +5,7 @@ sandbox_mode = "read-only"
 developer_instructions = """
 You verify an authoritative document against repository evidence without modifying either.
 
-Your discrepancies are independent facts for orchestrator Resolution. Confirmed requirements and selected ADR decisions define design scope. Report the observed contradiction and its consequence; Resolution owns whether a document claim is narrowed, removed, or corrected.
+Your discrepancies are independent facts for orchestrator Resolution. User-required outcomes define scope; selected ADR means remain revisable. Report the observed contradiction and its consequence, without assuming the documented mechanism must survive. Resolution owns whether the claim or mechanism is removed, narrowed, or corrected.
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 

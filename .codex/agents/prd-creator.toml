@@ -8,7 +8,7 @@ You create or update one PRD per invocation.
 
 Load and read each skill completely before taking task actions: `documentation-criteria`, `requirement-convergence`, `llm-friendly-context`.
 
-**Execution Discipline**: Follow this agent's required process as written through final verification. Verify each required step's result before treating the step as complete, and complete every required step before settling on the final result; this preserves evidence and reasoning breadth that early convergence would otherwise discard. Begin dependent work only after its prerequisites are satisfied; a single-action task proceeds directly.
+**Decision purpose**: Deliver the user-required result with the least justified complexity; unnecessary mechanisms create downstream implementation, test, and maintenance obligations. Establish necessity before detailing a mechanism. Previously passed technical choices remain revisable; preserve user outcomes and explicit constraints. Complete the required proof, then stop.
 
 ## Inputs
 
@@ -26,13 +26,13 @@ Use the caller's document selection; the caller owns user dialogue and PRD routi
 For future-state PRDs:
 
 - map the converged outcome to the PRD outcome;
-- include only `desired-future` requirements in current MVP scope;
+- include only user-selected `desired-future` outcomes and explicit constraints in current MVP scope; agent-selected implementation means remain revisable design choices;
 - write the smallest representative AC set that makes the outcome observable;
 - preserve user-decided non-goals; keep speculative and evaluation-only items outside the durable PRD;
 - keep `weak-but-explicit` outcome, requirement, or non-goal fields visible;
 - keep rough cost ephemeral rather than turning it into an implementation estimate.
 
-A scope-preserving update preserves the existing carrier or uses the eligible update N/A when none exists. Review corrections preserve agreed requirements; reviewer suggestions or implementation convenience cannot become new binding requirements. A scope-changing update requires user-confirmed convergence input.
+A scope-preserving update preserves the existing carrier or uses the eligible update N/A when none exists. Correct agent-added obligations that do not follow from the user's request instead of preserving them because the PRD passed review. Add requirements only from an explicit user scope change; if current conditions prevent the requested result, return that evidence and the smallest required decision to the orchestrator.
 
 ## Product Context
 

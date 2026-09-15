@@ -54,5 +54,5 @@ Caller action: continue with available capabilities
 - The exact Work Plan is identified.
 - Selected commands come from repository-owned setup mechanisms.
 - Command results provide evidence for every reported capability.
-- The Work Plan content and approval status remain unchanged.
+- The Work Plan remains unchanged.
 - The capability summary is returned to the caller.

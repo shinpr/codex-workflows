@@ -56,16 +56,16 @@ Qualifying durable choices include:
 
 - introducing or replacing a technology, library, platform, storage model, or external dependency;
 - changing ownership, dependency direction, trust boundary, or a shared public contract in a way with credible materially different alternatives;
-- reversing or superseding an accepted architecture decision;
+- replacing an accepted architecture decision with a new choice that passes both filters;
 - choosing an irreversible or high-cost-to-reverse data or compatibility strategy.
 
 A local contract, data-flow, state, or component change that follows an accepted design, has one evident repository-supported implementation, or remains cheaply reversible belongs in the Design Doc. Counts of files, consumers, nesting levels, states, steps, and Structural Scale remain supporting evidence rather than ADR criteria.
 
-## What Each Document Fixes
+## What Each Document Records
 
-Each document fixes one class of decision needed by its downstream consumer. The decision matrix determines whether the document is required; the applicable template defines its content.
+Each document records one class of decision needed by its downstream consumer. Phase passage permits progression, not permanent preservation of its technical means. For reductions, preserve user outcomes and explicit constraints and update affected sources and proof. The decision matrix determines whether the document is required; the template defines its content.
 
-| Document | Decision it fixes | Consumer and effect when missing |
+| Document | Decision it records | Consumer and effect when missing |
 |----------|-------------------|----------------------------------|
 | PRD | Confirmed product outcome, requirements, acceptance criteria, and exclusions | Design and test selection would have to infer product scope |
 | ADR | One qualifying durable technical choice and the alternatives it resolves | Design and future changes could not distinguish an accepted decision from a local implementation choice |

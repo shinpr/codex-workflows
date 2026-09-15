@@ -13,22 +13,22 @@ Read [references/typescript.md](references/typescript.md) only for TypeScript us
 
 Follow, in order:
 
-1. Task, acceptance criteria, and cited governing sources
-2. Governing Design Doc, ADR, Work Plan, and repository instructions
+1. User-required outcome, explicit constraints, repository rules, and actual consumer contracts
+2. Task, acceptance criteria, Design Doc, ADR, and Work Plan as the current implementation plan
 3. Representative repository patterns
 4. Language/framework defaults
 
-Use a sourced project contract in preference to generic best practice.
+Use a sourced project contract in preference to generic best practice. When a planned mechanism is unnecessary or incorrect, preserve user outcomes and explicit constraints while reducing it: document passage and a generated AC do not make that mechanism mandatory. Keep the affected plan and proof aligned with the selected reduction.
 
 ## Minimal Design Surface
 
-Deliver the current requirement with the least new persistent surface. Persistent state, public/cross-boundary fields, modes, flags, reusable abstractions, shared utilities, and component/service splits require a current requirement, verified constraint, observed problem, or evidence-backed material risk.
+Deliver the current requirement with the least justified total complexity. Before detailing new state, fields, modes, abstractions, or component splits, establish what required result a direct implementation cannot deliver. Evidence of a possible benefit makes the addition a candidate; retain it only when necessary now and worth its total lifecycle cost over subtraction or reuse.
 
 Private local implementation details and test fixtures are not new design surface. If an element matches both categories, treat it as design surface. If several sufficient options remain, prefer the one with lower lifecycle cost.
 
 ## Contract and Boundary Safety
 
-- Preserve required signatures, schemas, serialized values, field order, state transitions, dependency direction, and error behavior.
+- Preserve contracts required by remaining consumers and explicit user constraints; authorized removal includes the retired entry point and its unused implementation. Absence of repository call sites does not establish absence of external consumers. Resolve uncertainty only when it changes the removal or compatibility decision.
 - Validate untrusted input at the boundary and encode output for its destination.
 - Propagate or handle errors with useful context and keep failures observable.
 - Keep secrets and sensitive values out of source, client bundles, errors, and logs.
@@ -61,8 +61,8 @@ When the changed behavior implements a runtime rule that exists in multiple loca
 
 ## Completion Gate
 
-- [ ] Every addition maps to a governing requirement or verified risk
-- [ ] Public and cross-boundary contracts remain exact
+- [ ] Every addition is necessary for the required outcome and worth its cost over a smaller response
+- [ ] Actual consumer contracts and explicit constraints remain satisfied
 - [ ] Repository-local pattern choice is supported by evidence
 - [ ] Errors, sensitive data, and persistent state boundaries are handled
 - [ ] Focused and repository-required checks pass

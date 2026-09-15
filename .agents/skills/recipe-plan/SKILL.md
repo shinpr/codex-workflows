@@ -24,8 +24,8 @@ description: "Creates a reviewed Work Plan with value-filtered integration/E2E t
 1. Invoke the named specialist for test generation, Work Plan creation, and semantic review. The orchestrator owns deterministic coordination and status changes.
 2. **Follow subagents-orchestration-guide skill planning flow exactly**:
    - Execute steps defined below
-   - **[STOP — BLOCKING]** Present plan content to user for approval. **CANNOT proceed until user explicitly confirms.**
-3. **Scope**: Complete when work plan receives approval
+   - Present plan content and apply Work Plan Authorization; obtain missing implementation authority without repeating permission already granted.
+3. **Scope**: Complete when the reviewed plan's implementation authority is resolved
 
 ## Scope Boundaries
 
@@ -34,9 +34,9 @@ description: "Creates a reviewed Work Plan with value-filtered integration/E2E t
 - Test skeleton generation with acceptance-test-generator
 - Work plan creation with work-planner
 - Work plan review with document-reviewer
-- Plan approval obtainment
+- Implementation authorization resolution
 
-**Responsibility Boundary**: This skill completes with work plan approval.
+**Responsibility Boundary**: This skill completes with a reviewed plan and resolved implementation authority.
 
 Follow the planning process below:
 
@@ -55,20 +55,22 @@ Present options if multiple exist (can be specified with $ARGUMENTS).
 - Verify the returned Work Plan path and use it as the Step 4 review target
 
 ### Step 4: Work Plan Review
+
+**Review reception:** Unnecessary repairs create lasting work. Before assigning a fix, use Review Resolution to judge no change, removal or narrowing, and reuse first; record why any retained or added mechanism is necessary.
 Spawn document-reviewer agent: "Review the work plan. doc_type: WorkPlan. target: [work-planner completed path]. Verify Design Doc implementation coverage, absence of added operational scope, dependency order, executable verification, optional Verification Focus, and Review Scope."
 
 Branch on `verdict.decision`:
-- `approved` -> proceed to Step 5 with the plan-level status pending
+- `pass` -> proceed to Step 5
 - `needs_revision` -> apply Review Resolution with work-planner, then review the updated plan
 - `rejected` -> apply Orchestrator Escalation Resolution using the cited governing sources
 
-### Step 5: Plan Approval
-- Present the reviewed work plan to the user for batch approval
-- Handle user-requested changes through subagents-orchestration-guide Work Plan Approval
+### Step 5: Plan Authorization
+- Present the reviewed scope and apply Work Plan Authorization
+- Handle user-requested changes through subagents-orchestration-guide Work Plan Authorization
 - Summarize the implementation task set and any material choice the user is approving
-- After explicit approval, record the plan-level status as approved
+- After explicit authorization, record the user's instruction and scope in Implementation Authorization
 
-**Scope**: Up to work plan creation and obtaining approval for plan content.
+**Scope**: Reviewed work plan and implementation authorization.
 
 ## Completion Criteria
 
@@ -76,14 +78,15 @@ Branch on `verdict.decision`:
 - [ ] Integration/E2E test skeleton selection completed and its artifact paths passed to work-planner
 - [ ] Work plan created via work-planner
 - [ ] Work plan reviewed via document-reviewer
-- [ ] Plan content approved by user
-- [ ] All stopping points honored with user confirmation
+- [ ] User authorization for the implementation scope is recorded
+- [ ] Any required user decisions were resolved
 
 ## Response at Completion
 ```
 Planning phase completed.
 - Work plan: docs/plans/[plan-name].md
-- Status: Approved
+- Review: pass
+- Implementation authorization: [user instruction and scope]
 
-Please provide separate instructions for implementation.
+Continue implementation when already requested; otherwise this planning recipe is complete.
 ```

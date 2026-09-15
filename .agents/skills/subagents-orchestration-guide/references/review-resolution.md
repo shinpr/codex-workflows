@@ -1,14 +1,14 @@
 # Review Resolution
 
-Correct evidenced defects within supplied confirmed requirements and accepted design decisions, using existing responsibilities. Neither propose nor adopt scope expansion. Escalate before a design change only when concrete evidence shows the confirmed outcome cannot otherwise be achieved.
+Deliver the user-required result with the least justified complexity. Review findings and previously passed technical choices are revisable evidence, not implementation obligations. Preserve user outcomes, explicit constraints, actual consumer contracts, and authority; remove unnecessary means even when upstream documents selected them.
 
 ## 1. Assess Findings
 
-Apply `reviewee-judgment` within this boundary. Separate each evidenced defect from its proposed fix. Select only in-scope corrections; decline expansion instead of forwarding it as work. Existing required verification remains binding.
+Before assigning a correction, apply `reviewee-judgment`: first consider no change, removal or narrowing, and reuse. Record the disposition and reason in the existing resolution response. A mechanism-preserving or additive repair must name the required result those smaller responses cannot deliver and why its benefit justifies total cost. Optional capabilities are declined; a user decision is needed only when the required outcome cannot otherwise be achieved within the user's constraints or authority.
 
 ## 2. Correct and Recheck
 
-Pass the agreed boundary and selected corrections to the responsible author. Retain each passing reviewer/verifier as complete for this review cycle, including after another reviewer's correction. Rerun only the still-unpassed reviewer that owns the findings being resolved.
+Pass only the selected response to the responsible author. When it supersedes an upstream choice, update the affected source, consumers, and proof through their existing owners; do not restore the mechanism to match a stale document. Retain passing evidence unless the correction invalidates it, and rerun only the affected findings or proof.
 
 Supply its original governing inputs, previous complete result, dispositions, and correction diff or paths. Recheck only resolution of those findings and inconsistencies directly introduced by the correction; carry forward unaffected evidence. This replaces the initial full review. A new finding needs a causal link to the correction, not merely a newly noticed pre-existing problem.
 

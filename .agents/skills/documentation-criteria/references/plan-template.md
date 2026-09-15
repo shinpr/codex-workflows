@@ -5,11 +5,11 @@ Type: feature|fix|refactor
 Related Issue/PR: #XXX (if any)
 Review Scope: [repository responsibilities or expected files derived from the Design Doc]
 
-## WorkPlan Review
+## Implementation Authorization
 
-Plan creation and material updates set this to `pending`. Record `approved` after the user approves the reviewed implementation scope.
+The orchestrator records user authority here; review results stay in the reviewer response. Technical revisions retain existing authorization.
 
-- **Status**: pending|approved
+- **Authorization**: [not yet granted, or the user's instruction and authorized scope]
 
 ## Governing Documents
 

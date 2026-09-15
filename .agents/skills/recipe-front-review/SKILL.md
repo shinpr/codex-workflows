@@ -49,6 +49,8 @@ Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [p
 
 ### 4. Verdict and Response
 
+**Review reception:** Unnecessary repairs create lasting work. Before assigning a fix, use Review Resolution to judge no change, removal or narrowing, and reuse first; record why any retained or added mechanism is necessary.
+
 If either reviewer returns a blocked or otherwise unusable result, apply Orchestrator Escalation Resolution before continuing.
 
 Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
@@ -57,7 +59,7 @@ Apply a security-reviewer finding only when leaving it unresolved would violate 
 - `code-reviewer` verdict is `pass`
 
 **Security criteria**:
-- `approved` -> Pass
+- `pass` -> Pass
 - `needs_revision` -> Requires disposition
 
 Report required corrections from both results, then apply Review Resolution before proposing corrections:
@@ -78,7 +80,7 @@ Proposed corrections:
 ```
 
 Apply Review Resolution before presenting results. Recommend a correction route only for findings classified `apply` or `user decision required`:
-- Use `d` when implementation intent matches the requirement but the Design Doc is stale or too narrow.
+- Use `d` when the Design Doc is stale, excessive, or incorrect for the required outcome. A selected reduction may require both source updates and code removal; neither route makes existing implementation authoritative.
 - Use `c` when the required correction changes implementation.
 
 Present the review. When no correction remains, proceed to Final Report. Because this recipe is a review request rather than prior implementation authority, ask once before applying the proposed code or document corrections.
@@ -90,7 +92,7 @@ If the user declines corrections, skip fix steps and proceed to Final Report.
 1. **Design-side update**: If any accepted finding is routed to `d`, spawn technical-designer-frontend in update mode, then document-reviewer with `doc_type: DesignDoc` and `review_context: update`, then design-sync when multiple Design Docs exist. If both `d` and `c` routes exist, re-evaluate the `c` findings against the updated Design Doc and drop any now satisfied.
 2. **Plan fixes**: Use the active execution plan when one exists. When none exists, create one for the accepted fix flow. Create `docs/plans/tasks/review-fixes-YYYYMMDD.md` with only accepted code compliance issues and security required fixes routed to `c`.
 3. **Execute fixes**: Start the Per-Task Change Set, invoke task-executor-frontend with the task file, inspect its result and repository diff, and accumulate its paths.
-4. **Quality check**: Invoke quality-fixer-frontend with `task_file`, `filesModified: taskWriteSet`, and executor operation-verification evidence. On approval, add its paths and commit the reconciled set; repair stubs through task-executor-frontend, accumulate their paths, and resolve blocked results through Orchestrator Escalation Resolution.
+4. **Quality check**: Invoke quality-fixer-frontend with `task_file`, `filesModified: taskWriteSet`, and executor operation-verification evidence. On pass, add its paths and commit the reconciled set; repair stubs through task-executor-frontend, accumulate their paths, and resolve blocked results through Orchestrator Escalation Resolution.
 5. **Re-validate**: Run code-reviewer and security-reviewer against the updated Design Doc and actual implementation and fix files. For code-reviewer, pass `prior_feedback: [the complete initial result, applied corrections, declined finding IDs with reasons and evidence, and the correction paths or diff]` and apply its Rerun Boundary. Pass the applicable corrections and dispositions to security-reviewer.
 
 After any code fix, both review agents must re-run.

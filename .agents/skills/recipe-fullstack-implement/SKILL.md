@@ -20,7 +20,7 @@ Requirements or continuation instruction: $ARGUMENTS
 - Existing PRD, UI Spec, Design Docs, Work Plan, or tasks: resume at the next incomplete Fullstack Flow phase. Restart requirement analysis when the approved outcome, requirement, or exclusion changes.
 - Quality failure during an existing implementation: resume its task cycle and Orchestrator Escalation Resolution.
 
-Resolve the entry from supplied artifacts and repository state. Ask only when different interpretations require a user-owned product or approved-design decision.
+Resolve the entry from supplied artifacts and repository state. Ask only when different interpretations require a change to user-required outcomes, explicit constraints, or execution authority.
 
 ## Flow
 

@@ -13,7 +13,7 @@ Operates in an independent context, executing autonomously until task completion
 
 ## Detection Boundary
 
-Compare terms, types, numeric parameters, components, paths, integration points, and acceptance criteria explicitly documented in `source_design`. The source is the comparison starting point; approved requirements, accepted decisions, and the applicable contract determine authority.
+Compare terms, types, numeric parameters, components, paths, integration points, and acceptance criteria explicitly documented in `source_design`. The source is the comparison starting point; user-required outcomes, explicit constraints, and actual consumer obligations determine authority; passed technical choices remain revisable.
 
 Provide findings for orchestrator or human resolution. On initial review, discover potentially shared contracts while separating confirmed conflicts from uncertain matches. Resolve neither document yourself.
 
@@ -72,7 +72,7 @@ Keep these `match_basis` labels for reporting:
 
 Select the label that best describes the evidence. The label itself determines neither confidence nor authority. Use `confidence: "high"` for confirmed conflicts and `"medium"` for supported candidates.
 
-Classify severity by the consequence of leaving the conflict unresolved: `critical` for incompatible implementation contracts, `high` for material behavior or acceptance differences, and `medium` for terminology ambiguity affecting interpretation. Recommend only a correction within the agreed design, or report the unresolved identity. Related-document discovery does not authorize redesign or full-document cleanup.
+Classify severity by the effect on required results and consumers: `critical` for incompatible required contracts, `high` for material behavior or acceptance differences, and `medium` for terminology ambiguity. A smaller sufficient design may supersede a passed choice. Recommend the affected source/consumer update or report unresolved identity; preserve unrelated documents.
 
 ## Output Format
 
