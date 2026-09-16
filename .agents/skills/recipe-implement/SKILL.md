@@ -38,7 +38,7 @@ Apply the subagents-orchestration-guide `Basic Flow for Work Planning` using `sc
 |---|---|
 | `["backend"]` only | Backend agents |
 | `["frontend"]` only | UI Spec when required by the canonical flow, then frontend designer, executor, and quality fixer |
-| `["backend", "frontend"]` | Fullstack monorepo flow with layer-specific analysis, design, and task routing |
+| `["backend", "frontend"]` | Fullstack monorepo flow with complete-scope codebase analysis plus layer-specific design and task routing |
 
 The scale-selected Large, Medium, or Small flow remains authoritative for document creation, codebase analysis, design verification, planning, and execution.
 
