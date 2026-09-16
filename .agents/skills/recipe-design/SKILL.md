@@ -23,30 +23,32 @@ description: "Execute from codebase-scoped analysis to design document creation.
 **Execution Protocol**:
 1. **Spawn agents for analysis and document work** -- your role is to invoke sub-agents, select from their compact evidence against governing requirements, pass the selected material onward, and report results.
 2. **Run the design flow below in order**:
-   - Execute: scope evidence -> codebase-analyzer -> [Stop: Scope confirmation] -> optional PRD update/review/[Stop: PRD confirmation] -> optional ADR batch/batch review/[Stop: ADR-batch confirmation] -> Design Doc -> code-verifier/Review Resolution -> document-reviewer -> design-sync -> [Stop: Design confirmation]
+   - Execute: scope evidence -> [Stop: Scope confirmation] -> optional PRD update/review/[Stop: PRD confirmation] -> codebase-analyzer -> optional ADR batch/batch review/[Stop: ADR-batch confirmation] -> Design Doc -> code-verifier/Review Resolution -> document-reviewer -> design-sync -> [Stop: Design confirmation]
    - **[STOP — BLOCKING]** At every `[Stop: ...]` marker -> Present status to user for confirmation and proceed after explicit confirmation.
 3. **Scope**: Complete when design documents pass review and receive user confirmation
 
 ## Workflow Overview
 
 ```
-Requirements -> scope evidence -> codebase-analyzer -> [Stop: Scope confirmation]
-                                                            |
-                                      optional PRD update/review -> [Stop: PRD confirmation]
-                                                            |
-                                   optional ADR batch/review -> [Stop: ADR-batch confirmation]
-                                                            |
-                         Design Doc -> code-verifier -> Review Resolution -> document-reviewer
-                                                            |
-                                                    design-sync -> [Stop: Design confirmation]
+Requirements -> scope evidence -> [Stop: Scope confirmation]
+                                      |
+                optional PRD update/review -> [Stop: PRD confirmation]
+                                      |
+                             codebase-analyzer
+                                      |
+             optional ADR batch/review -> [Stop: ADR-batch confirmation]
+                                      |
+           Design Doc -> code-verifier -> Review Resolution -> document-reviewer
+                                      |
+                              design-sync -> [Stop: Design confirmation]
 ```
 
 ## Scope Boundaries
 
 **Included in this skill**:
 - Compact scope and cost evidence from requirement-analyzer; the orchestrator owns requirement, scale, and ADR decisions
-- Codebase analysis with codebase-analyzer (entry point of the design phase)
-- Scope confirmation with the user, grounded in codebase-analyzer findings
+- Scope confirmation with the user, grounded in compact scope and cost evidence
+- Codebase analysis of the confirmed scope before design creation
 - One ADR per qualifying decision point found in the current scope, created and reviewed as one batch
 - Design Doc creation with technical-designer
 - Document review with document-reviewer
@@ -66,28 +68,24 @@ Execute the process below within design scope.
 
 Spawn requirement-analyzer with the original requirements. Treat exact user quotes according to their returned signal type: implementation requirements and exclusions can enter confirmed scope; evaluation requests, speculation, and prescribed mechanisms remain non-binding until the orchestrator resolves them against the user's wording. Treat scope evidence, cost evidence, and questions as material; the orchestrator determines requirements, scale, and ADR routing.
 
-### Step 2: Codebase Analysis
-Spawn codebase-analyzer agent: "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for requirement confirmation, ADR selection, minimal Design Doc creation, and verification. requirement_analysis: [Step 1 scopeEvidence]. requirements: $ARGUMENTS. target_paths: [Step 1 scopeEvidence.affectedFiles]."
-
-### Step 3: Scope Confirmation
-After codebase-analyzer returns, confirm the requirements, determine Structural Scale, and identify qualifying ADR decision points:
+### Step 2: Scope Confirmation
+Confirm the requirements and determine Structural Scale from the user's wording and Step 1 scope and cost evidence:
 1. Locate a related PRD and read its Converged Outcome, MVP scope, Future / Out of Scope, and open requirement fields. If the related PRD is ambiguous, ask the user to select or provide its path, or confirm none exists, before continuing.
 2. When those fields match the current request and returned scope facts, use the PRD path as the current carrier and proceed directly to scope confirmation.
-3. When a current carrier is absent, load `requirement-convergence`. The orchestrator builds and judges its record from the user's wording, using Step 1 scope/cost evidence and Step 2 analysis for trade-offs, questions, and routing decisions. Mark an existing but incomplete or scope-mismatched PRD for update; otherwise mark the carrier as absent.
-4. Apply the documentation-criteria Choice filter, then the Durability filter, to Step 2 `decisionMaterials.candidateDecisionPoints`. `adrDecisionPoints` contains every current-scope point that passes both filters; an empty array routes directly to Design Doc regardless of scale.
-5. Determine Structural Scale and set `prdRequired` when the scale is Large and the current PRD carrier is absent.
+3. When a current carrier is absent, load `requirement-convergence`. The orchestrator builds and judges its record from the user's wording, using Step 1 scope and cost evidence for trade-offs, questions, and routing decisions. Mark an existing but incomplete or scope-mismatched PRD for update; otherwise mark the carrier as absent.
+4. Determine Structural Scale and set `prdRequired` when the scale is Large and the current PRD carrier is absent.
 
 Present the design scope to the user:
-- Target files/modules: `analysisScope.filesAnalyzed` and directly relevant modules
-- Affected layers: `analysisScope.affectedLayers`
-- Recommended document path: Design Doc alone or an ADR batch followed by Design Doc, with every qualifying `adrDecisionPoint` and its filter evidence
+- Candidate files/modules: `scopeEvidence.affectedFiles` and responsibility boundaries
+- Affected layers: `scopeEvidence.affectedLayers`
+- Recommended document path: the scale-selected Design Doc, with an ADR batch only when post-confirmation analysis finds a qualifying decision point
 - PRD status: whether `prdRequired` is true and whether the convergence carrier is current, requires update, or is absent
-- Unknowns/assumptions: `limitations` and unresolved risks
+- Unknowns/assumptions: Step 1 cost unknowns and decision-changing questions
 - Questions before design: scope questions that change the design target or scale, including technical wording whose mandatory/candidate status is outcome-relevant and ambiguous
 
 Ask the user to choose one:
 - Proceed with the recommended document path
-- Correct the scope and re-run codebase-analyzer
+- Correct the scope and re-run requirement-analyzer
 - Answer open questions, then proceed
 - Provide an existing PRD path when `prdRequired` is true
 - Explicitly approve proceeding without a PRD when `prdRequired` is true and no PRD will be provided
@@ -96,19 +94,24 @@ If `prdRequired` is true and the user neither provides a PRD path nor explicitly
 
 **[STOP — BLOCKING]** Wait for user confirmation before proceeding.
 
-After confirmation, record the final scale, derive `adrRequired` from `adrDecisionPoints.length > 0`, and record `documentTypeRationale` from the actual ADR decision points. When the user's answer changes the scope or PRD carrier, recompute the affected values before proceeding. Use the current PRD path as carrier when available; otherwise use the compact `convergence` object.
+After confirmation, record the final scale. When the user's answer changes the analysis target or scope/cost evidence, re-run requirement-analyzer; otherwise update the convergence record directly. Use the current PRD path as carrier when available; otherwise use the compact `convergence` object.
 
-### Step 4: Upstream Confirmation and Design Document Creation
-When Step 3 marked an existing PRD for update, spawn prd-creator in update mode with that PRD path and the confirmed `convergence` object. Review the updated PRD with document-reviewer using its path as `target`, then resolve findings through Review Resolution. After the review permits approval, present the updated PRD for user confirmation. Continue with its path as the carrier after approval.
+### Step 3: Upstream Confirmation and Codebase Analysis
+When Step 2 marked an existing PRD for update, spawn prd-creator in update mode with that PRD path and the confirmed `convergence` object. Review the updated PRD with document-reviewer using its path as `target`, then resolve findings through Review Resolution. After the review permits approval, present the updated PRD for user confirmation. Continue with its path as the carrier after approval.
 
 **[STOP — BLOCKING when a PRD was updated]** Wait for user confirmation of the updated PRD.
 
+When analysis is required under the subagents-orchestration-guide reuse rule, use the Fullstack Codebase Analysis assignment in `subagents-orchestration-guide/references/monorepo-flow.md` for a fullstack scope; otherwise spawn codebase-analyzer: "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for ADR selection, minimal Design Doc creation, and verification. requirement_analysis: [confirmed Step 1 scopeEvidence]. requirements: [confirmed requirements]. prd_path: [current PRD path when present]. target_paths: [confirmed scopeEvidence.affectedFiles]."
+
+Apply the documentation-criteria Choice filter, then the Durability filter, to `decisionMaterials.candidateDecisionPoints`. `adrDecisionPoints` contains every current-scope point that passes both filters; an empty array routes directly to Design Doc. Record `documentTypeRationale` from the retained points.
+
+### Step 4: Design Document Creation
 Create documents according to `documentTypeRationale`:
-- When `adrDecisionPoints` is non-empty, spawn technical-designer once with `document_to_create: ADRBatch`, `decision_points: [adrDecisionPoints]`, confirmed requirements, and `decision_materials: [only the Step 2 simplification, reuse, invalidation, option/cost, contract, and decision-changing unknown material relevant to those points]`. Review all returned `paths[]` in one document-reviewer invocation using `doc_type: ADRBatch` and `targets: [all paths]`. Apply Review Resolution to the batch, rerun the batch review when an accepted correction changes a file, then present one ADR-batch confirmation request.
+- When `adrDecisionPoints` is non-empty, spawn technical-designer once with `document_to_create: ADRBatch`, `decision_points: [adrDecisionPoints]`, confirmed requirements, and `decision_materials: [only the Step 3 simplification, reuse, invalidation, option/cost, contract, and decision-changing unknown material relevant to those points]`. Review all returned `paths[]` in one document-reviewer invocation using `doc_type: ADRBatch` and `targets: [all paths]`. Apply Review Resolution to the batch, rerun the batch review when an accepted correction changes a file, then present one ADR-batch confirmation request.
 
 **[STOP — BLOCKING when ADRs were created]** Wait for one user confirmation of the reviewed ADR batch before creating the Design Doc.
 
-Record every approved ADR file as `Accepted` when ADRs were created. Spawn technical-designer with `document_to_create: DesignDoc`, `adr_paths: [accepted ADR paths or []]`, the confirmed requirement carrier, and `decision_materials: [only Step 2 material that changes reuse, simplification, implementation validity, a selected ADR decision, a preserved contract, or verification]`. The confirmed requirements define scope, and selected ADR decisions supply the current technical choices, revisable when a smaller sufficient design is supported.
+Record every approved ADR file as `Accepted` when ADRs were created. Spawn technical-designer with `document_to_create: DesignDoc`, `adr_paths: [accepted ADR paths or []]`, the confirmed requirement carrier, and `decision_materials: [only Step 3 material that changes reuse, simplification, implementation validity, a selected ADR decision, a preserved contract, or verification]`. The confirmed requirements define scope, and selected ADR decisions supply the current technical choices, revisable when a smaller sufficient design is supported.
 
 ### Step 5: Code Verification
 
@@ -118,7 +121,7 @@ Spawn code-verifier agent: "Verify the Design Doc against the current codebase. 
 Apply Review Resolution to every discrepancy before document review, using technical-designer in update mode for selected corrections and its bounded rerun rule. When the `apply` set is empty, carry the resolved verification summary, declines with reasons, and material limitations to Step 6.
 
 ### Step 6: Document Review
-Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. review_context: creation. target: [Design Doc path]. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 3]. decision_materials: [only Step 2 material that constrains this design]. verification_resolution: [resolved Step 5 evidence]."
+Spawn document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. review_context: creation. target: [Design Doc path]. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 2]. decision_materials: [only Step 3 material that constrains this design]. verification_resolution: [resolved Step 5 evidence]."
 
 Route the result before consistency verification:
 - `pass`: continue
@@ -137,7 +140,7 @@ Request user confirmation using the shared Design Confirmation alignment.
 - [ ] Obtained compact scope and cost evidence while retaining requirement, scale, and ADR decisions in the orchestrator
 - [ ] Spawned codebase-analyzer and passed only decision-relevant material into ADR/Design Doc creation
 - [ ] Converged the requirement and persisted the record
-- [ ] Confirmed the design scope with the user before document creation
+- [ ] Confirmed the design scope before codebase analysis and document creation
 - [ ] Created one ADR per qualifying decision point and reviewed the complete batch once, or routed an empty decision-point set directly to Design Doc
 - [ ] Applied Review Resolution to code-verifier discrepancies before document review
 - [ ] Spawned document-reviewer and addressed feedback

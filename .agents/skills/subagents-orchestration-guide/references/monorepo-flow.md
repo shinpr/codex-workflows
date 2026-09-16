@@ -21,7 +21,7 @@ The tables show agent work and results. User confirmation and implementation aut
 | 3 | document-reviewer | PRD review | Review result |
 | 4 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
 | 5 | (orchestrator) | Use a supplied or target-referenced prototype; request its path only when the UI target otherwise cannot be determined, then resolve its reference strength | Prototype path plus `binding` or `reference`, or none |
-| 6 | codebase-analyzer x2 + ui-analyzer x1 | Per-layer codebase analysis plus frontend UI analysis | Analysis JSON |
+| 6 | codebase-analyzer + ui-analyzer | Complete-scope codebase analysis plus frontend UI analysis | Analysis JSON |
 | 7 | ui-spec-designer | UI Spec from PRD + UI analysis + optional prototype | UI Spec |
 | 8 | document-reviewer | UI Spec review | Review result |
 | 9 | orchestrator + technical-designer* | Apply both ADR filters and create one ADR per qualifying decision point | Created ADR paths or `[]` |
@@ -42,7 +42,7 @@ The tables show agent work and results. User confirmation and implementation aut
 | 1 | requirement-analyzer + orchestrator | Compact scope/cost evidence followed by orchestrator convergence and scale determination | Converged requirements + scale |
 | 2 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
 | 3 | (orchestrator) | Use a supplied or target-referenced prototype; request its path only when the UI target otherwise cannot be determined, then resolve its reference strength | Prototype path plus `binding` or `reference`, or none |
-| 4 | codebase-analyzer x2 + ui-analyzer x1 | Per-layer codebase analysis plus frontend UI analysis | Analysis JSON |
+| 4 | codebase-analyzer + ui-analyzer | Complete-scope codebase analysis plus frontend UI analysis | Analysis JSON |
 | 5 | ui-spec-designer | UI Spec from requirements + UI analysis + optional prototype | UI Spec |
 | 6 | document-reviewer | UI Spec review | Review result |
 | 7 | orchestrator + technical-designer* | Apply both ADR filters and create one ADR per qualifying decision point | Created ADR paths or `[]` |
@@ -58,7 +58,7 @@ The tables show agent work and results. User confirmation and implementation aut
 
 ### Parallelization in Multi-Agent Steps
 
-Steps marked `x2` run independently per layer and can execute in parallel when supported. `ui-analyzer x1` runs once for the frontend layer alongside frontend codebase analysis and consumes the selected `externalResourceRefs`. For the ADR step, route layer-owned decision points to the matching technical designer and cross-layer points to technical-designer, collect every returned path, and invoke document-reviewer once with `doc_type: ADRBatch` and the complete `targets` array.
+Steps marked `x2` run independently per layer and can execute in parallel when supported. `ui-analyzer` may run alongside codebase analysis when its inputs are ready. For the ADR step, route layer-owned decision points to the matching technical designer and cross-layer points to technical-designer, collect every returned path, and invoke document-reviewer once with `doc_type: ADRBatch` and the complete `targets` array.
 
 External evidence and prototype inputs are conditional. Load `external-resource-context` when external evidence changes the current UI or verification decision; otherwise continue with `none`. Prototype input follows the frontend rule: use a supplied or target-referenced prototype, request its path only when the UI target otherwise cannot be determined, and resolve and deliver `prototype_reference_strength` through the shared UI Spec rule.
 
@@ -77,21 +77,17 @@ Before spawning, replace every context placeholder with a concrete context objec
 **Agent**: Spawn technical-designer
 > "Create a backend Design Doc. context: [context]. adr_paths: [accepted ADR paths]. decision_materials: [backend analysis material that changes reuse, simplification, validity, a selected decision, contract, or verification]. Reference approved UI Spec at [path] only for displayed values whose source data crosses a backend-owned contract."
 
-**Backend Codebase Analysis**:
+**Fullstack Codebase Analysis**:
 **Agent**: Spawn codebase-analyzer
-> "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for requirement confirmation, ADR selection, minimal backend design, and verification. context: [layer scope evidence]. requirements: [original user requirements]. layer: backend. target_paths: [backend scope]. focus_areas: API contracts, data layer, business logic, service architecture."
+> "exploration_mode: [mode from Analysis Assignment]. Analyze the complete confirmed feature to provide compact decision materials for ADR selection, both layer designs, and verification. requirement_analysis: [complete confirmed scope evidence]. requirements: [confirmed requirements]. prd_path: [current PRD path when present]. target_paths: [confirmed scope]. focus_areas: responsibility ownership, cross-layer data and contracts, reuse, and verification."
 
 **Frontend Design Doc**:
 **Agent**: Spawn technical-designer-frontend
 > "Create a frontend Design Doc. context: [context]. adr_paths: [accepted ADR paths]. decision_materials: [frontend/UI material that changes reuse, simplification, validity, a selected decision, contract, or verification]. Reference backend Design Doc at [path] for API contracts and Integration Points. Reference UI Spec at [path] for component structure and state design."
 
-**Frontend Codebase Analysis**:
-**Agent**: Spawn codebase-analyzer
-> "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for requirement confirmation, ADR selection, minimal frontend design, and verification. context: [layer scope evidence]. requirements: [original user requirements]. layer: frontend. target_paths: [frontend scope]. focus_areas: responsibility ownership, state/data paths, contracts, and reuse."
-
 **Frontend UI Analysis**:
 **Agent**: Spawn ui-analyzer
-> "exploration_mode: [mode from Analysis Assignment]. prior_evidence: [relevant available layer findings]. Gather UI facts for frontend design. context: [context with requirement_analysis filtered to frontend files]. requirements: [original user requirements]. target_paths: [frontend file and directory scope]. target_components: [frontend target components]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected by the external-evidence step, or []]. focus_areas: [remaining rendering, interaction, and visual questions]."
+> "exploration_mode: [mode from Analysis Assignment]. prior_evidence: [relevant fullstack codebase findings when available]. Gather UI facts for frontend design. requirement_analysis: [frontend-filtered confirmed scope evidence]. requirements: [confirmed requirements]. target_paths: [frontend file and directory scope]. target_components: [frontend target components]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected by the external-evidence step, or []]. focus_areas: [remaining rendering, interaction, and visual questions]."
 
 ### Verification Resolution
 
