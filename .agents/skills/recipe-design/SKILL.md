@@ -6,8 +6,8 @@ description: "Execute from codebase-scoped analysis to design document creation.
 ## Required Skills [LOAD BEFORE EXECUTION]
 
 1. [LOAD IF NOT ACTIVE] `documentation-criteria` — document creation rules and templates
-2. [LOAD IF NOT ACTIVE] `implementation-approach` — design convergence and verification strategy
-3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and review resolution
+2. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and review resolution
+3. [LOAD IF NOT ACTIVE] `requirement-convergence` — requirements hearing and scope-confirmation output
 4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — document and review handoffs
 
 **Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
@@ -46,7 +46,7 @@ Requirements -> scope evidence -> [Stop: Scope confirmation]
 ## Scope Boundaries
 
 **Included in this skill**:
-- Compact scope and cost evidence from requirement-analyzer; the orchestrator owns requirement, scale, and ADR decisions
+- Compact scope and cost evidence from requirement-analyzer; the user owns product requirements and exclusions, while the orchestrator owns evidence comparison, readiness, scale, and ADR routing
 - Scope confirmation with the user, grounded in compact scope and cost evidence
 - Codebase analysis of the confirmed scope before design creation
 - One ADR per qualifying decision point found in the current scope, created and reviewed as one batch
@@ -66,29 +66,21 @@ Execute the process below within design scope.
 
 ### Step 1: Scope and Cost Evidence
 
-Spawn requirement-analyzer with the original requirements. Treat exact user quotes according to their returned signal type: implementation requirements and exclusions can enter confirmed scope; evaluation requests, speculation, and prescribed mechanisms remain non-binding until the orchestrator resolves them against the user's wording. Treat scope evidence, cost evidence, and questions as material; the orchestrator determines requirements, scale, and ADR routing.
+Apply the subagents-orchestration-guide Requirement Evidence Handoff, then spawn requirement-analyzer with that minimum contract.
+
+Step 1 completes when the requirement-analyzer result is received. While it runs, apply the subagent-delegation independence boundary; Step 2 depends on the completed scope and cost evidence.
 
 ### Step 2: Scope Confirmation
 Confirm the requirements and determine Structural Scale from the user's wording and Step 1 scope and cost evidence:
-1. Locate a related PRD and read its Converged Outcome, MVP scope, Future / Out of Scope, and open requirement fields. If the related PRD is ambiguous, ask the user to select or provide its path, or confirm none exists, before continuing.
-2. When those fields match the current request and returned scope facts, use the PRD path as the current carrier and proceed directly to scope confirmation.
-3. When a current carrier is absent, load `requirement-convergence`. The orchestrator builds and judges its record from the user's wording, using Step 1 scope and cost evidence for trade-offs, questions, and routing decisions. Mark an existing but incomplete or scope-mismatched PRD for update; otherwise mark the carrier as absent.
-4. Determine Structural Scale and set `prdRequired` when the scale is Large and the current PRD carrier is absent.
+1. Compare the retained user wording with the returned evidence. Matching facts are evidenced impact. When the repository exposes an additional functional responsibility, present its current treatment and observable consequence for user judgment. When the request assumes behavior the repository does not provide or cannot support as stated, present that mismatch and consequence for reconsideration. User-selected requirements remain current when no matching path was found; user selection establishes product requirements and exclusions. Evaluation requests, speculative ideas, and suggested mechanisms retain their original status.
+2. Locate a related PRD and read its Converged Outcome, MVP scope, Future / Out of Scope, and open requirement fields. If the related PRD is ambiguous, ask the user to select or provide its path, or confirm none exists, before continuing.
+3. When those fields match the current request and returned scope facts, use the PRD path as the current carrier and proceed directly to scope confirmation.
+4. When a current carrier is absent, build the `requirement-convergence` record from the user's wording and judge readiness, using Step 1 scope and cost evidence for trade-offs, questions, and routing decisions. Mark an existing but incomplete or scope-mismatched PRD for update; otherwise mark the carrier as absent.
+5. Determine Structural Scale and set `prdRequired` when the scale is Large and the current PRD carrier is absent.
 
-Present the design scope to the user:
-- Candidate files/modules: `scopeEvidence.affectedFiles` and responsibility boundaries
-- Affected layers: `scopeEvidence.affectedLayers`
-- Recommended document path: the scale-selected Design Doc, with an ADR batch only when post-confirmation analysis finds a qualifying decision point
-- PRD status: whether `prdRequired` is true and whether the convergence carrier is current, requires update, or is absent
-- Unknowns/assumptions: Step 1 cost unknowns and decision-changing questions
-- Questions before design: scope questions that change the design target or scale, including technical wording whose mandatory/candidate status is outcome-relevant and ambiguous
+Immediately before the stop, read `requirement-convergence`'s `references/scope-confirmation.md` and render that output from the retained user wording and Step 1 evidence. Render each unanswered product, UX, or operational decision under **User decisions** as an unresolved question followed by its answer-dependent effects. Only an explicit user selection moves it into **Confirmed scope**. Record Structural Scale and document routing under **Workflow**.
 
-Ask the user to choose one:
-- Proceed with the recommended document path
-- Correct the scope and re-run requirement-analyzer
-- Answer open questions, then proceed
-- Provide an existing PRD path when `prdRequired` is true
-- Explicitly approve proceeding without a PRD when `prdRequired` is true and no PRD will be provided
+Request the listed user decisions and any separate document-route authorization still required, including a PRD path or approval to proceed without one when `prdRequired` is true. Re-run requirement-analyzer only when the user's answer changes its analysis target or the scope/cost evidence.
 
 If `prdRequired` is true and the user neither provides a PRD path nor explicitly approves proceeding without a PRD, stop. This recipe does not create PRDs.
 
@@ -101,7 +93,7 @@ When Step 2 marked an existing PRD for update, spawn prd-creator in update mode 
 
 **[STOP — BLOCKING when a PRD was updated]** Wait for user confirmation of the updated PRD.
 
-When analysis is required under the subagents-orchestration-guide reuse rule, use the Fullstack Codebase Analysis assignment in `subagents-orchestration-guide/references/monorepo-flow.md` for a fullstack scope; otherwise spawn codebase-analyzer: "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for ADR selection, minimal Design Doc creation, and verification. requirement_analysis: [confirmed Step 1 scopeEvidence]. requirements: [confirmed requirements]. prd_path: [current PRD path when present]. target_paths: [confirmed scopeEvidence.affectedFiles]."
+When analysis is required under the subagents-orchestration-guide reuse rule, use the Fullstack Codebase Analysis assignment in `subagents-orchestration-guide`'s `references/monorepo-flow.md` for a fullstack scope; otherwise spawn codebase-analyzer: "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for ADR selection, minimal Design Doc creation, and verification. requirement_analysis: [confirmed Step 1 scopeEvidence]. requirements: [confirmed requirements]. prd_path: [current PRD path when present]. target_paths: [confirmed scopeEvidence.affectedFiles]."
 
 Apply the documentation-criteria Choice filter, then the Durability filter, to `decisionMaterials.candidateDecisionPoints`. `adrDecisionPoints` contains every current-scope point that passes both filters; an empty array routes directly to Design Doc. Record `documentTypeRationale` from the retained points.
 
@@ -137,7 +129,7 @@ Request user confirmation using the shared Design Confirmation alignment.
 
 ## Completion Criteria
 
-- [ ] Obtained compact scope and cost evidence while retaining requirement, scale, and ADR decisions in the orchestrator
+- [ ] Obtained compact scope and cost evidence while the user retained product requirements and exclusions and the orchestrator handled comparison, readiness, scale, and routing
 - [ ] Spawned codebase-analyzer and passed only decision-relevant material into ADR/Design Doc creation
 - [ ] Converged the requirement and persisted the record
 - [ ] Confirmed the design scope before codebase analysis and document creation

@@ -16,7 +16,7 @@ The tables show agent work and results. User confirmation and implementation aut
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
-| 1 | requirement-analyzer + orchestrator | Compact scope/cost evidence followed by orchestrator convergence and scale determination | Converged requirements + scale |
+| 1 | requirement-analyzer + orchestrator | Compact scope/cost evidence, comparison with retained user wording, user convergence, and orchestrator readiness and scale determination | Converged requirements + scale |
 | 2 | prd-creator | PRD covering entire feature (all layers) | Single PRD |
 | 3 | document-reviewer | PRD review | Review result |
 | 4 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
@@ -24,7 +24,7 @@ The tables show agent work and results. User confirmation and implementation aut
 | 6 | codebase-analyzer + ui-analyzer | Complete-scope codebase analysis plus frontend UI analysis | Analysis JSON |
 | 7 | ui-spec-designer | UI Spec from PRD + UI analysis + optional prototype | UI Spec |
 | 8 | document-reviewer | UI Spec review | Review result |
-| 9 | orchestrator + technical-designer* | Apply both ADR filters and create one ADR per qualifying decision point | Created ADR paths or `[]` |
+| 9 | orchestrator + technical-designer* | Orchestrator filters qualifying decision points; designers select technical choices and create the ADR batch | Created ADR paths or `[]` |
 | 10 | document-reviewer | Review the complete ADR batch together | Review result |
 | 11 | technical-designer | **Backend** Design Doc | Backend Design Doc |
 | 12 | technical-designer-frontend | **Frontend** Design Doc (references backend Integration Points + UI Spec + UI analysis) | Frontend Design Doc |
@@ -39,13 +39,13 @@ The tables show agent work and results. User confirmation and implementation aut
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
-| 1 | requirement-analyzer + orchestrator | Compact scope/cost evidence followed by orchestrator convergence and scale determination | Converged requirements + scale |
+| 1 | requirement-analyzer + orchestrator | Compact scope/cost evidence, comparison with retained user wording, user convergence, and orchestrator readiness and scale determination | Converged requirements + scale |
 | 2 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
 | 3 | (orchestrator) | Use a supplied or target-referenced prototype; request its path only when the UI target otherwise cannot be determined, then resolve its reference strength | Prototype path plus `binding` or `reference`, or none |
 | 4 | codebase-analyzer + ui-analyzer | Complete-scope codebase analysis plus frontend UI analysis | Analysis JSON |
 | 5 | ui-spec-designer | UI Spec from requirements + UI analysis + optional prototype | UI Spec |
 | 6 | document-reviewer | UI Spec review | Review result |
-| 7 | orchestrator + technical-designer* | Apply both ADR filters and create one ADR per qualifying decision point | Created ADR paths or `[]` |
+| 7 | orchestrator + technical-designer* | Orchestrator filters qualifying decision points; designers select technical choices and create the ADR batch | Created ADR paths or `[]` |
 | 8 | document-reviewer | Review the complete ADR batch together | Review result |
 | 9 | technical-designer | **Backend** Design Doc | Backend Design Doc |
 | 10 | technical-designer-frontend | **Frontend** Design Doc (references backend Integration Points + UI Spec + UI analysis) | Frontend Design Doc |

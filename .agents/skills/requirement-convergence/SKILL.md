@@ -30,8 +30,12 @@ Use [references/criteria.md](references/criteria.md) to judge each field.
 
 The orchestrator owns user interaction. It runs the hearing after an analysis step has produced scope facts.
 
-1. Present observed scope facts separately from their inferred implications. Keep agent-proposed capabilities, guarantees, outputs, and operating obligations out of requirements. Escalate a requirement change only when concrete evidence shows the requested outcome cannot be achieved under the current conditions; name the failing premise, smallest change, and trade-off for the user's decision.
-2. Ask only about fields below `ready`, at most two questions per message.
+The user decides product requirements and exclusions. Keep confirmed user scope, observed facts, and agent inference separate because combining them makes agent interpretation indistinguishable from evidence and prevents an informed requirement decision.
+
+At every requirements confirmation stop, render [references/scope-confirmation.md](references/scope-confirmation.md). Only an explicit user answer moves a user-owned decision into confirmed scope.
+
+1. Escalate a requirement change only when concrete evidence shows the requested outcome cannot be achieved under the current conditions; name the failing premise, smallest change, and trade-off for the user's decision.
+2. Ask only about fields below `ready`.
 3. Record answers in the user's wording.
 4. If an answer still fails its pass condition, ask once more. Mark it `weak-but-explicit` only when the user agrees to proceed unresolved.
 5. Re-judge the updated record before design begins. Re-run structural analysis only when an answer changes scope or cost evidence; otherwise the orchestrator applies the field's pass condition directly.
@@ -64,3 +68,4 @@ Persist `weak-but-explicit` outcome, current requirements, and non-goals as open
 ## References
 
 - [references/criteria.md](references/criteria.md) — field judgments, cost bands, challenge intensity, and solution-in-disguise test
+- [references/scope-confirmation.md](references/scope-confirmation.md) — requirements-stop output shape

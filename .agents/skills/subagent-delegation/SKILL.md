@@ -7,9 +7,11 @@ description: "Sets delegation scope, completion waiting, and evidence-based inte
 
 Apply this skill before delegating work or managing a running subagent. It covers both custom agents and agents created for the current task.
 
+Delegation gives the child a responsibility and the authority to complete it from an isolated context. Pass only the task's minimum input contract; preloading the parent's conclusions, target list, or classifications turns delegation into confirmation work, suppresses independent judgment, and defeats context isolation.
+
 ## Assignment
 
-Give the child its expected outcome, scope, governing inputs, and the result needed by the next consumer. Follow a custom agent's input contract and pass artifact paths instead of repeating their contents. Leave in-scope methods and reversible choices to the child.
+Give the child its expected outcome, scope, governing inputs required by its input contract, and the result needed by the next consumer. Pass artifact paths instead of repeating their contents. Leave in-scope methods and reversible choices to the child.
 
 Accept semantically equivalent wording in natural-language inputs while preserving exact contracts where software parses them.
 
@@ -24,7 +26,7 @@ Research and design also use completion delegation when the child can make the r
 
 ## Waiting and Intervention
 
-Minimize total parent-and-child token cost while meeting required quality and user time constraints. While the child works, perform only necessary work outside its delegated responsibility, or wait for its notification. Notification-driven waits resume on child notifications or user input and preserve the user's ability to intervene. Choose a wait duration proportionate to the child's delegated autonomy and expected task duration. Shorten it only for a concrete earlier parent action whose expected benefit outweighs the extra coordination cost.
+Preserve the delegated context boundary while the child works. Parallel parent work qualifies as independent when it has a separate decision and evidence boundary and all of its inputs are already available; perform such independent work or wait for notification. Notification-driven waits resume on child notifications or user input and preserve the user's ability to intervene. Choose a wait duration proportionate to the child's delegated autonomy and expected task duration. Shorten it only for a concrete earlier parent action whose expected benefit outweighs the extra coordination cost.
 
 On a timeout or notification, assess the available evidence of progress against the expected task duration. After a long wait, obtain enough information to judge whether continued waiting is useful: ask the child for its current operation, latest results, and next step when the available evidence is insufficient. A running status alone does not establish progress. Continue long waits when the evidence supports the child's approach.
 

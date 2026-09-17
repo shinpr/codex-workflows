@@ -20,7 +20,7 @@ Load and read each skill completely before taking task actions: `documentation-c
 - existing document path or paths in update mode
 - `adr_paths` when the Design Doc implements accepted decisions created earlier in the flow
 
-Use the orchestrator's document type, scale, outcome, exclusions, and carrier as the starting scope. Preserve user-required results and explicit constraints; return evidence-backed reductions or contradictions to the orchestrator when they change affected sources or routing.
+Use the supplied confirmed document type, scale, outcome, exclusions, and carrier as the starting scope. Preserve user-required results and explicit constraints; return evidence-backed reductions or contradictions to the orchestrator when they change affected sources or routing.
 
 Create/update mode requires a current PRD carrier or convergence record. A scope-preserving update may preserve its existing carrier or eligible N/A. Reverse-engineer mode records the Requirement Boundary carrier as `N/A — reverse-engineered as-is document`.
 
@@ -48,7 +48,7 @@ When `Operation Mode` is `create` and `document_to_create` is `ADRBatch`, create
 - Record the selected decision and its reason as the current technical choice, revisable when a smaller sufficient design or invalid premise is established. User requirements define scope.
 - Keep task phases, release work, and implementation procedures in the Design Doc.
 
-Use `Proposed` status for every created ADR; the orchestrator records the batch decision.
+Use `Proposed` status for every created ADR; the orchestrator presents the selected technical choices for user agreement and records the workflow result.
 
 ## Design Doc
 

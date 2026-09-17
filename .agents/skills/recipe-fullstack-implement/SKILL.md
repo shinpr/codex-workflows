@@ -16,15 +16,17 @@ Requirements or continuation instruction: $ARGUMENTS
 
 ## Entry
 
-- New or scope-changing requirements: invoke requirement-analyzer for compact scope/cost evidence; the orchestrator completes Requirement Convergence, determines scale and layer routing, and obtains requirement confirmation.
+- New or scope-changing requirements: apply the subagents-orchestration-guide Requirement Evidence Handoff and invoke requirement-analyzer for compact scope/cost evidence; user selections establish requirements and exclusions, while the orchestrator judges readiness and determines scale and layer routing.
 - Existing PRD, UI Spec, Design Docs, Work Plan, or tasks: resume at the next incomplete Fullstack (Monorepo) Flow phase. Restart requirement analysis when the approved outcome, requirement, or exclusion changes.
 - Quality failure during an existing implementation: resume its task cycle and Orchestrator Escalation Resolution.
+
+For a requirements stop, read `requirement-convergence`'s `references/scope-confirmation.md` and render that output from the retained user record and analyzer evidence. Render each unanswered product, UX, or operational decision under **User decisions** as an unresolved question followed by its answer-dependent effects. Only an explicit user selection moves it into **Confirmed scope**. Record Structural Scale and workflow routing under **Workflow**.
 
 Resolve the entry from supplied artifacts and repository state. Ask only when different interpretations require a change to user-required outcomes, explicit constraints, or execution authority.
 
 ## Flow
 
-Apply the [Fullstack (Monorepo) Flow](../subagents-orchestration-guide/references/monorepo-flow.md) with backend, frontend, and shared routing. The orchestrator directly owns artifact/path resolution, execution-plan updates, approval recording, task-set computation, commits, and lightweight checks; invoke the named specialists for analysis, authoring, implementation, review, and quality judgment.
+Apply `subagents-orchestration-guide`'s `references/monorepo-flow.md` with backend, frontend, and shared routing. The orchestrator directly owns artifact/path resolution, execution-plan updates, approval recording, task-set computation, commits, and lightweight checks; invoke the named specialists for analysis, authoring, implementation, review, and quality judgment.
 
 Reuse the active execution plan or register the material remaining phases once. Follow the Fullstack (Monorepo) Flow's document approvals. After implementation-scope approval, execute tasks autonomously through its filename routing, Per-Task Change Set, quality gate, commit, and Post-Implementation Review.
 
