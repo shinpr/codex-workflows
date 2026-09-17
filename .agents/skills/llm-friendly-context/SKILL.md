@@ -27,10 +27,10 @@ The goal is stable downstream execution. The next agent should know the target a
    - Define only the sections or fields the next consumer uses.
    - For agent handoffs, name produced artifact paths and the result needed by the next action. Require exact serialization only when a program parses it.
 
-4. **Provide necessary context**
-   - Include purpose, source artifacts, hard constraints, accepted decisions, and unresolved conditions.
-   - Prefer concrete file paths and section hints over broad module names.
-   - Follow references only while they can change an in-scope decision, action, or verification result.
+4. **Provide the smallest sufficient context**
+   - Self-contained means sufficient for the assigned action, not complete background.
+   - Include only context directly consumed by the target action or required result.
+   - Extra context can anchor judgment, contaminate independent work, and create work.
 
 5. **Decompose complex work into verifiable steps**
    - Expose dependency order when a later action relies on an earlier result.
@@ -65,7 +65,7 @@ Use these rewrites when an ambiguity materially changes the next action or its r
 Before sending a prompt or artifact to another agent, verify:
 
 - [ ] The target action is explicit.
-- [ ] Required input paths and source artifacts are named.
+- [ ] Every included context item is directly consumed by the target action or required result.
 - [ ] User constraints are distinguished from revisable technical choices; include the necessity of selected means where the next decision depends on it.
 - [ ] The next consumer can identify the artifact or result it needs.
 - [ ] Success criteria are observable.

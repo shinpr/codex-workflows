@@ -109,7 +109,7 @@ Somente decisões que afetam o produto ou a implementação do repositório segu
 
 Depois que a implementação é autorizada, o orquestrador executa as tarefas, as verificações específicas, as checagens aplicáveis do repositório e um commit de implementação por tarefa. Primeiro, resolve problemas com base nos documentos aprovados e nas evidências do repositório. O comportamento percebido pelo usuário continua sendo um limite de produto: a implementação não pode ajustá-lo por conta própria em nome da consistência interna. O orquestrador só consulta você quando avançar exige um novo requisito de produto, uma mudança em algo que você pediu ou descartou, uma autorização que só você tem ou uma ação irreversível que você não autorizou. Encontrar uma forma mais enxuta de chegar ao mesmo resultado não entra nessa lista, e pedir novamente uma permissão que você já concedeu também não.
 
-Cada especialista recebe um trabalho com escopo definido, os documentos e caminhos relevantes e um resultado claro para entregar. O especialista conduz esse trabalho até o fim, enquanto a sessão principal mantém as decisões de produto e do fluxo, só intervém diante de uma decisão ou bloqueio concreto e verifica o resultado antes da próxima fase. Assim, os especialistas têm espaço para trabalhar sem receber autoridade para ampliar o resultado aprovado.
+Cada especialista recebe um trabalho com escopo definido, os documentos e caminhos relevantes e um resultado claro para entregar. O especialista conduz esse trabalho até o fim. A sessão principal preserva os limites de produto definidos por você e coordena o fluxo; só intervém diante de uma decisão ou bloqueio concreto e verifica o resultado antes da próxima fase. Assim, os especialistas têm espaço para trabalhar sem receber autoridade para ampliar o resultado aprovado.
 
 ### Como as decisões sobrevivem à troca de contexto
 
@@ -280,7 +280,7 @@ O Codex cria esses agentes conforme a necessidade durante a execução dos fluxo
 
 | Agente | Função |
 |--------|--------|
-| `requirement-analyzer` | Resume os sinais do pedido e as evidências do repositório necessárias para decisões de escopo e custo |
+| `requirement-analyzer` | Investiga quais partes do repositório serão afetadas e o custo aproximado para definir o escopo |
 | `prd-creator` | Cria e estrutura PRDs |
 | `technical-designer` | Cria um lote completo de ADRs ou um Design Doc (backend/geral) |
 | `technical-designer-frontend` | Cria um lote completo de ADRs ou um Design Doc frontend (React) |

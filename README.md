@@ -109,7 +109,7 @@ Only decisions that affect the product or repository implementation are carried 
 
 Once implementation is authorized, the orchestrator runs the tasks, focused verification, applicable repository checks, and one implementation commit per task. It resolves problems from the approved documents and repository evidence first. User-visible behavior remains a product boundary rather than something the implementation may adjust for internal consistency. The orchestrator asks you only when progress requires a new product requirement, a change to something you asked for or ruled out, authority only you hold, or an irreversible action you did not authorize. Finding a smaller way to reach the same outcome is not one of those, and neither is re-confirming permission you have already given.
 
-Each specialist gets a bounded job, the relevant documents and paths, and a clear result to return. The specialist carries that job through completion while the main session keeps product and workflow decisions, steps in only for a decision or concrete blocker, and checks the result before the next phase. This gives specialists room to work without giving them authority to widen the approved outcome.
+Each specialist gets a bounded job, the relevant documents and paths, and a clear result to return. The specialist carries that job through completion while the main session retains user-selected product boundaries, owns workflow decisions, steps in only for a decision or concrete blocker, and checks the result before the next phase. This gives specialists room to work without giving them authority to widen the approved outcome.
 
 ### How decisions survive fresh contexts
 
@@ -281,7 +281,7 @@ Codex spawns these as needed during recipe execution. You do not need to learn t
 
 | Agent | Role |
 |-------|------|
-| `requirement-analyzer` | Compact request signals plus repository-backed scope and cost evidence for orchestrator decisions |
+| `requirement-analyzer` | Finds the affected parts of the repository and rough cost so the scope can be confirmed |
 | `prd-creator` | PRD creation and structuring |
 | `technical-designer` | Complete ADR-batch or Design Doc creation (backend/general) |
 | `technical-designer-frontend` | Complete frontend ADR-batch or Design Doc creation (React) |

@@ -3,7 +3,7 @@ description = "Collects compact repository evidence for scope confirmation, tech
 sandbox_mode = "read-only"
 
 developer_instructions = """
-Collect repository evidence for the supplied design or scope questions. Keep repository files unchanged; the orchestrator and designer own scope and design selection.
+Collect repository evidence for the supplied design or scope questions. Keep repository files unchanged. User-confirmed requirements define product scope, the orchestrator owns evidence comparison and routing, and the technical designer owns technical design selection.
 
 Reduce unnecessary implementation: inspect the direct path and opportunities for no change, removal, or reuse before investigating extra mechanisms. Evidence informs necessity and lifecycle-value judgment; it does not add requirements. Previously passed technical choices may be invalidated by the same evidence.
 
@@ -30,14 +30,14 @@ Reuse supplied evidence and distinguish observations, inferences, and unknowns. 
 
 ## Exploration Mode
 
-- `guided`: Start from target paths or domain entry points; trace the affected control/data/state path, relevant consumers, representative reuse, and existing checks. Cover only perspectives that can change the supplied decision.
+- `guided`: Treat confirmed requirements as the analysis baseline. Start from target paths or domain entry points and choose the exploration route needed to answer the supplied questions. Follow changed state or contracts through material existing responsibilities. Complete guided exploration when the supplied questions and retained effects have sufficient evidence.
 - `autonomous`: Choose the search route and depth from the supplied questions and evidence boundary.
 
 ## Decision Materials
 
 - Record `reuse` when an existing element can reduce new implementation surface.
 - Record `invalidations` when repository evidence makes a candidate approach incorrect, incompatible, or non-verifiable.
-- Record a `candidateDecisionPoint` when current evidence exposes at least two credible materially distinct options for a technical question within the supplied scope. State repository fit, lifecycle cost drivers, and maintenance effects; the orchestrator owns option selection and product value judgment after confirming scope.
+- Record a `candidateDecisionPoint` when current evidence exposes at least two credible materially distinct options for a technical question within the supplied scope. State repository fit, lifecycle cost drivers, and maintenance effects for technical-designer selection; the orchestrator owns qualification and routing of the decision point.
 - Record `verification` only for a contract or observable result the current scope must prove.
 - Record an `unknown` only when resolving it can change requirement confirmation, option validity, option selection, design, or verification.
 

@@ -109,7 +109,7 @@ Solo se crea un ADR para una decisión duradera dentro del alcance actual cuando
 
 Una vez autorizada la implementación, el orquestador ejecuta las tareas, sus verificaciones específicas, los controles aplicables del repositorio y un commit de implementación por tarea. Primero resuelve los problemas a partir de los documentos aprobados y de las pruebas del repositorio. El comportamiento visible sigue siendo una frontera de producto: la implementación no puede ajustarlo por su cuenta para lograr coherencia interna. El orquestador solo te consulta cuando avanzar exige un requisito de producto nuevo, cambiar algo que pediste o descartaste, usar una autorización que solo tú tienes o realizar una acción irreversible que no autorizaste. Encontrar una forma más acotada de llegar al mismo resultado no entra ahí, ni tampoco volver a pedir un permiso que ya diste.
 
-Cada especialista recibe un trabajo acotado, los documentos y rutas pertinentes y un resultado claro que debe entregar. Se encarga del trabajo hasta completarlo, mientras la sesión principal conserva las decisiones de producto y del flujo, interviene solo cuando hace falta tomar una decisión o resolver un bloqueo concreto y comprueba el resultado antes de pasar a la siguiente fase. Así, los especialistas pueden trabajar con autonomía sin tener autoridad para ampliar el resultado aprobado.
+Cada especialista recibe un trabajo acotado, los documentos y rutas pertinentes y un resultado claro que debe entregar. Se encarga del trabajo hasta completarlo. La sesión principal respeta los límites de producto que has elegido y coordina el flujo; solo interviene cuando hace falta tomar una decisión o resolver un bloqueo concreto, y comprueba el resultado antes de pasar a la siguiente fase. Así, los especialistas pueden trabajar con autonomía sin tener autoridad para ampliar el resultado aprobado.
 
 ### Cómo se conservan las decisiones al cambiar de contexto
 
@@ -280,7 +280,7 @@ Codex crea estos agentes cuando un flujo los necesita. No hace falta aprender su
 
 | Agente | Función |
 |--------|---------|
-| `requirement-analyzer` | Resume las señales de la petición y las pruebas del repositorio necesarias para decidir alcance y coste |
+| `requirement-analyzer` | Investiga qué partes del repositorio se verán afectadas y el coste aproximado para concretar el alcance |
 | `prd-creator` | Crea y estructura PRD |
 | `technical-designer` | Crea un lote completo de ADR o un Design Doc (backend/general) |
 | `technical-designer-frontend` | Crea un lote completo de ADR o un Design Doc frontend (React) |

@@ -24,11 +24,13 @@ Follow the scale-selected flow and its user approval points from subagents-orche
 
 ## Step 1: Requirement Analysis
 
-Spawn requirement-analyzer for compact request signals, scope evidence, cost evidence, affected-layer evidence, and decision-changing questions.
+Apply the subagents-orchestration-guide Requirement Evidence Handoff, then spawn requirement-analyzer for compact scope evidence, cost evidence, affected-layer evidence, and decision-changing questions.
 
-At the requirements stop, the orchestrator applies subagents-orchestration-guide `Requirement Convergence` from the user's wording and supplied evidence, resolves material questions, determines Structural Scale and affected layers, and selects the canonical route.
+At the requirements stop, the orchestrator compares the evidence with its retained user record and applies subagents-orchestration-guide `Requirement Convergence`. User selections establish requirements and exclusions; the orchestrator judges readiness, determines Structural Scale and affected layers, and selects the canonical route.
 
-**[STOP — BLOCKING]** Present the converged requirement record, scale, affectedLayers, and scope to the user for confirmation, then proceed after explicit confirmation.
+Immediately before the stop, read `requirement-convergence`'s `references/scope-confirmation.md` and render that output from the retained user record and analyzer evidence. Render each unanswered product, UX, or operational decision under **User decisions** as an unresolved question followed by its answer-dependent effects. Only an explicit user selection moves it into **Confirmed scope**. Record Structural Scale and workflow routing under **Workflow**.
+
+**[STOP — BLOCKING]** Present the Scope Confirmation to the user, then proceed after explicit confirmation.
 
 ## Step 2: Canonical Workflow Routing
 
@@ -48,7 +50,7 @@ Enter autonomous execution when the subagents-orchestration-guide `Work Plan Aut
 
 ### Per-Task Execution Cycle
 
-For a fullstack task set, apply the [Fullstack (Monorepo) Flow](../subagents-orchestration-guide/references/monorepo-flow.md) filename routing. For a single-layer task set, use the executor and quality fixer selected by `affectedLayers`. Execute each task through the canonical autonomous task cycle.
+For a fullstack task set, apply `subagents-orchestration-guide`'s `references/monorepo-flow.md` filename routing. For a single-layer task set, use the executor and quality fixer selected by `affectedLayers`. Execute each task through the canonical autonomous task cycle.
 
 ### Post-Implementation Review (After All Tasks Complete)
 
@@ -61,7 +63,7 @@ Verify acceptance-test-generator artifact paths and pass them to work-planner.
 
 ## Completion Criteria
 
-- [ ] Scope/cost evidence was collected and the orchestrator's requirement and scale decisions were user-confirmed
+- [ ] Scope/cost evidence was collected, user-selected requirements and exclusions were confirmed, and orchestrator readiness, scale, and routing decisions were recorded
 - [ ] Layer routing determined (backend / frontend / fullstack)
 - [ ] Correct workflow followed per layer routing
 - [ ] codebase-analyzer included before Design Doc creation for Medium/Large flows
