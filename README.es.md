@@ -369,7 +369,7 @@ your-project/
 
 ## Ecosistema
 
-[Nautilus](https://github.com/shinpr/nautilus) valida ideas de producto y convierte los resultados en un PRD, mientras que [linear-prism](https://github.com/shinpr/linear-prism) convierte requisitos aprobados en incidencias de Linear listas para implementar. [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) aplica el mismo enfoque a Claude Code y puede instalarse junto con codex-workflows.
+[Nautilus](https://github.com/shinpr/nautilus) valida ideas de producto y convierte los resultados en un PRD, mientras que [linear-prism](https://github.com/shinpr/linear-prism) convierte requisitos aprobados en incidencias de Linear listas para implementar. [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) aplica el mismo enfoque a Claude Code y puede instalarse junto con codex-workflows. [outcome-doctor](https://github.com/shinpr/agent-clinic) usa Jev para comprobar si el enfoque de implementación de Codex se queda corto o se pasa respecto al objetivo, y necesita una clave de API de TypeSafe.
 
 ### ¿Quieres usar Astra aquí?
 
