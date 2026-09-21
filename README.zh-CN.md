@@ -369,7 +369,7 @@ your-project/
 
 ## 生态系统
 
-[Nautilus](https://github.com/shinpr/nautilus)用于验证产品想法并产出PRD，[linear-prism](https://github.com/shinpr/linear-prism)则把已批准的需求整理成可直接实施的Linear任务。[claude-code-workflows](https://github.com/shinpr/claude-code-workflows)在Claude Code中采用同样的方法，并可与codex-workflows安装在同一项目中。
+[Nautilus](https://github.com/shinpr/nautilus)用于验证产品想法并产出PRD，[linear-prism](https://github.com/shinpr/linear-prism)则把已批准的需求整理成可直接实施的Linear任务。[claude-code-workflows](https://github.com/shinpr/claude-code-workflows)在Claude Code中采用同样的方法，并可与codex-workflows安装在同一项目中。[outcome-doctor](https://github.com/shinpr/agent-clinic)通过Jev检查Codex的实现方案相对目标是否过度或不足，需要TypeSafe API密钥。
 
 ### 想在这里用Astra？
 

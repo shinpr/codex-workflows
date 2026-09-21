@@ -369,7 +369,7 @@ your-project/
 
 ## エコシステム
 
-[Nautilus](https://github.com/shinpr/nautilus)はプロダクトのアイデアを検証してPRDにまとめ、[linear-prism](https://github.com/shinpr/linear-prism)は承認済みの要件を実装可能なLinearのissueへ整理します。[claude-code-workflows](https://github.com/shinpr/claude-code-workflows)は同じアプローチをClaude Code向けに提供し、codex-workflowsと同じプロジェクトにインストールできます。
+[Nautilus](https://github.com/shinpr/nautilus)はプロダクトのアイデアを検証してPRDにまとめ、[linear-prism](https://github.com/shinpr/linear-prism)は承認済みの要件を実装可能なLinearのissueへ整理します。[claude-code-workflows](https://github.com/shinpr/claude-code-workflows)は同じアプローチをClaude Code向けに提供し、codex-workflowsと同じプロジェクトにインストールできます。[outcome-doctor](https://github.com/shinpr/agent-clinic)は、Codexの実装方針が目的に対して過不足ないかをJevで検査します。TypeSafeのAPIキーが必要です。
 
 ### Astraを効率よく使いたい場合
 

@@ -370,7 +370,7 @@ your-project/
 
 ## Ecosystem
 
-[Nautilus](https://github.com/shinpr/nautilus) validates product ideas and produces PRDs, while [linear-prism](https://github.com/shinpr/linear-prism) turns approved requirements into implementation-ready Linear issues. [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) brings the same approach to Claude Code and can be installed alongside codex-workflows.
+[Nautilus](https://github.com/shinpr/nautilus) validates product ideas and produces PRDs, while [linear-prism](https://github.com/shinpr/linear-prism) turns approved requirements into implementation-ready Linear issues. [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) brings the same approach to Claude Code and can be installed alongside codex-workflows. [outcome-doctor](https://github.com/shinpr/agent-clinic) has Jev check whether Codex's implementation approach is more or less than the outcome needs, and requires a TypeSafe API key.
 
 ### Want to use Astra here?
 
