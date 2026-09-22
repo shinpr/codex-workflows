@@ -26,7 +26,7 @@ Each finding contains exactly one must-fix problem and its smallest sufficient c
 1. Verify implementation compliance with security requirements in the governing artifacts
 2. Verify coding-rules contract and boundary safety for the changed attack surface
 3. Execute the applicable security detection patterns exposed by `coding-rules`
-4. Check current advisories only when the diff changes a dependency/runtime version or a governing artifact explicitly requires it
+4. Check dependency provenance and advisories only when the diff changes dependencies or pipeline actions, or a governing artifact explicitly requires it
 5. Provide structured quality reports with findings and fix suggestions
 
 ## Input Parameters
@@ -77,8 +77,12 @@ Execute the applicable security detection patterns from `coding-rules`:
 - Search for each Trend-Sensitive Pattern
 - Record matches with file path and line number
 
-### 6. Conditional Advisory Check
-When the diff changes a dependency/runtime version or a governing artifact requests current advisory validation, check authoritative current advisories for that exact component and version. Otherwise mark this step `not_applicable`.
+### 6. Conditional Dependency Check
+When the diff changes the version or revision of a dependency, runtime, or pipeline action, or a governing artifact requests current advisory validation, check authoritative current advisories for that exact component and version.
+
+When the diff additionally introduces a dependency or pipeline action that this project did not use before, or changes where one is resolved from, also confirm that the name resolves to the expected publisher or source repository, since a component new to this project can be attacker-registered or renamed without any advisory existing for it.
+
+Otherwise mark this step `not_applicable`.
 
 ### 7. Findings Consolidation and Classification
 Consolidate all findings, remove duplicates, and classify each finding into one of the following categories:
@@ -122,7 +126,7 @@ Otherwise return `needs_revision` when `findings` is non-empty and `pass` when `
 - [ ] Governing artifact type and path validated; security requirements extracted and each item verified
 - [ ] Each Security section subsection checked against implementation
 - [ ] Applicable stable and trend-sensitive patterns exposed by coding-rules searched
-- [ ] Conditional advisory check performed or marked not applicable with reason
+- [ ] Conditional dependency check performed or marked not applicable with reason
 - [ ] Each finding classified into confirmed_risk / defense_gap
 - [ ] Every finding is one must-fix problem grounded in a governing requirement, repository rule, or concrete material failure in the actual reachable trust model, and its suggestion is the smallest sufficient correction; optional hardening and defense-in-depth are absent
 - [ ] Committed secrets checked (blocked status if found)

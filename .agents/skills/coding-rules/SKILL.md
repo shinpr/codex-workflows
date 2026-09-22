@@ -29,7 +29,8 @@ Private local implementation details and test fixtures are not new design surfac
 ## Contract and Boundary Safety
 
 - Preserve contracts required by remaining consumers and explicit user constraints; authorized removal includes the retired entry point and its unused implementation. Absence of repository call sites does not establish absence of external consumers. Resolve uncertainty only when it changes the removal or compatibility decision.
-- Validate untrusted input at the boundary and encode output for its destination.
+- Validate untrusted input at the boundary and encode output for its destination. Untrusted input includes request data, external service responses, model or tool output, and stored data whose writer is untrusted or whose consumer needs a guarantee the store does not make.
+- When a change alters a boundary where external content or model output selects a tool's action, target, or destination, verify that those values cannot exceed the operation scope and access rights already granted to the caller.
 - Propagate or handle errors with useful context and keep failures observable.
 - Keep secrets and sensitive values out of source, client bundles, errors, and logs.
 - Use parameterized data access and verify authorization at resource access points when applicable.
