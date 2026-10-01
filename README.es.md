@@ -20,7 +20,7 @@ Codex por sí solo es la mejor opción para una corrección bien acotada, un exp
 
 Usa codex-workflows cuando una decisión técnica pueda ampliar el producto, alterar el comportamiento visible o deba conservarse al cambiar de contexto.
 
-Por ejemplo, una petición para ampliar un flujo de autenticación existente puede desembocar en un segundo mecanismo —técnicamente más limpio—, más validaciones y un contrato de respuesta nuevo. El frontend puede adaptarse y todas las pruebas pueden pasar, pero el usuario termina recibiendo un comportamiento que nunca se aprobó.
+Por ejemplo, una petición para ampliar un flujo de autenticación existente puede desembocar en un segundo mecanismo técnicamente más limpio, más validaciones y un contrato de respuesta nuevo. El frontend puede adaptarse y todas las pruebas pueden pasar, pero el usuario termina recibiendo un comportamiento que nunca se aprobó.
 
 codex-workflows evita que el alcance crezca sin control durante toda la ejecución:
 
@@ -31,7 +31,7 @@ codex-workflows evita que el alcance crezca sin control durante toda la ejecuci�
 | Ejecución | Una vez que autorizas la implementación, Codex ejecuta el conjunto de tareas de forma autónoma. Cada tarea supera su verificación específica y las comprobaciones aplicables del repositorio antes del commit de implementación. |
 | Finalización | Las revisiones independientes de código y seguridad comprueban que el cambio terminado se ajuste al alcance aprobado y no contenga fallos importantes. Las correcciones obligatorias vuelven al mismo ciclo de implementación y calidad. |
 
-Este flujo requiere más llamadas a agentes y más tokens que una ejecución directa. Úsalo cuando proteger el resultado acordado compense ese coste.
+Este flujo requiere más llamadas a agentes y más tokens que una ejecución directa. Úsalo cuando proteger el resultado acordado compense ese coste. Cuando un cambio no necesita todos los controles, el [modo ligero](#modo-ligero) ejecuta menos.
 
 Un caso límite no exige trabajo solo porque Codex sepa resolverlo. Añadir validaciones, hacer determinista un comportamiento o crear otra abstracción debe servir para proteger un requisito aprobado o un contrato observable, o para corregir un fallo demostrado. Y funciona en ambos sentidos: si una decisión de diseño acaba abarcando más de lo que el resultado necesita, el flujo la retira en vez de defenderla porque ya figure en un documento.
 
@@ -97,43 +97,21 @@ flowchart LR
 
 La ruta depende del número de decisiones independientes de producto y diseño, no de cuántos archivos cambien ni de cuántos casos límite sea capaz de encontrar Codex.
 
-| Tamaño | Qué necesita el cambio | Qué ocurre |
-|--------|------------------------|-----------|
-| Pequeño | Un resultado que sigue un patrón existente en una parte del sistema | Tarea confirmada → implementación → controles de calidad y seguridad |
-| Mediano | Un resultado que exige coordinar varias partes del sistema o tomar una decisión de diseño duradera | Design Doc revisado, más UI Spec / ADR si corresponde → verificación de integración/E2E seleccionada → Work Plan revisado → ciclos autónomos de tareas → verificación final |
-| Grande | Varios resultados que requieren decisiones de diseño independientes | Design Docs revisados, más un PRD salvo que decidas omitirlo, y UI Spec / ADR si corresponde → verificación de integración/E2E seleccionada → Work Plan revisado → ciclos autónomos de tareas → verificación final |
+Un cambio con un solo resultado que sigue un patrón existente en una parte del sistema pasa directamente a una tarea confirmada y después a la implementación, con controles de calidad y seguridad. Un cambio que exige coordinar varias partes del sistema o tomar una decisión de diseño duradera recibe primero un Design Doc y un Work Plan revisados, más una UI Spec o un ADR cuando alguna de sus decisiones lo requiera. Si el cambio tiene varios resultados que requieren decisiones de diseño independientes, también se crea un PRD, salvo que decidas omitirlo. Solo se escribe un ADR cuando una decisión duradera tiene al menos dos opciones sustancialmente distintas, y solo se elige una prueba de integración o E2E cuando otra más barata no puede demostrar la interacción.
 
-Solo se crea un ADR para una decisión duradera dentro del alcance actual cuando existen al menos dos opciones materialmente distintas. Si hay varias decisiones que cumplen estas condiciones, sus ADR se revisan en conjunto. Una prueba de integración o E2E solo se elige cuando otra prueba más barata no puede demostrar la interacción necesaria. Hay cambios que no necesitan ninguna de las dos cosas.
+Una vez autorizada la implementación, la sesión principal ejecuta las tareas, sus verificaciones específicas, los controles aplicables del repositorio y un commit de implementación por tarea. Primero resuelve los problemas a partir de los documentos aprobados y de la evidencia del repositorio. El comportamiento visible sigue siendo una frontera de producto: la implementación no puede ajustarlo por su cuenta para lograr coherencia interna. La sesión principal solo te consulta cuando avanzar exige un requisito de producto nuevo, cambiar algo que pediste o descartaste, usar una autorización que solo tú tienes o realizar una acción irreversible que no autorizaste. Encontrar una forma más acotada de llegar al mismo resultado no entra ahí, ni tampoco volver a pedir un permiso que ya diste. El flujo no añade la aprobación de terceros, el acceso a producción ni la ejecución de una release como condiciones para dar por terminada la implementación.
 
-Únicamente las decisiones que afectan al producto o a la implementación del repositorio pasan a documentos permanentes del proyecto. La aprobación de terceros, el acceso a producción, la ejecución de una release y otras tareas operativas ajenas no se convierten en bloqueos de implementación.
+### Modo ligero
 
-Una vez autorizada la implementación, el orquestador ejecuta las tareas, sus verificaciones específicas, los controles aplicables del repositorio y un commit de implementación por tarea. Primero resuelve los problemas a partir de los documentos aprobados y de las pruebas del repositorio. El comportamiento visible sigue siendo una frontera de producto: la implementación no puede ajustarlo por su cuenta para lograr coherencia interna. El orquestador solo te consulta cuando avanzar exige un requisito de producto nuevo, cambiar algo que pediste o descartaste, usar una autorización que solo tú tienes o realizar una acción irreversible que no autorizaste. Encontrar una forma más acotada de llegar al mismo resultado no entra ahí, ni tampoco volver a pedir un permiso que ya diste.
-
-Cada especialista recibe un trabajo acotado, los documentos y rutas pertinentes y un resultado claro que debe entregar. Se encarga del trabajo hasta completarlo. La sesión principal respeta los límites de producto que has elegido y coordina el flujo; solo interviene cuando hace falta tomar una decisión o resolver un bloqueo concreto, y comprueba el resultado antes de pasar a la siguiente fase. Así, los especialistas pueden trabajar con autonomía sin tener autoridad para ampliar el resultado aprobado.
-
-### Cómo se conservan las decisiones al cambiar de contexto
-
-Separar los contextos evita que exploración, diseño, implementación y revisión compartan supuestos de forma implícita. La [plantilla de Work Plan](.agents/skills/documentation-criteria/references/plan-template.md) incluida enlaza cada tarea de implementación con su sección del Design Doc y sus criterios de aceptación:
-
-```markdown
-### P1-T1: Conservar el contrato de respuestas de error
-
-- **Fuente**: `docs/design/example-design.md`, contrato de API, AC-2
-- **Alcance**: Actualizar la implementación del repositorio y sus pruebas específicas
-- **Dependencias**: ninguna
-- **Verificación**: Ejecutar la prueba de contrato y comprobar la estructura de respuesta documentada
+```
+$recipe-implement Modo ligero. Añade una tabla ordenable a la página de informes
 ```
 
-El [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) lleva a la implementación la fuente, el resultado esperado, los archivos afectados y una verificación ejecutable. Solo añade un `Verification Focus` cuando una prueba podría pasar sin demostrar un comportamiento importante. Tras ejecutar la tarea, se aplican al cambio completo todos los controles pertinentes del repositorio antes del commit. Los revisores finales comparan el código terminado con los documentos aprobados. También buscan cambios fuera del alcance aprobado y problemas importantes de calidad del código. Cuando se acepta una corrección, la siguiente revisión se centra en los controles que esa corrección podría afectar. Ejecuta `$recipe-quality-profile` para definir en `docs/project-context/quality.yaml` las reglas de calidad del repositorio que se usarán durante la implementación y la revisión.
+Pide el modo ligero en la petición de cualquier flujo. Las fases y los puntos de aprobación no cambian, pero Codex ejecuta menos controles: los Design Docs no se contrastan con el repositorio ni entre sí, y se omite la revisión de seguridad. Los controles del repositorio se ejecutan una sola vez después de la última tarea, en lugar de antes de cada commit, y la revisión final del código se mantiene. El modo ligero sigue activo durante el resto de la sesión hasta que le pidas a Codex que lo desactive.
 
 ---
 
 ## Instalación
-
-### Requisitos
-
-- [Codex CLI](https://developers.openai.com/codex/cli) (última versión)
-- Node.js >= 22
 
 ### Instalar
 
@@ -175,7 +153,7 @@ npx codex-workflows update
 npx codex-workflows update --user
 ```
 
-El actualizador conserva los archivos que hayas modificado localmente. Compara cada archivo con su hash en el momento de la instalación y omite los que hayan cambiado. El historial de actualizaciones versionado aplica en orden los movimientos y eliminaciones, de modo que los cambios locales siguen a un archivo trasladado hasta su ruta actual. Los archivos modificados que se retiran sin sustituto se mueven a `.codex-workflows-preserved/<version>/`. Los archivos nuevos se añaden automáticamente.
+El actualizador conserva los archivos que hayas modificado localmente. Compara cada archivo con su hash en el momento de la instalación y omite los que hayan cambiado. Si una actualización traslada un archivo, tus cambios locales lo acompañan a la nueva ruta. Los archivos modificados que se retiran sin sustituto se mueven a `.codex-workflows-preserved/<version>/`. Los archivos nuevos se añaden automáticamente.
 
 ```bash
 # Consultar la versión instalada
@@ -201,7 +179,7 @@ Invoca un flujo con `$recipe-name` en Codex. Escribe `$recipe-` y usa el autocom
 | `$recipe-implement` | Ciclo completo con selección de capa (backend/frontend/fullstack) | Funcionalidades nuevas (entrada universal) |
 | `$recipe-design` | Requisitos → documentos de producto y diseño según el tamaño | Diseño de producto y arquitectura |
 | `$recipe-plan` | Design Doc → esqueletos selectivos de integración/E2E → Work Plan | Planificación desde un Design Doc aprobado |
-| `$recipe-prepare-implementation` | Prepara las herramientas locales ya existentes que necesita un Work Plan aprobado | Petición expresa de preparación o capacidad necesaria no disponible |
+| `$recipe-prepare-implementation` | Prepara las herramientas ya existentes en el repositorio que necesita un Work Plan aprobado | Petición expresa de preparación o capacidad necesaria no disponible |
 | `$recipe-build` | Ejecuta tareas de backend con validación entre pasos | Retomar una implementación de backend |
 | `$recipe-review` | Revisa el alcance de implementación, el cumplimiento del Design Doc, la calidad del código y la seguridad; aplica las correcciones aprobadas por el usuario | Revisión tras implementar |
 | `$recipe-quality-profile` | Define o actualiza reglas de calidad propias del repositorio en `docs/project-context/quality.yaml` | Configuración y mantenimiento de las reglas de calidad |
@@ -231,7 +209,7 @@ Invoca un flujo con `$recipe-name` en Codex. Escribe `$recipe-` y usa el autocom
 
 ## Estado de trabajo
 
-Los flujos usan `docs/plans/` como estado temporal para Work Plans, Task Files de implementación y Task Files provisionales de corrección o ampliación de pruebas. El avance de tareas y fases se actualiza allí después de cada commit de implementación aprobado por calidad, pero esos archivos de estado no entran en el commit. Añade el directorio al `.gitignore` del proyecto, salvo que el equipo quiera revisar expresamente esos archivos transitorios:
+Los flujos usan `docs/plans/` como estado temporal para Work Plans, Task Files de implementación y Task Files provisionales de corrección o ampliación de pruebas. Añade el directorio al `.gitignore` del proyecto, salvo que el equipo quiera revisar expresamente esos archivos transitorios:
 
 ```gitignore
 docs/plans/
@@ -264,104 +242,6 @@ No hace falta invocar un flujo para aprovechar estas skills. Codex también las 
 | `subagents-orchestration-guide` | Coordinación multiagente, gestión de flujos y ejecución autónoma guiada |
 
 También se incluyen referencias para TypeScript de frontend web, incluidas aplicaciones React (`coding-rules/references/typescript.md` y `testing/references/typescript.md`). No se aplican a TypeScript de backend.
-
-</details>
-
----
-
-## Agentes especializados
-
-Codex crea estos agentes cuando un flujo los necesita. No hace falta aprender sus funciones de antemano: los flujos derivan cada trabajo al especialista adecuado y el orquestador mantiene el control general. Cada agente trabaja en su propio contexto, con instrucciones especializadas y las skills obligatorias nombradas de forma explícita.
-
-<details>
-<summary>Ver todos los agentes especializados</summary>
-
-### Agentes de documentación
-
-| Agente | Función |
-|--------|---------|
-| `requirement-analyzer` | Investiga qué partes del repositorio se verán afectadas y el coste aproximado para concretar el alcance |
-| `prd-creator` | Crea y estructura PRD |
-| `technical-designer` | Crea un lote completo de ADR o un Design Doc (backend/general) |
-| `technical-designer-frontend` | Crea un lote completo de ADR o un Design Doc frontend (React) |
-| `ui-spec-designer` | Genera una UI Specification a partir del PRD y, opcionalmente, código de prototipo |
-| `codebase-analyzer` | Recopila del repositorio solo la información necesaria para las decisiones técnicas, el diseño más sencillo y la verificación |
-| `ui-analyzer` | Recoge hechos sobre la UI desde recursos externos (herramientas de diseño, documentación del sistema de diseño e interfaces desplegadas) y código frontend |
-| `work-planner` | Crea el Work Plan a partir de Design Docs |
-| `document-reviewer` | Revisa documentos frente a los requisitos y decisiones de diseño que los gobiernan |
-| `design-sync` | Comprueba la coherencia entre documentos |
-
-### Agentes de implementación
-
-| Agente | Función |
-|--------|---------|
-| `task-decomposer` | Convierte el Work Plan en el menor número de Task Files ejecutables |
-| `task-executor` | Implementa Task Files con verificación específica (backend) |
-| `task-executor-frontend` | Implementa React con la verificación RTL de comportamiento aplicable |
-| `quality-fixer` | Ejecuta los controles aplicables del repositorio y corrige problemas de calidad dentro del alcance (backend) |
-| `quality-fixer-frontend` | Ejecuta y corrige controles aplicables de React, TypeScript, RTL y bundle |
-| `acceptance-test-generator` | Genera esqueletos de las pruebas de integración/E2E seleccionadas |
-| `integration-test-reviewer` | Revisa la calidad de las pruebas |
-
-### Agentes de análisis
-
-| Agente | Función |
-|--------|---------|
-| `code-reviewer` | Contrasta la implementación terminada con el alcance y los documentos aprobados, y señala problemas importantes de calidad del código |
-| `code-verifier` | Comprueba la coherencia entre documentos y código |
-| `security-reviewer` | Revisa la seguridad después de implementar |
-| `scope-discoverer` | Descubre el alcance del código para documentación inversa y agrupa unidades de PRD |
-| `technical-spike` | Realiza una prueba acotada para medir un efecto o coste que puede cambiar una decisión de diseño |
-
-### Agentes de diagnóstico
-
-| Agente | Función |
-|--------|---------|
-| `investigator` | Recopila evidencia, traza rutas y localiza puntos de fallo |
-| `verifier` | Valida la cobertura de rutas y evalúa los fallos de forma independiente |
-| `solver` | Deriva soluciones y analiza sus trade-offs |
-
-</details>
-
----
-
-## Estructura del proyecto
-
-Después de la instalación, el proyecto contiene:
-
-<details>
-<summary>Ver la estructura instalada</summary>
-
-```
-your-project/
-├── .agents/skills/           # Skills de Codex
-│   ├── coding-rules/         # Criterios fundamentales
-│   ├── testing/
-│   ├── ai-development-guide/
-│   ├── reviewee-judgment/
-│   ├── documentation-criteria/
-│   ├── requirement-convergence/
-│   ├── implementation-approach/
-│   ├── integration-e2e-testing/
-│   ├── external-resource-context/
-│   ├── llm-friendly-context/
-│   ├── subagent-delegation/
-│   ├── subagents-orchestration-guide/
-│   └── recipe-*/             # Puntos de entrada ($recipe-*)
-├── .codex/agents/            # Definiciones TOML de subagentes
-│   ├── requirement-analyzer.toml
-│   ├── technical-designer.toml
-│   ├── ui-analyzer.toml
-│   ├── task-executor.toml
-│   └── ... (25 agentes en total)
-└── docs/                     # Se crea al usar los flujos
-    ├── prd/
-    ├── design/
-    ├── adr/
-    ├── ui-spec/
-    └── plans/
-        └── tasks/
-```
 
 </details>
 

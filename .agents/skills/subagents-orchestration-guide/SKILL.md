@@ -131,6 +131,10 @@ Use agent statuses as routing signals, not as a parser contract. Prefer `pass` f
 
 Apply [references/review-resolution.md](references/review-resolution.md) wherever review or verification results can generate work. Before assigning repairs, record the disposition; retaining or adding a mechanism requires a reason subtraction cannot deliver the required result. Pass user outcomes and explicit constraints separately from revisable technical decisions.
 
+### Lite Mode
+
+When the user requests Lite Mode (light mode), read [references/lite-mode.md](references/lite-mode.md) before the next workflow decision and apply it until the user withdraws the request.
+
 ### Orchestrator Escalation Resolution [MANDATORY]
 
 Apply this procedure when a workflow result cannot support the next action, including `escalation_needed`, `blocked`, a missing artifact, or contradictory evidence. The response returns control to the orchestrator; it is not itself a human stop. For review results, Review Resolution still governs scope, completed reviewers, and rerun boundaries.
@@ -187,7 +191,7 @@ For each implementation task, record `diffBase` and maintain one `taskWriteSet`:
 3. Before quality review and before commit, reconcile it with repository state so earlier changes are retained and unrelated user changes are excluded.
 4. Pass the accumulated `taskWriteSet` to the quality fixer. After quality pass, commit only implementation, test, and required generated files in that set. After that commit succeeds, mark the Task File's satisfied Completion Criteria and the corresponding Work Plan task and phase complete, then update the active execution plan.
 
-Task Files and Work Plans are local workflow state. Exclude both from implementation commits; their checkboxes record completion only after quality pass and a successful implementation commit.
+Task Files and Work Plans are local workflow state. Exclude both from implementation commits; their checkboxes record completion only after a successful implementation commit.
 
 ## Handling Requirement Changes
 
@@ -340,3 +344,4 @@ When receiving a task, check the following:
 
 - `references/review-resolution.md`: Evidence- and ROI-based review finding resolution
 - `references/monorepo-flow.md`: Fullstack (monorepo) orchestration flow
+- `references/lite-mode.md`: User-selected omissions of intermediate verification calls

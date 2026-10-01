@@ -31,7 +31,7 @@ codex-workflows controls that expansion throughout the run:
 | Execution | Once you authorize implementation, Codex executes the task set autonomously. Each task passes its focused verification and applicable repository checks before its implementation commit. |
 | Completion | Independent code and security reviews check that the completed change stays within the approved scope and has no serious problems. Required corrections return through the same implementation and quality cycle. |
 
-This workflow uses more agent calls and tokens than direct execution. Use it when protecting the approved outcome is worth that cost.
+This workflow uses more agent calls and tokens than direct execution. Use it when protecting the approved outcome is worth that cost. When a change does not need every check, [lite mode](#lite-mode) runs fewer of them.
 
 An edge case does not require work simply because Codex can handle it. Additional validation, deterministic behavior, or a new abstraction must protect an approved requirement, an observable contract, or a demonstrated failure. This cuts both ways: when a design decision turns out to carry more than the outcome needs, the workflow removes it instead of defending it because a document already named it.
 
@@ -97,43 +97,21 @@ flowchart LR
 
 The number of independent product and design decisions determines the route, not file count or the number of edge cases Codex can identify.
 
-| Scale | What the change needs | What happens |
-|-------|-----------------------|--------------|
-| Small | One outcome that follows an existing pattern in one part of the system | Confirmed task → implementation → quality and security checks |
-| Medium | One outcome that needs coordination across parts of the system or a lasting design decision | Reviewed Design Doc, plus UI Spec / ADR when required → selected integration/E2E proof → reviewed Work Plan → autonomous task cycles → final verification |
-| Large | Multiple outcomes that need separate design decisions | Reviewed Design Docs, plus a PRD unless you choose to skip it, and UI Spec / ADR when required → selected integration/E2E proof → reviewed Work Plan → autonomous task cycles → final verification |
+A change with one outcome that follows an existing pattern in one part of the system goes straight to a confirmed task, then implementation with quality and security checks. A change that needs coordination across parts of the system or a lasting design decision first gets a reviewed Design Doc and Work Plan, plus a UI Spec or ADR when one of its decisions calls for it. A change with multiple outcomes that need separate design decisions also gets a PRD unless you choose to skip it. An ADR is written only when a lasting choice has at least two materially distinct options, and an integration or E2E test only when a cheaper test cannot prove the interaction.
 
-An ADR is created only for a durable current-scope choice with at least two materially distinct options. When several choices qualify, their ADRs are reviewed together. An integration or E2E test is selected only when a cheaper test cannot prove the required interaction. Some changes need neither.
+Once implementation is authorized, the main session runs the tasks, focused verification, applicable repository checks, and one implementation commit per task. It resolves problems from the approved documents and repository evidence first. User-visible behavior remains a product boundary rather than something the implementation may adjust for internal consistency. The main session asks you only when progress requires a new product requirement, a change to something you asked for or ruled out, authority only you hold, or an irreversible action you did not authorize. Finding a smaller way to reach the same outcome is not one of those, and neither is re-confirming permission you have already given. The workflow does not add third-party approval, production access, or release execution as conditions for completing the implementation.
 
-Only decisions that affect the product or repository implementation are carried forward in durable project documents. Third-party approval, production access, release execution, and unrelated operational work do not become implementation gates.
+### Lite mode
 
-Once implementation is authorized, the orchestrator runs the tasks, focused verification, applicable repository checks, and one implementation commit per task. It resolves problems from the approved documents and repository evidence first. User-visible behavior remains a product boundary rather than something the implementation may adjust for internal consistency. The orchestrator asks you only when progress requires a new product requirement, a change to something you asked for or ruled out, authority only you hold, or an irreversible action you did not authorize. Finding a smaller way to reach the same outcome is not one of those, and neither is re-confirming permission you have already given.
-
-Each specialist gets a bounded job, the relevant documents and paths, and a clear result to return. The specialist carries that job through completion while the main session retains user-selected product boundaries, owns workflow decisions, steps in only for a decision or concrete blocker, and checks the result before the next phase. This gives specialists room to work without giving them authority to widen the approved outcome.
-
-### How decisions survive fresh contexts
-
-Fresh contexts keep exploration, design, implementation, and review from silently sharing assumptions. The included [Work Plan template](.agents/skills/documentation-criteria/references/plan-template.md) ties each implementation task to its Design Doc section and acceptance criteria:
-
-```markdown
-### P1-T1: Preserve the error response contract
-
-- **Source**: `docs/design/example-design.md`, API contract, AC-2
-- **Scope**: Update the repository implementation and its focused tests
-- **Depends on**: none
-- **Verification**: Run the contract test and observe the documented response shape
+```
+$recipe-implement Lite mode. Add a sortable table to the reports page
 ```
 
-The [Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md) carries the source, intended result, target files, and executable verification into implementation. It adds a `Verification Focus` only when a test could pass without proving one important behavior. After execution, the applicable repository checks run against the complete task change before commit. Final reviewers compare the completed code with the approved documents. They also look for work outside the approved scope and serious code-quality problems. When a correction is accepted, the next review focuses on the checks that correction could affect. Run `$recipe-quality-profile` to define repository-specific quality rules in `docs/project-context/quality.yaml` for implementation and review.
+Ask for lite mode in the request to any recipe. The phases and approval stops stay the same, but Codex runs fewer checks: Design Docs are not checked against the repository or against each other, and the security review is skipped. Repository checks run once after the last task instead of before every commit, and the final code review still runs. Lite mode stays on for the rest of the session until you ask Codex to drop it.
 
 ---
 
 ## Installation
-
-### Requirements
-
-- [Codex CLI](https://developers.openai.com/codex/cli) (latest)
-- Node.js >= 22
 
 ### Install
 
@@ -176,7 +154,7 @@ npx codex-workflows update
 npx codex-workflows update --user
 ```
 
-The updater preserves files you have modified locally. It compares each file against its hash at install time and skips changed files. Versioned update history applies file moves and deletions in order, so local changes follow a moved file to its current path. Modified files retired without a replacement are moved to `.codex-workflows-preserved/<version>/`. New files from the update are added automatically.
+The updater preserves files you have modified locally. It compares each file against its hash at install time and skips changed files. When an update moves a file, your local changes follow it to the new path. Modified files retired without a replacement are moved to `.codex-workflows-preserved/<version>/`. New files from the update are added automatically.
 
 ```bash
 # Check installed version
@@ -232,7 +210,7 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 
 ## Working State
 
-Recipes use `docs/plans/` as ephemeral working state for Work Plans, implementation Task Files, and temporary review-fix or test-addition Task Files. Task and phase progress is updated there after each quality-approved implementation commit, while those progress files stay outside that commit. Add the directory to your project's `.gitignore` unless your team intentionally wants to review those transient files:
+Recipes use `docs/plans/` as ephemeral working state for Work Plans, implementation Task Files, and temporary review-fix or test-addition Task Files. Add the directory to your project's `.gitignore` unless your team intentionally wants to review those transient files:
 
 ```gitignore
 docs/plans/
@@ -270,104 +248,6 @@ Web-frontend references are included for TypeScript used in web frontend work, i
 
 ---
 
-## Specialized Agents
-
-Codex spawns these as needed during recipe execution. You do not need to learn them first; recipes route domain work to the relevant agents while the orchestrator retains workflow control. Each agent runs in its own context with specialized instructions and explicitly named required skills.
-
-<details>
-<summary>View all specialized agent roles</summary>
-
-### Document Creation Agents
-
-| Agent | Role |
-|-------|------|
-| `requirement-analyzer` | Finds the affected parts of the repository and rough cost so the scope can be confirmed |
-| `prd-creator` | PRD creation and structuring |
-| `technical-designer` | Complete ADR-batch or Design Doc creation (backend/general) |
-| `technical-designer-frontend` | Complete frontend ADR-batch or Design Doc creation (React) |
-| `ui-spec-designer` | UI Specification from PRD and optional prototype code |
-| `codebase-analyzer` | Compact repository facts for later technical decisions, minimal design, and verification |
-| `ui-analyzer` | UI facts from external resources (design tools, design-system docs, deployed UI) and frontend code |
-| `work-planner` | Work plan creation from Design Docs |
-| `document-reviewer` | Document review against governing requirements and design decisions |
-| `design-sync` | Cross-document consistency verification |
-
-### Implementation Agents
-
-| Agent | Role |
-|-------|------|
-| `task-decomposer` | Work plan → the fewest executable implementation task files |
-| `task-executor` | Task-file implementation with focused verification (backend) |
-| `task-executor-frontend` | React implementation with applicable behavior-focused RTL verification |
-| `quality-fixer` | Applicable repository checks and in-scope quality repair (backend) |
-| `quality-fixer-frontend` | Applicable React, TypeScript, RTL, and bundle checks and repair |
-| `acceptance-test-generator` | Selected integration/E2E test skeleton generation |
-| `integration-test-reviewer` | Test quality review |
-
-### Analysis Agents
-
-| Agent | Role |
-|-------|------|
-| `code-reviewer` | Checks the completed implementation against the approved scope and documents, and flags serious code-quality problems |
-| `code-verifier` | Document-code consistency verification |
-| `security-reviewer` | Security compliance review after implementation |
-| `scope-discoverer` | Codebase scope discovery for reverse docs, including PRD unit grouping |
-| `technical-spike` | Bounded empirical evidence for one design-changing effect or cost |
-
-### Diagnosis Agents
-
-| Agent | Role |
-|-------|------|
-| `investigator` | Evidence collection, path mapping, and failure-point discovery |
-| `verifier` | Path coverage validation and independent failure-point evaluation |
-| `solver` | Solution derivation with tradeoff analysis |
-
-</details>
-
----
-
-## Project Structure
-
-After installation, your project gets:
-
-<details>
-<summary>View installed layout</summary>
-
-```
-your-project/
-├── .agents/skills/           # Codex skills
-│   ├── coding-rules/         # Foundational guidance
-│   ├── testing/
-│   ├── ai-development-guide/
-│   ├── reviewee-judgment/
-│   ├── documentation-criteria/
-│   ├── requirement-convergence/
-│   ├── implementation-approach/
-│   ├── integration-e2e-testing/
-│   ├── external-resource-context/
-│   ├── llm-friendly-context/
-│   ├── subagent-delegation/
-│   ├── subagents-orchestration-guide/
-│   └── recipe-*/             # Workflow entry points ($recipe-*)
-├── .codex/agents/            # Subagent TOML definitions
-│   ├── requirement-analyzer.toml
-│   ├── technical-designer.toml
-│   ├── ui-analyzer.toml
-│   ├── task-executor.toml
-│   └── ... (25 agents total)
-└── docs/                     # Created as you use the recipes
-    ├── prd/
-    ├── design/
-    ├── adr/
-    ├── ui-spec/
-    └── plans/
-        └── tasks/
-```
-
-</details>
-
----
-
 ## Ecosystem
 
 [Nautilus](https://github.com/shinpr/nautilus) validates product ideas and produces PRDs, while [linear-prism](https://github.com/shinpr/linear-prism) turns approved requirements into implementation-ready Linear issues. [claude-code-workflows](https://github.com/shinpr/claude-code-workflows) brings the same approach to Claude Code and can be installed alongside codex-workflows. [outcome-doctor](https://github.com/shinpr/agent-clinic) has Jev check whether Codex's implementation approach is more or less than the outcome needs, and requires a TypeSafe API key.
@@ -379,7 +259,7 @@ Running a whole workflow on Astra burns through usage fast. [codex-subagent-play
 <details>
 <summary>Setup (2 steps)</summary>
 
-Run the orchestrator on Sol, or on Astra at low reasoning effort. The plugin's skills decide which subagents get Astra and which run on a cheaper model, and implementation goes to Luna.
+Run the main Codex session on Sol, or on Astra at low reasoning effort. The plugin's skills decide which subagents get Astra and which run on a cheaper model, and implementation goes to Luna.
 
 **1. Install the plugin**
 
