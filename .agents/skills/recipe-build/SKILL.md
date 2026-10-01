@@ -53,7 +53,7 @@ Use the active execution plan when one exists. When none exists, create one afte
 
 **Review reception:** Unnecessary repairs create lasting work. Before assigning a fix, use Review Resolution to judge no change, removal or narrowing, and reuse first; record why any retained or added mechanism is necessary.
 
-Execute each pending task through the `subagents-orchestration-guide` autonomous task cycle using task-executor and quality-fixer. Pass the exact task file and preserve the canonical Per-Task Change Set. After quality pass and a successful implementation commit, update the Task File, corresponding Work Plan task and phase, and execution plan locally; keep Task Files and the Work Plan outside the implementation commit.
+Execute each pending task through the `subagents-orchestration-guide` autonomous task cycle using task-executor and quality-fixer. Pass the exact task file and preserve the canonical Per-Task Change Set. After a successful implementation commit, update the Task File, corresponding Work Plan task and phase, and execution plan locally; keep Task Files and the Work Plan outside the implementation commit.
 
 ## 7. Requirement Changes During Build
 

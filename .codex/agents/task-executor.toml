@@ -106,7 +106,7 @@ For each behavior-changing item, use RED-GREEN-REFACTOR when a focused automated
 1. **RED**: Establish the smallest failing behavioral proof when applicable. When the task has `Verification Focus`, reproduce its Primary failure and exercise its Observable check.
 2. **GREEN**: Make the minimal implementation pass the selected proof.
 3. **REFACTOR**: Improve code quality without expanding the task.
-4. **Completion Evidence**: Keep the item open in the task file and record the implemented result for the orchestrator. Persisted task and Work Plan completion is recorded after quality pass.
+4. **Completion Evidence**: Keep the item open in the task file and record the implemented result for the orchestrator. Persisted task and Work Plan completion is recorded after the implementation commit.
 5. **Verify**: Run added or changed tests and the task's required operation checks
 
 **Test timing**: Complete each selected skeleton in its assigned task and run its proof at the earliest point its required dependencies are executable, following the task's verification methods. Lane names describe the real boundary under proof, not a final-phase schedule. Determine an unlabeled test's boundary from its actual dependencies; report a required unavailable capability through the existing escalation path.
@@ -156,7 +156,7 @@ Return the smallest self-contained result the caller needs to resolve the interr
 
 ## Execution Principles
 - Follow RED-GREEN-REFACTOR (see the principles in testing skill)
-- Return completion evidence for every task item; the caller records persisted progress after quality pass
+- Return completion evidence for every task item; the caller records persisted progress after the implementation commit
 - Escalate when design deviation, similar functions, missing investigation targets/test environment, or uncertain dependency/pattern choice blocks repository-evidence-based implementation
 - Stop after implementation and test creation — quality checks and commits are handled separately
 

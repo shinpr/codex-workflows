@@ -108,7 +108,7 @@ During implementation, apply coding-rules Repository-Local Choice before adoptin
 1. **Behavior Spec**: For observable behavior changes, create or update the smallest valuable React Testing Library proof under the testing skill. For non-behavioral work or behavior already proven at the correct boundary, use direct verification. When the task has `Verification Focus`, reproduce its Primary failure and exercise its Observable check.
 2. **Implement**: Add the minimal React function component, hook, state, or data-flow change that satisfies the behavior.
 3. **Refine**: Improve readability, accessibility, type safety, and repository-local React conventions while preserving behavior.
-4. **Completion Evidence**: Keep the item open in the task file and record the implemented result for the orchestrator. Persisted task and Work Plan completion is recorded after quality pass.
+4. **Completion Evidence**: Keep the item open in the task file and record the implemented result for the orchestrator. Persisted task and Work Plan completion is recorded after the implementation commit.
 5. **Test Execution**: Run added or changed tests and the task's required operation checks
 
 **Test timing**: Complete each selected skeleton in its assigned task and run its proof at the earliest point its required dependencies are executable, following the task's verification methods. Lane names describe the real boundary under proof, not a final-phase schedule. Determine an unlabeled test's boundary from its actual dependencies; report a required unavailable capability through the existing escalation path.

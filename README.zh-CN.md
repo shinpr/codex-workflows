@@ -6,7 +6,7 @@
 
 [English](README.md) | **简体中文** | [日本語](README.ja.md) | [Español](README.es.md) | [한국어](README.ko.md) | [Português (Brasil)](README.pt-BR.md)
 
-面对规模较大的产品开发，Codex有时会为了技术上的一致性，把事情做得比用户真正需要的更多。穷尽所有边界情况、让每条路径都得到确定结果，看似严谨，却可能在既定目标并不要求的地方改变用户实际看到的行为。
+面对规模较大的产品开发，Codex有时会为了技术上的一致性，把事情做得比用户真正需要的更多。穷尽所有边界情况、让每条路径都得到确定结果，可能在既定目标并不要求的地方改变用户实际看到的行为。
 
 codex-workflows把工作限制在“已确认的最小目标”之内。它先明确哪些用户可见行为允许改变、哪些绝不能动，并要求在结束前拿出验证依据。在这些边界内，Codex再结合仓库现状，选择容易回退的实现细节。
 
@@ -31,7 +31,7 @@ codex-workflows会在整个执行过程中约束这种范围膨胀：
 | 执行 | 你授权实现之后，Codex会自主完成整组任务。每项任务都要通过针对性验证和仓库要求的检查，之后才会提交实现。 |
 | 完成 | 独立的代码评审和安全评审会确认最终改动未超出已批准范围，且不存在重大问题。必须修复的问题会回到同一套实现与质量流程。 |
 
-与直接执行相比，这套工作流会调用更多代理、消耗更多token。只有当保护既定目标值得这笔成本时，才需要使用它。
+与直接执行相比，这套工作流会调用更多代理、消耗更多token。只有当保护既定目标值得这笔成本时，才需要使用它。如果某项改动用不着全部检查，可以用[轻量模式](#轻量模式)少做一些检查。
 
 Codex能处理某个边界情况，并不代表这项工作就有必要做。额外校验、确定性行为或新的抽象层，必须是为了保护已批准的需求或可观测契约，或者处理已经证实的故障。反过来也一样：如果某个设计决策最后超出了目标所需，工作流会将其删除，而不会仅仅因为它已经写进文档就继续保留。
 
@@ -97,43 +97,21 @@ flowchart LR
 
 决定采用哪条路径的，是互相独立的产品和设计决策数量，而不是文件数量，也不是Codex能找出多少边界情况。
 
-| 规模 | 改动所需条件 | 执行方式 |
-|------|--------------|----------|
-| 小 | 一个目标，并且能在系统的某一部分沿用现有模式 | 确认任务 → 实现 → 质量和安全检查 |
-| 中 | 一个目标，但需要系统多个部分相互配合，或需要作出长期保留的设计决策 | 已评审的Design Doc，必要时补充UI Spec / ADR → 选定集成/E2E验证 → 已评审的Work Plan → 自主任务循环 → 最终验证 |
-| 大 | 多个目标，并且各自需要设计决策 | 已评审的Design Doc，以及PRD（除非你选择省略），必要时补充UI Spec / ADR → 选定集成/E2E验证 → 已评审的Work Plan → 自主任务循环 → 最终验证 |
+只有一个目标、且能在系统某一部分沿用现有模式的改动，会直接进入已确认的任务，再进行实现以及质量和安全检查。需要系统多个部分相互配合，或需要作出长期保留的设计决策的改动，会先产出已评审的Design Doc和Work Plan；某项决策需要时，还会补充UI Spec或ADR。改动包含多个目标且各自需要设计决策时，还会加上PRD，除非你选择省略。只有当某项需要长期保留的选择至少有两个实质不同的方案时，才会创建ADR；只有成本更低的测试无法证明所需交互时，才会选择集成或E2E测试。
 
-只有当前范围中存在一项需要长期保留的选择，并且至少有两个实质不同的方案时，才会创建ADR。若有多项选择符合条件，会集中评审这些ADR。只有成本更低的测试无法证明所需交互时，才会选择集成或E2E测试。有些改动两者都不需要。
+实现获得授权后，主会话会执行任务、针对性验证、适用的仓库检查，并为每项任务生成一次实现提交。遇到问题时，它会优先根据已批准的文档和仓库证据自行解决。用户可见行为始终是产品边界，不能为了内部一致性而由实现擅自调整。只有当继续推进需要新增产品需求、改动你提出过或排除过的内容、使用只有你拥有的权限，或执行未经授权且无法撤销的操作时，主会话才会询问你。找到能实现相同结果的更精简方案不属于需要询问的情况，已经给过的许可也不会再次确认。工作流不会把第三方审批、生产环境权限或发布操作加为完成实现的条件。
 
-只有会影响产品或仓库实现的决策，才会写进需要长期保留的项目文档。第三方审批、生产环境权限、发布操作和无关的运维工作，不会变成实现阶段的门槛。
+### 轻量模式
 
-实现获得授权后，编排器会执行任务、针对性验证、适用的仓库检查，并为每项任务生成一次实现提交。遇到问题时，它会优先根据已批准的文档和仓库证据自行解决。用户可见行为始终是产品边界，不能为了内部一致性而由实现擅自调整。只有当继续推进需要新增产品需求、改动你提出过或排除过的内容、使用只有你拥有的权限，或执行未经授权且无法撤销的操作时，编排器才会询问你。找到更精简的实现方式不算其中之一，已经给过的许可也不会再问一遍。
-
-每个专业代理都会拿到边界明确的任务、相关文档和路径，以及需要返回的明确结果。专业代理负责把任务执行到完成。主会话会遵循你确定的产品边界并负责推进工作流，只在需要决策或遇到具体阻碍时介入，并在进入下一阶段前检查结果。这样既让专业代理有足够空间完成工作，也不会让它们擅自扩大已批准的目标。
-
-### 如何让决策在新上下文中继续生效
-
-将上下文分开，可以避免调研、设计、实现和评审在不知不觉间共享未经说明的前提。内置的[Work Plan模板](.agents/skills/documentation-criteria/references/plan-template.md)会把每项实现任务关联到Design Doc中的对应章节和验收标准：
-
-```markdown
-### P1-T1: 保持错误响应契约不变
-
-- **来源**: `docs/design/example-design.md`，API契约，AC-2
-- **范围**: 更新仓库实现及对应的针对性测试
-- **依赖**: 无
-- **验证**: 运行契约测试，确认响应结构符合文档
+```
+$recipe-implement 轻量模式。为报表页面添加可排序表格
 ```
 
-[Task File Contract](.agents/skills/llm-friendly-context/references/task-template.md)会把来源、预期结果、目标文件和可执行的验证方法传递到实现阶段。只有在测试可能通过、却没有证明某项关键行为时，才会增加`Verification Focus`。任务执行完毕后，完整改动必须在提交前通过适用的仓库检查。最终评审者会将完成的代码与已批准文档逐项对照，同时检查是否存在超出批准范围的实现或重大的代码质量问题。接受修正后，下一轮评审只聚焦于可能受该修正影响的检查项。运行`$recipe-quality-profile`，可在`docs/project-context/quality.yaml`中定义实现和评审时使用的仓库专属质量规则。
+在任意工作流的请求中说明使用轻量模式即可。阶段和需要你确认的节点不变，只是Codex会少做一些检查：不再对照仓库或其他Design Doc检查Design Doc，也会跳过安全评审。仓库检查改为在最后一项任务完成后统一运行一次，不再在每次提交前运行；最终的代码评审照常进行。在你让Codex停用之前，轻量模式会在本次会话中一直生效。
 
 ---
 
 ## 安装
-
-### 环境要求
-
-- 最新版[Codex CLI](https://developers.openai.com/codex/cli)
-- Node.js 22或更高版本
 
 ### 安装方式
 
@@ -175,7 +153,7 @@ npx codex-workflows update
 npx codex-workflows update --user
 ```
 
-更新程序会保留你在本地修改过的文件。它会把每个文件与安装时的哈希值进行比较，并跳过已经改动的文件。带版本的更新历史会按顺序处理文件移动和删除，因此本地修改也会跟随文件移动到新路径。已修改但被移除且没有替代文件的内容，会转移到`.codex-workflows-preserved/<version>/`。新增文件则会自动加入。
+更新程序会保留你在本地修改过的文件。它会把每个文件与安装时的哈希值进行比较，并跳过已经改动的文件。更新移动文件时，你的本地修改也会随之移到新路径。已修改但被移除且没有替代文件的内容，会转移到`.codex-workflows-preserved/<version>/`。新增文件则会自动加入。
 
 ```bash
 # 查看已安装版本
@@ -231,7 +209,7 @@ npx codex-workflows status --user
 
 ## 工作状态
 
-工作流使用`docs/plans/`存放临时状态，包括Work Plan、实现Task File，以及临时的评审修复或测试补充Task File。每次实现提交通过质量检查后，这里会更新任务和阶段进度，但这些进度文件不会进入实现提交。除非团队希望评审这些临时文件，否则请把该目录加入项目的`.gitignore`：
+工作流使用`docs/plans/`存放临时状态，包括Work Plan、实现Task File，以及临时的评审修复或测试补充Task File。除非团队希望评审这些临时文件，否则请把该目录加入项目的`.gitignore`：
 
 ```gitignore
 docs/plans/
@@ -269,104 +247,6 @@ PRD、ADR、UI Spec和Design Doc属于需要长期保存的项目文档，应当
 
 ---
 
-## 专业代理
-
-执行工作流时，Codex会按需启动以下代理。你无须事先掌握这些角色：工作流会把不同领域的任务交给对应代理，编排器继续掌控整体流程。每个代理都有独立上下文、专业指令和明确列出的必需技能。
-
-<details>
-<summary>查看全部专业代理角色</summary>
-
-### 文档创建代理
-
-| 代理 | 职责 |
-|------|------|
-| `requirement-analyzer` | 调查仓库中受影响的部分和大致成本，帮助确定范围 |
-| `prd-creator` | 创建并组织PRD |
-| `technical-designer` | 创建完整ADR批次或Design Doc（后端/通用） |
-| `technical-designer-frontend` | 创建完整的前端ADR批次或Design Doc（React） |
-| `ui-spec-designer` | 根据PRD和可选原型代码创建UI Specification |
-| `codebase-analyzer` | 从仓库中提取技术决策、精简设计和验证所需的关键信息 |
-| `ui-analyzer` | 从外部资源（设计工具、设计系统文档、线上UI）和前端代码中整理UI事实 |
-| `work-planner` | 根据Design Doc创建Work Plan |
-| `document-reviewer` | 按照上层需求和设计决策评审文档 |
-| `design-sync` | 验证不同文档之间的一致性 |
-
-### 实现代理
-
-| 代理 | 职责 |
-|------|------|
-| `task-decomposer` | 将Work Plan拆成数量最少、可以执行的Task File |
-| `task-executor` | 根据Task File实现并完成针对性验证（后端） |
-| `task-executor-frontend` | 实现React改动，并完成适用的行为型RTL验证 |
-| `quality-fixer` | 执行适用的仓库检查，修复范围内的质量问题（后端） |
-| `quality-fixer-frontend` | 执行并修复适用的React、TypeScript、RTL和打包检查 |
-| `acceptance-test-generator` | 生成已选定的集成/E2E测试骨架 |
-| `integration-test-reviewer` | 评审测试质量 |
-
-### 分析代理
-
-| 代理 | 职责 |
-|------|------|
-| `code-reviewer` | 对照批准范围和约束文档检查最终实现，并指出重大的代码质量问题 |
-| `code-verifier` | 验证文档与代码的一致性 |
-| `security-reviewer` | 实现后进行安全符合性评审 |
-| `scope-discoverer` | 为逆向文档发现代码库范围，并整理PRD单元 |
-| `technical-spike` | 在有限范围内验证一项可能影响设计决策的效果或成本 |
-
-### 诊断代理
-
-| 代理 | 职责 |
-|------|------|
-| `investigator` | 收集证据、梳理路径并发现故障点 |
-| `verifier` | 验证路径覆盖，并独立评估故障点 |
-| `solver` | 权衡取舍，推导解决方案 |
-
-</details>
-
----
-
-## 项目结构
-
-安装后，项目中会增加以下内容：
-
-<details>
-<summary>查看安装后的目录结构</summary>
-
-```
-your-project/
-├── .agents/skills/           # Codex技能
-│   ├── coding-rules/         # 基础指导原则
-│   ├── testing/
-│   ├── ai-development-guide/
-│   ├── reviewee-judgment/
-│   ├── documentation-criteria/
-│   ├── requirement-convergence/
-│   ├── implementation-approach/
-│   ├── integration-e2e-testing/
-│   ├── external-resource-context/
-│   ├── llm-friendly-context/
-│   ├── subagent-delegation/
-│   ├── subagents-orchestration-guide/
-│   └── recipe-*/             # 工作流入口（$recipe-*）
-├── .codex/agents/            # 子代理TOML定义
-│   ├── requirement-analyzer.toml
-│   ├── technical-designer.toml
-│   ├── ui-analyzer.toml
-│   ├── task-executor.toml
-│   └── ...（共25个代理）
-└── docs/                     # 使用工作流时创建
-    ├── prd/
-    ├── design/
-    ├── adr/
-    ├── ui-spec/
-    └── plans/
-        └── tasks/
-```
-
-</details>
-
----
-
 ## 生态系统
 
 [Nautilus](https://github.com/shinpr/nautilus)用于验证产品想法并产出PRD，[linear-prism](https://github.com/shinpr/linear-prism)则把已批准的需求整理成可直接实施的Linear任务。[claude-code-workflows](https://github.com/shinpr/claude-code-workflows)在Claude Code中采用同样的方法，并可与codex-workflows安装在同一项目中。[outcome-doctor](https://github.com/shinpr/agent-clinic)通过Jev检查Codex的实现方案相对目标是否过度或不足，需要TypeSafe API密钥。
@@ -378,7 +258,7 @@ your-project/
 <details>
 <summary>设置（2步）</summary>
 
-编排器用Sol，或者把Astra的reasoning effort调低。哪些子代理用Astra、哪些用更便宜的模型，由插件的技能决定；实现交给Luna。
+主Codex会话使用Sol，或使用reasoning effort设为low的Astra。哪些子代理用Astra、哪些用更便宜的模型，由插件的技能决定；实现交给Luna。
 
 **1. 安装插件**
 
