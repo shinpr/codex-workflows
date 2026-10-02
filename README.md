@@ -164,6 +164,8 @@ npx codex-workflows status
 npx codex-workflows status --user
 ```
 
+To uninstall, run `npx codex-workflows uninstall`, adding `--user` for a user-level installation. Files you have modified locally are left in place.
+
 ---
 
 ## Workflow Recipe Reference

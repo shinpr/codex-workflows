@@ -163,6 +163,8 @@ npx codex-workflows status
 npx codex-workflows status --user
 ```
 
+アンインストールは`npx codex-workflows uninstall`で行います（ユーザー単位のインストールでは`--user`を付けます）。ローカルで編集したファイルは削除されません。
+
 ---
 
 ## ワークフローレシピ一覧

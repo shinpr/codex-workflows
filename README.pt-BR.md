@@ -163,6 +163,8 @@ npx codex-workflows status
 npx codex-workflows status --user
 ```
 
+Para desinstalar, execute `npx codex-workflows uninstall` (em uma instalação de usuário, acrescente `--user`). Arquivos modificados localmente não são apagados.
+
 ---
 
 ## Referência dos fluxos
