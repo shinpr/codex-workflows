@@ -163,6 +163,8 @@ npx codex-workflows status
 npx codex-workflows status --user
 ```
 
+제거하려면 `npx codex-workflows uninstall`을 실행하세요. 사용자 수준 설치라면 `--user`를 붙입니다. 로컬에서 수정한 파일은 삭제되지 않습니다.
+
 ---
 
 ## 워크플로 레시피 목록

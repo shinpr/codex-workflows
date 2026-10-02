@@ -163,6 +163,8 @@ npx codex-workflows status
 npx codex-workflows status --user
 ```
 
+如需卸载，请运行`npx codex-workflows uninstall`（用户级安装需加上`--user`）。你在本地修改过的文件不会被删除。
+
 ---
 
 ## 工作流参考

@@ -527,3 +527,85 @@ test("removes an emptied skill directory after preserving a locally modified fil
     "locally edited\n"
   );
 });
+
+test("uninstall removes unmodified managed files, emptied directories, and the manifest", () => {
+  const cwd = makeTemporaryDirectory("codex-workflows-project");
+  const installResult = runCli(["install"], { cwd });
+  assert.equal(installResult.status, 0, installResult.stderr);
+  fs.writeFileSync(path.join(cwd, ".codex/config.toml"), "model = \"custom\"\n");
+
+  const result = runCli(["uninstall"], { cwd });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(fs.existsSync(path.join(cwd, ".agents")), false);
+  assert.equal(fs.existsSync(path.join(cwd, ".codex/agents")), false);
+  assert.equal(fs.readFileSync(path.join(cwd, ".codex/config.toml"), "utf8"), "model = \"custom\"\n");
+  assert.equal(fs.existsSync(path.join(cwd, ".codex-workflows-manifest.json")), false);
+});
+
+test("uninstall keeps locally modified and user-added files in place", () => {
+  const cwd = makeTemporaryDirectory("codex-workflows-project");
+  const modifiedPath = ".agents/skills/example/SKILL.md";
+  const siblingPath = ".agents/skills/example/references/notes.md";
+  const userPath = ".agents/skills/personal/SKILL.md";
+  writeInstalledFixture({
+    cwd,
+    version: "1.0.0",
+    files: { [modifiedPath]: "original\n", [siblingPath]: "notes\n" },
+  });
+  fs.writeFileSync(path.join(cwd, modifiedPath), "locally edited\n");
+  fs.mkdirSync(path.dirname(path.join(cwd, userPath)), { recursive: true });
+  fs.writeFileSync(path.join(cwd, userPath), "mine\n");
+
+  const result = runCli(["uninstall"], { cwd });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /modified locally, kept/);
+  assert.equal(fs.readFileSync(path.join(cwd, modifiedPath), "utf8"), "locally edited\n");
+  assert.equal(fs.readFileSync(path.join(cwd, userPath), "utf8"), "mine\n");
+  assert.equal(fs.existsSync(path.join(cwd, ".agents/skills/example/references")), false);
+  assert.equal(fs.existsSync(path.join(cwd, ".codex-workflows-preserved")), false);
+  assert.equal(fs.existsSync(path.join(cwd, ".codex-workflows-manifest.json")), false);
+});
+
+test("uninstall --user leaves CODEX_HOME and unrelated user files in place", () => {
+  const cwd = makeTemporaryDirectory("codex-workflows-project");
+  const codexHome = makeTemporaryDirectory("codex-workflows-codex-home");
+  const unrelatedFile = path.join(codexHome, "skills/personal/SKILL.md");
+  fs.mkdirSync(path.dirname(unrelatedFile), { recursive: true });
+  fs.writeFileSync(unrelatedFile, "personal skill\n");
+  const installResult = runCli(["install", "--user"], { cwd, codexHome });
+  assert.equal(installResult.status, 0, installResult.stderr);
+
+  const result = runCli(["uninstall", "--user"], { cwd, codexHome });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(fs.readFileSync(unrelatedFile, "utf8"), "personal skill\n");
+  assert.equal(fs.existsSync(path.join(codexHome, "skills/coding-rules")), false);
+  assert.equal(fs.existsSync(path.join(codexHome, "agents")), false);
+  assert.equal(fs.existsSync(path.join(codexHome, ".codex-workflows-manifest.json")), false);
+  assert.equal(fs.existsSync(codexHome), true);
+});
+
+test("uninstall dry run reports removals without changing files", () => {
+  const cwd = makeTemporaryDirectory("codex-workflows-project");
+  const managedPath = ".agents/skills/example/SKILL.md";
+  writeInstalledFixture({ cwd, version: "1.0.0", files: { [managedPath]: "original\n" } });
+
+  const result = runCli(["uninstall", "--dry-run"], { cwd });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /\[DRY RUN\]/);
+  assert.match(result.stdout, /- \.agents\/skills\/example\/ \(removed\)/);
+  assert.equal(fs.existsSync(path.join(cwd, managedPath)), true);
+  assert.equal(fs.existsSync(path.join(cwd, ".codex-workflows-manifest.json")), true);
+});
+
+test("uninstall fails when nothing is installed", () => {
+  const cwd = makeTemporaryDirectory("codex-workflows-project");
+
+  const result = runCli(["uninstall"], { cwd });
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /not installed/);
+});

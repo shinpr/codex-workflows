@@ -20,6 +20,7 @@ const COMMAND_OPTIONS = {
   install: new Set(["--user"]),
   update: new Set(["--dry-run", "--user"]),
   status: new Set(["--user"]),
+  uninstall: new Set(["--dry-run", "--user"]),
   "--version": new Set(),
   "-v": new Set(),
   "--help": new Set(),
@@ -717,6 +718,59 @@ function printUpdateSummary(counts, dryRun) {
   console.log(`\n${dryRun ? "[DRY RUN] " : ""}${parts.join(", ")}.`);
 }
 
+function uninstall(installation, dryRun) {
+  const manifest = readManifest(installation);
+  if (!manifest) throw new CliError("codex-workflows is not installed.");
+
+  const installedHashes = Array.isArray(manifest.files)
+    ? Object.fromEntries(manifest.files.map(file => [file, null]))
+    : manifest.files;
+  const state = readInstalledState(installation, installedHashes);
+  const prefix = dryRun ? "[DRY RUN] " : "";
+  console.log(
+    `${prefix}Uninstalling codex-workflows v${manifest.version} (${installation.scope})...\n`
+  );
+
+  const vacated = new Set();
+  const pruneCandidates = [];
+  let removed = 0;
+  let kept = 0;
+  for (const [manifestPath, entry] of state) {
+    if (!entry.exists) continue;
+    // Locally modified files stay in place, like dpkg conffiles on remove
+    if (!entry.baselineHash || entry.currentHash !== entry.baselineHash) {
+      const reason = entry.baselineHash ? "modified locally" : "no install hash";
+      console.log(`  ~ ${manifestPath} (${reason}, kept)`);
+      kept++;
+      continue;
+    }
+    console.log(`  - ${manifestPath} (removed)`);
+    if (!dryRun) fs.unlinkSync(entry.destinationPath);
+    vacated.add(entry.destinationPath);
+    pruneCandidates.push({
+      dir: path.dirname(entry.destinationPath),
+      root: installation.targetDir,
+    });
+    removed++;
+  }
+
+  const prunedDirs = pruneVacatedDirs(pruneCandidates, vacated, new Set(), dryRun);
+  for (const dir of prunedDirs) {
+    console.log(`  - ${path.relative(installation.targetDir, dir)}/ (removed)`);
+  }
+  if (!dryRun) fs.unlinkSync(installation.manifestPath);
+
+  const parts = [`${removed} removed`];
+  if (prunedDirs.length > 0) parts.push(`${prunedDirs.length} empty dirs removed`);
+  if (kept > 0) parts.push(`${kept} kept (local changes)`);
+  console.log(`\n${prefix}${parts.join(", ")}.`);
+  if (kept > 0) {
+    console.log(
+      "Kept files are still loaded by Codex. Delete them manually if you no longer need them."
+    );
+  }
+}
+
 function status(installation) {
   const manifest = readManifest(installation);
   if (!manifest) {
@@ -741,6 +795,8 @@ Usage:
   npx codex-workflows update [--user]              Update managed files
   npx codex-workflows update [--user] --dry-run    Preview changes without applying
   npx codex-workflows status [--user]              Show installation info
+  npx codex-workflows uninstall [--user]           Remove unmodified managed files
+  npx codex-workflows uninstall [--user] --dry-run Preview removal without applying
   npx codex-workflows --version                    Show version
   npx codex-workflows --help                       Show this help
 
@@ -755,6 +811,7 @@ function run({ command, dryRun, installation }) {
     case "install": install(installation); break;
     case "update": update(installation, dryRun); break;
     case "status": status(installation); break;
+    case "uninstall": uninstall(installation, dryRun); break;
     case "--version": case "-v": console.log(getVersion(installation.sourceDir)); break;
     case "--help": case "-h": case undefined: showHelp(); break;
     default:
