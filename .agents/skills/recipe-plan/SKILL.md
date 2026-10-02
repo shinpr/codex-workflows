@@ -10,7 +10,7 @@ description: "Creates a reviewed Work Plan with value-filtered integration/E2E t
 3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and workflow flow
 4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — planning handoffs and artifact contract
 
-**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation.
 
 **Context**: Dedicated to the planning phase.
 
@@ -47,17 +47,17 @@ Check for existence of design documents in docs/design/, notify user if none exi
 Present options if multiple exist (can be specified with $ARGUMENTS).
 
 ### Step 2: Integration/E2E Test Skeleton Selection
-- Spawn acceptance-test-generator agent: "Generate the value-selected integration/E2E test skeletons from Design Doc at [design-doc-path]."
+- Invoke acceptance-test-generator agent: "Generate the value-selected integration/E2E test skeletons from Design Doc at [design-doc-path]."
 - Verify generated artifact paths and pass them to Step 3; an empty selection is valid
 
 ### Step 3: Work Plan Creation
-- Spawn work-planner agent: "Create an implementation-focused work plan from design document at [design-doc-path]. Include generated test skeleton artifact paths from the previous step when present. Plan only repository implementation outcomes required by the Design Doc."
+- Invoke work-planner agent: "Create an implementation-focused work plan from design document at [design-doc-path]. Include generated test skeleton artifact paths from the previous step when present. Plan only repository implementation outcomes required by the Design Doc."
 - Verify the returned Work Plan path and use it as the Step 4 review target
 
 ### Step 4: Work Plan Review
 
 **Review reception:** Unnecessary repairs create lasting work. Before assigning a fix, use Review Resolution to judge no change, removal or narrowing, and reuse first; record why any retained or added mechanism is necessary.
-Spawn document-reviewer agent: "Review the work plan. doc_type: WorkPlan. target: [work-planner completed path]. Verify Design Doc implementation coverage, absence of added operational scope, dependency order, executable verification, optional Verification Focus, and Review Scope."
+Invoke document-reviewer agent: "Review the work plan. doc_type: WorkPlan. target: [work-planner completed path]. Verify Design Doc implementation coverage, absence of added operational scope, dependency order, executable verification, optional Verification Focus, and Review Scope."
 
 Branch on `verdict.decision`:
 - `pass` -> proceed to Step 5

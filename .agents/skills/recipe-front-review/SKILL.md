@@ -13,7 +13,7 @@ description: "Reviews completed frontend implementation for governing-source com
 4. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- task file contract
 5. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and result handling
 
-**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation.
 
 ## Execution Method
 
@@ -38,12 +38,12 @@ If a single active work plan is explicitly provided or unambiguously resolved fo
 Proceed when both a Design Doc and implementation files are available.
 
 ### 2. Execute code-reviewer
-Spawn code-reviewer agent: "Review the completed frontend implementation. governingDocuments: [{type: design-doc, path: [design-doc-path]}]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. implementationFiles: [$STEP_1_FILES]. Return the initial review JSON."
+Invoke code-reviewer agent: "Review the completed frontend implementation. governingDocuments: [{type: design-doc, path: [design-doc-path]}]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. implementationFiles: [$STEP_1_FILES]. Return the initial review JSON."
 
 **Store output as**: `$STEP_2_OUTPUT`
 
 ### 3. Execute security-reviewer
-Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]` and `implementationFiles: $STEP_1_FILES`.
+Invoke security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]` and `implementationFiles: $STEP_1_FILES`.
 
 **Store output as**: `$STEP_3_OUTPUT`
 
@@ -89,7 +89,7 @@ If the user declines corrections, skip fix steps and proceed to Final Report.
 
 ## Correction Flow
 
-1. **Design-side update**: If any accepted finding uses the design-side route, spawn technical-designer-frontend in update mode, then document-reviewer with `doc_type: DesignDoc` and `review_context: update`, then design-sync when multiple Design Docs exist. If both routes apply, re-evaluate the code-side findings against the updated Design Doc and drop any now satisfied.
+1. **Design-side update**: If any accepted finding uses the design-side route, invoke technical-designer-frontend in update mode, then document-reviewer with `doc_type: DesignDoc` and `review_context: update`, then design-sync when multiple Design Docs exist. If both routes apply, re-evaluate the code-side findings against the updated Design Doc and drop any now satisfied.
 2. **Plan fixes**: Use the active execution plan when one exists. When none exists, create one for the accepted fix flow. Create `docs/plans/tasks/review-fixes-frontend-task-01.md` with only findings selected for code-side correction.
 3. **Execute fixes**: Start the Per-Task Change Set, invoke task-executor-frontend with the task file, inspect its result and repository diff, and accumulate its paths.
 4. **Quality check**: Invoke quality-fixer-frontend with `task_file`, `filesModified: taskWriteSet`, and executor operation-verification evidence. On pass, add its paths and commit the reconciled set; repair stubs through task-executor-frontend, accumulate their paths, and resolve blocked results through Orchestrator Escalation Resolution.

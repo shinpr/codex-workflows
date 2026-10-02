@@ -10,7 +10,7 @@ description: "Orchestrate the complete implementation lifecycle from requirement
 3. [LOAD IF NOT ACTIVE] `requirement-convergence` — outcome, exclusion, and rough-cost convergence before design
 4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — cross-agent handoffs and task carrier
 
-**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation.
 
 # Full-Cycle Implementation
 
@@ -24,7 +24,7 @@ Follow the scale-selected flow and its user approval points from subagents-orche
 
 ## Step 1: Requirement Analysis
 
-Apply the subagents-orchestration-guide Requirement Evidence Handoff, then spawn requirement-analyzer for compact scope evidence, cost evidence, affected-layer evidence, and decision-changing questions.
+Apply the subagents-orchestration-guide Requirement Evidence Handoff, then invoke requirement-analyzer for compact scope evidence, cost evidence, affected-layer evidence, and decision-changing questions.
 
 At the requirements stop, the orchestrator compares the evidence with its retained user record and applies subagents-orchestration-guide `Requirement Convergence`. User selections establish requirements and exclusions; the orchestrator judges readiness, determines Structural Scale and affected layers, and selects the canonical route.
 
@@ -69,5 +69,5 @@ Verify acceptance-test-generator artifact paths and pass them to work-planner.
 - [ ] codebase-analyzer included before Design Doc creation for Medium/Large flows
 - [ ] code-verifier discrepancies passed through Review Resolution before Design Doc review
 - [ ] All stopping points honored with user confirmation obtained
-- [ ] Quality-fixer spawned before every commit
+- [ ] Quality-fixer invoked before every commit
 - [ ] All tasks committed or user input requested

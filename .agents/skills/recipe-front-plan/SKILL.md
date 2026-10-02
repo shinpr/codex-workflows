@@ -12,7 +12,7 @@ description: "Create frontend work plan from design document with test skeleton 
 3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and workflow flow
 4. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- planning handoffs and artifact contract
 
-**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation.
 
 ## Orchestrator Definition
 
@@ -50,17 +50,17 @@ Check for existence of design documents in docs/design/.
 Proceed when a design document is available.
 
 ### Step 2: Test Skeleton Generation
-Spawn acceptance-test-generator agent: "Generate test skeletons from Design Doc at [path]. [UI Spec at [ui-spec path] if exists.]"
+Invoke acceptance-test-generator agent: "Generate test skeletons from Design Doc at [path]. [UI Spec at [ui-spec path] if exists.]"
 Verify generated artifact paths and pass them to Step 3; an empty selection is valid.
 
 ### Step 3: Work Plan Creation
-Spawn work-planner agent: "Create an implementation-focused work plan from Design Doc at [path]. Include generated test skeleton artifact paths from Step 2 when present. Plan only repository implementation outcomes required by the Design Doc and UI Spec."
+Invoke work-planner agent: "Create an implementation-focused work plan from Design Doc at [path]. Include generated test skeleton artifact paths from Step 2 when present. Plan only repository implementation outcomes required by the Design Doc and UI Spec."
 Verify the returned Work Plan path and use it as the Step 4 review target.
 
 ### Step 4: Work Plan Review
 
 **Review reception:** Unnecessary repairs create lasting work. Before assigning a fix, use Review Resolution to judge no change, removal or narrowing, and reuse first; record why any retained or added mechanism is necessary.
-Spawn document-reviewer agent: "Review the frontend work plan. doc_type: WorkPlan. target: [work-planner completed path]. Verify Design Doc and UI Spec implementation coverage, absence of added operational scope, dependency order, executable verification, optional Verification Focus, and Review Scope."
+Invoke document-reviewer agent: "Review the frontend work plan. doc_type: WorkPlan. target: [work-planner completed path]. Verify Design Doc and UI Spec implementation coverage, absence of added operational scope, dependency order, executable verification, optional Verification Focus, and Review Scope."
 
 Branch on `verdict.decision`:
 - `pass` -> proceed to Step 5

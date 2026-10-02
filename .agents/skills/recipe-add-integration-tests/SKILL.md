@@ -10,7 +10,7 @@ description: "Add integration/E2E tests to existing codebase using Design Docs."
 3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — review resolution and agent coordination
 4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — task file contract
 
-**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation.
 
 **Context**: Test addition workflow for existing implementations
 
@@ -21,11 +21,11 @@ description: "Add integration/E2E tests to existing codebase using Design Docs."
 **Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification.
 
 **Execution Method**:
-- Skeleton generation -> Spawn acceptance-test-generator agent
+- Skeleton generation -> Invoke acceptance-test-generator agent
 - Task file creation -> Orchestrator creates directly (minimal context usage)
-- Test implementation -> Spawn task-executor agent
-- Test review -> Spawn integration-test-reviewer agent
-- Quality checks -> Spawn quality-fixer agent
+- Test implementation -> Invoke task-executor agent
+- Test review -> Invoke integration-test-reviewer agent
+- Quality checks -> Invoke quality-fixer agent
 
 Document paths: $ARGUMENTS
 
@@ -48,7 +48,7 @@ Treat paths under `docs/ui-spec/` as UI Specs and the supplied `docs/design/` pa
 
 ### Step 2: Skeleton Generation
 
-Spawn acceptance-test-generator with the validated document paths from Step 1. Include UI Specs as optional UI evidence.
+Invoke acceptance-test-generator with the validated document paths from Step 1. Include UI Specs as optional UI evidence.
 ```text
 Generate test skeletons from the following documents:
 - Design Docs: [paths]
@@ -103,7 +103,7 @@ Execute one task file at a time through Steps 4 -> 5 -> 6 -> 7 before starting t
 ### Step 5: Test Review
 
 Use integration/E2E paths from `taskWriteSet` as the test-review input set.
-Spawn integration-test-reviewer with `changedTestFiles`, `diffBase`, `skeletonFiles: [artifact paths in the current task]`, and `taskFile`.
+Invoke integration-test-reviewer with `changedTestFiles`, `diffBase`, `skeletonFiles: [artifact paths in the current task]`, and `taskFile`.
 Keep `testsAdded` as reporting metadata only.
 
 Consume the reviewer decision, actionable findings, and governing basis. Apply Orchestrator Escalation Resolution when the result is blocked or cannot support the next action.
@@ -116,7 +116,7 @@ Proceed when the review passes. When it contains actionable revision findings, a
 
 ### Step 7: Quality Check
 
-Spawn the quality fixer from the current task's Step 3 table row with `task_file`, `filesModified: taskWriteSet`, and the executor's operation-verification evidence.
+Invoke the quality fixer from the current task's Step 3 table row with `task_file`, `filesModified: taskWriteSet`, and the executor's operation-verification evidence.
 
 **Expected output**: `status` (`stub_detected`/`pass`/`blocked`)
 

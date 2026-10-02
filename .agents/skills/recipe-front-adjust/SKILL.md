@@ -12,7 +12,7 @@ description: "Adjust an implemented UI with focused evidence, verification, and 
 
 Load `external-resource-context` in Step 1 only when a named external source is required for the requested adjustment.
 
-**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation.
 
 ## Execution Pattern
 
@@ -34,7 +34,7 @@ Identify whether the requested adjustment depends on an external design or verif
 
 ### Step 2: UI Fact Gathering
 
-Spawn `ui-analyzer`:
+Invoke `ui-analyzer`:
 
 `exploration_mode: [mode from Analysis Assignment]. requirement_analysis: { affectedFiles: [files inferred from request], purpose: "UI adjustment", technicalConsiderations: [] }. requirements: [adjustment request]. target_paths: [paths named or inferred from request]. target_components: [components named in request]. ui_spec_path: [path if available]. externalResourceRefs: [{label, featureIdentifier} selected in Step 1, or []]. Analyze existing UI code and populate candidateWriteSet[].`
 
@@ -67,7 +67,7 @@ For each adjustment unit:
 
 **Review reception:** Unnecessary repairs create lasting work. Before assigning a fix, use Review Resolution to judge no change, removal or narrowing, and reuse first; record why any retained or added mechanism is necessary.
 
-For each unit, spawn `quality-fixer-frontend` with `filesModified: taskWriteSet` and the Step 4 verification evidence. Repair reported stubs in the parent session, accumulate every repair and quality-fixer path, and rerun quality-fixer. On pass, reconcile and commit the Per-Task Change Set; resolve blocked results through Orchestrator Escalation Resolution.
+For each unit, invoke `quality-fixer-frontend` with `filesModified: taskWriteSet` and the Step 4 verification evidence. Repair reported stubs in the parent session, accumulate every repair and quality-fixer path, and rerun quality-fixer. On pass, reconcile and commit the Per-Task Change Set; resolve blocked results through Orchestrator Escalation Resolution.
 
 ## Completion Criteria
 
