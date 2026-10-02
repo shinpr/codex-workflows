@@ -11,7 +11,7 @@ description: "Execute an approved fullstack Work Plan autonomously with layer-aw
 4. `subagents-orchestration-guide`
 5. `llm-friendly-context`
 
-Every `spawn_agent` call uses `fork_turns="none"` and supplies exact artifact paths.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation. Supply exact artifact paths.
 
 ## Orchestrator Role
 

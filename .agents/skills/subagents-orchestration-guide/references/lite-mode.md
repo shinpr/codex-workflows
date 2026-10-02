@@ -15,6 +15,6 @@ A single-cycle flow without a Work Plan task set, such as Small, keeps its quali
 
 ## Final Quality Run
 
-After the last task commit and before Post-Implementation Review, spawn the routed quality fixer once per layer with completed tasks. Pass its usual inputs with values for that layer's whole task set: the Work Plan as `task_file`, the union of the tasks' `taskWriteSet` as `filesModified`, and the executors' operation-verification evidence.
+After the last task commit and before Post-Implementation Review, invoke the routed quality fixer once per layer with completed tasks. Pass its usual inputs with values for that layer's whole task set: the Work Plan as `task_file`, the union of the tasks' `taskWriteSet` as `filesModified`, and the executors' operation-verification evidence.
 
 Route the result as per-task cycle step 3. For `stub_detected`, repair through the owning task's implementation owner, then repeat the Final Quality Run. Commit the resulting fixes once as a reconciled change set.

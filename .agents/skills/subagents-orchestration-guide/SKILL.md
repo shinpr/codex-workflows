@@ -7,7 +7,7 @@ description: "Coordinates custom specialists through workflow phases, artifact h
 
 Load `subagent-delegation` for assignment, waiting, and intervention rules. This guide owns workflow-specific coordination.
 
-**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation.
 
 ## Role: The Orchestrator
 
@@ -69,21 +69,21 @@ Assign work based on each subagent's responsibilities:
 - Applying explicit user answers and governing-source resolutions
 - Deterministic commands and lightweight evidence collection needed to route the next step
 
-**What to spawn task-executor for**:
+**What to invoke task-executor for**:
 - Implementation work and test addition
 - Confirmation of added tests passing (existing tests are not covered)
 
-**What to spawn quality-fixer for**:
+**What to invoke quality-fixer for**:
 - Applicable repository checks discovered from the task, changed files, manifests, configuration, and CI
 - Complete execution of quality error fixes
 - Self-contained processing until fix completion
 - Final approved judgment (only after fixes are complete)
 
-## How to Spawn Agents
+## How to Invoke Agents
 
-Apply the Spawn rule above. Resolve missing workflow inputs that affect the next action or its verification from repository and governing evidence; route remaining blockers through Orchestrator Escalation Resolution.
+Apply the Invocation rule above. Resolve missing workflow inputs that affect the next action or its verification from repository and governing evidence; route remaining blockers through Orchestrator Escalation Resolution.
 
-### Spawn Prompt Requirements
+### Invocation Prompt Requirements
 
 - For requirement, design, or scope judgment, supply relevant user wording and explicit constraints through the existing requirement carrier or task message, separately from agent-selected means. A target document alone suffices only when it retains that provenance; otherwise include the source excerpt needed for the decision.
 

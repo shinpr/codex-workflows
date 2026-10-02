@@ -9,7 +9,7 @@ description: "Investigate problem, verify findings, and derive solutions through
 2. [LOAD IF NOT ACTIVE] `coding-rules` — coding standards
 3. [LOAD IF NOT ACTIVE] `llm-friendly-context` — clear prompts, handoffs, and generated artifacts
 
-**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation.
 
 **Context**: Diagnosis flow to identify concrete failure points and present solutions
 
@@ -18,15 +18,15 @@ Target problem: $ARGUMENTS
 ## Orchestrator Definition
 
 **Execution Method**:
-- Investigation -> Spawn investigator agent
-- Verification -> Spawn verifier agent
-- Solution derivation -> Spawn solver agent
+- Investigation -> Invoke investigator agent
+- Verification -> Invoke verifier agent
+- Solution derivation -> Invoke solver agent
 
 The orchestrator structures the reported problem, coordinates the three specialist stages, evaluates their results, and passes only the context needed by the next stage.
 
 **Execution Plan**: Reuse the active execution plan. When the workflow has multiple dependent actions and no plan exists, create one that tracks them through final verification. Complete a plan step after verifying its result; start a dependent step after its prerequisites are satisfied.
 
-## Step 0: Problem Structuring (Before spawning investigator)
+## Step 0: Problem Structuring (Before invoking investigator)
 
 ### 0.1 Problem Type Determination
 
@@ -57,7 +57,7 @@ solver null recommendation -> investigator while new evidence can change the res
 evidence saturated before recommendation -> unresolved Report
 ```
 
-**Context Separation**: Pass only structured output to each step. Each step starts fresh with the data only.
+**Context Separation**: Pass only structured output to each step. Each agent's first invocation starts fresh with the supplied data only.
 
 ## Execution Steps
 
@@ -65,7 +65,7 @@ Execute the registered steps:
 
 ### Step 1: Investigation (investigator)
 
-Spawn investigator agent with the following prompt:
+Invoke investigator agent with the following prompt:
 
 ```text
 Collect decision-relevant information about the following phenomenon.
@@ -98,7 +98,7 @@ Proceed to verifier once quality is satisfied.
 
 ### Step 3: Verification (verifier)
 
-Spawn verifier agent: "Verify the following investigation results. Investigation results: [Investigation output]"
+Invoke verifier agent: "Verify the following investigation results. Investigation results: [Investigation output]"
 
 **Expected output**: Path coverage findings, independent failure-point evaluation, final conclusion, coverageAssessment/finalStatus
 
@@ -106,7 +106,7 @@ Use the verifier's `coverageAssessment` and its Coverage Determination Criteria 
 
 ### Step 4: Solution Derivation (solver)
 
-When `finalStatus=ready_for_solution`, spawn solver agent: "Derive solutions based on the following verified conclusion. Verified conclusion: [verifier's conclusion]. Failure-point evaluations: [verifier's failurePointsEvaluation]. Verification limitations: [verifier's verificationLimitations]. Impact analysis: [investigator output impactAnalysis]."
+When `finalStatus=ready_for_solution`, invoke solver agent: "Derive solutions based on the following verified conclusion. Verified conclusion: [verifier's conclusion]. Failure-point evaluations: [verifier's failurePointsEvaluation]. Verification limitations: [verifier's verificationLimitations]. Impact analysis: [investigator output impactAnalysis]."
 
 **Expected output**: Credible materially distinct solutions, relevant tradeoffs, and either a supported recommendation with implementation steps or a null recommendation with exact missing evidence. One solution is sufficient when evidence rules out a meaningful alternative.
 
@@ -155,9 +155,9 @@ Rationale: [Selection rationale]
 
 ## Completion Criteria
 
-- [ ] Spawned investigator and obtained evidence matrix, comparison analysis, and causal tracking
+- [ ] Invoked investigator and obtained evidence matrix, comparison analysis, and causal tracking
 - [ ] Performed investigation quality check and re-ran if insufficient
-- [ ] Spawned verifier and obtained coverage assessment
-- [ ] Spawned solver when `finalStatus=ready_for_solution`
+- [ ] Invoked verifier and obtained coverage assessment
+- [ ] Invoked solver when `finalStatus=ready_for_solution`
 - [ ] Reached `ready_for_solution` with a supported recommendation, or reported the exact unresolved input after available evidence stopped changing coverage
 - [ ] Presented final report to user

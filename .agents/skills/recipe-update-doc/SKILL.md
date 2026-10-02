@@ -9,7 +9,7 @@ description: "Update existing design documents (Design Doc / PRD / ADR) with rev
 2. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and workflow flows
 3. [LOAD IF NOT ACTIVE] `llm-friendly-context` — document update and review handoffs
 
-**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation.
 
 **Context**: Dedicated to updating existing design documents.
 
@@ -97,9 +97,9 @@ For PRD or Design Doc updates, apply the confirmed changes to the target documen
 
 ### Step 4: Document Update
 
-For PRD or Design Doc, spawn [Update Agent from Step 2]: "Operation Mode: update. Existing Document: [path from Step 1]. Changes Required: [Changes clarified in Step 3]. confirmed_requirement_context: [Step 3 current context]. Update the document to reflect the specified changes. Add change history entry."
+For PRD or Design Doc, invoke [Update Agent from Step 2]: "Operation Mode: update. Existing Document: [path from Step 1]. Changes Required: [Changes clarified in Step 3]. confirmed_requirement_context: [Step 3 current context]. Update the document to reflect the specified changes. Add change history entry."
 
-For a minor ADR change, spawn the update agent with `Operation Mode: update`, the existing path, confirmed changes, and `confirmed_requirement_context: N/A — ADR update`. For a major ADR change, apply documentation-criteria's choice and durability filters. Update or retire an unnecessary choice in the existing record; create a superseding ADR only for a qualifying new decision. Existing execution authority remains valid for outcome-preserving technical reductions.
+For a minor ADR change, invoke the update agent with `Operation Mode: update`, the existing path, confirmed changes, and `confirmed_requirement_context: N/A — ADR update`. For a major ADR change, apply documentation-criteria's choice and durability filters. Update or retire an unnecessary choice in the existing record; create a superseding ADR only for a qualifying new decision. Existing execution authority remains valid for outcome-preserving technical reductions.
 
 ### Step 5: Document Review
 
@@ -107,14 +107,14 @@ For a minor ADR change, spawn the update agent with `Operation Mode: update`, th
 
 For Design Doc updates, first verify the updated document against code:
 
-Spawn code-verifier agent: "Verify the updated Design Doc against current code. doc_type: design-doc. document_path: [path from Step 1]. Focus especially on literal identifier referential integrity for concrete paths, endpoints, type names, config keys, and other exact identifiers changed in this update."
+Invoke code-verifier agent: "Verify the updated Design Doc against current code. doc_type: design-doc. document_path: [path from Step 1]. Focus especially on literal identifier referential integrity for concrete paths, endpoints, type names, config keys, and other exact identifiers changed in this update."
 
 Apply Review Resolution to every discrepancy. Pass the `apply` discrepancies to the update agent, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$VERIFICATION_RESOLUTION` after the `apply` set becomes empty.
 
 For Design Doc updates:
-Spawn document-reviewer agent: "Review the following updated document. doc_type: DesignDoc. review_context: update. target: [path from Step 1]. confirmed_requirement_context: [Step 3 current context]. verification_resolution: $VERIFICATION_RESOLUTION. Focus on consistency of the updated sections, governing requirements, and change history."
+Invoke document-reviewer agent: "Review the following updated document. doc_type: DesignDoc. review_context: update. target: [path from Step 1]. confirmed_requirement_context: [Step 3 current context]. verification_resolution: $VERIFICATION_RESOLUTION. Focus on consistency of the updated sections, governing requirements, and change history."
 
-For PRD updates, spawn document-reviewer with the target and `confirmed_requirement_context` from Step 3. For minor ADR updates, use `doc_type: ADRBatch`, `targets: [updated ADR path]`, and `review_context: update`; review the requested changes and their dependent consistency while carrying the accepted, unchanged decision content as governing context.
+For PRD updates, invoke document-reviewer with the target and `confirmed_requirement_context` from Step 3. For minor ADR updates, use `doc_type: ADRBatch`, `targets: [updated ADR path]`, and `review_context: update`; review the requested changes and their dependent consistency while carrying the accepted, unchanged decision content as governing context.
 
 **Store output as**: `$STEP_5_OUTPUT`
 
@@ -127,7 +127,7 @@ For PRD updates, spawn document-reviewer with the target and `confirmed_requirem
 
 For PRD or ADR, proceed directly to finalization below.
 
-For Design Doc, spawn design-sync agent: "Verify consistency of the updated Design Doc with other design documents. Updated document: [path from Step 1]"
+For Design Doc, invoke design-sync agent: "Verify consistency of the updated Design Doc with other design documents. Updated document: [path from Step 1]"
 
 **On consistency result**:
 - No conflicts -> Finalize the update below
@@ -151,8 +151,8 @@ For Design Doc, spawn design-sync agent: "Verify consistency of the updated Desi
 - [ ] Built the current `confirmed_requirement_context` from the target document and confirmed changes
 - [ ] Updated document via appropriate agent (update mode)
 - [ ] Applied Review Resolution to code-verifier discrepancies before document-reviewer for Design Doc updates
-- [ ] Spawned document-reviewer and addressed feedback
-- [ ] Spawned design-sync for consistency verification (Design Doc only)
+- [ ] Invoked document-reviewer and addressed feedback
+- [ ] Invoked design-sync for consistency verification (Design Doc only)
 - [ ] Finalized the update under Step 6
 
 ## Output Example

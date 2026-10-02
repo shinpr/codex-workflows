@@ -10,7 +10,7 @@ description: "Run the full-cycle implementation workflow for one outcome spannin
 3. [LOAD IF NOT ACTIVE] `requirement-convergence` — outcome, exclusions, and rough-cost challenge
 4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — cross-agent handoffs and Small task carrier
 
-Every `spawn_agent` call uses `fork_turns="none"` and supplies only the exact artifacts needed by that specialist.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation. Supply only the exact artifacts needed by that specialist.
 
 Requirements or continuation instruction: $ARGUMENTS
 

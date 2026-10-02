@@ -10,7 +10,7 @@ description: "Generate PRD and Design Docs from existing codebase through discov
 3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and review resolution
 4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — generated document handoffs
 
-**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation.
 
 **Context**: Reverse engineering workflow to create documentation from existing code
 
@@ -59,7 +59,7 @@ Phase 2: Design Doc Generation (if requested)
 
 ### Step 1: PRD Scope Discovery
 
-Spawn scope-discoverer agent: "Discover functional scope targets in the codebase. target_path: $USER_TARGET_PATH. reference_architecture: $USER_RA_CHOICE. focus_area: $USER_FOCUS_AREA (if specified)."
+Invoke scope-discoverer agent: "Discover functional scope targets in the codebase. target_path: $USER_TARGET_PATH. reference_architecture: $USER_RA_CHOICE. focus_area: $USER_FOCUS_AREA (if specified)."
 
 **Store output as**: `$STEP_1_OUTPUT`
 
@@ -80,7 +80,7 @@ Spawn scope-discoverer agent: "Discover functional scope targets in the codebase
 
 Set `$PRD_UNIT_INVENTORY` to the category-wise deduplicated union of `unitInventory` from the `$STEP_1_OUTPUT.discoveredUnits` named by `$PRD_UNIT_SOURCE_UNITS`, preserving its `routes`, `testFiles`, and `publicExports` arrays.
 
-Spawn prd-creator agent: "Create reverse-engineered PRD for the following feature. Operation Mode: reverse-engineer. External Scope Provided: true. Feature: $PRD_UNIT_NAME. Description: $PRD_UNIT_DESCRIPTION. Related Files: $PRD_UNIT_COMBINED_RELATED_FILES. Entry Points: $PRD_UNIT_COMBINED_ENTRY_POINTS. Source Units: $PRD_UNIT_SOURCE_UNITS. Unit Inventory: $PRD_UNIT_INVENTORY. Use provided scope as an investigation starting point. If tracing entry points reveals directly connected files outside this scope, include them. Create final version PRD based on thorough code investigation."
+Invoke prd-creator agent: "Create reverse-engineered PRD for the following feature. Operation Mode: reverse-engineer. External Scope Provided: true. Feature: $PRD_UNIT_NAME. Description: $PRD_UNIT_DESCRIPTION. Related Files: $PRD_UNIT_COMBINED_RELATED_FILES. Entry Points: $PRD_UNIT_COMBINED_ENTRY_POINTS. Source Units: $PRD_UNIT_SOURCE_UNITS. Unit Inventory: $PRD_UNIT_INVENTORY. Use provided scope as an investigation starting point. If tracing entry points reveals directly connected files outside this scope, include them. Create final version PRD based on thorough code investigation."
 
 **Store output as**: `$STEP_2_OUTPUT` (PRD path)
 
@@ -90,7 +90,7 @@ Spawn prd-creator agent: "Create reverse-engineered PRD for the following featur
 
 **Prerequisite**: $STEP_2_OUTPUT (PRD path from Step 2)
 
-Spawn code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. code_paths: $PRD_UNIT_COMBINED_RELATED_FILES. unit_inventory: $PRD_UNIT_INVENTORY."
+Invoke code-verifier agent: "Verify consistency between PRD and code implementation. doc_type: prd. document_path: $STEP_2_OUTPUT. code_paths: $PRD_UNIT_COMBINED_RELATED_FILES. unit_inventory: $PRD_UNIT_INVENTORY."
 
 Apply Review Resolution to every discrepancy. Pass the `apply` discrepancies to prd-creator in update mode, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$STEP_3_RESOLUTION` after the `apply` set becomes empty. A blocked or unusable result enters Orchestrator Escalation Resolution.
 
@@ -98,7 +98,7 @@ Apply Review Resolution to every discrepancy. Pass the `apply` discrepancies to 
 
 **Required Input**: $STEP_3_RESOLUTION (resolved verification evidence from Step 3)
 
-Spawn document-reviewer agent: "Review the following PRD. doc_type: PRD. target: $STEP_2_OUTPUT. verification_resolution: $STEP_3_RESOLUTION. Review alignment between PRD claims, resolved verification evidence, and in-scope inventory coverage."
+Invoke document-reviewer agent: "Review the following PRD. doc_type: PRD. target: $STEP_2_OUTPUT. verification_resolution: $STEP_3_RESOLUTION. Review alignment between PRD claims, resolved verification evidence, and in-scope inventory coverage."
 
 **Store output as**: `$STEP_4_OUTPUT`
 
@@ -180,13 +180,13 @@ Map PRD units to Design Doc generation targets by resolving each PRD unit's `sou
 
 **Scope**: Document current architecture as-is. This is a documentation task, not a design improvement task.
 
-Spawn technical-designer agent: "Create Design Doc for the following feature based on existing code. Operation Mode: reverse-engineer. Feature: $UNIT_NAME. Description: $UNIT_DESCRIPTION. Primary Files: $UNIT_PRIMARY_MODULES. Public Interfaces: $UNIT_PUBLIC_INTERFACES. Dependencies: $UNIT_DEPENDENCIES. Unit Inventory: $UNIT_INVENTORY. Parent PRD: $APPROVED_PRD_PATH. Document current architecture as-is. Use Unit Inventory as the completeness baseline."
+Invoke technical-designer agent: "Create Design Doc for the following feature based on existing code. Operation Mode: reverse-engineer. Feature: $UNIT_NAME. Description: $UNIT_DESCRIPTION. Primary Files: $UNIT_PRIMARY_MODULES. Public Interfaces: $UNIT_PUBLIC_INTERFACES. Dependencies: $UNIT_DEPENDENCIES. Unit Inventory: $UNIT_INVENTORY. Parent PRD: $APPROVED_PRD_PATH. Document current architecture as-is. Use Unit Inventory as the completeness baseline."
 
 **Store output as**: `$STEP_7_OUTPUT`
 
 #### Step 8: Code Verification
 
-Spawn code-verifier agent: "Verify consistency between Design Doc and code implementation. doc_type: design-doc. document_path: $STEP_7_OUTPUT. code_paths: $UNIT_SCOPE_BOUNDARY. unit_inventory: $UNIT_INVENTORY."
+Invoke code-verifier agent: "Verify consistency between Design Doc and code implementation. doc_type: design-doc. document_path: $STEP_7_OUTPUT. code_paths: $UNIT_SCOPE_BOUNDARY. unit_inventory: $UNIT_INVENTORY."
 
 Apply Review Resolution to every discrepancy. Pass the `apply` discrepancies to technical-designer in update mode, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$STEP_8_RESOLUTION` after the `apply` set becomes empty. A blocked or unusable result enters Orchestrator Escalation Resolution.
 
@@ -194,7 +194,7 @@ Apply Review Resolution to every discrepancy. Pass the `apply` discrepancies to 
 
 **Required Input**: $STEP_8_RESOLUTION (resolved verification evidence from Step 8)
 
-Spawn document-reviewer agent: "Review the following Design Doc. doc_type: DesignDoc. review_context: as-is. target: $STEP_7_OUTPUT. verification_resolution: $STEP_8_RESOLUTION. Parent PRD: $APPROVED_PRD_PATH. Review technical accuracy, parent PRD scope, and in-scope unit boundary coverage."
+Invoke document-reviewer agent: "Review the following Design Doc. doc_type: DesignDoc. review_context: as-is. target: $STEP_7_OUTPUT. verification_resolution: $STEP_8_RESOLUTION. Parent PRD: $APPROVED_PRD_PATH. Review technical accuracy, parent PRD scope, and in-scope unit boundary coverage."
 
 **Store output as**: `$STEP_9_OUTPUT`
 

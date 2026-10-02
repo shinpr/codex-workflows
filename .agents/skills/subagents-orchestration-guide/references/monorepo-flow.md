@@ -58,35 +58,35 @@ The tables show agent work and results. User confirmation and implementation aut
 
 ### Parallelization in Multi-Agent Steps
 
-Steps marked `x2` run independently per layer and can execute in parallel when supported. `ui-analyzer` may run alongside codebase analysis when its inputs are ready. For the ADR step, route layer-owned decision points to the matching technical designer and cross-layer points to technical-designer, collect every returned path, and invoke document-reviewer once with `doc_type: ADRBatch` and the complete `targets` array.
+Steps marked `x2` invoke the same named agent once per layer in sequence. `ui-analyzer` may run alongside codebase analysis when its inputs are ready. For the ADR step, route layer-owned decision points to the matching technical designer and cross-layer points to technical-designer, collect every returned path, and invoke document-reviewer once with `doc_type: ADRBatch` and the complete `targets` array.
 
 External evidence and prototype inputs are conditional. Load `external-resource-context` when external evidence changes the current UI or verification decision; otherwise continue with `none`. Prototype input follows the frontend rule: use a supplied or target-referenced prototype, request its path only when the UI target otherwise cannot be determined, and resolve and deliver `prototype_reference_strength` through the shared UI Spec rule.
 
 ### Layer Context in Design Doc Creation
 
-When spawning Design Doc creation for each layer, pass explicit context:
+When invoking Design Doc creation for each layer, pass explicit context:
 
 | Scale | Concrete context value |
 |-------|------------------------|
 | Large | `context: { scale: "large", prd_path: "[path]", scope_evidence: [layer-filtered compact evidence] }` |
 | Medium | `context: { scale: "medium", prd_path: null, scope_evidence: [layer-filtered compact evidence], convergence: [confirmed record] }` |
 
-Before spawning, replace every context placeholder with a concrete context object for the active flow scale. For filtered context placeholders, use the same `scale` and `prd_path` values and the layer-filtered compact evidence.
+Before invoking, replace every context placeholder with a concrete context object for the active flow scale. For filtered context placeholders, use the same `scale` and `prd_path` values and the layer-filtered compact evidence.
 
 **Backend Design Doc**:
-**Agent**: Spawn technical-designer
+**Agent**: Invoke technical-designer
 > "Create a backend Design Doc. context: [context]. adr_paths: [accepted ADR paths]. decision_materials: [backend analysis material that changes reuse, simplification, validity, a selected decision, contract, or verification]. Reference approved UI Spec at [path] only for displayed values whose source data crosses a backend-owned contract."
 
 **Fullstack Codebase Analysis**:
-**Agent**: Spawn codebase-analyzer
+**Agent**: Invoke codebase-analyzer
 > "exploration_mode: [mode from Analysis Assignment]. Analyze the complete confirmed feature to provide compact decision materials for ADR selection, both layer designs, and verification. requirement_analysis: [complete confirmed scope evidence]. requirements: [confirmed requirements]. prd_path: [current PRD path when present]. target_paths: [confirmed scope]. focus_areas: responsibility ownership, cross-layer data and contracts, reuse, and verification."
 
 **Frontend Design Doc**:
-**Agent**: Spawn technical-designer-frontend
+**Agent**: Invoke technical-designer-frontend
 > "Create a frontend Design Doc. context: [context]. adr_paths: [accepted ADR paths]. decision_materials: [frontend/UI material that changes reuse, simplification, validity, a selected decision, contract, or verification]. Reference backend Design Doc at [path] for API contracts and Integration Points. Reference UI Spec at [path] for component structure and state design."
 
 **Frontend UI Analysis**:
-**Agent**: Spawn ui-analyzer
+**Agent**: Invoke ui-analyzer
 > "exploration_mode: [mode from Analysis Assignment]. prior_evidence: [relevant fullstack codebase findings when available]. Gather UI facts for frontend design. requirement_analysis: [frontend-filtered confirmed scope evidence]. requirements: [confirmed requirements]. target_paths: [frontend file and directory scope]. target_components: [frontend target components]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected by the external-evidence step, or []]. focus_areas: [remaining rendering, interaction, and visual questions]."
 
 ### Verification Resolution
@@ -95,13 +95,13 @@ Apply Review Resolution independently to each code-verifier result, using the ma
 
 ### design-sync for Cross-Layer Verification
 
-Spawn design-sync with `source_design` = frontend Design Doc (created last, referencing backend's Integration Points). design-sync auto-discovers other Design Docs in `docs/design/` for comparison.
+Invoke design-sync with `source_design` = frontend Design Doc (created last, referencing backend's Integration Points). design-sync auto-discovers other Design Docs in `docs/design/` for comparison.
 
 At Design Confirmation, use the shared alignment for the feature across both layers.
 
 ## Test Skeleton Generation Phase
 
-Spawn acceptance-test-generator with all Design Docs and UI Spec:
+Invoke acceptance-test-generator with all Design Docs and UI Spec:
 
 > "Generate test skeletons from the following documents: Design Doc (backend): [path], Design Doc (frontend): [path], UI Spec: [path] (if exists)"
 
@@ -109,13 +109,13 @@ Verify generated artifact paths and continue with them; an empty selection is va
 
 ## Work Planning Phase
 
-Spawn work-planner with all Design Docs:
+Invoke work-planner with all Design Docs:
 
 > "Create an implementation-focused work plan from the following documents: PRD: [path] (Large Scale only), Design Doc (backend): [path], Design Doc (frontend): [path], UI Spec: [path] (if exists). Test skeleton artifact paths from acceptance-test-generator: [artifacts[].path]. Compose phases around shared backend/frontend verification points and plan only repository implementation outcomes required by the Design Docs."
 
 Verify the returned Work Plan path and use it as the document-reviewer target.
 
-After work-planner creates or updates the plan, spawn document-reviewer:
+After work-planner creates or updates the plan, invoke document-reviewer:
 
 > "Review the fullstack work plan. doc_type: WorkPlan. target: [work plan path]. Verify Design Doc and UI Spec implementation coverage, repository-only scope, cross-layer dependency order, executable verification, optional Verification Focus, and Review Scope."
 

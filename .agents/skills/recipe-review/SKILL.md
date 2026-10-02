@@ -11,7 +11,7 @@ description: "Reviews completed implementation for governing-source compliance, 
 4. [LOAD IF NOT ACTIVE] `llm-friendly-context` — task file contract
 5. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and result handling
 
-**Spawn rule**: every `spawn_agent` call uses `fork_turns="none"` so the subagent receives only the task message and explicitly provided context.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation.
 
 **Context**: Post-implementation quality assurance
 
@@ -23,12 +23,12 @@ description: "Reviews completed implementation for governing-source compliance, 
 
 ## Execution Method
 
-- Implementation review -> Spawn code-reviewer agent
-- Security validation -> Spawn security-reviewer agent
-- Code-side fix path -> Spawn task-executor agent
-- Design-side update path -> Spawn technical-designer in update mode, then document-reviewer, then design-sync when multiple Design Docs exist
-- Quality checks -> Spawn quality-fixer agent
-- Re-validation -> Spawn code-reviewer / security-reviewer agents
+- Implementation review -> Invoke code-reviewer agent
+- Security validation -> Invoke security-reviewer agent
+- Code-side fix path -> Invoke task-executor agent
+- Design-side update path -> Invoke technical-designer in update mode, then document-reviewer, then design-sync when multiple Design Docs exist
+- Quality checks -> Invoke quality-fixer agent
+- Re-validation -> Invoke code-reviewer / security-reviewer agents
 
 Orchestrator spawns sub-agents and passes structured data between them.
 
@@ -41,12 +41,12 @@ Identify the Design Doc in `docs/design/`. Derive `$STEP_1_FILES` as the complet
 If a single active work plan is explicitly provided or unambiguously resolved for that Design Doc, read its `Review Scope` line. Otherwise set `Work Plan: none` and `Review Scope: none`; do not infer.
 
 ### Step 2: Execute code-reviewer
-Spawn code-reviewer agent: "Review the completed implementation. governingDocuments: [{type: design-doc, path: [path]}]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. implementationFiles: [$STEP_1_FILES]. Return the initial review JSON."
+Invoke code-reviewer agent: "Review the completed implementation. governingDocuments: [{type: design-doc, path: [path]}]. Work Plan: [resolved work plan path or none]. Review Scope: [literal Review Scope value or none]. implementationFiles: [$STEP_1_FILES]. Return the initial review JSON."
 
 **Store output as**: `$STEP_2_OUTPUT`
 
 ### Step 3: Execute security-reviewer
-Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]` and `implementationFiles: $STEP_1_FILES`.
+Invoke security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]` and `implementationFiles: $STEP_1_FILES`.
 
 **Store output as**: `$STEP_3_OUTPUT`
 
@@ -98,9 +98,9 @@ Use the llm-friendly-context Task File Contract.
 
 Run this step only when the user selects a design-side correction.
 
-1. Spawn technical-designer agent in update mode: "Update Design Doc at [path]. Apply the selected Review Resolution disposition to these findings; neither existing implementation nor the prior design is automatically correct: [d-routed findings with code locations and current Design Doc values]. Update the relevant sections and add change history."
-2. Spawn document-reviewer agent: "Review updated Design Doc at [path] for consistency and completeness. doc_type: DesignDoc. review_context: update."
-3. If multiple Design Docs exist in `docs/design/`, spawn design-sync agent: "Check cross-Design Doc consistency after updating [path]."
+1. Invoke technical-designer agent in update mode: "Update Design Doc at [path]. Apply the selected Review Resolution disposition to these findings; neither existing implementation nor the prior design is automatically correct: [d-routed findings with code locations and current Design Doc values]. Update the relevant sections and add change history."
+2. Invoke document-reviewer agent: "Review updated Design Doc at [path] for consistency and completeness. doc_type: DesignDoc. review_context: update."
+3. If multiple Design Docs exist in `docs/design/`, invoke design-sync agent: "Check cross-Design Doc consistency after updating [path]."
 4. If the user selected both routes, re-evaluate the code-side findings against the updated Design Doc and drop any that are now satisfied.
 
 ### Step 6: Create Task File
@@ -110,21 +110,21 @@ Include only findings selected for code-side correction.
 
 ### Step 7: Execute Fixes
 
-Spawn task-executor agent: "Execute the accepted review fixes. Task file: docs/plans/tasks/review-fixes-task-01.md."
+Invoke task-executor agent: "Execute the accepted review fixes. Task file: docs/plans/tasks/review-fixes-task-01.md."
 
 Start the Per-Task Change Set before execution. Inspect the executor result and repository diff, add its paths, and continue when the requested fixes are present; resolve an incomplete or unusable result through Orchestrator Escalation Resolution.
 
 ### Step 8: Quality Check
 
-Spawn quality-fixer with `task_file`, `filesModified: taskWriteSet`, and executor operation-verification evidence. On pass, add its paths and commit the reconciled Per-Task Change Set; repair stubs through task-executor, accumulate their paths, and resolve blocked results through Orchestrator Escalation Resolution.
+Invoke quality-fixer with `task_file`, `filesModified: taskWriteSet`, and executor operation-verification evidence. On pass, add its paths and commit the reconciled Per-Task Change Set; repair stubs through task-executor, accumulate their paths, and resolve blocked results through Orchestrator Escalation Resolution.
 
 ### Step 9: Re-validate code-reviewer
 
-Spawn code-reviewer with the original governing documents and implementation change set, plus `prior_feedback: [the complete Step 2 result, applied corrections, declined finding IDs with reasons and evidence, and the correction paths or diff]`. Apply its Rerun Boundary.
+Invoke code-reviewer with the original governing documents and implementation change set, plus `prior_feedback: [the complete Step 2 result, applied corrections, declined finding IDs with reasons and evidence, and the correction paths or diff]`. Apply its Rerun Boundary.
 
 ### Step 10: Re-validate security-reviewer
 
-Spawn security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]`, the actual implementation and fix files, and `prior_feedback: [applied corrections and declined finding IDs with reasons and evidence from Step 4]`.
+Invoke security-reviewer with `governingDocuments: [{type: "design-doc", path: [path]}]`, the actual implementation and fix files, and `prior_feedback: [applied corrections and declined finding IDs with reasons and evidence from Step 4]`.
 
 After any code fix, both Steps 9 and 10 are mandatory even when only one reviewer initially reported a finding.
 
@@ -150,8 +150,8 @@ Remaining issues:
 ## Completion Criteria
 
 - [ ] Design Doc identified and implementation files checked
-- [ ] code-reviewer spawned and compliance validated
-- [ ] security-reviewer spawned and security reviewed
+- [ ] code-reviewer invoked and compliance validated
+- [ ] security-reviewer invoked and security reviewed
 - [ ] Results presented to user
 - [ ] Fixes executed if user approved (with quality-fixer gate)
 - [ ] Re-validation completed after fixes (both code and security)

@@ -11,7 +11,7 @@ description: "Execute an approved backend Work Plan autonomously through task ex
 4. `subagents-orchestration-guide`
 5. `llm-friendly-context`
 
-Every `spawn_agent` call uses `fork_turns="none"` and supplies the exact artifact paths needed by that specialist.
+**Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation. Supply the exact artifact paths needed by that specialist.
 
 ## Orchestrator Role
 
