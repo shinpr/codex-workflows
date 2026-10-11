@@ -32,7 +32,6 @@ def parse_args():
     parser.add_argument("--interval", type=positive_seconds, default=3600)
     parser.add_argument("--duration", type=positive_seconds, default=14400)
     parser.add_argument("--review-timeout", type=positive_seconds, default=600)
-    parser.add_argument("--model", default="gpt-6.1-sol")
     parser.add_argument("--language", default="English")
     args = parser.parse_args()
     if args.stop is not None:
@@ -117,8 +116,7 @@ def review(args, stop, deadline):
         output = root / "result.json"
         command = [
             "codex", "exec", "--ephemeral", "--sandbox", "read-only",
-            "--skip-git-repo-check", "--model", args.model, "--cd", str(args.cwd),
-            "-c", 'model_reasoning_effort="high"',
+            "--skip-git-repo-check", "--cd", str(args.cwd),
             "-c", "developer_instructions=" + json.dumps(instructions),
             "--output-schema", str(root / "schema.json"),
             "--output-last-message", str(output), "-",

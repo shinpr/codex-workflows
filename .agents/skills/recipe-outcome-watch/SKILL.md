@@ -23,7 +23,7 @@ Resolve `scripts/watch.py` relative to this skill and use an available Python 3 
 
 Start in the target directory with `--source PATH` for each governing document, or `--purpose TEXT` for the explicit or confirmed purpose. Optional `--activity PATH` supplies existing evidence; `--cwd PATH` selects the target directory. Quote arguments for the available shell. Use `--interval SECONDS`, `--duration SECONDS`, and `--language LANGUAGE` for the user's choices.
 
-Defaults are a 60-minute interval and a 4-hour duration, using `gpt-6.1-sol` with high reasoning. `--model MODEL` selects a user-requested alternative. The first review runs immediately, with subsequent starts spaced by the interval. Each review is bounded by 10 minutes and the remaining duration. Use the host's normal permission mechanism to launch the authenticated CLI; reviews run read-only.
+Defaults are a 60-minute interval and a 4-hour duration. The first review runs immediately, with subsequent starts spaced by the interval. Each review is bounded by 10 minutes and the remaining duration. Use the host's normal permission mechanism to launch the authenticated CLI; reviews run read-only.
 
 Confirm the startup output and retain its `stop_handle` plus the host's running-job handle in the active context. Continue the user's task while findings arrive. Clear reviews are silent. Evaluate findings against their cited basis and act on justified corrections. Failure or an unknown judgment ends the watch with a reason; report that termination.
 
