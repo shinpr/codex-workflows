@@ -75,6 +75,14 @@ El prefijo `$` invoca una skill de forma explícita. Escribe `$recipe-` para ver
 | Investigar un problema sin tocar el código | `$recipe-diagnose` |
 | Hacer un experimento desechable o un script puntual | Usa Codex directamente |
 
+En tareas largas, `$recipe-outcome-watch` revisa el trabajo de forma independiente mientras Codex avanza y avisa si empieza a añadir funciones innecesarias o a alejarse del resultado que pediste. Puedes activarlo mientras trabajas:
+
+```
+$recipe-outcome-watch Comprueba el trabajo con respecto a docs/design/export.md cada 60 minutos durante 4 horas
+```
+
+Indica un documento de diseño, un plan o una descripción de la tarea, o explica el objetivo directamente. Los avisos llegan a la sesión de trabajo; si todo va bien, no envía notificaciones. La supervisión termina al cumplirse el plazo, o antes si le pides a Codex que la detenga.
+
 ---
 
 ## Cómo funciona
@@ -186,6 +194,7 @@ Invoca un flujo con `$recipe-name` en Codex. Escribe `$recipe-` y usa el autocom
 | `$recipe-review` | Revisa el alcance de implementación, el cumplimiento del Design Doc, la calidad del código y la seguridad; aplica las correcciones aprobadas por el usuario | Revisión tras implementar |
 | `$recipe-quality-profile` | Define o actualiza reglas de calidad propias del repositorio en `docs/project-context/quality.yaml` | Configuración y mantenimiento de las reglas de calidad |
 | `$recipe-diagnose` | Investigación → verificación del punto de fallo → solución | Investigación de errores |
+| `$recipe-outcome-watch` | Detecta trabajo innecesario y desvíos del objetivo mientras Codex trabaja | Mantener el rumbo en tareas largas |
 | `$recipe-reverse-engineer` | Genera PRD y Design Docs a partir del código existente | Documentar sistemas heredados |
 | `$recipe-add-integration-tests` | Añade pruebas de integración/E2E a partir del Design Doc | Mejorar la cobertura del código existente |
 | `$recipe-update-doc` | Actualiza y revisa un Design Doc / PRD / ADR existente | Cambios de especificación y mantenimiento documental |

@@ -1,6 +1,6 @@
 {
   "name": "codex-workflows",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Codex CLI workflows that keep larger software changes within the approved scope, from planning through review",
   "license": "MIT",
   "author": "Shinsuke Kagawa",
@@ -9,7 +9,7 @@
     "url": "git+https://github.com/shinpr/codex-workflows.git"
   },
   "scripts": {
-    "test": "node --test scripts/tests/cli.test.js"
+    "test": "node --test scripts/tests/cli.test.js && python3 -B -m unittest discover -s scripts/tests -p '*_test.py'"
   },
   "bin": {
     "codex-workflows": "bin/cli.js"

@@ -1,0 +1,7 @@
+interface:
+  display_name: "recipe-outcome-watch"
+  short_description: "Periodically check work against its intended outcome"
+  default_prompt: "Use $recipe-outcome-watch to monitor: "
+
+policy:
+  allow_implicit_invocation: false

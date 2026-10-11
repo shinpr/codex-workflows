@@ -75,6 +75,14 @@ $recipe-implement 使用JWT添加用户认证
 | 调查问题但不修改代码 | `$recipe-diagnose` |
 | 做一次性实验或临时脚本 | 直接使用Codex |
 
+处理耗时较长的任务时，`$recipe-outcome-watch`会独立检查Codex的工作，发现不必要的功能扩展或偏离预期结果的情况时及时提醒。可以在任务进行时启动检查：
+
+```
+$recipe-outcome-watch 对照docs/design/export.md检查工作，每60分钟一次，持续4小时
+```
+
+可以指定设计文档、计划或任务文档，也可以直接说明目标。发现问题时会在当前工作会话中提醒；进展正常时保持安静。检查会在指定时间结束后自动停止，也可以随时让Codex提前停止。
+
 ---
 
 ## 工作原理
@@ -186,6 +194,7 @@ npx codex-workflows status --user
 | `$recipe-review` | 评审实现范围、Design Doc符合性、代码质量和安全性，并应用用户批准的修正 | 实现后检查 |
 | `$recipe-quality-profile` | 在`docs/project-context/quality.yaml`中定义或更新仓库专属质量规则 | 设置和维护质量规则 |
 | `$recipe-diagnose` | 调查问题 → 验证故障点 → 提出解决方案 | 缺陷调查 |
+| `$recipe-outcome-watch` | 在Codex工作时指出不必要的工作和偏离目标的情况 | 让长时间任务始终围绕目标推进 |
 | `$recipe-reverse-engineer` | 从现有代码生成PRD和Design Doc | 遗留系统文档化 |
 | `$recipe-add-integration-tests` | 根据Design Doc添加集成/E2E测试 | 为现有代码补充测试 |
 | `$recipe-update-doc` | 评审并更新已有Design Doc / PRD / ADR | 规格变更、文档维护 |
