@@ -11,7 +11,7 @@ Delegation gives the child a responsibility and the authority to complete it fro
 
 ## Assignment
 
-Give the child its expected outcome, scope, governing inputs required by its input contract, and the result needed by the next consumer. Pass artifact paths instead of repeating their contents. Leave in-scope methods and reversible choices to the child.
+Give the child its expected outcome, scope, governing inputs required by its input contract, and the result needed by the next consumer. Pass artifact paths instead of repeating their contents. Leave in-scope methods and reversible choices to the child. Tell the child to notify the parent when its decision or intervention is needed or an update is explicitly requested, and otherwise work through to the completed result; include the evidence needed to act.
 
 Accept semantically equivalent wording in natural-language inputs while preserving exact contracts where software parses them.
 
@@ -26,9 +26,9 @@ Research and design also use completion delegation when the child can make the r
 
 ## Waiting and Intervention
 
-Preserve the delegated context boundary while the child works. Parallel parent work qualifies as independent when it has a separate decision and evidence boundary and all of its inputs are already available; perform such independent work or wait for notification. Notification-driven waits resume on child notifications or user input and preserve the user's ability to intervene. Choose a wait duration proportionate to the child's delegated autonomy and expected task duration. Shorten it only for a concrete earlier parent action whose expected benefit outweighs the extra coordination cost.
+Preserve the delegated context boundary while the child works. Parallel parent work qualifies as independent when it has a separate decision and evidence boundary and all of its inputs are already available; perform such independent work or wait for notification. Notification-driven waits resume on child notifications or user input and preserve the user's ability to intervene. Use the tool's maximum timeout for notification-driven subagent waits, shortening it only when a concrete parent action is due earlier.
 
-On a timeout or notification, assess the available evidence of progress against the expected task duration. After a long wait, obtain enough information to judge whether continued waiting is useful: ask the child for its current operation, latest results, and next step when the available evidence is insufficient. A running status alone does not establish progress. Continue long waits when the evidence supports the child's approach.
+After a timeout or routine progress notification, continue waiting. Base progress checks on explicit requests or received evidence of a problem.
 
 Intervene during execution for a child decision request, a user change or cancellation, a material assignment error learned through other necessary work, or evidence that the child's approach is ineffective or progress has stalled. Investigate enough to provide an actionable correction or diagnostic approach before resuming the wait. Return in-scope execution to the child once the next step addresses the problem.
 
