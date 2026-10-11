@@ -75,6 +75,14 @@ $recipe-implement Add user authentication with JWT
 | Investigate a problem without changing code | `$recipe-diagnose` |
 | Run a throwaway experiment or one-shot script | Use Codex directly |
 
+For longer tasks, `$recipe-outcome-watch` checks the work independently as Codex proceeds and flags effort drifting into unnecessary features or away from the result you asked for. Start it alongside your task:
+
+```
+$recipe-outcome-watch Check work against docs/design/export.md every 60 minutes for 4 hours
+```
+
+Point it at a design, plan, or task document, or state the purpose directly. Findings arrive in the working session; checks stay quiet when work is on track. The watch stops at the time limit, or earlier when you ask Codex to stop it.
+
 ---
 
 ## How It Works
@@ -187,6 +195,7 @@ Invoke recipes with `$recipe-name` in Codex. Type `$recipe-` and use tab complet
 | `$recipe-review` | Review implementation scope, Design Doc compliance, code quality, and security; apply corrections approved by the user | Post-implementation check |
 | `$recipe-quality-profile` | Define or update repository-specific quality rules in `docs/project-context/quality.yaml` | Set up or maintain quality rules |
 | `$recipe-diagnose` | Problem investigation → failure-point verification → solution | Bug investigation |
+| `$recipe-outcome-watch` | Flag unnecessary work and drift from the intended outcome as Codex works | Keep longer tasks on track |
 | `$recipe-reverse-engineer` | Generate PRD + Design Docs from existing code | Legacy system documentation |
 | `$recipe-add-integration-tests` | Add integration/E2E tests from Design Doc | Test coverage for existing code |
 | `$recipe-update-doc` | Update existing Design Doc / PRD / ADR with review | Spec changes, document maintenance |

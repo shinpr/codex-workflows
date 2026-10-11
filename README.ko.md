@@ -75,6 +75,14 @@ $recipe-implement JWT 사용자 인증 추가
 | 코드를 바꾸지 않고 문제 조사 | `$recipe-diagnose` |
 | 일회성 실험이나 단발성 스크립트 실행 | Codex 직접 사용 |
 
+오래 걸리는 작업에서는 `$recipe-outcome-watch`가 Codex의 작업을 독립적으로 점검하고, 불필요한 기능을 추가하거나 요청한 결과에서 벗어나면 알려줍니다. 작업과 함께 실행할 수 있습니다.
+
+```
+$recipe-outcome-watch docs/design/export.md에 맞게 작업이 진행되는지 60분 간격으로 4시간 동안 확인해 줘
+```
+
+설계 문서, 계획서 또는 작업 문서를 지정하거나 목적을 직접 알려주세요. 지적 사항은 작업 중인 세션으로 전달되며, 작업이 순조로우면 알림을 보내지 않습니다. 지정한 시간이 지나면 자동으로 종료되며, 그 전에 Codex에 중지를 요청할 수도 있습니다.
+
 ---
 
 ## 작동 방식
@@ -186,6 +194,7 @@ Codex에서 `$recipe-name`으로 레시피를 호출합니다. `$recipe-`를 입
 | `$recipe-review` | 구현 범위, Design Doc 준수 여부, 코드 품질 및 보안을 리뷰하고 사용자가 승인한 수정 적용 | 구현 후 확인 |
 | `$recipe-quality-profile` | `docs/project-context/quality.yaml`에 저장소별 품질 규칙 정의 또는 업데이트 | 품질 규칙 설정 및 유지보수 |
 | `$recipe-diagnose` | 문제 조사 → 장애 지점 검증 → 해결책 | 버그 조사 |
+| `$recipe-outcome-watch` | Codex 작업 중 불필요한 작업이나 목표에서 벗어난 부분을 지적 | 오래 걸리는 작업이 목표에 맞게 진행되도록 점검 |
 | `$recipe-reverse-engineer` | 기존 코드에서 PRD와 Design Doc 생성 | 레거시 시스템 문서화 |
 | `$recipe-add-integration-tests` | Design Doc에서 통합/E2E 테스트 추가 | 기존 코드의 테스트 범위 확대 |
 | `$recipe-update-doc` | 기존 Design Doc / PRD / ADR을 리뷰와 함께 업데이트 | 명세 변경, 문서 유지보수 |

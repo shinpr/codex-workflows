@@ -75,6 +75,14 @@ O prefixo `$` invoca uma skill explicitamente. Digite `$recipe-` para ver os flu
 | Investigar um problema sem alterar o código | `$recipe-diagnose` |
 | Fazer um experimento descartável ou um script pontual | Use o Codex diretamente |
 
+Em tarefas longas, `$recipe-outcome-watch` revisa o trabalho de forma independente enquanto o Codex avança e avisa se ele começar a adicionar funcionalidades desnecessárias ou se afastar do resultado que você pediu. Você pode iniciar o acompanhamento junto com a tarefa:
+
+```
+$recipe-outcome-watch Confira o trabalho com base em docs/design/export.md a cada 60 minutos durante 4 horas
+```
+
+Indique um documento de design, um plano ou um documento da tarefa, ou informe o objetivo diretamente. Os avisos chegam à sessão de trabalho; se tudo estiver no rumo certo, nenhuma notificação é enviada. O acompanhamento termina ao fim do prazo, ou antes se você pedir ao Codex para encerrá-lo.
+
 ---
 
 ## Como funciona
@@ -186,6 +194,7 @@ No Codex, use `$recipe-name` para invocar um fluxo. Digite `$recipe-` e use o pr
 | `$recipe-review` | Revisa o escopo de implementação, a conformidade com o Design Doc, a qualidade do código e a segurança; aplica as correções aprovadas pelo usuário | Revisão após a implementação |
 | `$recipe-quality-profile` | Define ou atualiza regras de qualidade específicas do repositório em `docs/project-context/quality.yaml` | Configuração e manutenção das regras de qualidade |
 | `$recipe-diagnose` | Investigação → verificação do ponto de falha → solução | Investigação de bugs |
+| `$recipe-outcome-watch` | Identifica trabalho desnecessário e desvios do objetivo enquanto o Codex trabalha | Manter o foco no objetivo em tarefas longas |
 | `$recipe-reverse-engineer` | Gera PRD e Design Docs com base no código existente | Documentação de sistemas legados |
 | `$recipe-add-integration-tests` | Adiciona testes de integração/E2E a partir do Design Doc | Ampliar a cobertura do código existente |
 | `$recipe-update-doc` | Atualiza e revisa um Design Doc / PRD / ADR existente | Mudanças de especificação e manutenção de documentação |

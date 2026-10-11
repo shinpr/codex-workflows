@@ -11,7 +11,9 @@ Read [references/frontend.md](references/frontend.md) only for React or TypeScri
 
 ## Outcome Boundary
 
-Deliver the user's required outcome with the least justified total complexity. Unnecessary implementation creates maintenance, verification, operational, and review obligations. Every role is responsible for avoiding those obligations, including by correcting upstream choices.
+Ground the required outcome in the governing task or design sources and the user's explicit instructions. Choose work by what the consumer must be able to do or judge, preserving that result while reducing the means needed to deliver it.
+
+When an unverified premise could invalidate the approach, check it by the cheapest sufficient means before expanding dependent work. When results contradict that premise, reconsider the approach before patching its parts. Keep this reasoning in the current task; a small request needs no additional artifact.
 
 Phase passage permits progress; technical necessity remains a separate evidence-backed lifecycle decision. Reconsider and remove or supersede means recorded in a Design Doc, ADR, plan, AC, or test when the required outcome remains satisfied. Preserve user-required outcomes, explicit constraints, actual consumer contracts, and external-action authority. For authorized feature removal, check remaining consumers; the removed entry point and its now-unused backend create no preservation obligation. Coordinate affected source and consumer updates through the orchestrator; existing execution authority continues for outcome-preserving technical reductions.
 
