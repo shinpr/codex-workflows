@@ -105,7 +105,7 @@ flowchart LR
 
 O caminho depende da quantidade de decisões independentes de produto e design, não do número de arquivos nem da quantidade de casos extremos que o Codex consegue identificar.
 
-Uma mudança com um único resultado, que segue um padrão existente em uma parte do sistema, vai direto para uma tarefa confirmada e depois para a implementação, com checagens de qualidade e segurança. Uma mudança que exige coordenação entre partes do sistema ou uma decisão de design duradoura recebe antes um Design Doc e um Work Plan revisados, além de UI Spec ou ADR quando alguma de suas decisões pedir. Se a mudança tiver vários resultados que exigem decisões de design separadas, ela também recebe um PRD, a menos que você opte por omiti-lo. Um ADR só é criado quando uma escolha duradoura tem pelo menos duas opções substancialmente diferentes, e um teste de integração ou E2E só é escolhido quando um teste mais barato não consegue comprovar a interação.
+Uma mudança com um único resultado, que segue um padrão existente em uma parte do sistema, vai direto para uma tarefa confirmada e depois para a implementação, com checagens de qualidade e segurança. Uma mudança que exige coordenação entre partes do sistema ou uma decisão de design duradoura recebe antes um Design Doc e um Work Plan revisados, além de UI Spec ou ADR quando alguma de suas decisões pedir. Se a mudança tiver vários resultados que exigem decisões de design separadas, ela também recebe um PRD, a menos que você opte por omiti-lo. Um ADR só é criado quando uma escolha duradoura tem pelo menos duas opções substancialmente diferentes. O comportamento é comprovado por testes de integração e E2E no ponto em que usuários e sistemas que o chamam o observam, e um teste unitário só é adicionado para lógica, como um cálculo ou um parser, cujos casos um desses testes não consegue cobrir.
 
 Depois que a implementação é autorizada, a sessão principal executa as tarefas, as verificações específicas, as checagens aplicáveis do repositório e um commit de implementação por tarefa. Primeiro, resolve problemas com base nos documentos aprovados e nas evidências do repositório. O comportamento percebido pelo usuário continua sendo um limite de produto: a implementação não pode ajustá-lo por conta própria em nome da consistência interna. A sessão principal só consulta você quando avançar exige um novo requisito de produto, uma mudança em algo que você pediu ou descartou, uma autorização que só você tem ou uma ação irreversível que você não autorizou. Encontrar uma forma mais enxuta de chegar ao mesmo resultado não entra nessa lista, e pedir novamente uma permissão que você já concedeu também não. O fluxo não acrescenta aprovação de terceiros, acesso à produção nem execução de releases como condições para concluir a implementação.
 
@@ -240,13 +240,13 @@ Não é preciso invocar um fluxo para aproveitar essas skills. O Codex também a
 | Skill | O que oferece |
 |-------|---------------|
 | `coding-rules` | Qualidade de código, design de funções, tratamento de erros e refatoração |
-| `testing` | TDD proporcional ao escopo, escolha de verificações observáveis, integridade dos testes e verificações exigidas pelo repositório |
+| `testing` | Escolha dos testes de que uma mudança precisa, cada comportamento comprovado uma só vez, escolha de verificações observáveis, integridade dos testes e verificações exigidas pelo repositório |
 | `ai-development-guide` | Causa raiz apoiada por evidências, análise de impacto proporcional ao escopo e garantia de qualidade aplicável |
 | `reviewee-judgment` | Avaliação baseada em evidências antes que observações de revisão virem trabalho |
 | `documentation-criteria` | Regras e modelos para PRD, ADR, Design Doc e Work Plan |
 | `requirement-convergence` | Resultado, camadas de requisitos, exclusões decididas pelo usuário e custo aproximado antes do design |
 | `implementation-approach` | MVP direto, expansão justificada, redução, divisão e limite de verificação |
-| `integration-e2e-testing` | Seleção e design apenas dos testes de integração/E2E que comprovam uma interação real necessária |
+| `integration-e2e-testing` | Seleção e design dos testes de integração/E2E que comprovam o comportamento aceito onde ele é observado |
 | `external-resource-context` | Consulta direcionada a uma fonte externa necessária para a decisão atual |
 | `llm-friendly-context` | Contexto claro para os agentes que o usarão depois: prompts, repasses, artefatos gerados, Task Files e observações de revisão |
 | `subagent-delegation` | Delegar o trabalho a subagentes até a conclusão, com consultas quando for preciso tomar uma decisão |

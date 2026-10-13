@@ -37,7 +37,7 @@ Select the narrowest level that exercises the boundary named by the requirement:
 - **L2: Integration** — interaction across components, persistence, processes, or another named integration boundary.
 - **L3: End-to-end** — the complete user, browser, process, or service journey required by the acceptance criterion.
 
-A broader check does not replace a required focused proof, and a focused check does not prove a wider boundary. Prefer evidence in this order when applicable: observable operation, focused test, then build/static evidence.
+Prefer evidence in this order when applicable: observable operation, test, then build/static evidence.
 
 ## Completion Check
 

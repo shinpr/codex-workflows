@@ -55,7 +55,7 @@ Set the band from established evidence and explain material unknowns. Resolve fa
 | `moderate` | Present the cost; include a credible lower-cost alternative when it materially changes the user's decision |
 | `high` | Present the trade-off and require the user's explicit choice before design |
 
-The goal is a cost-proportionate decision that preserves user intent. Cost selects challenge intensity; documentation-criteria Structural Scale independently selects the workflow.
+The goal is a cost-proportionate decision that preserves user intent. Cost selects challenge intensity; Structural Scale independently selects the workflow.
 
 ## Solution-in-Disguise Test
 

@@ -23,7 +23,7 @@ Use the appropriate run command based on the `packageManager` field in package.j
 ### Implementation Judgment
 
 - Preserve user-required UI results, explicit constraints, actual consumer contracts, and observable proof. Internal Props, components, and mechanisms are revisable under ai-development-guide's Outcome Boundary.
-- Use TDD and repository-local React, TypeScript, component, testing, and package-manager patterns. Reuse or extend a similar component when it serves the same responsibility; create a separate component when repository evidence shows a distinct responsibility.
+- Use repository-local React, TypeScript, component, testing, and package-manager patterns. Reuse or extend a similar component when it serves the same responsibility; create a separate component when repository evidence shows a distinct responsibility.
 - Resolve unspecified implementation details from governing sources and representative nearby code. Choose a local, reversible option when multiple details preserve the same approved behavior.
 - Change an existing test expectation only when a cited governing source changes that behavior; record the old expectation, new assertion, and source.
 - Return `escalation_needed` when a required outcome, explicit constraint, actual consumer obligation, or authority cannot be preserved, or an upstream owner must update a selected reduction. Give the smallest response and affected sources; the orchestrator can resolve technical changes without renewed user permission.
@@ -103,13 +103,9 @@ Apply this when Pre-implementation Verification finds that a dependency required
 
 During implementation, apply coding-rules Repository-Local Choice before adopting existing patterns, UI composition, or dependency versions. Prefer the lockfile or manifest and nearest compatible implementation. Return `escalation_needed` when the remaining choice changes a required consumer obligation or needs an upstream owner's update; propose the smallest sufficient response for the orchestrator to resolve.
 
-#### Implementation Flow (Behavior-First RTL)
-**Implementation procedure for each checkbox item**:
-1. **Behavior Spec**: For observable behavior changes, create or update the smallest valuable React Testing Library proof under the testing skill. For non-behavioral work or behavior already proven at the correct boundary, use direct verification. When the task has `Verification Focus`, reproduce its Primary failure and exercise its Observable check.
-2. **Implement**: Add the minimal React function component, hook, state, or data-flow change that satisfies the behavior.
-3. **Refine**: Improve readability, accessibility, type safety, and repository-local React conventions while preserving behavior.
-4. **Completion Evidence**: Keep the item open in the task file and record the implemented result for the orchestrator. Persisted task and Work Plan completion is recorded after the implementation commit.
-5. **Test Execution**: Run added or changed tests and the task's required operation checks
+#### Implementation Flow
+
+Implement the behaviors the task delivers with repository-local React conventions and prove them under the testing skill and the task's verification methods. When the task has `Verification Focus`, reproduce its Primary failure and exercise its Observable check. Keep each item open in the task file and record the implemented result for the orchestrator; persisted task and Work Plan completion is recorded after the implementation commit. Run added or changed tests and the task's required operation checks.
 
 **Test timing**: Complete each selected skeleton in its assigned task and run its proof at the earliest point its required dependencies are executable, following the task's verification methods. Lane names describe the real boundary under proof, not a final-phase schedule. Determine an unlabeled test's boundary from its actual dependencies; report a required unavailable capability through the existing escalation path.
 
@@ -157,7 +153,7 @@ Return the smallest self-contained result the caller needs to resolve the interr
 ```
 
 ## Scope Boundary
-- Overall quality checks → handled by quality-fixer-frontend
+- Overall quality checks → handled by the workflow's quality gate
 - Commit creation → handled by the caller after quality checks
 - Design Doc deviation → return `escalation_needed` with evidence
 

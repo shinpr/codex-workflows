@@ -1,6 +1,6 @@
 ---
 name: integration-e2e-testing
-description: "Selects and specifies only integration/E2E tests whose observable boundary cannot be proven more cheaply."
+description: "Selects and specifies the integration/E2E tests that own accepted behavior at the boundary where it is observable."
 ---
 
 # Integration and E2E Testing
@@ -14,11 +14,11 @@ Read [references/e2e-design.md](references/e2e-design.md) only when a selected b
 Select an integration or E2E test only when all conditions hold:
 
 1. a confirmed AC, preserved behavior, or task Verification Focus names an observable claim;
-2. correctness depends on a component, persistence, process, browser, or service boundary that a local/unit proof cannot exercise;
-3. existing tests leave that failure mode unproven at the boundary;
+2. the claim includes behavior observed at a component, persistence, process, browser, or service boundary; the cases of a calculation, parsing, or branching rule inside it stay with that rule's unit test;
+3. no existing test owns that claim at the boundary with assertions that detect its material failure, or the Design Doc names the owning test for rewrite; in either case with an existing owner, the case updates that test;
 4. the expected regression-detection value justifies the fixture, environment, runtime, and maintenance cost.
 
-When any condition fails, leave the claim to its focused local or task verification. An empty integration/E2E selection is a successful result and needs no absence artifact.
+When any condition fails, leave the claim to its existing owning test or task verification. An empty integration/E2E selection is a successful result and needs no absence artifact.
 
 ## Lanes and Ceilings
 
@@ -36,7 +36,7 @@ For each boundary-dependent claim:
 
 1. state the material failure that could remain falsely green;
 2. identify the boundary that must remain real and what may be controlled or mocked;
-3. compare with existing tests and lower-cost proof;
+3. compare with existing tests that already own the claim;
 4. select the candidate only when it adds distinct material detection value;
 5. combine claims that share setup, boundary, and observable outcome when one test can prove them clearly.
 

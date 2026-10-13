@@ -87,4 +87,4 @@ Before writing or finalizing a generated document:
 
 ## References
 
-- [Task File Contract](references/task-template.md) — execution-carrier fields and filename routing for task-decomposer, build recipes, and Small flows
+- [Task File Contract](references/task-template.md) — execution-carrier fields and filename routing for task decomposition, build recipes, and Small flows

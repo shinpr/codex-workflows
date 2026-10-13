@@ -130,5 +130,5 @@ Upstream correction required:
 - Verification Focus is present only when it changes how a material false-green state is detected.
 - Every directly constraining governing section reaches the affected task by path and section reference.
 - Each carried Material Risk is expressed through an existing task's outcome, dependency, protected boundary, or verification.
-- The plan contains the minimum context required by task-decomposer; design detail remains in governing documents.
+- The plan contains the minimum context required for task decomposition; design detail remains in governing documents.
 """

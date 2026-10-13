@@ -9,7 +9,7 @@ description: "Converges future-state requirements around outcome, exclusions, an
 
 Capable models can make an oversized or misdirected request technically coherent and implement it faithfully. Converge **what is worth building** before design decides how to build it.
 
-Apply this skill to future-state Design Doc and implementation flows. Reverse-engineered/as-is documentation is outside its scope. Requirement Convergence decides what to build; `implementation-approach` decides the smallest sufficient way to build the converged scope.
+Apply this skill to future-state Design Doc and implementation flows. Reverse-engineered/as-is documentation is outside its scope. Requirement Convergence decides what to build; design then decides the smallest sufficient way to build the converged scope.
 
 ## Convergence Record
 

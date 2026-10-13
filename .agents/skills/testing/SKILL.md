@@ -1,9 +1,11 @@
 ---
 name: testing
-description: "Repository-aware test execution rules for TDD, observable proof, and boundary selection. Use when writing, reviewing, or fixing tests."
+description: "Repository-aware rules for choosing which tests a change needs, one owning test per claim, observable proof, and test integrity. Use when writing, reviewing, or fixing tests."
 ---
 
 # Testing
+
+Tests guarantee accepted behavior, and the next agent reads every existing test as a requirement to preserve. A brittle, duplicated, or implementation-shaped test therefore becomes a false requirement: it gets worked around, and the workaround leaves debt in the implementation. Keep the set of tests whose proof is worth its maintenance.
 
 ## Reference
 
@@ -13,23 +15,16 @@ Read [references/typescript.md](references/typescript.md) only for TypeScript te
 
 Use test commands, thresholds, boundaries, fixtures, and conventions from the repository, task, Work Plan, Design Doc, or test skeleton. When these sources are silent, select the smallest repository-supported proof without introducing a new project-wide default.
 
-## TDD Gate
+## Test Selection
 
-Use RED-GREEN-REFACTOR for behavior-changing implementation when a focused automated test adds or restores necessary behavioral proof:
-
-1. **RED**: Add or select a test that observes the required behavior. Run it and confirm it fails for the targeted missing behavior or regression.
-2. **GREEN**: Make the smallest implementation change that satisfies the behavior. Run the focused test.
-3. **REFACTOR**: Improve the changed code without changing the contract. Re-run the focused test.
-4. **VERIFY**: Run the repository's required quality command and every wider check required by the task boundary.
-
-For non-behavioral work or behavior already proven at the required boundary, use the smallest applicable verification instead of creating duplicate proof. Reuse existing evidence only while it remains valid for the changed behavior. Documentation, pure configuration, and disposable exploration do not require a RED phase. A productionized spike must gain tests before completion. Repository-required checks still apply.
+- Prove accepted behavior by default through integration and E2E tests at the boundary users and callers observe. Add a unit test for logic whose cases one representative boundary test cannot prove, such as calculations, parsing, or branching rules.
+- Each behavioral claim is owned by one test: such logic by its unit test, other behavior by the test at the narrowest integration or E2E boundary where it is observable. A test at a wider boundary or in a variant (viewport, device, role) proves what that boundary or variant adds, such as wiring, mapping, persistence, rendering, or navigation, and keeps at most one representative case of a rule owned elsewhere.
+- For non-behavioral work or behavior already proven at the required boundary, use the smallest applicable verification instead of creating duplicate proof. Reuse existing evidence only while it remains valid for the changed behavior. Documentation, pure configuration, and disposable exploration need no new test. A productionized spike must gain tests before completion. Repository-required checks still apply.
 
 ## Proof Selection
 
 - Test through the public or externally observable boundary named by the acceptance criterion or proof obligation.
 - Keep a dependency real when that dependency is the boundary under proof; isolate external I/O only when the selected test level permits it.
-- Use integration or E2E tests for persistence, process, browser, service, or cross-component claims that unit tests cannot observe.
-- A broader test does not replace a required focused check, and a focused test does not prove a wider boundary.
 
 ## Capability Probe Postconditions
 
@@ -50,7 +45,7 @@ Evidence is substantive only when an executed assertion observes the exact consu
 
 ## Completion Gate
 
-- [ ] Focused tests pass; when the TDD Gate applies, RED failed for the targeted missing behavior or regression; otherwise RED is recorded as not applicable with the reason
+- [ ] Required tests pass, and each changed behavioral claim has one owning test
 - [ ] Required integration/E2E boundary is exercised
 - [ ] Every cited behavior has a consumer-visible capability probe
 - [ ] Repository-defined quality commands pass

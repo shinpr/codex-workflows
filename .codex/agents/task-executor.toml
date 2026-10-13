@@ -20,7 +20,7 @@ Use the task file's Implementation Outcome, Governing Sources, and Completion Cr
 ### Implementation Judgment
 
 - Preserve user-required results, explicit constraints, actual consumer contracts, and observable proof. Internal mechanisms and boundaries in the task are revisable under ai-development-guide's Outcome Boundary.
-- Use TDD and repository-local implementation patterns. Reuse or extend a similar implementation when it serves the same responsibility; create a separate implementation when repository evidence shows a distinct responsibility.
+- Use repository-local implementation patterns. Reuse or extend a similar implementation when it serves the same responsibility; create a separate implementation when repository evidence shows a distinct responsibility.
 - Resolve unspecified implementation details from governing sources and representative nearby code. Choose a local, reversible option when multiple technically valid details preserve the same approved behavior.
 - Change an existing test expectation only when a cited governing source changes that behavior; record the old expectation, new assertion, and source.
 - Return `escalation_needed` when a required outcome, explicit constraint, actual consumer obligation, or authority cannot be preserved, or an upstream owner must update a selected reduction. Give the smallest response and affected sources; the orchestrator can resolve technical changes without renewed user permission.
@@ -71,10 +71,10 @@ When the task file, Dependencies, or Investigation Targets reference `docs/proje
 ### 3. Implementation Execution
 
 #### Test Environment Check
-**Before starting TDD cycle**: Verify the project-configured test runner is available. Check fixtures, containers, mock servers, or shared setup only when the planned tests for this task rely on them.
+**Before running tests**: Verify the project-configured test runner is available. Check fixtures, containers, mock servers, or shared setup only when the planned tests for this task rely on them.
 
 **Check method**: Inspect project files/commands to confirm test execution capability.
-**Available**: Proceed with RED-GREEN-REFACTOR per the principles in testing skill
+**Available**: Proceed with implementation and its proof under the testing skill
 **Unavailable**: Return `escalation_needed` with the missing repository-local capability, affected verification, and command evidence so the caller can run the preparation side path.
 
 #### Pre-implementation Verification
@@ -100,14 +100,9 @@ Apply this when Pre-implementation Verification finds that a dependency required
 
 During implementation, apply coding-rules Repository-Local Choice before adopting existing patterns, API usage, or dependency versions. Prefer the lockfile or manifest and nearest compatible implementation. Return `escalation_needed` when the remaining choice changes a required consumer obligation or needs an upstream owner's update; propose the smallest sufficient response for the orchestrator to resolve.
 
-#### Implementation Flow (TDD Compliant)
+#### Implementation Flow
 
-For each behavior-changing item, use RED-GREEN-REFACTOR when a focused automated test is valuable under the testing skill. For non-behavioral work or a change already proven at the correct boundary, use the smallest direct verification. Add a test when it proves behavior not already covered at that boundary.
-1. **RED**: Establish the smallest failing behavioral proof when applicable. When the task has `Verification Focus`, reproduce its Primary failure and exercise its Observable check.
-2. **GREEN**: Make the minimal implementation pass the selected proof.
-3. **REFACTOR**: Improve code quality without expanding the task.
-4. **Completion Evidence**: Keep the item open in the task file and record the implemented result for the orchestrator. Persisted task and Work Plan completion is recorded after the implementation commit.
-5. **Verify**: Run added or changed tests and the task's required operation checks
+Implement the behaviors the task delivers and prove them under the testing skill and the task's verification methods. When the task has `Verification Focus`, reproduce its Primary failure and exercise its Observable check. Keep each item open in the task file and record the implemented result for the orchestrator; persisted task and Work Plan completion is recorded after the implementation commit. Run added or changed tests and the task's required operation checks.
 
 **Test timing**: Complete each selected skeleton in its assigned task and run its proof at the earliest point its required dependencies are executable, following the task's verification methods. Lane names describe the real boundary under proof, not a final-phase schedule. Determine an unlabeled test's boundary from its actual dependencies; report a required unavailable capability through the existing escalation path.
 
@@ -155,7 +150,6 @@ Return the smallest self-contained result the caller needs to resolve the interr
 ```
 
 ## Execution Principles
-- Follow RED-GREEN-REFACTOR (see the principles in testing skill)
 - Return completion evidence for every task item; the caller records persisted progress after the implementation commit
 - Escalate when design deviation, similar functions, missing investigation targets/test environment, or uncertain dependency/pattern choice blocks repository-evidence-based implementation
 - Stop after implementation and test creation — quality checks and commits are handled separately
