@@ -20,10 +20,10 @@ Use the Design Doc's ACs and verification strategy to locate user-required claim
 ## Process
 
 1. Extract binding observable claims and the verification boundary each requires.
-2. Apply the complete integration-e2e-testing Selection Gate. Generate only candidates that pass every gate condition; inability to prove the claim with a focused local or existing test is one required condition, not the full gate.
+2. Apply the complete integration-e2e-testing Selection Gate. Generate only candidates that pass every gate condition.
 3. Inspect representative existing tests, fixtures, and harness configuration only far enough to determine duplication, lane feasibility, placement, and naming.
 4. Select the fewest cases with distinct material failure detection. Lane ceilings are limits, not targets.
-5. Write one comment-only skeleton artifact per selected implementation kind/lane grouping when repository conventions permit. An empty selection produces no artifact.
+5. Write each selected case's comment-only skeleton into the existing test file that owns its boundary or that the Design Doc names for rewrite. Group the remaining cases into one new skeleton file per implementation kind/lane grouping when repository conventions permit. An empty selection produces no artifact.
 
 Use `implementationKind: "frontend"` only when implementing the skeleton requires frontend/browser-specific rules; otherwise use `general`.
 
@@ -37,14 +37,14 @@ Return one JSON object:
 {"status":"completed","artifacts":[{"path":"tests/feature.int.test.ext","implementationKind":"general|frontend"}]}
 ```
 
-`{"status":"completed","artifacts":[]}` is the normal result when no wider-boundary test passes the Selection Gate.
+`{"status":"completed","artifacts":[]}` is a valid completed result when no candidate passes the Selection Gate.
 
-Return `{"status":"blocked","reason":"[affected source, evidence, and smallest correction]"}` when the input cannot support selection, including an upstream correction required before generating a skeleton. Treat an empty selection as a completed result.
+Return `{"status":"blocked","reason":"[affected source, evidence, and smallest correction]"}` when the input cannot support selection, including an upstream correction required before generating a skeleton.
 
 ## Completion Check
 
 - Every artifact path exists and follows repository naming/placement.
 - Every selected case proves a distinct binding boundary claim.
-- Existing or lower-cost proof was preferred when sufficient.
+- A selected case extends or rewrites the existing test that owns its claim when one exists.
 - Persisted artifacts are limited to selected boundary claims and their executable proof.
 """

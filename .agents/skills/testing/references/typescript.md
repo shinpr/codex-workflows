@@ -2,9 +2,9 @@
 
 ## Unit and Integration Tests
 
-### Where to Concentrate Test Rigor
+### Test Ownership in UI Code
 
-Apply the strongest focused coverage to shared components, custom hooks, utilities, and business rules reused across features. Use integration or E2E coverage for higher-composition surfaces whose proof obligation crosses component or browser boundaries. Numeric thresholds come from the project's CI, task file, work plan, or Design Doc.
+Logic that needs its own unit tests usually lives in shared components, custom hooks, utilities, and business rules reused across features. Screen behavior is owned by the narrowest test that renders the real composition. Numeric thresholds come from the project's CI, task file, work plan, or Design Doc.
 
 ### Test Level and Boundary Rules
 
@@ -46,7 +46,7 @@ Use locators in this priority order:
 
 ### E2E Selection
 
-Apply the integration-e2e-testing Selection Gate and its lane ceilings before generating a browser test. Prefer the fewest journeys that prove distinct required boundaries.
+Add a browser test only when a test skeleton or the task verification assigns browser-level proof, or the claim is not observable at the RTL/MSW integration boundary. Prefer the fewest journeys that prove distinct required boundaries.
 
 ### Test Isolation
 

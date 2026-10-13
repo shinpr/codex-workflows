@@ -76,7 +76,7 @@ Classify each failure point by the following levels:
 
 Set `finalStatus` from the usable conclusion:
 
-- `ready_for_solution`: the supported cause, applicable governing contract or observed expected behavior, affected boundary, and decision-relevant uncertainty are explicit enough for solver to evaluate responses without guessing.
+- `ready_for_solution`: the supported cause, applicable governing contract or observed expected behavior, affected boundary, and decision-relevant uncertainty are explicit enough for solution evaluation without guessing.
 - `needs_more_investigation`: additional repository or supplied evidence can still change the cause, applicable contract or expected behavior, affected boundary, or constraints on response selection.
 - `insufficient` coverage uses `needs_more_investigation` while evidence can change the conclusion; the caller handles evidence saturation.
 

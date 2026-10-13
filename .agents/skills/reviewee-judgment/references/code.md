@@ -12,7 +12,7 @@ Inspect only the paths needed to establish the cause and affected boundary:
 - the responsibility that owns the relevant rule or state;
 - public, serialized, persistent, generated, or integration contracts;
 - representative repository patterns with the same responsibility;
-- focused tests and broader regression evidence at changed boundaries;
+- the tests that own the affected claims at changed boundaries;
 - migration, rollout, and rollback constraints when state or compatibility changes.
 
 Treat a reviewer's patch suggestion as evidence of intent, not repository authority.
@@ -47,10 +47,10 @@ A smaller diff is evidence of lower change volume, not evidence of better mainta
 
 ## Verification Safety
 
-Select proof from the changed boundary outward:
+Select proof at the test that owns each affected claim:
 
-- focused tests for the responsible rule;
-- contract or integration tests for changed consumers and providers;
+- a unit test for a changed rule whose cases one boundary test cannot prove;
+- the integration or contract test at the boundary where changed consumer or provider behavior is observable;
 - migration checks for persisted or serialized state;
 - repository-required static, build, and regression checks.
 

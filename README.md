@@ -105,7 +105,7 @@ flowchart LR
 
 The number of independent product and design decisions determines the route, not file count or the number of edge cases Codex can identify.
 
-A change with one outcome that follows an existing pattern in one part of the system goes straight to a confirmed task, then implementation with quality and security checks. A change that needs coordination across parts of the system or a lasting design decision first gets a reviewed Design Doc and Work Plan, plus a UI Spec or ADR when one of its decisions calls for it. A change with multiple outcomes that need separate design decisions also gets a PRD unless you choose to skip it. An ADR is written only when a lasting choice has at least two materially distinct options, and an integration or E2E test only when a cheaper test cannot prove the interaction.
+A change with one outcome that follows an existing pattern in one part of the system goes straight to a confirmed task, then implementation with quality and security checks. A change that needs coordination across parts of the system or a lasting design decision first gets a reviewed Design Doc and Work Plan, plus a UI Spec or ADR when one of its decisions calls for it. A change with multiple outcomes that need separate design decisions also gets a PRD unless you choose to skip it. An ADR is written only when a lasting choice has at least two materially distinct options. Behavior is proven by integration and E2E tests where users and callers see it, and a unit test is added only for logic, such as a calculation or a parser, whose cases one of those tests cannot cover.
 
 Once implementation is authorized, the main session runs the tasks, focused verification, applicable repository checks, and one implementation commit per task. It resolves problems from the approved documents and repository evidence first. User-visible behavior remains a product boundary rather than something the implementation may adjust for internal consistency. The main session asks you only when progress requires a new product requirement, a change to something you asked for or ruled out, authority only you hold, or an irreversible action you did not authorize. Finding a smaller way to reach the same outcome is not one of those, and neither is re-confirming permission you have already given. The workflow does not add third-party approval, production access, or release execution as conditions for completing the implementation.
 
@@ -241,13 +241,13 @@ You don't need a recipe to benefit from these. Codex loads them in ordinary conv
 | Skill | What it provides |
 |-------|-----------------|
 | `coding-rules` | Code quality, function design, error handling, refactoring |
-| `testing` | Proportionate TDD, observable proof selection, test integrity, and repository-required verification |
+| `testing` | Choosing the tests a change needs, proving each behavior once, observable proof, test integrity, and repository-required verification |
 | `ai-development-guide` | Evidence-backed root cause, proportionate impact analysis, and applicable quality assurance |
 | `reviewee-judgment` | Evidence-backed evaluation of received findings before they generate revision work |
 | `documentation-criteria` | Document creation rules and templates (PRD, ADR, Design Doc, Work Plan) |
 | `requirement-convergence` | Outcome, requirement layers, user-decided exclusions, and rough cost before design |
 | `implementation-approach` | Direct MVP, evidence-backed expansion, subtraction, slicing, and verification boundary |
-| `integration-e2e-testing` | Selecting and designing only integration/E2E tests that prove a necessary real interaction |
+| `integration-e2e-testing` | Selecting and designing the integration/E2E tests that prove accepted behavior where it is observed |
 | `external-resource-context` | Focused resolution of one external evidence source required by a current decision |
 | `llm-friendly-context` | Clear prompts, handoffs, generated artifacts, task files, and review findings for downstream agents |
 | `subagent-delegation` | Letting subagents finish assigned work and ask for input when a decision is needed |
