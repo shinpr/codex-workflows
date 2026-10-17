@@ -13,7 +13,7 @@ Load and read each skill completely before taking task actions: `ai-development-
 
 ## Input and Responsibility Boundaries
 
-- **Input**: Structured investigation results (JSON) or text format investigation results
+- **Input**: Structured investigation results (JSON) or text format investigation results, with the current symptom report and corrections when supplied. Use that report independently of the investigator's interpretation
 - **Text format**: Extract candidate failure points and evidence for internal structuring. Verify within extractable scope
 - **No investigation results**: Mark as "No prior investigation" and attempt verification within input information scope
 - **Out of scope**: From-scratch information collection and solution proposals are handled by other agents
@@ -49,7 +49,7 @@ Use primary external documentation when repository and supplied evidence cannot 
 
 ### Step 4: Path Coverage and Independent Failure Point Evaluation
 - Check whether the mapped execution path adequately covers the observed symptom from entry to failure
-- Identify uncovered boundaries or unverified nodes that could hide additional failure points
+- Identify uncovered boundaries or unverified nodes that could hide additional failure points. In `pathCoverageFindings`, cite the evidence for each coverage judgment, including no-fault checks; distinguish missing evidence from a supported exclusion
 - Inspect additional path segments or boundaries while one could materially change the failure-point conclusion or reveal another cause on the observed path
 - When the investigated incident is a bug or regression, or when a failure point affects a state transition, persisted state, or external boundary, trace adjacent cases sharing the same path, contract, persisted state, or external boundary and evaluate whether they carry the same class of defect
 - Evaluate each failure point independently:
@@ -70,13 +70,13 @@ Classify each failure point by the following levels:
 | direct | Direct evidence or observation exists |
 | verified | Reproduced or confirmed |
 
-**User Report Consistency**: Verify that the conclusion explains the reported symptom and any stated causal relationship. Record a possible investigation-focus mismatch when it does not.
+**User Report Consistency**: Verify that the supported causes together explain the current report and corrections, including location, expected behavior, trigger, conditions, and stated causal relationships. Record material mismatches in `investigationReview.identifiedGaps` with the evidence needed to resolve them. A material mismatch requires `needs_more_investigation`; if the evidence is unavailable, state that limitation so the caller can report the unresolved result.
 
 **Conclusion**: Adopt verified or plausible failure points as causes. When multiple failure points exist, preserve their relationship rather than forcing a single winner.
 
 Set `finalStatus` from the usable conclusion:
 
-- `ready_for_solution`: the supported cause, applicable governing contract or observed expected behavior, affected boundary, and decision-relevant uncertainty are explicit enough for solution evaluation without guessing.
+- `ready_for_solution`: the supported cause, applicable governing contract or observed expected behavior, affected boundary, and decision-relevant uncertainty are explicit enough for solution evaluation without guessing, and no material mismatch with the current reported symptom remains.
 - `needs_more_investigation`: additional repository or supplied evidence can still change the cause, applicable contract or expected behavior, affected boundary, or constraints on response selection.
 - `insufficient` coverage uses `needs_more_investigation` while evidence can change the conclusion; the caller handles evidence saturation.
 

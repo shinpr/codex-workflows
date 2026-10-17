@@ -28,6 +28,10 @@ The orchestrator structures the reported problem, coordinates the three speciali
 
 ## Step 0: Problem Structuring (Before invoking investigator)
 
+Keep the user's current symptom report and corrections verbatim, separate from investigation interpretations. Record observed and expected behavior, location, trigger, conditions, and onset when known. Resolve target-changing uncertainty from available evidence; ask the user only for a fact the investigation cannot obtain, and continue unaffected work.
+
+When a correction changes the symptom's location, expected behavior, timing, or conditions, update this record and return to investigator for path mapping and affected findings, then verifier before solution derivation. In follow-up calls, identify which prior interpretation the correction supersedes; retain evidence that remains valid. Prior readiness and recommendations apply only to the symptom and evidence they evaluated. An evidence-only addition for the same symptom reopens only the judgments it affects.
+
 ### 0.1 Problem Type Determination
 
 | Type | Criteria |
@@ -57,7 +61,7 @@ solver null recommendation -> investigator while new evidence can change the res
 evidence saturated before recommendation -> unresolved Report
 ```
 
-**Context Separation**: Pass only structured output to each step. Each agent's first invocation starts fresh with the supplied data only.
+**Context Separation**: Supply the current symptom record from Step 0 alongside the structured results named below, including on follow-up calls. Each agent's first invocation starts fresh; the symptom record supplies the user's report independently of upstream interpretations.
 
 ## Execution Steps
 
@@ -70,7 +74,7 @@ Invoke investigator agent with the following prompt:
 ```text
 Collect decision-relevant information about the following phenomenon.
 
-Phenomenon: [Problem reported by user]
+Current symptom: [Step 0 report, corrections, and known or unresolved symptom facts]
 
 For change failures, include available facts and unresolved investigation targets for:
 - what changed
@@ -92,13 +96,13 @@ Review investigation output:
 - [ ] `investigationSources` covers the source types needed to support or refute the causal path
 - [ ] each failure point has supporting evidence with a concrete source
 
-When required evidence is missing, re-run investigator with the missing items and previous output. Proceed to verifier when the causal path and its material unknowns are explicit.
+When required evidence is missing, re-run investigator with the current symptom record, missing items, and previous output. Proceed to verifier when the causal path and its material unknowns are explicit.
 
 Proceed to verifier once quality is satisfied.
 
 ### Step 3: Verification (verifier)
 
-Invoke verifier agent: "Verify the following investigation results. Investigation results: [Investigation output]"
+Invoke verifier agent: "Verify the following investigation results against the current reported symptom. Current symptom: [Step 0 symptom record]. Investigation results: [Investigation output]"
 
 **Expected output**: Path coverage findings, independent failure-point evaluation, final conclusion, coverageAssessment/finalStatus
 
@@ -106,13 +110,13 @@ Use the verifier's `coverageAssessment` and its Coverage Determination Criteria 
 
 ### Step 4: Solution Derivation (solver)
 
-When `finalStatus=ready_for_solution`, invoke solver agent: "Derive solutions based on the following verified conclusion. Verified conclusion: [verifier's conclusion]. Failure-point evaluations: [verifier's failurePointsEvaluation]. Verification limitations: [verifier's verificationLimitations]. Impact analysis: [investigator output impactAnalysis]."
+When `finalStatus=ready_for_solution`, invoke solver agent: "Derive solutions for the current symptom based on the following verified conclusion. Current symptom: [Step 0 symptom record]. Verified conclusion: [verifier's conclusion]. Failure-point evaluations: [verifier's failurePointsEvaluation]. Verification limitations: [verifier's verificationLimitations]. Impact analysis: [investigator output impactAnalysis]."
 
 **Expected output**: Credible materially distinct solutions, relevant tradeoffs, and either a supported recommendation with implementation steps or a null recommendation with exact missing evidence. One solution is sufficient when evidence rules out a meaningful alternative.
 
 **Completion condition**: `finalStatus=ready_for_solution` and solver returns a non-null evidence-supported recommendation.
 
-**When not reached**: Return to Step 1 with the verifier's material unknowns or solver's `uncertaintyHandling.missingEvidence` as investigation targets while repository or supplied evidence can change the result. When further investigation produces no new decision-relevant evidence, report the unresolved input and its effect instead of repeating the loop.
+**When not reached**: Return to Step 1 with the current symptom record and the verifier's material unknowns or solver's `uncertaintyHandling.missingEvidence` as investigation targets while repository or supplied evidence can change the result. When further investigation produces no new decision-relevant evidence, report the unresolved input and its effect instead of repeating the loop.
 
 ### Step 5: Final Report Creation
 
