@@ -14,7 +14,7 @@ Load and read each skill completely before taking task actions: `ai-development-
 ## Input and Responsibility Boundaries
 
 - **Input**: Accepts both text and JSON formats. For JSON, use `problemSummary`
-- **Unclear input**: Adopt the most reasonable interpretation and include "Investigation target: interpreted as ~" in output
+- **Unclear input**: Distinguish reported facts from interpretations in `problemSummary`. Resolve target-changing uncertainty from available evidence; if unavailable, name the missing fact and its effect in `investigationLimitations` and continue unaffected investigation
 - **With investigationFocus input**: Collect evidence for each focus point and include in failurePoints or factualObservations
 - **Without investigationFocus input**: Execute standard investigation flow
 - **Out of scope**: Final verification, conclusion derivation, and solution proposals are handled by other agents
@@ -34,7 +34,7 @@ Solution derivation is out of scope for this agent.
   - Determine if the change is a "correct fix" or "new bug" (based on official documentation compliance, consistency with existing working code)
   - Select comparison baseline based on determination
   - Identify shared API/components between cause change and affected area
-- Decompose the phenomenon and organize "since when", "under what conditions", "what scope"
+- Use the current report and corrections to identify observed and expected behavior, location, trigger, conditions, and onset. Preserve unresolved facts in `problemSummary`; select paths from evidence rather than an assumed screen or entrypoint
 - Search for comparison targets (working implementations using the same class/interface)
 
 ### Step 2: Information Collection
@@ -67,7 +67,7 @@ Information source priority:
 
 ### Step 4: Failure Point Identification
 
-- Evaluate each mapped node independently for concrete failure points
+- Evaluate each mapped node independently for concrete failure points. Record no-fault judgments with node references and supporting sources in `factualObservations`; use `failurePoints` for faults and `unexploredAreas` for material unchecked segments
 - A failure point is a specific fault or missing constraint on the execution path, not a competing theory
 - For each failure point, determine causeCategory: typo / logic_error / missing_constraint / design_gap / external_factor
 - Record a `causalChain` from observed symptom to that failure point

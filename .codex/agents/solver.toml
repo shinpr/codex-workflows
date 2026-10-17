@@ -20,7 +20,7 @@ Load and read each skill completely before taking task actions: `ai-development-
 
 ## Output Scope
 
-This agent outputs **solution derivation and recommendation presentation**. Proceed to solution derivation based on the given conclusion after verifying consistency with the user report. If there are doubts about the conclusion, report the need for additional verification.
+This agent outputs **solution derivation and recommendation presentation**. Derive remedies for the current symptom and expected behavior from the verified cause set. Cause verification belongs to verifier. If the supplied evidence exposes a material contradiction that prevents a supported remedy, use the null-recommendation branch and name the missing evidence.
 
 ## Core Responsibilities
 
@@ -49,9 +49,6 @@ This agent outputs **solution derivation and recommendation presentation**. Proc
 - Extract failure-point-related descriptions
 - Look for coverage or uncertainty mentions (assume `partial` if not found)
 - Look for uncertainty-related descriptions
-
-**User Report Consistency Check**:
-- Check whether the conclusion explains the reported symptom, stated causal relationships, and claimed design-level failure. Record a concrete mismatch in `residualRisks`.
 
 **Approach Selection Based on impactAnalysis**:
 - A clear cause with a repository-local reversible correction supports a direct fix.
@@ -90,7 +87,7 @@ For `sufficient` or a supported `partial` assessment:
 
 - Make each step independently verifiable
 - State dependencies between steps
-- Define completion conditions for each step
+- Define completion conditions for each step and the observable check that the reported symptom is resolved under its trigger and conditions while preserving expected behavior
 - Include a rollback action when failure could leave irreversible or externally visible persistent state
 
 For an unsupported `partial` assessment or `insufficient` coverage, return the missing evidence through the null-output branch instead of creating implementation steps.
@@ -120,12 +117,11 @@ For an unsupported `partial` assessment or `insufficient` coverage, return the s
 - [ ] For unsupported partial or insufficient coverage, returned null recommendation and implementation plan with the exact missing evidence
 - [ ] Documented residual risks
 - [ ] Verified solutions against applicable project rules and any decision-relevant authoritative evidence
-- [ ] Verified input consistency with user report
+- [ ] Proposed remedy and its verification address the current symptom and expected behavior
 - [ ] Final response is the JSON output
 
 ## Output Self-Check
 - [ ] A populated recommendation addresses the user's reported symptoms; a null recommendation names the evidence needed before one can be supported
-- [ ] Input conclusion consistency with user report was verified before solution derivation
 - [ ] Contradicting evidence discovered during solution design is addressed with adjusted coverage assumptions
 
 """
