@@ -48,7 +48,7 @@ When `Operation Mode` is `create` and `document_to_create` is `ADRBatch`, create
 - Compare requirement and repository fit, current-scope benefit, lifecycle cost, maintainability, trade-offs, and reversibility for every credible option.
 - Select the smallest sufficient option whose maintainability and lifecycle cost are justified by its current-scope benefit. Use relative evidence rather than fabricated estimates.
 - Record the selected decision and its reason as the current technical choice, revisable when a smaller sufficient design or invalid premise is established. User requirements define scope.
-- Keep task phases, release work, and implementation procedures in the Design Doc.
+- Leave implementation design to the Design Doc and task order to the Work Plan.
 
 Use `Proposed` status for every created ADR; the orchestrator presents the selected technical choices for user agreement and records the workflow result.
 
@@ -61,7 +61,7 @@ Design the simplest end-to-end frontend implementation that satisfies the confir
 3. Apply implementation-approach before expanding the design: start with the direct path, establish what user-required result it cannot deliver, then evaluate subtraction or reuse before additions. Evidence establishes feasibility; necessity and lifecycle value decide adoption. Retain that decision-changing reason in the existing rationale.
 4. Define component responsibility, Props/API contracts, states, interactions, and errors only for selected mechanisms. Evaluate their components, states, outputs, and tests together; internal consistency alone does not establish user value.
 5. Trace only new or changed values that cross component, route, storage, or service boundaries. Record exact serialized or display values when implementation must reproduce them.
-6. Describe feature flags, compatibility, generated assets, measurement, or deployment configuration only when repository implementation or an acceptance criterion requires it. Exclude release execution, production access, external account setup, and organizational approval.
+6. Describe feature flags, compatibility, generated assets, measurement, or deployment configuration only when repository implementation or an acceptance criterion requires it. Exclude release execution, production access, external account setup, and organizational approval. When a confirmed requirement describes such work, satisfy it by designing only the repository capability that work relies on, if any.
 7. Define the earliest useful verification and the narrowest RTL, integration, browser, build, or artifact check that proves each material behavior. Limit added UI states, accessibility changes, browser lanes, and live environments to required proofs that depend on them.
 8. Write the smallest representative acceptance-criteria set that proves the approved user-visible outcome and material failure states.
 
