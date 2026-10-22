@@ -8,7 +8,7 @@ Before assigning a correction, apply `reviewee-judgment`: first consider no chan
 
 ## 2. Correct and Recheck
 
-Pass only the selected response to the responsible author. When it supersedes an upstream choice, update the affected source, consumers, and proof through their existing owners; do not restore the mechanism to match a stale document. Retain passing evidence unless the correction invalidates it, and rerun only the affected findings or proof.
+Pass each finding selected for correction to the responsible author as the reviewer or verifier returned it, with the selected response and its reason labeled as the orchestrator's disposition. The author derives the edit from the finding and the governing sources, so the correction stays grounded in reviewed evidence. When the selected response supersedes an upstream choice, update the affected source, consumers, and proof through their existing owners; do not restore the mechanism to match a stale document. Retain passing evidence unless the correction invalidates it, and rerun only the affected findings or proof.
 
 Supply its original governing inputs, previous complete result, dispositions, and correction diff or paths. Recheck only resolution of those findings and inconsistencies directly introduced by the correction; carry forward unaffected evidence. This replaces the initial full review. A new finding needs a causal link to the correction, not merely a newly noticed pre-existing problem.
 

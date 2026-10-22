@@ -10,9 +10,11 @@
 ## Requirement Boundary
 
 - PRD or convergence carrier: [path | embedded record | eligible N/A]
-- Current requirements: [binding requirements implemented by this design]
+- Current requirements: [each binding requirement implemented by this design, as its carrier states it: PRD path and section, or the convergence entry copied unchanged]
 - Non-goals: [user-decided exclusions | user confirmed none]
 - Open requirement fields: [weak-but-explicit item and effect | none]
+
+Keep requirements in their carrier's words and write this design's reading of them in Selected Design, where it remains revisable. A reading written into a requirement's words takes their place, and planning and implementation carry it out as the user's requirement.
 
 Reverse-engineered documents use only `N/A — reverse-engineered as-is document` for convergence and describe existing behavior rather than future requirements.
 
