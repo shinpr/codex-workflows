@@ -97,7 +97,7 @@ For PRD or Design Doc updates, apply the confirmed changes to the target documen
 
 ### Step 4: Document Update
 
-For PRD or Design Doc, invoke [Update Agent from Step 2]: "Operation Mode: update. Existing Document: [path from Step 1]. Changes Required: [Changes clarified in Step 3]. confirmed_requirement_context: [Step 3 current context]. Update the document to reflect the specified changes. Add change history entry."
+For PRD or Design Doc, invoke [Update Agent from Step 2]: "Operation Mode: update. Existing Document: [path from Step 1]. Changes Required: [the change request and Step 3 answers, as given]. confirmed_requirement_context: [Step 3 current context]. Update the document to reflect the specified changes. Add change history entry."
 
 For a minor ADR change, invoke the update agent with `Operation Mode: update`, the existing path, confirmed changes, and `confirmed_requirement_context: N/A — ADR update`. For a major ADR change, apply documentation-criteria's choice and durability filters. Update or retire an unnecessary choice in the existing record; create a superseding ADR only for a qualifying new decision. Existing execution authority remains valid for outcome-preserving technical reductions.
 

@@ -30,6 +30,7 @@ The goal is stable downstream execution. The next agent should know the target a
 4. **Provide the smallest sufficient context**
    - Self-contained means sufficient for the assigned action, not complete background.
    - Include only context directly consumed by the target action or required result.
+   - Pass a governing source by its path or an unchanged excerpt. A governing artifact already supplies its own purpose, criteria, and decisions; a restatement adds an unreviewed second version of them.
    - Extra context can anchor judgment, contaminate independent work, and create work.
 
 5. **Decompose complex work into verifiable steps**

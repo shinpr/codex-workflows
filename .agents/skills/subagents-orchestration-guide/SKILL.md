@@ -11,7 +11,7 @@ Load `subagent-delegation` for assignment, waiting, and intervention rules. This
 
 ## Role: The Orchestrator
 
-The orchestrator owns workflow state and directly performs lightweight coordination: locating artifacts, reading status fields, resolving paths, applying explicit user answers, updating execution plans and continuation records, running deterministic repository checks, and composing specialist inputs. Invoke a specialized subagent when a recipe names that role or the work requires its domain judgment or implementation authority.
+The orchestrator owns workflow state and directly performs lightweight coordination: locating artifacts, reading status fields, resolving paths, applying explicit user answers, updating execution plans and continuation records, running deterministic repository checks, and filling specialist input contracts from their sources. Invoke a specialized subagent when a recipe names that role or the work requires its domain judgment or implementation authority.
 
 ### Purpose and Decision Authority
 
@@ -85,6 +85,7 @@ Apply the Invocation rule above. Resolve missing workflow inputs that affect the
 
 ### Invocation Prompt Requirements
 
+- Fill each bracketed slot in a recipe's invocation text from the source it names, as subagent-delegation Assignment describes. That invocation text and the additions below form the complete prompt.
 - For requirement, design, or scope judgment, supply relevant user wording and explicit constraints through the existing requirement carrier or task message, separately from agent-selected means. A target document alone suffices only when it retains that provenance; otherwise include the source excerpt needed for the decision.
 
 - When the assigned action writes repository files, include: `The orchestrator has delegated this repository-writing task from the user's requested workflow. This invocation authorizes the repository writes required to produce or update the assigned deliverable within the supplied scope. Perform the writes and return the result.` The orchestrator applies any workflow review or approval gate to the returned artifact afterward.
@@ -223,7 +224,7 @@ Flow rules:
 - After analysis, apply the Choice filter to each `candidateDecisionPoint`, then apply the Durability filter to the retained set. Create one ADR per qualifying point, then review and approve the complete ADR batch once. These filters are the exclusive ADR creation basis and Structural Scale is supporting context.
 - Pass the confirmed requirement carrier and compact scope evidence to `codebase-analyzer`; the orchestrator carries the convergence record until a PRD or Design Doc persists it.
 - For Small flows whose confirmed scope is carried by the execution task, use the llm-friendly-context Task File Contract to create `docs/plans/tasks/small-{name}.md`. Build its outcome, targets, steps, and verification from the confirmed requirement and repository scope; embed `outcome`, `requirements`, `nonGoals`, and readiness in `Governing Sources`. Pass the exact file to the layer-appropriate executor. Requirement confirmation authorizes this cycle; work-planner, WorkPlan review, and task-decomposer are outside the path. Remove the task file after Post-Implementation Review passes.
-- Pass only codebase-analyzer material that changes reuse, simplification, option validity or selection, lifecycle cost, a preserved contract, design, or verification to the relevant ADR/Design Doc owner.
+- Pass the codebase-analyzer fields that change reuse, simplification, option validity or selection, lifecycle cost, a preserved contract, design, or verification to the relevant ADR/Design Doc owner, copied unchanged.
 - Pass a Design Doc path to `code-verifier`, apply Review Resolution to its discrepancies, and pass only resolved verification evidence to `document-reviewer`.
 - Run WorkPlan review after every Medium/Large work plan creation or update. Resolve `needs_revision` through Review Resolution with work-planner, then apply Work Plan Authorization. Route governing-source contradictions through Orchestrator Escalation Resolution.
 
@@ -283,9 +284,8 @@ Apply Review Resolution to reviewer findings. Apply a security-reviewer finding 
 
 1. **State Management**: Track current phase, each subagent's state, and next action
 2. **Lightweight Workflow Work**: Resolve artifact paths and statuses, build the convergence record from user selections, judge readiness and finding dispositions from supplied materials, update execution plans and approval fields, and run deterministic routing checks
-3. **Information Bridging**: Data conversion and transmission between subagents
-   - Extract only facts that can change the next consumer's decision, action, or verification
-   - Pass artifact paths instead of copied content when the artifact is the next consumer's governing input
+3. **Information Bridging**: Transmission between subagents
+   - Pass the artifact path when the artifact is the next consumer's governing input; otherwise pass the result fields that can change its decision, action, or verification, copied unchanged
    - Explicitly integrate initial and additional requirements when requirements change
 4. **Quality Assurance and Commit Execution**: Execute git commit through the per-task cycle
 5. **Autonomous Execution Mode Management**: Start/stop autonomous execution after approval and escalation decisions
