@@ -5,6 +5,8 @@ description: "Add integration/E2E tests to existing codebase using Design Docs."
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
+Before loading required skills, use `wc -c` to size the files and set both `exec_command.max_output_tokens` and the outer `// @exec: {"max_output_tokens": N}` budget to accommodate their contents, including the combined output of batched reads. Split oversized reads upfront; recover any truncated content before proceeding.
+
 1. [LOAD IF NOT ACTIVE] `testing` — repository-aware test execution
 2. [LOAD IF NOT ACTIVE] `integration-e2e-testing` — value-based integration/E2E selection
 3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — review resolution and agent coordination

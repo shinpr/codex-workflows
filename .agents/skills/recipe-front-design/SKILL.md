@@ -7,6 +7,8 @@ description: "Execute from codebase-scoped analysis to frontend design document 
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
+Before loading required skills, use `wc -c` to size the files and set both `exec_command.max_output_tokens` and the outer `// @exec: {"max_output_tokens": N}` budget to accommodate their contents, including the combined output of batched reads. Split oversized reads upfront; recover any truncated content before proceeding.
+
 1. [LOAD IF NOT ACTIVE] `documentation-criteria` -- document quality standards
 2. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` -- agent coordination and review resolution
 3. [LOAD IF NOT ACTIVE] `requirement-convergence` -- requirements hearing and scope-confirmation output

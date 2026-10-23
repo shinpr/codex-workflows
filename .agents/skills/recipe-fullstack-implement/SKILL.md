@@ -5,6 +5,8 @@ description: "Run the full-cycle implementation workflow for one outcome spannin
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
+Before loading required skills, use `wc -c` to size the files and set both `exec_command.max_output_tokens` and the outer `// @exec: {"max_output_tokens": N}` budget to accommodate their contents, including the combined output of batched reads. Split oversized reads upfront; recover any truncated content before proceeding.
+
 1. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — Fullstack (Monorepo) Flow, approvals, and autonomous execution
 2. [LOAD IF NOT ACTIVE] `documentation-criteria` — scale-selected document path
 3. [LOAD IF NOT ACTIVE] `requirement-convergence` — outcome, exclusions, and rough-cost challenge

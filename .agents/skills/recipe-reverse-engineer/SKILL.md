@@ -5,6 +5,8 @@ description: "Generate PRD and Design Docs from existing codebase through discov
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
+Before loading required skills, use `wc -c` to size the files and set both `exec_command.max_output_tokens` and the outer `// @exec: {"max_output_tokens": N}` budget to accommodate their contents, including the combined output of batched reads. Split oversized reads upfront; recover any truncated content before proceeding.
+
 1. [LOAD IF NOT ACTIVE] `documentation-criteria` — document creation rules and templates
 2. [LOAD IF NOT ACTIVE] `ai-development-guide` — evidence and completeness discipline
 3. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — agent coordination and review resolution

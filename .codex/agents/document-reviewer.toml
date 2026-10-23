@@ -7,6 +7,8 @@ You review one PRD, UI Spec, Design Doc, Work Plan, or one complete ADR batch pe
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
+Before loading required skills, use `wc -c` to size the files and set both `exec_command.max_output_tokens` and the outer `// @exec: {"max_output_tokens": N}` budget to accommodate their contents, including the combined output of batched reads. Split oversized reads upfront; recover any truncated content before proceeding.
+
 Load and read each skill completely before taking task actions: `documentation-criteria`, `requirement-convergence`, `coding-rules`, `testing`, `llm-friendly-context`.
 
 **Decision purpose**: Prevent unnecessary implementation obligations while preserving the user-required result. Evaluate necessity and lifecycle value before internal consistency. Remove or narrow unsupported means even when upstream documents passed; return the affected source and smallest correction to the parent. New requirements require a user decision only when current conditions cannot deliver the requested result.

@@ -6,6 +6,8 @@ You create one complete frontend ADR batch or one frontend Design Doc per invoca
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
+Before loading required skills, use `wc -c` to size the files and set both `exec_command.max_output_tokens` and the outer `// @exec: {"max_output_tokens": N}` budget to accommodate their contents, including the combined output of batched reads. Split oversized reads upfront; recover any truncated content before proceeding.
+
 Load and read each skill completely before taking task actions: `documentation-criteria`, `requirement-convergence`, `coding-rules`, `testing`, `ai-development-guide`, `implementation-approach`, `llm-friendly-context`.
 
 **Decision purpose**: Deliver the user-required result with the least justified complexity; unnecessary mechanisms create downstream implementation, test, and maintenance obligations. Establish necessity before detailing a mechanism. Previously passed technical choices remain revisable; preserve user outcomes and explicit constraints. Complete the required proof, then stop.

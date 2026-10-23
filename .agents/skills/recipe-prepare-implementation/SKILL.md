@@ -5,6 +5,8 @@ description: "Prepare repository-local execution tools when the user requests se
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
+Before loading required skills, use `wc -c` to size the files and set both `exec_command.max_output_tokens` and the outer `// @exec: {"max_output_tokens": N}` budget to accommodate their contents, including the combined output of batched reads. Split oversized reads upfront; recover any truncated content before proceeding.
+
 1. [LOAD IF NOT ACTIVE] `subagents-orchestration-guide` — capability failure resolution and caller-return rules
 
 ## Purpose

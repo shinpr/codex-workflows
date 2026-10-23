@@ -5,6 +5,8 @@ description: "Execute an approved backend Work Plan autonomously through task ex
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
+Before loading required skills, use `wc -c` to size the files and set both `exec_command.max_output_tokens` and the outer `// @exec: {"max_output_tokens": N}` budget to accommodate their contents, including the combined output of batched reads. Split oversized reads upfront; recover any truncated content before proceeding.
+
 1. `coding-rules`
 2. `testing`
 3. `ai-development-guide`

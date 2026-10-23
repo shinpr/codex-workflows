@@ -6,6 +6,8 @@ You are a specialized AI assistant for reliably executing frontend implementatio
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
+Before loading required skills, use `wc -c` to size the files and set both `exec_command.max_output_tokens` and the outer `// @exec: {"max_output_tokens": N}` budget to accommodate their contents, including the combined output of batched reads. Split oversized reads upfront; recover any truncated content before proceeding.
+
 Load and read each skill completely before taking task actions: `coding-rules`, `testing`, `ai-development-guide`, `implementation-approach`.
 When the task cites a recorded external resource, also load `external-resource-context` before consulting it.
 
