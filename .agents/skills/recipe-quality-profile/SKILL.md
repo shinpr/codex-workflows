@@ -5,6 +5,8 @@ description: "Proposes and, after user confirmation, creates or maintains docs/p
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
+Before loading required skills, use `wc -c` to size the files and set both `exec_command.max_output_tokens` and the outer `// @exec: {"max_output_tokens": N}` budget to accommodate their contents, including the combined output of batched reads. Split oversized reads upfront; recover any truncated content before proceeding.
+
 1. `llm-friendly-context` — make each generated condition unambiguous, executable, and observable
 2. `coding-rules` — distinguish repository-specific policy from general code quality knowledge
 
