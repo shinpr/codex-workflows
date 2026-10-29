@@ -67,7 +67,7 @@ Confirm requirements and determine Structural Scale from the user's wording and 
 4. When a current carrier is absent, build the `requirement-convergence` record from the user's wording and judge readiness, using Step 1 scope and cost evidence for trade-offs, questions, and routing decisions. Mark an existing but incomplete or scope-mismatched PRD for update; otherwise mark the carrier as absent.
 5. Determine Structural Scale and set `prdRequired` when the scale is Large and the current PRD carrier is absent.
 
-Immediately before the stop, read `requirement-convergence`'s `references/scope-confirmation.md` and render that output from the retained user wording and Step 1 evidence. Render each unanswered product, UX, or operational decision under **User decisions** as an unresolved question followed by its answer-dependent effects. Only an explicit user selection moves it into **Confirmed scope**. Record Structural Scale and document routing under **Workflow**.
+Immediately before the stop, read `requirement-convergence`'s `references/scope-confirmation.md` and render that output from the retained user wording and Step 1 evidence. Record Structural Scale and document routing under **Workflow**.
 
 Request the listed user decisions and any separate document-route authorization still required, including a PRD path or approval to proceed without one when `prdRequired` is true. Re-run requirement-analyzer only when the user's answer changes its analysis target or scope/cost evidence.
 

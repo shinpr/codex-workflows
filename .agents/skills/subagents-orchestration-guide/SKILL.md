@@ -295,7 +295,7 @@ Apply Review Resolution to reviewer findings. Apply a security-reviewer finding 
 
 | From | To | Required pass-through |
 |------|----|-----------------------|
-| `requirement-analyzer` | orchestrator requirement hearing | compact scope and cost evidence plus decision-changing questions; the orchestrator compares them with retained user wording, obtains user selections, and decides readiness and scale before codebase analysis |
+| `requirement-analyzer` | orchestrator requirement hearing | compact scope and cost evidence; the orchestrator compares them with retained user wording, obtains user selections, and decides readiness and scale before codebase analysis |
 | confirmed requirement carrier | `codebase-analyzer` | current PRD path when present, otherwise confirmed requirements, plus compact scope evidence |
 | convergence record | PRD or Design Doc owner | `prd-creator` persists PRD fields; `technical-designer*` persists Design Doc fields when no PRD exists; both record open requirement fields while cost remains ephemeral |
 | convergence record | Small-flow implementation | compact record in the task file's `Governing Sources` when no PRD or Design Doc exists |

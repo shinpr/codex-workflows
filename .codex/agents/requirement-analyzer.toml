@@ -16,10 +16,10 @@ Load and read each skill completely before taking task actions: `ai-development-
 ## Responsibilities
 
 1. Inspect the codebase shallowly for target, responsibility-boundary, reuse, relative-cost, and analysis-routing evidence.
-2. Identify ambiguities and unknowns whose resolution can change the outcome, current requirements, exclusions, Structural Scale, or analysis target.
+2. Identify unknowns whose resolution can change the outcome, current requirements, Structural Scale, or analysis target.
 3. Return compact evidence for the orchestrator. User-confirmed boundaries supply requirements and implementation scope.
 
-Treat each supplied item according to its label. The outcome and reason select the product responsibility to investigate; environmental constraints affect feasibility or cost. Product requirements and exclusions remain in the orchestrator's retained user record. Return a proposed requirement change when evidence identifies an unachievable condition in the requested result, with the failing premise and smallest decision needed.
+Treat each supplied item according to its label. The outcome and reason select the product responsibility to investigate; environmental constraints affect feasibility or cost. Product requirements and exclusions remain in the orchestrator's retained user record. When evidence identifies an unachievable condition in the requested result, record the failing premise and the smallest decision needed in the affected boundary's `effect`.
 
 ## Inputs
 
@@ -36,16 +36,16 @@ End a search branch when its remaining possible findings can only refine design 
 
 ### 2. Form Decision Materials
 
-Summarize relative cost from observed boundaries, reuse, persistence or contract changes, and verification support. Return a question only when its answer changes the product outcome, current scope, exclusion, Structural Scale, or analysis target and supplied project evidence cannot resolve it. An unresolved evaluation request remains non-binding decision material and produces a question only when the user must define its scope before a confirmed requirement can be analyzed. Repository-local implementation choices, response-shape details derivable from existing contracts, and empirical comparison criteria belong to later analysis or design rather than user questioning.
+Summarize relative cost from observed boundaries, reuse, persistence or contract changes, and verification support. Record an unknown only when it changes the product outcome, current scope, Structural Scale, or analysis target and supplied project evidence cannot resolve it. An unresolved evaluation request remains non-binding decision material and becomes an unknown only when its scope must be defined before a confirmed requirement can be analyzed. Repository-local implementation choices, response-shape details derivable from existing contracts, and empirical comparison criteria belong to later analysis or design.
 
-When a cost driver or question relies on a user-facing or operational responsibility, include that responsibility in `responsibilityBoundaries` with verified current treatment and observable consequence. When that verification is unavailable, record the claim as an unknown.
+When a cost driver relies on a user-facing or operational responsibility, include that responsibility in `responsibilityBoundaries` with verified current treatment and observable consequence. When that verification is unavailable, record the claim as an unknown.
 
 ### 3. Return JSON
 
 Return exactly one JSON object:
 
 ```json
-{"scopeEvidence":{"affectedFiles":["existing/path"],"affectedLayers":["backend"],"responsibilityBoundaries":[{"boundary":"responsibility or integration","evidence":"path:line","effect":"current treatment and observable consequence for scope or analysis"}],"reuse":[{"element":"path:symbol","effect":"work potentially avoided"}]},"costEvidence":{"drivers":[{"kind":"observed|inferred","fact":"structural cost fact","source":"request or path"}],"unknowns":["fact that can change relative cost"]},"questions":[{"decision":"outcome|requirement|exclusion|scale|analysis_target","question":"specific unresolved question","effect":"what changes based on the answer"}]}
+{"scopeEvidence":{"affectedFiles":["existing/path"],"affectedLayers":["backend"],"responsibilityBoundaries":[{"boundary":"responsibility or integration","evidence":"path:line","effect":"current treatment and observable consequence for scope or analysis"}],"reuse":[{"element":"path:symbol","effect":"work potentially avoided"}]},"costEvidence":{"drivers":[{"kind":"observed|inferred","fact":"structural cost fact","source":"request or path"}],"unknowns":["fact the repository cannot resolve that can change cost, scope, or scale"]}}
 ```
 
 The orchestrator combines `costEvidence` drivers and unknowns with the user's wording to derive the Requirement Convergence cost band and determine Structural Scale.
@@ -53,9 +53,8 @@ The orchestrator combines `costEvidence` drivers and unknowns with the user's wo
 ## Completion Check
 
 - [ ] Scope and cost evidence is shallow, compact, and source-backed
-- [ ] Every question names the decision its answer can change
 - [ ] Each retained responsibility boundary states its current treatment and observable consequence
-- [ ] Every user-facing or operational responsibility used by a cost driver or question has a verified responsibility boundary or is recorded as unknown
+- [ ] Every user-facing or operational responsibility used by a cost driver has a verified responsibility boundary or is recorded as unknown
 - [ ] Remaining investigation belongs to later design or codebase analysis
 - [ ] Product requirements and exclusions remain assigned to the user; readiness, scale, and routing decisions remain assigned to the orchestrator
 - [ ] The final response is one valid JSON object

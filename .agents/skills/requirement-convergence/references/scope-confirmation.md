@@ -1,6 +1,6 @@
 # Scope Confirmation
 
-Use only information that can change the user's requirement decision or the workflow route. Only explicit user selections enter **Confirmed scope**. Keep repository observations and agent interpretations labeled under **Decision evidence**. Keep open product, UX, and operational choices under **User decisions** until the user answers them.
+Use only information that can change the user's requirement decision or the workflow route. Only explicit user selections enter **Confirmed scope**. Keep repository observations and agent interpretations labeled under **Decision evidence**. Keep one question per convergence field below `ready` under **User decisions** until the user answers it.
 
 ## Confirmed scope
 
