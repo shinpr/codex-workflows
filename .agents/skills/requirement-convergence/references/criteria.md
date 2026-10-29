@@ -16,6 +16,8 @@ Record one observable result, not a feature list. Remove agent-proposed requirem
 
 Ask when the layer is unclear. Treating all three as equally binding turns exploration into accidental scope.
 
+Requirements cover what the repository change can satisfy. A precondition held outside that change, such as legal or policy review, contract execution, release execution, or organizational approval, enters the record and the hearing only when the user's wording raises it.
+
 ## nonGoals[]
 
 Present cost and its unknowns before asking what to exclude. Record exclusions in the user's wording. Treat an empty `nonGoals` list as ready only when the user considered exclusions and chose none.

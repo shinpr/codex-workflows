@@ -22,7 +22,7 @@ Requirements or continuation instruction: $ARGUMENTS
 - Existing PRD, UI Spec, Design Docs, Work Plan, or tasks: resume at the next incomplete Fullstack (Monorepo) Flow phase. Restart requirement analysis when the approved outcome, requirement, or exclusion changes.
 - Quality failure during an existing implementation: resume its task cycle and Orchestrator Escalation Resolution.
 
-For a requirements stop, read `requirement-convergence`'s `references/scope-confirmation.md` and render that output from the retained user record and analyzer evidence. Render each unanswered product, UX, or operational decision under **User decisions** as an unresolved question followed by its answer-dependent effects. Only an explicit user selection moves it into **Confirmed scope**. Record Structural Scale and workflow routing under **Workflow**.
+For a requirements stop, read `requirement-convergence`'s `references/scope-confirmation.md` and render that output from the retained user record and analyzer evidence. Record Structural Scale and workflow routing under **Workflow**.
 
 Resolve the entry from supplied artifacts and repository state. Ask only when different interpretations require a change to user-required outcomes, explicit constraints, or execution authority.
 

@@ -26,11 +26,11 @@ Follow the scale-selected flow and its user approval points from subagents-orche
 
 ## Step 1: Requirement Analysis
 
-Apply the subagents-orchestration-guide Requirement Evidence Handoff, then invoke requirement-analyzer for compact scope evidence, cost evidence, affected-layer evidence, and decision-changing questions.
+Apply the subagents-orchestration-guide Requirement Evidence Handoff, then invoke requirement-analyzer for compact scope evidence, cost evidence, and affected-layer evidence.
 
 At the requirements stop, the orchestrator compares the evidence with its retained user record and applies subagents-orchestration-guide `Requirement Convergence`. User selections establish requirements and exclusions; the orchestrator judges readiness, determines Structural Scale and affected layers, and selects the canonical route.
 
-Immediately before the stop, read `requirement-convergence`'s `references/scope-confirmation.md` and render that output from the retained user record and analyzer evidence. Render each unanswered product, UX, or operational decision under **User decisions** as an unresolved question followed by its answer-dependent effects. Only an explicit user selection moves it into **Confirmed scope**. Record Structural Scale and workflow routing under **Workflow**.
+Immediately before the stop, read `requirement-convergence`'s `references/scope-confirmation.md` and render that output from the retained user record and analyzer evidence. Record Structural Scale and workflow routing under **Workflow**.
 
 **[STOP — BLOCKING]** Present the Scope Confirmation to the user, then proceed after explicit confirmation.
 
