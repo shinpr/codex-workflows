@@ -41,7 +41,7 @@ So that [expected value/benefit]
 - [ ] Requirement 1: [Detailed description]
   - AC-001: [Acceptance criteria - Given/When/Then format or measurable standard]
   - AC-002: [Acceptance criteria]
-[Repeat only for additional confirmed requirements]
+[Repeat only for additional requirements]
 
 ### Future / Out of Scope
 
@@ -56,9 +56,9 @@ Reverse-engineered PRDs mark convergence-derived entries N/A because code contai
 
 | Area | Requirement | Evidence / Source |
 |------|-------------|-------------------|
-| [performance / reliability / security / accessibility / other] | [Confirmed constraint or measurable acceptance condition] | [Source] |
+| [performance / reliability / security / accessibility / other] | [Constraint or measurable acceptance condition] | [Source] |
 
-Use `N/A — no confirmed non-functional requirement changes the current outcome` when none apply. General quality preferences remain non-binding context until the user approves them as product requirements.
+Use `N/A — no non-functional requirement changes the current outcome` when none apply. General quality preferences remain non-binding context until the user approves them as product requirements.
 
 ## Success Criteria
 

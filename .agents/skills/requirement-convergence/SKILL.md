@@ -30,9 +30,9 @@ Use [references/criteria.md](references/criteria.md) to judge each field.
 
 The orchestrator owns user interaction. It runs the hearing after an analysis step has produced scope facts.
 
-The user decides product requirements and exclusions. Keep confirmed user scope, observed facts, and agent inference separate because combining them makes agent interpretation indistinguishable from evidence and prevents an informed requirement decision.
+The user decides product requirements and exclusions. Keep user-selected scope, observed facts, and agent inference separate because combining them makes agent interpretation indistinguishable from evidence and prevents an informed requirement decision.
 
-At every requirements confirmation stop, render [references/scope-confirmation.md](references/scope-confirmation.md). Only an explicit user answer moves a user-owned decision into confirmed scope.
+At every requirements confirmation stop, render [references/scope-confirmation.md](references/scope-confirmation.md). Only an explicit user answer moves a user-owned decision into user-selected scope.
 
 1. Escalate a requirement change only when concrete evidence shows the requested outcome cannot be achieved under the current conditions; name the failing premise, smallest change, and trade-off for the user's decision.
 2. Ask only about fields below `ready`.
@@ -49,7 +49,7 @@ At every requirements confirmation stop, render [references/scope-confirmation.m
 | Design Doc is the first durable document | `Overview` holds `outcome`; `Requirement Boundary` holds current requirements and user-decided `nonGoals` |
 | Small direct implementation | Compact record embedded in the single task file's `Governing Sources` |
 
-Persist `weak-but-explicit` outcome, current requirements, and non-goals as open questions. Keep speculative ideas, evaluation requests, prescribed mechanisms, and unselected candidates in the active convergence context only until scope is confirmed; durable downstream documents contain the resulting current requirements and selected conclusions. `cost` is also ephemeral: use it for the requirements challenge, then let Structural Scale select the workflow and let design or planning produce later estimates. A Small-flow task file carries only `outcome`, current requirements, `nonGoals`, and their readiness in `Governing Sources`; its executor receives only that task path. Keep relevant user wording and explicit constraints in that existing requirement boundary, distinct from technical means. Downstream agents can then use the document path; before persistence or when provenance is missing, pass the relevant source excerpt.
+Persist `weak-but-explicit` outcome, current requirements, and non-goals as open questions. Keep speculative ideas, evaluation requests, prescribed mechanisms, and unselected candidates in the active convergence context only until the user selects scope; durable downstream documents contain the resulting current requirements and selected conclusions. `cost` is also ephemeral: use it for the requirements challenge, then let Structural Scale select the workflow and let design or planning produce later estimates. A Small-flow task file carries only `outcome`, current requirements, `nonGoals`, and their readiness in `Governing Sources`; its executor receives only that task path. Keep relevant user wording and explicit constraints in that existing requirement boundary, distinct from technical means. Downstream agents can then use the document path; before persistence or when provenance is missing, pass the relevant source excerpt.
 
 ## Downstream Contract
 

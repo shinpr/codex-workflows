@@ -95,13 +95,13 @@ Read the document and determine its layer from content signals:
 
 Derive the sections, reason, and expected outcome from the user request and target document. Ask only for a missing item whose plausible interpretations would materially change the updated document.
 
-For PRD or Design Doc updates, apply the confirmed changes to the target document's current outcome, requirements, and exclusions to form `confirmed_requirement_context`; preserve fields the request does not change. Incorporate later user corrections or additions into the same context before the next update or review action. For ADR updates, use `confirmed_requirement_context: N/A — ADR update` and carry the accepted decision plus the requested changes as governing context.
+For PRD or Design Doc updates, apply the requested changes to the target document's current outcome, requirements, and exclusions to form `requirement_context`; preserve fields the request does not change. Incorporate later user corrections or additions into the same context before the next update or review action. For ADR updates, use `requirement_context: N/A — ADR update` and carry the accepted decision plus the requested changes as governing context.
 
 ### Step 4: Document Update
 
-For PRD or Design Doc, invoke [Update Agent from Step 2]: "Operation Mode: update. Existing Document: [path from Step 1]. Changes Required: [the change request and Step 3 answers, as given]. confirmed_requirement_context: [Step 3 current context]. Update the document to reflect the specified changes. Add change history entry."
+For PRD or Design Doc, invoke [Update Agent from Step 2]: "Operation Mode: update. Existing Document: [path from Step 1]. Changes Required: [the change request and Step 3 answers, as given]. requirement_context: [Step 3 current context]. Update the document to reflect the specified changes. Add change history entry."
 
-For a minor ADR change, invoke the update agent with `Operation Mode: update`, the existing path, confirmed changes, and `confirmed_requirement_context: N/A — ADR update`. For a major ADR change, apply documentation-criteria's choice and durability filters. Update or retire an unnecessary choice in the existing record; create a superseding ADR only for a qualifying new decision. Existing execution authority remains valid for outcome-preserving technical reductions.
+For a minor ADR change, invoke the update agent with `Operation Mode: update`, the existing path, the requested changes, and `requirement_context: N/A — ADR update`. For a major ADR change, apply documentation-criteria's choice and durability filters. Update or retire an unnecessary choice in the existing record; create a superseding ADR only for a qualifying new decision. Existing execution authority remains valid for outcome-preserving technical reductions.
 
 ### Step 5: Document Review
 
@@ -114,9 +114,9 @@ Invoke code-verifier agent: "Verify the updated Design Doc against current code.
 Apply Review Resolution to every discrepancy. Pass the `apply` discrepancies to the update agent, rerun code-verifier, and store the resolved summary, declines with reasons, and material limitations as `$VERIFICATION_RESOLUTION` after the `apply` set becomes empty.
 
 For Design Doc updates:
-Invoke document-reviewer agent: "Review the following updated document. doc_type: DesignDoc. review_context: update. target: [path from Step 1]. confirmed_requirement_context: [Step 3 current context]. verification_resolution: $VERIFICATION_RESOLUTION. Focus on consistency of the updated sections, governing requirements, and change history."
+Invoke document-reviewer agent: "Review the following updated document. doc_type: DesignDoc. review_context: update. target: [path from Step 1]. requirement_context: [Step 3 current context]. verification_resolution: $VERIFICATION_RESOLUTION. Focus on consistency of the updated sections, governing requirements, and change history."
 
-For PRD updates, invoke document-reviewer with the target and `confirmed_requirement_context` from Step 3. For minor ADR updates, use `doc_type: ADRBatch`, `targets: [updated ADR path]`, and `review_context: update`; review the requested changes and their dependent consistency while carrying the accepted, unchanged decision content as governing context.
+For PRD updates, invoke document-reviewer with the target and `requirement_context` from Step 3. For minor ADR updates, use `doc_type: ADRBatch`, `targets: [updated ADR path]`, and `review_context: update`; review the requested changes and their dependent consistency while carrying the accepted, unchanged decision content as governing context.
 
 **Store output as**: `$STEP_5_OUTPUT`
 
@@ -150,7 +150,7 @@ For Design Doc, invoke design-sync agent: "Verify consistency of the updated Des
 
 - [ ] Identified target document
 - [ ] Resolved change content from the request and target document, asking only when material intent was missing
-- [ ] Built the current `confirmed_requirement_context` from the target document and confirmed changes
+- [ ] Built the current `requirement_context` from the target document and the requested changes
 - [ ] Updated document via appropriate agent (update mode)
 - [ ] Applied Review Resolution to code-verifier discrepancies before document-reviewer for Design Doc updates
 - [ ] Invoked document-reviewer and addressed feedback

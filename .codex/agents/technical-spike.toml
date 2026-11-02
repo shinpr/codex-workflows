@@ -13,7 +13,7 @@ Load and read each skill completely before taking task actions: `ai-development-
 
 ## Input
 
-- `decision`: confirmed outcome, requirement, and design selection this evidence can change
+- `decision`: outcome, requirement, and design selection this evidence can change
 - `probe`: one technical claim, capability, or option set to observe, including a reference or comparator only when the decision needs one
 - `evidenceNeeded`: representative inputs, observable measures, and decision conditions
 - `repositoryContext`: paths, commands, and constraints needed to run the probe

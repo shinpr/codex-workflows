@@ -13,7 +13,7 @@ Read [references/e2e-design.md](references/e2e-design.md) only when a selected b
 
 Select an integration or E2E test only when all conditions hold:
 
-1. a confirmed AC, preserved behavior, or task Verification Focus names an observable claim;
+1. an AC, preserved behavior, or task Verification Focus names an observable claim;
 2. the claim includes behavior observed at a component, persistence, process, browser, or service boundary; the cases of a calculation, parsing, or branching rule inside it stay with that rule's unit test;
 3. no existing test owns that claim at the boundary with assertions that detect its material failure, or the Design Doc names the owning test for rewrite; in either case with an existing owner, the case updates that test;
 4. the expected regression-detection value justifies the fixture, environment, runtime, and maintenance cost.

@@ -22,7 +22,7 @@ Metadata:
 
 ## Implementation Outcome
 
-[Repository change that completes the source Work Plan task or confirmed Small outcome.]
+[Repository change that completes the source Work Plan task or Small outcome.]
 
 ## Governing Sources
 
@@ -31,9 +31,9 @@ List every directly constraining section for this task. Preserve the Work Plan c
 - [Design Doc path (§ section); AC IDs]
 - [UI Spec or ADR path (§ section), when it directly constrains this task]
 
-For a Small flow whose scope is carried by this task file, replace the path entries with the compact confirmed scope:
+For a Small flow whose scope is carried by this task file, replace the path entries with the compact scope from the convergence record:
 
-- Confirmed outcome: [observable result]
+- Outcome: [observable result]
 - Desired-future requirements: [current buildable requirements]
 - Non-goals: [excluded items or confirmed none]
 - Open fields: [weak-but-explicit items or none]
@@ -47,7 +47,7 @@ For a Small flow whose scope is carried by this task file, replace the path entr
 
 Read the smallest representative set needed to implement the task:
 
-- [Governing document section or confirmed Small scope]
+- [Governing document section or Small scope]
 - [Existing implementation]
 - [Adjacent representative test]
 
@@ -64,20 +64,20 @@ Read the smallest representative set needed to implement the task:
 ## Operation Verification Methods
 
 - **Verification method**: [Governing verification method or repository command]
-- **Success criteria**: [Observable result tied to the cited ACs or confirmed requirement]
+- **Success criteria**: [Observable result tied to the cited ACs or requirement]
 - **Verification level**: [L1 unit/local | L2 integration | L3 end-to-end]
 
 ## Verification Focus
 
 Include this section only when a material false-green state exists or a generated test skeleton already defines one.
 
-- **Primary failure**: [Implementation appears complete while the cited AC or confirmed outcome remains false]
+- **Primary failure**: [Implementation appears complete while the cited AC or outcome remains false]
 - **Observable check**: [Smallest check that detects that state]
 
 ## Completion Criteria
 
 - [ ] The cited implementation outcome is complete
-- [ ] The cited ACs or confirmed Small requirements are satisfied
+- [ ] The cited ACs or Small requirements are satisfied
 - [ ] Required tests pass
 - [ ] Operation verification succeeds
 - [ ] Verification Focus is satisfied when present

@@ -121,7 +121,7 @@ Upstream correction required:
 
 ## Quality Check
 
-- Every task maps to a confirmed AC, selected implementation obligation, or required dependency and produces its repository implementation outcome.
+- Every task maps to an AC, selected implementation obligation, or required dependency and produces its repository implementation outcome.
 - Together the tasks cover every Design Doc obligation that is repository work.
 - Task order makes the first vertical slice's representative ACs observable across their required repository path at the earliest point permitted by observed dependencies and executor routing; the Design Doc's early verification runs at the earliest applicable point within that slice, and every earlier task is required by and consumed by that slice.
 - Every supplied test skeleton path appears unchanged in the earliest task where its declared real boundary becomes executable, and that task completes the same file as a runnable test.

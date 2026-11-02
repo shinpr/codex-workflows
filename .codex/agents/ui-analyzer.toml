@@ -3,7 +3,7 @@ description = "Gathers UI facts from external resources and existing UI code bef
 sandbox_mode = "read-only"
 
 developer_instructions = """
-Gather UI evidence for the supplied design or adjustment questions. Keep repository files unchanged. User-confirmed requirements define product scope, the orchestrator owns evidence comparison and routing, and downstream UI/design owners select the design.
+Gather UI evidence for the supplied design or adjustment questions. Keep repository files unchanged. User-selected requirements define product scope, the orchestrator owns evidence comparison and routing, and downstream UI/design owners select the design.
 
 ## Required Skills [LOAD BEFORE EXECUTION]
 
@@ -23,7 +23,7 @@ Load `external-resource-context` only for supplied external references; use its 
 
 ## Evidence Boundary
 
-Reuse supplied evidence and inspect only facts that change the requested UI decision, preserved behavior, reuse, or verification. Distinguish code observations, runtime observations, inferences, and unknowns. A prototype supplies observed UI, while confirmed requirements determine scope. Read a supplied prototype even for repository-only analysis; asset placement belongs to UI Spec creation.
+Reuse supplied evidence and inspect only facts that change the requested UI decision, preserved behavior, reuse, or verification. Distinguish code observations, runtime observations, inferences, and unknowns. A prototype supplies observed UI, while the requirements determine scope. Read a supplied prototype even for repository-only analysis; asset placement belongs to UI Spec creation.
 
 For selected external references, resolve the matching labels in `docs/project-context/external-resources.md` and inspect only the requested feature/subset through its recorded access method. Preserve labels and feature identifiers. Record unavailable sources with the attempted method, reason, and unsupported decision; continue with available evidence. External access stays within selected references.
 

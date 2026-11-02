@@ -19,7 +19,7 @@ Every role owns the smallest sufficient result within its assigned scope. Unnece
 
 A phase `pass` means the current evidence permits progression. User confirmation permits the requested next work; neither makes internal design choices immutable. Final user acceptance concerns the delivered outcome. Interpret existing `approved` or ADR `Accepted` records as passage/continuation in context, without requiring a new field or repeating permission already granted.
 
-Interpret user responses by their meaning and the authority they supply. Continuation or route approval advances the workflow. A product requirement or exclusion becomes settled when the user's response selects it.
+Interpret user responses by their meaning and the authority they supply. Continuation or route approval advances the workflow. A product requirement or exclusion enters scope when the user's response selects it.
 
 Resolve outcome-preserving technical reductions, including superseding ADR choices, through existing owners. Update only affected sources, tasks, and proof, and continue within the user's execution authority. Escalate changes to user-required outcomes, explicit constraints, actual consumer obligations, or external-action authority. Optional new requirements remain unadopted; propose a requirement expansion only with evidence that the current conditions cannot deliver the requested result; requirement reductions follow Requirement reopening after codebase analysis.
 
@@ -46,7 +46,7 @@ For a new or scope-changing request, retain the complete user wording in the orc
 
 Keep all remaining requirement detail for comparison after the result returns. The handoff supplies an evidence target, while the retained user record supplies product requirements and exclusions. Requirement analysis completes when the evidence result returns; parallel orchestrator work stays outside the delegated evidence boundary.
 
-A PRD is both a binding product contract and a Product Context carrier. Downstream design and planning prompts consume the converged outcome, confirmed requirements, acceptance criteria, user-decided exclusions, and explicit constraints. They load Product Context only when one of those binding items cites it. This keeps business, UX, and feasibility background available for product judgment without turning it into implementation scope.
+A PRD is both a binding product contract and a Product Context carrier. Downstream design and planning prompts consume the converged outcome, requirements, acceptance criteria, user-decided exclusions, and explicit constraints. They load Product Context only when one of those binding items cites it. This keeps business, UX, and feasibility background available for product judgment without turning it into implementation scope.
 
 ### Requirement Change Detection During Flow [MANDATORY]
 
@@ -57,7 +57,7 @@ During flow execution, compare a user addition with the approved outcome, requir
 
 Preserve completed unaffected work on either route.
 
-**Requirement reopening after codebase analysis**: When the first codebase-analyzer result after requirement confirmation shows existing behavior that serves a confirmed requirement's need and falls short only of extra behavior that requirement specifies, whichever field reports it, present it with its evidence and cost effect at one requirements stop before UI Spec, ADR, or Design Doc work, and let the user keep or change the requirement. Requirements are confirmed before any code is read, and every later phase builds and reviews against them without questioning them, so this is the one point where repository evidence can reduce them; judging such evidence as ruled out by the requirement removes the user's only chance to weigh it. Apply the answer through Handling Requirement Changes and continue; later analyses do not reopen requirements this way.
+**Requirement reopening after codebase analysis**: When the first codebase-analyzer result after requirement confirmation shows existing behavior that serves a requirement's need and falls short only of extra behavior that requirement specifies, whichever field reports it, present it with its evidence and cost effect at one requirements stop before UI Spec, ADR, or Design Doc work, and let the user keep or change the requirement. The user selects requirements before any code is read, and every later phase builds and reviews against them without questioning them, so this is the one point where repository evidence can reduce them; judging such evidence as ruled out by the requirement removes the user's only chance to weigh it. Apply the answer through Handling Requirement Changes and continue; later analyses do not reopen requirements this way.
 
 ## Orchestration Principles
 
@@ -107,7 +107,7 @@ Use these stops when the active recipe reaches a user decision or authority not 
 |-------|------------|---------------------|
 | Requirements | After an entry recipe invokes requirement-analyzer | Converge fields below `ready`, then confirm requirements |
 | PRD | After document-reviewer completes PRD review | Confirm the required outcome and continue |
-| Requirement reopening | After the first codebase-analyzer result when it shows existing behavior that falls short of a confirmed requirement only by extra behavior that requirement specifies | Keep or change each affected requirement |
+| Requirement reopening | After the first codebase-analyzer result when it shows existing behavior that falls short of a requirement only by extra behavior that requirement specifies | Keep or change each affected requirement |
 | UI Spec | After document-reviewer completes UI Spec review (frontend/fullstack) | Confirm the UI outcome and continue |
 | ADR | After document-reviewer completes the complete ADR-batch review (when ADRs were created) | Continue with the current technical choices |
 | Design | After design-sync completes consistency verification | Continue with the current design |
@@ -170,7 +170,7 @@ Use documentation-criteria Structural Scale as the single scale definition.
 
 \* Update if PRD exists for the relevant feature
 \*\* One ADR per durable technical choice that requires comparison between at least two credible materially distinct options; the Choice and Durability filters determine qualification independently of scale
-\*\*\* Create, update, or reverse-engineer the PRD in flows that own it. A design recipe that does not create PRDs may use its confirmed convergence carrier after the user explicitly authorizes that route.
+\*\*\* Create, update, or reverse-engineer the PRD in flows that own it. A design recipe that does not create PRDs may use its convergence carrier after the user explicitly authorizes that route.
 
 ## Using Agent Results
 
@@ -215,18 +215,18 @@ After the selected entry recipe completes its requirement stop, follow the minim
 
 | Scale | Required flow |
 |-------|---------------|
-| Large | scope evidence + user-confirmed convergence **[Stop]** -> PRD creation/review **[Stop]** when the active recipe owns it; otherwise its user-authorized convergence carrier -> codebase analysis -> requirement reopening when applicable **[Stop when applicable]** -> frontend/fullstack UI Spec + `document-reviewer` **[Stop]** -> optional ADR batch + one batch `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` + Review Resolution -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
-| Medium | scope evidence + user-confirmed convergence **[Stop]** -> codebase analysis -> requirement reopening when applicable **[Stop when applicable]** -> frontend/fullstack UI Spec + `document-reviewer` **[Stop]** -> optional ADR batch + one batch `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` + Review Resolution -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
-| Small | scope evidence + user-confirmed convergence **[Stop]** -> one standard task file -> task execution cycle |
+| Large | scope evidence + requirements convergence **[Stop]** -> PRD creation/review **[Stop]** when the active recipe owns it; otherwise its user-authorized convergence carrier -> codebase analysis -> requirement reopening when applicable **[Stop when applicable]** -> frontend/fullstack UI Spec + `document-reviewer` **[Stop]** -> optional ADR batch + one batch `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` + Review Resolution -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
+| Medium | scope evidence + requirements convergence **[Stop]** -> codebase analysis -> requirement reopening when applicable **[Stop when applicable]** -> frontend/fullstack UI Spec + `document-reviewer` **[Stop]** -> optional ADR batch + one batch `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` + Review Resolution -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
+| Small | scope evidence + requirements convergence **[Stop]** -> one standard task file -> task execution cycle |
 
 Flow rules:
-- After each analysis result, compare any unresolved product, UX, or operational boundary with the confirmed scope. When it can change that scope, return through Requirement Convergence before dependent analysis or document work; technical choices continue through the design owners.
-- Reuse a `codebase-analyzer` result when its `analysisScope` still covers the current confirmed scope; otherwise run complete-scope analysis. Frontend flows add `ui-analyzer` for rendering and interaction evidence; fullstack analysis follows `references/monorepo-flow.md` and passes the same complete-scope result to both layer designs.
+- After each analysis result, compare any unresolved product, UX, or operational boundary with the scope in the convergence record. When it can change that scope, return through Requirement Convergence before dependent analysis or document work; technical choices continue through the design owners.
+- Reuse a `codebase-analyzer` result when its `analysisScope` still covers the current scope; otherwise run complete-scope analysis. Frontend flows add `ui-analyzer` for rendering and interaction evidence; fullstack analysis follows `references/monorepo-flow.md` and passes the same complete-scope result to both layer designs.
 - Frontend and fullstack flows create the UI Spec from completed codebase and UI analysis before ADR or Design Doc creation.
 - When a frontend or fullstack UI Spec uses a prototype, pass `prototype_reference_strength` to ui-spec-designer. Use `binding` when the supplied context makes the prototype's rendering the implementation target; otherwise use `reference`. Ask the user only when the choice changes the current UI outcome and the supplied context materially supports both readings.
 - After analysis, apply the Choice filter to each `candidateDecisionPoint`, then apply the Durability filter to the retained set. Create one ADR per qualifying point, then review and approve the complete ADR batch once. These filters are the exclusive ADR creation basis and Structural Scale is supporting context.
-- Pass the confirmed requirement carrier and compact scope evidence to `codebase-analyzer`; the orchestrator carries the convergence record until a PRD or Design Doc persists it.
-- For Small flows whose confirmed scope is carried by the execution task, use the llm-friendly-context Task File Contract to create `docs/plans/tasks/small-{name}.md`. Build its outcome, targets, steps, and verification from the confirmed requirement and repository scope; embed `outcome`, `requirements`, `nonGoals`, and readiness in `Governing Sources`. Pass the exact file to the layer-appropriate executor. Requirement confirmation authorizes this cycle; work-planner, WorkPlan review, and task-decomposer are outside the path. Remove the task file after Post-Implementation Review passes.
+- Pass the requirement carrier and compact scope evidence to `codebase-analyzer`; the orchestrator carries the convergence record until a PRD or Design Doc persists it.
+- For Small flows whose scope is carried by the execution task, use the llm-friendly-context Task File Contract to create `docs/plans/tasks/small-{name}.md`. Build its outcome, targets, steps, and verification from the requirements and repository scope; embed `outcome`, `requirements`, `nonGoals`, and readiness in `Governing Sources`. Pass the exact file to the layer-appropriate executor. Requirement confirmation authorizes this cycle; work-planner, WorkPlan review, and task-decomposer are outside the path. Remove the task file after Post-Implementation Review passes.
 - Pass the codebase-analyzer fields that change reuse, simplification, option validity or selection, lifecycle cost, a preserved contract, design, or verification to the relevant ADR/Design Doc owner, copied unchanged.
 - Pass a Design Doc path to `code-verifier`, apply Review Resolution to its discrepancies, and pass only resolved verification evidence to `document-reviewer`.
 - Run WorkPlan review after every Medium/Large work plan creation or update. Resolve `needs_revision` through Review Resolution with work-planner, then apply Work Plan Authorization. Route governing-source contradictions through Orchestrator Escalation Resolution.
@@ -256,7 +256,7 @@ For each task, record `diffBase`, run the routed executor, and inspect the resul
 Stop autonomous execution and request user input in the following cases:
 
 1. **Orchestrator resolution requires user input**: Orchestrator Escalation Resolution reaches one of its user-escalation conditions
-2. **Confirmed scope change needs approval**: Requirement Change Detection routes the addition through Requirement Convergence
+2. **Scope change needs user approval**: Requirement Change Detection routes the addition through Requirement Convergence
 3. **User explicitly stops**: Direct stop instruction or interruption
 
 Agent `blocked` results, maintained blocking findings, and implementation deviations first enter Orchestrator Escalation Resolution. The orchestrator requests user input only under that procedure's explicit user-decision conditions.
@@ -299,10 +299,10 @@ Apply Review Resolution to reviewer findings. Apply a security-reviewer finding 
 | From | To | Required pass-through |
 |------|----|-----------------------|
 | `requirement-analyzer` | orchestrator requirement hearing | compact scope and cost evidence; the orchestrator compares them with retained user wording, obtains user selections, and decides readiness and scale before codebase analysis |
-| confirmed requirement carrier | `codebase-analyzer` | current PRD path when present, otherwise confirmed requirements, plus compact scope evidence |
+| requirement carrier | `codebase-analyzer` | current PRD path when present, otherwise the convergence record's requirements, plus compact scope evidence |
 | convergence record | PRD or Design Doc owner | `prd-creator` persists PRD fields; `technical-designer*` persists Design Doc fields when no PRD exists; both record open requirement fields while cost remains ephemeral |
 | convergence record | Small-flow implementation | compact record in the task file's `Governing Sources` when no PRD or Design Doc exists |
-| `codebase-analyzer` | orchestrator and `technical-designer*` | relevant `simplifications`, `reuse`, `invalidations`, `candidateDecisionPoints`, `verification`, decision-changing `unknowns`, and material limitations; the orchestrator passes confirmed ADR points to the designer |
+| `codebase-analyzer` | orchestrator and `technical-designer*` | relevant `simplifications`, `reuse`, `invalidations`, `candidateDecisionPoints`, `verification`, decision-changing `unknowns`, and material limitations; the orchestrator passes the qualifying ADR points to the designer |
 | `technical-designer*` | ADR batch reviewer | complete ADR `paths[]` from the invocation |
 | `technical-designer*` | `code-verifier` | Design Doc path |
 | `code-verifier` | orchestrator Review Resolution, then technical designer or document reviewer | `apply` discrepancies for the author; declined reasons and resolved verification evidence for the next reviewer |

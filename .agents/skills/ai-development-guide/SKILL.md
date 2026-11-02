@@ -52,7 +52,7 @@ For an observed bug or regression, inspect adjacent cases that share its support
 
 ## Design and Reuse Judgment
 
-- Treat complexity as cost, never as evidence of value. Additional user decisions, settings, modes, concepts, outputs, persistent state, and implementation paths earn their cost only when a confirmed current need cannot be served by a smaller existing or default behavior and the observable benefit justifies the total UX and lifecycle burden.
+- Treat complexity as cost, never as evidence of value. Additional user decisions, settings, modes, concepts, outputs, persistent state, and implementation paths earn their cost only when a current need in the requirements cannot be served by a smaller existing or default behavior and the observable benefit justifies the total UX and lifecycle burden.
 - Prefer the lowest-total-complexity implementation that satisfies the current outcome.
 - Reuse or extend an existing element when it owns the same responsibility and represents the repository’s current pattern.
 - Keep similar local code separate when its responsibilities may evolve independently or abstraction adds more contract surface than it removes.
@@ -77,9 +77,9 @@ Fix failures caused by the current change and failures within required dependenc
 
 ## Completion Gate
 
-- [ ] The implementation maps to the confirmed outcome or an evidence-backed required dependency or risk.
+- [ ] The implementation maps to the outcome or an evidence-backed required dependency or risk.
 - [ ] An observed defect was corrected at its supported cause rather than hidden.
 - [ ] Adjacent in-scope cases sharing the supported cause are corrected or evidenced unaffected.
 - [ ] Public, persistent, security, and error boundaries affected by the change remain correct.
 - [ ] Applicable focused and repository-required checks pass, or an exact environmental limitation is reported.
-- [ ] Every added mechanism or cleanup item is required by the confirmed outcome or its evidence-backed dependency or risk.
+- [ ] Every added mechanism or cleanup item is required by the outcome or its evidence-backed dependency or risk.

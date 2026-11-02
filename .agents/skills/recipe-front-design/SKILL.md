@@ -27,7 +27,7 @@ Load `external-resource-context` in Step 4 only when a named external source is 
 **Execution Method**:
 - Scope and cost evidence -> performed by requirement-analyzer
 - Scope confirmation -> performed by the orchestrator with user confirmation
-- Codebase analysis -> performed by codebase-analyzer against the confirmed scope
+- Codebase analysis -> performed by codebase-analyzer against the scope selected at Scope Confirmation
 - UI fact gathering -> performed by ui-analyzer
 - UI Specification creation -> performed by ui-spec-designer
 - Design document creation -> performed by technical-designer-frontend
@@ -41,7 +41,7 @@ Orchestrator spawns agents and passes structured data between them.
 **Included in this skill**:
 - Compact scope and cost evidence from requirement-analyzer; the user owns product requirements and exclusions, while the orchestrator owns evidence comparison, readiness, scale, and document routing
 - Scope confirmation with the user, grounded in compact scope and cost evidence
-- Codebase analysis of the confirmed frontend scope
+- Codebase analysis of the frontend scope selected at Scope Confirmation
 - Focused external resource hearing when a current design decision requires it
 - UI fact gathering with ui-analyzer
 - UI Specification creation with ui-spec-designer (prototype code inquiry included)
@@ -78,30 +78,30 @@ If `prdRequired` is true and the user neither provides a PRD path nor explicitly
 After confirmation, record the final scale. When the user's answer changes the analysis target or scope/cost evidence, re-run requirement-analyzer; otherwise update the convergence record directly. The Choice and Durability filters supply ADR decision points independently of scale. Use the current PRD path as carrier when available; otherwise use the compact `convergence` object.
 
 ### Step 3: Upstream Confirmation and Codebase Analysis
-When Step 2 marked an existing PRD for update, invoke prd-creator in update mode with that PRD path and the confirmed `convergence` object. Review the updated PRD with document-reviewer using its path as `target`, then resolve findings through Review Resolution. After the review permits approval, present the updated PRD for user confirmation. Continue with its path as the carrier after approval.
+When Step 2 marked an existing PRD for update, invoke prd-creator in update mode with that PRD path and the Step 2 `convergence` object. Review the updated PRD with document-reviewer using its path as `target`, then resolve findings through Review Resolution. After the review permits approval, present the updated PRD for user confirmation. Continue with its path as the carrier after approval.
 
 **[STOP -- BLOCKING when a PRD was updated]** Wait for user confirmation of the updated PRD.
 
-When analysis is required under the subagents-orchestration-guide reuse rule, invoke codebase-analyzer for the confirmed frontend scope: "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for ADR selection, minimal Design Doc creation, and verification. requirement_analysis: [confirmed Step 1 scopeEvidence]. requirements: [confirmed requirements]. prd_path: [current PRD path when present]. layer: frontend. target_paths: [confirmed scopeEvidence.affectedFiles]. focus_areas: responsibility ownership, state/data paths, contracts, and reuse."
+When analysis is required under the subagents-orchestration-guide reuse rule, invoke codebase-analyzer for the frontend scope selected at Step 2: "exploration_mode: [mode from Analysis Assignment]. Analyze the existing codebase to provide compact decision materials for ADR selection, minimal Design Doc creation, and verification. requirement_analysis: [Step 1 scopeEvidence after Step 2]. requirements: [Step 2 convergence record requirements]. prd_path: [current PRD path when present]. layer: frontend. target_paths: [scopeEvidence.affectedFiles after Step 2]. focus_areas: responsibility ownership, state/data paths, contracts, and reuse."
 
 ### Step 4: External Resource Hearing
 After scope confirmation, identify whether a current UI or verification decision requires evidence unavailable from the repository, supplied artifacts, or a recorded resource. When it does, run the focused hearing from `external-resource-context` for that exact axis and persist its access method. Ask the user only when the missing access method controls the design decision. Otherwise record no external-resource dependency and continue.
 
 ### Step 5: Prototype Inquiry
-Use prototype code when the user supplied it or the confirmed UI target references it. Ask for a prototype path only when the UI target cannot otherwise be determined and the answer would change the UI specification. In all other cases set `prototype_path` to unavailable and continue.
+Use prototype code when the user supplied it or the UI target references it. Ask for a prototype path only when the UI target cannot otherwise be determined and the answer would change the UI specification. In all other cases set `prototype_path` to unavailable and continue.
 
 When `prototype_path` is available, apply the subagents-orchestration-guide UI Spec rule to resolve `prototype_reference_strength`. Omit the field when no prototype is available.
 
 ### Step 6: UI Fact Gathering Phase
 Use the prototype path as an input when one was provided; otherwise set `prototype_path` to unavailable.
 
-Invoke ui-analyzer agent: "exploration_mode: [mode from Analysis Assignment]. prior_evidence: [relevant Step 3 findings]. Gather UI facts for frontend design. requirement_analysis: { affectedFiles: [confirmed frontend affected files] }. requirements: [Step 2 confirmed current requirements]. target_paths: [confirmed frontend affected files and directories]. target_components: [frontend target components when known]. ui_spec_path: [path if an existing UI Spec covers this feature]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected in Step 4, or []]. focus_areas: [remaining rendering, interaction, and visual questions]."
+Invoke ui-analyzer agent: "exploration_mode: [mode from Analysis Assignment]. prior_evidence: [relevant Step 3 findings]. Gather UI facts for frontend design. requirement_analysis: { affectedFiles: [frontend affected files after Step 2] }. requirements: [Step 2 current requirements]. target_paths: [frontend affected files and directories after Step 2]. target_components: [frontend target components when known]. ui_spec_path: [path if an existing UI Spec covers this feature]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected in Step 4, or []]. focus_areas: [remaining rendering, interaction, and visual questions]."
 
 ### Step 7: UI Specification Phase
 
 **Review reception:** Unnecessary repairs create lasting work. Before assigning a fix, use Review Resolution to judge no change, removal or narrowing, and reuse first; record why any retained or added mechanism is necessary.
 After UI fact gathering completes, create the UI Specification:
-- Invoke ui-spec-designer agent: "Create UI Spec [from PRD at [path] if PRD exists; read its binding requirements and only Product Context entries they explicitly cite]. Confirmed requirements and exclusions: [Step 2 current requirements and nonGoals]. Codebase analysis: [JSON from codebase-analyzer]. UI analysis: [JSON from ui-analyzer]. [Prototype code is at [user-provided path]. Prototype reference strength: [binding | reference]. Place prototype in docs/ui-spec/assets/{feature-name}/ | Prototype path unavailable; proceed from PRD/requirements and UI analysis.] External resource refs: [ui_analysis.externalResources.selectedRefs]."
+- Invoke ui-spec-designer agent: "Create UI Spec [from PRD at [path] if PRD exists; read its binding requirements and only Product Context entries they explicitly cite]. Requirements and exclusions: [Step 2 current requirements and nonGoals]. Codebase analysis: [JSON from codebase-analyzer]. UI analysis: [JSON from ui-analyzer]. [Prototype code is at [user-provided path]. Prototype reference strength: [binding | reference]. Place prototype in docs/ui-spec/assets/{feature-name}/ | Prototype path unavailable; proceed from PRD/requirements and UI analysis.] External resource refs: [ui_analysis.externalResources.selectedRefs]."
 - Invoke document-reviewer agent: "doc_type: UISpec target: [ui-spec path] Review for consistency and completeness"
 - Resolve `needs_revision` through Review Resolution with ui-spec-designer, then review the updated UI Spec. Route governing-source contradictions through Orchestrator Escalation Resolution before the user confirmation stop.
 
@@ -109,16 +109,16 @@ After UI fact gathering completes, create the UI Specification:
 Proceed after the user explicitly confirms the UI Spec.
 
 ### Step 8: Design Document Creation Phase
-Create appropriate design documents from confirmed scope and decision materials:
+Create appropriate design documents from the Step 2 scope and decision materials:
 - Start with codebase analysis `candidateDecisionPoints`, then add a technical choice from UI analysis or the approved UI Spec when its evidence establishes at least two credible materially distinct options. Apply the Choice filter, then the Durability filter, to the complete candidate set.
-- When the retained array is non-empty, invoke technical-designer-frontend once with `document_to_create: ADRBatch`, `decision_points: [retained array]`, confirmed requirements, and `decision_materials: [only analysis material that changes the options, lifecycle cost, maintainability, or validity of those points]`. Review all returned `paths[]` in one document-reviewer invocation using `doc_type: ADRBatch` and `targets: [all paths]`. Apply Review Resolution to the batch, rerun the batch review when an accepted correction changes a file, then present one ADR-batch confirmation request.
+- When the retained array is non-empty, invoke technical-designer-frontend once with `document_to_create: ADRBatch`, `decision_points: [retained array]`, the requirements, and `decision_materials: [only analysis material that changes the options, lifecycle cost, maintainability, or validity of those points]`. Review all returned `paths[]` in one document-reviewer invocation using `doc_type: ADRBatch` and `targets: [all paths]`. Apply Review Resolution to the batch, rerun the batch review when an accepted correction changes a file, then present one ADR-batch confirmation request.
 
   **[STOP -- BLOCKING when ADRs were created]** Wait for one user confirmation of the reviewed ADR batch before creating the Design Doc.
 
-- Record every approved ADR file as `Accepted` when ADRs were created. For Design Doc, invoke technical-designer-frontend with `document_to_create: DesignDoc`, `adr_paths: [accepted ADR paths or []]`, confirmed requirements, approved UI Spec, and `decision_materials: [only analysis material that changes reuse, simplification, implementation validity, a selected ADR decision, a preserved contract, or verification]`. The confirmed requirements define scope, and selected ADR decisions supply the current technical choices, revisable when a smaller sufficient design is supported.
+- Record every approved ADR file as `Accepted` when ADRs were created. For Design Doc, invoke technical-designer-frontend with `document_to_create: DesignDoc`, `adr_paths: [accepted ADR paths or []]`, the requirements, approved UI Spec, and `decision_materials: [only analysis material that changes reuse, simplification, implementation validity, a selected ADR decision, a preserved contract, or verification]`. The requirements define scope, and selected ADR decisions supply the current technical choices, revisable when a smaller sufficient design is supported.
 - Invoke code-verifier agent: "Verify Design Doc against code. doc_type: design-doc. document_path: [document path]."
 - Apply Review Resolution to every code-verifier discrepancy, using technical-designer-frontend in update mode for selected corrections and its bounded rerun rule. Carry the resolved verification summary, declines with reasons, and material limitations after the `apply` set becomes empty.
-- Review the Design Doc: Invoke document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. review_context: creation. target: [Design Doc path]. requirements_verbatim: [original user requirements]. confirmed_requirement_context: [complete confirmed requirement context from Step 2]. decision_materials: [only analysis material that constrains this design]. verification_resolution: [resolved code-verifier evidence]."
+- Review the Design Doc: Invoke document-reviewer agent: "Review the Design Doc for consistency, completeness, and adopted design validity. doc_type: DesignDoc. review_context: creation. target: [Design Doc path]. requirements_verbatim: [original user requirements]. requirement_context: [complete requirement context from Step 2]. decision_materials: [only analysis material that constrains this design]. verification_resolution: [resolved code-verifier evidence]."
 - Resolve `needs_revision` through Review Resolution with technical-designer-frontend, then review the updated Design Doc. Route governing-source contradictions through Orchestrator Escalation Resolution. Reach the user confirmation stop after review succeeds.
 
 **[STOP -- BLOCKING]** Obtain user confirmation using the shared Design Confirmation alignment.

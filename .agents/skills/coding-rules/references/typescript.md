@@ -17,7 +17,7 @@ Apply only rules relevant to the changed code and prefer repository configuratio
 - Guard asynchronous effects against stale results and post-unmount updates using the repository's established mechanism.
 - Use class components only where the repository or framework requires them, such as an existing Error Boundary contract.
 
-Introduce a state library, server-state library, component hierarchy, alias convention, memoization strategy, or code-splitting pattern only when the confirmed outcome and repository evidence require it.
+Introduce a state library, server-state library, component hierarchy, alias convention, memoization strategy, or code-splitting pattern only when the outcome and repository evidence require it.
 
 ## Environment and Security
 

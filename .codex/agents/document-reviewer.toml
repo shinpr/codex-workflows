@@ -43,14 +43,14 @@ When `prior_feedback` is supplied, check only the prior findings and inconsisten
 
 ### PRD
 
-- Future-state creation contains one confirmed outcome, buildable current requirements, representative acceptance criteria, and user-decided exclusions or confirmed none.
+- Future-state creation contains one outcome, buildable current requirements, representative acceptance criteria, and user-decided exclusions or confirmed none.
 - Product Context preserves provenance and labels unknown business, UX, success, or feasibility claims as unknown.
 - Contextual unknowns permit approval; block only for an unresolved user decision that changes the outcome, requirement, exclusion, or AC.
 - Reverse-engineered/as-is PRDs may mark convergence fields N/A and record user decisions only when supplied by the user.
 
 ### ADR Batch
 
-- Every file owns one technical question within confirmed scope.
+- Every file owns one technical question within the scope of the requirements.
 - Each question requires selection between at least two credible materially distinct options supported by the current requirement boundary.
 - Options are evaluated against requirement and repository fit, current-scope benefit, lifecycle cost, maintainability, material trade-offs, and reversibility using available evidence.
 - The selected option is necessary and sufficient for the approved outcome and has the lowest justified lifecycle cost among valid options. A more expensive option requires a current-scope benefit that changes the selection.
@@ -62,13 +62,13 @@ When `prior_feedback` is supplied, check only the prior findings and inconsisten
 
 ### UI Spec
 
-- Screens/components, transitions, state/display behavior, interactions, and visual acceptance needed by confirmed requirements are implementable and traceable.
-- Loading, empty, error, responsive, accessibility, token, and browser behavior is required only when supported by a confirmed requirement, approved UI direction, preserved behavior, or applicable repository/design-system rule.
-- UI states trace to the confirmed scope, with user-decided exclusions remaining excluded.
+- Screens/components, transitions, state/display behavior, interactions, and visual acceptance needed by the requirements are implementable and traceable.
+- Loading, empty, error, responsive, accessibility, token, and browser behavior is required only when supported by a requirement, approved UI direction, preserved behavior, or applicable repository/design-system rule.
+- UI states trace to the scope of the requirements, with user-decided exclusions remaining excluded.
 
 ### Design Doc
 
-- The design implements only the confirmed outcome and required dependencies.
+- The design implements only the outcome and required dependencies.
 - The document contains selected implementation conclusions rather than evaluation-only ideas or unselected candidates; ADRs may retain alternatives as decision history.
 - Existing evidence is sufficient for the decisions that rely on it; cited identifiers and contracts agree with supplied code verification or repository facts.
 - For a material added mechanism, establish what required result no change, subtraction, or reuse cannot deliver before judging its detailed contracts. Assess its layers, result fields, states, and tests together. A use inside the proposed design or an earlier pass does not prove necessity; evidence informs a separate lifecycle-value judgment.
@@ -83,7 +83,7 @@ When `prior_feedback` is supplied, check only the prior findings and inconsisten
 - Every Design Doc obligation that is repository work is covered by at least one task.
 - Every task produces a repository implementation outcome required by a cited Design Doc section or AC.
 - The plan uses the fewest tasks permitted by real dependency order, executor routing, and independently completable outcomes.
-- Every task maps to a confirmed AC, a selected implementation obligation, or a dependency required by one.
+- Every task maps to an AC, a selected implementation obligation, or a dependency required by one.
 - Task order makes the first vertical slice's representative ACs observable across their required repository path at the earliest point permitted by observed dependencies and executor routing; the Design Doc's early verification runs at the earliest applicable point within that slice, and every earlier task is required by and consumed by that slice.
 - Each generated test skeleton path is assigned unchanged to the earliest task where its declared real boundary becomes executable, and that task completes the same file as a runnable test.
 - Verification is executable from repository artifacts or the task's own output.
@@ -96,7 +96,7 @@ Every issue cites its governing `basis` and the `expectedEffect` of correcting i
 
 Set `blocking: true` for input gaps preventing a supported judgment (`blocked`), or when the artifact otherwise:
 
-- commits its downstream consumer to implementation outside confirmed scope or to an added mechanism whose supported outcome benefit does not justify total complexity over a smaller valid design;
+- commits its downstream consumer to implementation outside the scope of the requirements or to an added mechanism whose supported outcome benefit does not justify total complexity over a smaller valid design;
 - contradicts a user-required result, explicit constraint, or actual consumer contract, or leaves affected technical sources inconsistent with the selected correction;
 - describes an incorrect approved outcome or contract;
 - leaves the approved implementation non-executable; or

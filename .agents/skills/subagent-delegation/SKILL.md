@@ -19,7 +19,7 @@ Choose the delegation level before spawning, based on which decisions the child 
 
 | Task type | Default delegation |
 |---|---|
-| Implementation or fixes within confirmed scope; review or verification against supplied criteria; research with a defined question | Delegate through completion, including the required verification. Receive the completed result or an escalation for a blocker requiring help beyond the child's assigned scope. |
+| Implementation or fixes within the assigned scope; review or verification against supplied criteria; research with a defined question | Delegate through completion, including the required verification. Receive the completed result or an escalation for a blocker requiring help beyond the child's assigned scope. |
 | Exploration or design that needs the parent to settle the objective, selection criteria, or a major decision during the work | Name the decision retained by the parent in the assignment. Have the child request that decision when it becomes necessary, with the evidence needed to answer. |
 
 Research and design also use completion delegation when the child can make the required decisions from its assigned scope and evidence. Use these defaults directly; only a retained parent decision needs additional consultation instructions.

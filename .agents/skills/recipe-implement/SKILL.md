@@ -65,7 +65,7 @@ Verify acceptance-test-generator artifact paths and pass them to work-planner.
 
 ## Completion Criteria
 
-- [ ] Scope/cost evidence was collected, user-selected requirements and exclusions were confirmed, and orchestrator readiness, scale, and routing decisions were recorded
+- [ ] Scope/cost evidence was collected, the user selected requirements and exclusions, and orchestrator readiness, scale, and routing decisions were recorded
 - [ ] Layer routing determined (backend / frontend / fullstack)
 - [ ] Correct workflow followed per layer routing
 - [ ] codebase-analyzer included before Design Doc creation for Medium/Large flows
