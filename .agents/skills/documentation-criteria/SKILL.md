@@ -73,6 +73,8 @@ Each document records one class of decision needed by its downstream consumer. P
 | Design Doc | Repository-grounded implementation approach, contracts, change surface, and verification strategy | Planning and implementation would have to make technical design decisions locally |
 | Work Plan | Implementation outcome order, dependencies, and executable verification | Task decomposition and execution would have to choose sequencing and proof boundaries locally |
 
+**Work Plan tasks**: Each task is repository work the executor completes and verifies during implementation using repository artifacts and its own output. Write no plan text about governing content that is not such a task: no exclusion notes, external prerequisites, handoff or ownership statements, or completion caveats for it. That content stays in its governing document, which already records it; restated in the plan, it becomes an unreviewed second version that executors and reviewers read as plan scope.
+
 ## Storage Locations
 
 | Document | Path | Naming Convention |

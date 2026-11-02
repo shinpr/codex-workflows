@@ -21,7 +21,7 @@ The tables show agent work and results. User confirmation and implementation aut
 | 3 | document-reviewer | PRD review | Review result |
 | 4 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
 | 5 | (orchestrator) | Use a supplied or target-referenced prototype; request its path only when the UI target otherwise cannot be determined, then resolve its reference strength | Prototype path plus `binding` or `reference`, or none |
-| 6 | codebase-analyzer + ui-analyzer | Complete-scope codebase analysis plus frontend UI analysis | Analysis JSON |
+| 6 | codebase-analyzer + ui-analyzer + orchestrator | Complete-scope codebase analysis plus frontend UI analysis, then requirement reopening when applicable | Analysis JSON |
 | 7 | ui-spec-designer | UI Spec from PRD + UI analysis + optional prototype | UI Spec |
 | 8 | document-reviewer | UI Spec review | Review result |
 | 9 | orchestrator + technical-designer* | Orchestrator filters qualifying decision points; designers select technical choices and create the ADR batch | Created ADR paths or `[]` |
@@ -42,7 +42,7 @@ The tables show agent work and results. User confirmation and implementation aut
 | 1 | requirement-analyzer + orchestrator | Compact scope/cost evidence, comparison with retained user wording, user convergence, and orchestrator readiness and scale determination | Converged requirements + scale |
 | 2 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
 | 3 | (orchestrator) | Use a supplied or target-referenced prototype; request its path only when the UI target otherwise cannot be determined, then resolve its reference strength | Prototype path plus `binding` or `reference`, or none |
-| 4 | codebase-analyzer + ui-analyzer | Complete-scope codebase analysis plus frontend UI analysis | Analysis JSON |
+| 4 | codebase-analyzer + ui-analyzer + orchestrator | Complete-scope codebase analysis plus frontend UI analysis, then requirement reopening when applicable | Analysis JSON |
 | 5 | ui-spec-designer | UI Spec from requirements + UI analysis + optional prototype | UI Spec |
 | 6 | document-reviewer | UI Spec review | Review result |
 | 7 | orchestrator + technical-designer* | Orchestrator filters qualifying decision points; designers select technical choices and create the ADR batch | Created ADR paths or `[]` |

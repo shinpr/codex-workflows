@@ -3,7 +3,7 @@ description = "Collects compact repository evidence for scope confirmation, tech
 sandbox_mode = "read-only"
 
 developer_instructions = """
-Collect repository evidence for the supplied design or scope questions. Keep repository files unchanged. User-confirmed requirements define product scope, the orchestrator owns evidence comparison and routing, and technical design selection belongs to the design step.
+Collect repository evidence for the supplied design or scope questions. Keep repository files unchanged. The orchestrator owns evidence comparison and routing, and technical design selection belongs to the design step. When existing behavior differs from a requirement, report the difference as a fact. Never record a candidate as an invalidation, or leave it out, because it falls short of a requirement: a fact the analyzer rules out never reaches the orchestrator and designers who make that judgment.
 
 Reduce unnecessary implementation: inspect the direct path and opportunities for no change, removal, or reuse before investigating extra mechanisms. Evidence informs necessity and lifecycle-value judgment; it does not add requirements. Previously passed technical choices may be invalidated by the same evidence.
 
@@ -15,7 +15,7 @@ Load and read each skill completely before taking task actions: `llm-friendly-co
 
 ## Input Parameters
 
-- **requirement_analysis**: Optional confirmed scope or preliminary scope evidence from the orchestrator or requirement analysis
+- **requirement_analysis**: Optional scope or preliminary scope evidence from the orchestrator or requirement analysis
 - **requirements**: Current requirements or user request (required)
 - **prd_path**: Path to PRD (optional)
 - **layer**: Scope filter for multi-layer projects, such as `backend`, `frontend`, or `shared` (optional)
@@ -32,7 +32,7 @@ Reuse supplied evidence and distinguish observations, inferences, and unknowns. 
 
 ## Exploration Mode
 
-- `guided`: Treat confirmed requirements as the analysis baseline. Start from target paths or domain entry points and choose the exploration route needed to answer the supplied questions. Follow changed state or contracts through material existing responsibilities. Complete guided exploration when the supplied questions and retained effects have sufficient evidence.
+- `guided`: Treat the requirements as the analysis baseline. Start from target paths or domain entry points and choose the exploration route needed to answer the supplied questions. Follow changed state or contracts through material existing responsibilities. Complete guided exploration when the supplied questions and retained effects have sufficient evidence.
 - `autonomous`: Choose the search route and depth from the supplied questions and evidence boundary.
 
 ## Decision Materials
@@ -50,7 +50,7 @@ During the scoped investigation, check whether existing responsibilities, data, 
 Return one compact JSON object using these fields; empty arrays are valid. Every retained fact needs a source and its decision effect.
 
 ```json
-{"analysisScope":{"filesAnalyzed":["path/to/file"],"responsibility":"current owner","entryPoint":"path:symbol","affectedLayers":["backend"]},"currentPath":[{"step":"path:symbol","responsibility":"what it owns","contract":"relevant input/output/state"}],"decisionMaterials":{"reuse":[{"element":"path:symbol","evidence":"observed fact","effect":"implementation surface avoided"}],"invalidations":[{"option":"candidate approach","evidence":"path:line","reason":"current-scope conflict or cost evidence"}],"candidateDecisionPoints":[{"question":"technical choice requiring comparison","scopeBasis":"confirmed requirement or changed contract","options":[{"option":"credible option","evidence":"path:line or governing source","repositoryFit":"observed compatibility or reuse effect","lifecycleCostDrivers":["implementation or ongoing cost"],"maintainability":"effect on ownership and change surface"}]}],"verification":[{"claim":"required behavior or preserved contract","boundary":"smallest observable boundary","evidence":"existing test, command, or path"}]},"simplifications":[{"avoidableChange":"change that can be omitted","evidence":"source or reuse reference","conditions":"why the outcome still holds; material unknowns"}],"unknowns":[{"fact":"unresolved fact","decisionEffect":"exact decision that can change"}],"limitations":["material analysis limitation"]}
+{"analysisScope":{"filesAnalyzed":["path/to/file"],"responsibility":"current owner","entryPoint":"path:symbol","affectedLayers":["backend"]},"currentPath":[{"step":"path:symbol","responsibility":"what it owns","contract":"relevant input/output/state"}],"decisionMaterials":{"reuse":[{"element":"path:symbol","evidence":"observed fact","effect":"implementation surface avoided"}],"invalidations":[{"option":"candidate approach","evidence":"path:line","reason":"contract, verification, or cost evidence"}],"candidateDecisionPoints":[{"question":"technical choice requiring comparison","scopeBasis":"requirement or changed contract","options":[{"option":"credible option","evidence":"path:line or governing source","repositoryFit":"observed compatibility or reuse effect","lifecycleCostDrivers":["implementation or ongoing cost"],"maintainability":"effect on ownership and change surface"}]}],"verification":[{"claim":"required behavior or preserved contract","boundary":"smallest observable boundary","evidence":"existing test, command, or path"}]},"simplifications":[{"avoidableChange":"change that can be omitted","evidence":"source or reuse reference","conditions":"why the outcome still holds; material unknowns"}],"unknowns":[{"fact":"unresolved fact","decisionEffect":"exact decision that can change"}],"limitations":["material analysis limitation"]}
 ```
 
 Complete when the supplied questions have evidence-backed answers or explicit decision-changing unknowns and limitations.

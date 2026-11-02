@@ -80,15 +80,15 @@ When `prior_feedback` is supplied, check only the prior findings and inconsisten
 
 ### Work Plan
 
-- Every Design Doc obligation needed for implementation is covered by at least one task.
+- Every Design Doc obligation that is repository work is covered by at least one task.
 - Every task produces a repository implementation outcome required by a cited Design Doc section or AC.
 - The plan uses the fewest tasks permitted by real dependency order, executor routing, and independently completable outcomes.
-- Every task maps to a confirmed AC, a selected implementation obligation, or a dependency required by one; together the tasks cover the complete approved implementation scope.
+- Every task maps to a confirmed AC, a selected implementation obligation, or a dependency required by one.
 - Task order makes the first vertical slice's representative ACs observable across their required repository path at the earliest point permitted by observed dependencies and executor routing; the Design Doc's early verification runs at the earliest applicable point within that slice, and every earlier task is required by and consumed by that slice.
 - Each generated test skeleton path is assigned unchanged to the earliest task where its declared real boundary becomes executable, and that task completes the same file as a runnable test.
 - Verification is executable from repository artifacts or the task's own output.
 - Design detail is referenced rather than copied.
-- External setup, credentials, approval, release, deployment execution, production operation, and a review-only final QA phase are outside the task set unless a cited Design Doc makes checked-in repository changes the implementation outcome.
+- Every task is repository work as defined by the Work Plan tasks rule in documentation-criteria, and a review-only final QA phase remains outside the task set.
 
 ## Findings and Review Resolution
 

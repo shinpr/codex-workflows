@@ -21,7 +21,7 @@ A phase `pass` means the current evidence permits progression. User confirmation
 
 Interpret user responses by their meaning and the authority they supply. Continuation or route approval advances the workflow. A product requirement or exclusion becomes settled when the user's response selects it.
 
-Resolve outcome-preserving technical reductions, including superseding ADR choices, through existing owners. Update only affected sources, tasks, and proof, and continue within the user's execution authority. Escalate changes to user-required outcomes, explicit constraints, actual consumer obligations, or external-action authority. Optional new requirements remain unadopted; propose a requirement change only with evidence that the current conditions cannot deliver the requested result.
+Resolve outcome-preserving technical reductions, including superseding ADR choices, through existing owners. Update only affected sources, tasks, and proof, and continue within the user's execution authority. Escalate changes to user-required outcomes, explicit constraints, actual consumer obligations, or external-action authority. Optional new requirements remain unadopted; propose a requirement expansion only with evidence that the current conditions cannot deliver the requested result; requirement reductions follow Requirement reopening after codebase analysis.
 
 ### Execution Plans
 
@@ -56,6 +56,8 @@ During flow execution, compare a user addition with the approved outcome, requir
 - A change to the approved outcome, requirements, or exclusions returns to Requirement Convergence, then resumes from the earliest affected artifact after confirmation.
 
 Preserve completed unaffected work on either route.
+
+**Requirement reopening after codebase analysis**: When the first codebase-analyzer result after requirement confirmation shows existing behavior that serves a confirmed requirement's need and falls short only of extra behavior that requirement specifies, whichever field reports it, present it with its evidence and cost effect at one requirements stop before UI Spec, ADR, or Design Doc work, and let the user keep or change the requirement. Requirements are confirmed before any code is read, and every later phase builds and reviews against them without questioning them, so this is the one point where repository evidence can reduce them; judging such evidence as ruled out by the requirement removes the user's only chance to weigh it. Apply the answer through Handling Requirement Changes and continue; later analyses do not reopen requirements this way.
 
 ## Orchestration Principles
 
@@ -105,6 +107,7 @@ Use these stops when the active recipe reaches a user decision or authority not 
 |-------|------------|---------------------|
 | Requirements | After an entry recipe invokes requirement-analyzer | Converge fields below `ready`, then confirm requirements |
 | PRD | After document-reviewer completes PRD review | Confirm the required outcome and continue |
+| Requirement reopening | After the first codebase-analyzer result when it shows existing behavior that falls short of a confirmed requirement only by extra behavior that requirement specifies | Keep or change each affected requirement |
 | UI Spec | After document-reviewer completes UI Spec review (frontend/fullstack) | Confirm the UI outcome and continue |
 | ADR | After document-reviewer completes the complete ADR-batch review (when ADRs were created) | Continue with the current technical choices |
 | Design | After design-sync completes consistency verification | Continue with the current design |
@@ -212,8 +215,8 @@ After the selected entry recipe completes its requirement stop, follow the minim
 
 | Scale | Required flow |
 |-------|---------------|
-| Large | scope evidence + user-confirmed convergence **[Stop]** -> PRD creation/review **[Stop]** when the active recipe owns it; otherwise its user-authorized convergence carrier -> codebase analysis -> frontend/fullstack UI Spec + `document-reviewer` **[Stop]** -> optional ADR batch + one batch `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` + Review Resolution -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
-| Medium | scope evidence + user-confirmed convergence **[Stop]** -> codebase analysis -> frontend/fullstack UI Spec + `document-reviewer` **[Stop]** -> optional ADR batch + one batch `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` + Review Resolution -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
+| Large | scope evidence + user-confirmed convergence **[Stop]** -> PRD creation/review **[Stop]** when the active recipe owns it; otherwise its user-authorized convergence carrier -> codebase analysis -> requirement reopening when applicable **[Stop when applicable]** -> frontend/fullstack UI Spec + `document-reviewer` **[Stop]** -> optional ADR batch + one batch `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` + Review Resolution -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
+| Medium | scope evidence + user-confirmed convergence **[Stop]** -> codebase analysis -> requirement reopening when applicable **[Stop when applicable]** -> frontend/fullstack UI Spec + `document-reviewer` **[Stop]** -> optional ADR batch + one batch `document-reviewer` **[Stop]** -> `technical-designer*` -> `code-verifier` + Review Resolution -> `document-reviewer` -> `design-sync` **[Stop]** -> `acceptance-test-generator` -> `work-planner` -> `document-reviewer` (doc_type: WorkPlan) **[Stop]** -> `task-decomposer` |
 | Small | scope evidence + user-confirmed convergence **[Stop]** -> one standard task file -> task execution cycle |
 
 Flow rules:
