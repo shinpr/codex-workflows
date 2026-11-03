@@ -41,7 +41,7 @@ Prefer evidence in this order when applicable: observable operation, test, then 
 
 ## Completion Check
 
-- [ ] The approach delivers the confirmed outcome through existing patterns where sufficient.
+- [ ] The approach delivers the outcome through existing patterns where sufficient.
 - [ ] Every added mechanism resolves a current failed item.
 - [ ] Task order follows verified dependencies rather than hypothetical rollout needs.
 - [ ] Verification exercises the required observable boundary without adding an unnecessary wider lane.

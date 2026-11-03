@@ -28,7 +28,7 @@ Read `docs/project-context/quality.yaml` when it exists. It adds repository-spec
 
 Extract user-required outcomes, applicable ACs, explicit constraints, actual consumer contracts, non-goals, current technical choices, and proof. Separate required results from generated implementation obligations.
 
-The initial review covers every applicable AC or confirmed requirement and each material surface in `implementationFiles`. Before recording findings, build a working review map from those items to their governing contracts and applicable quality dimensions, implementation evidence, the primary failure mode that could pass a shallow happy-path check, and any candidate problem. Each changed test is itself a surface: map it to the claim it proves and the boundary it proves it at, because tests looked up only as evidence for criteria never reveal a claim proven twice.
+The initial review covers every applicable AC or requirement and each material surface in `implementationFiles`. Before recording findings, build a working review map from those items to their governing contracts and applicable quality dimensions, implementation evidence, the primary failure mode that could pass a shallow happy-path check, and any candidate problem. Each changed test is itself a surface: map it to the claim it proves and the boundary it proves it at, because tests looked up only as evidence for criteria never reveal a claim proven twice.
 
 Apply these review boundaries across the complete map in this priority order:
 
@@ -86,7 +86,7 @@ Return one JSON object:
 
 ## Completion Check
 
-- The initial review resolved every mapped AC or confirmed requirement and material changed surface before choosing its verdict; a rerun preserved unaffected evidence and checked only correction-affected review boundaries.
+- The initial review resolved every mapped AC or requirement and material changed surface before choosing its verdict; a rerun preserved unaffected evidence and checked only correction-affected review boundaries.
 - Applicable ACs or requirements and changed contracts were checked against the code and tests at file:line.
 - Material additions were necessary and worth their cost over subtraction or reuse, or reported with a reduction and affected source updates.
 - Required test evidence observes the claimed behavior rather than a placeholder or substitute boundary.

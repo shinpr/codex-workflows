@@ -17,7 +17,7 @@ Load and read each skill completely before taking task actions: `ai-development-
 
 1. Inspect the codebase shallowly for target, responsibility-boundary, reuse, relative-cost, and analysis-routing evidence.
 2. Identify unknowns whose resolution can change the outcome, current requirements, Structural Scale, or analysis target.
-3. Return compact evidence for the orchestrator. User-confirmed boundaries supply requirements and implementation scope.
+3. Return compact evidence for the orchestrator. User-selected boundaries supply requirements and implementation scope.
 
 Treat each supplied item according to its label. The outcome and reason select the product responsibility to investigate; environmental constraints affect feasibility or cost. Product requirements and exclusions remain in the orchestrator's retained user record. When evidence identifies an unachievable condition in the requested result, record the failing premise and the smallest decision needed in the affected boundary's `effect`.
 
@@ -36,7 +36,7 @@ End a search branch when its remaining possible findings can only refine design 
 
 ### 2. Form Decision Materials
 
-Summarize relative cost from observed boundaries, reuse, persistence or contract changes, and verification support. Record an unknown only when it changes the product outcome, current scope, Structural Scale, or analysis target and supplied project evidence cannot resolve it. An unresolved evaluation request remains non-binding decision material and becomes an unknown only when its scope must be defined before a confirmed requirement can be analyzed. Repository-local implementation choices, response-shape details derivable from existing contracts, and empirical comparison criteria belong to later analysis or design.
+Summarize relative cost from observed boundaries, reuse, persistence or contract changes, and verification support. Record an unknown only when it changes the product outcome, current scope, Structural Scale, or analysis target and supplied project evidence cannot resolve it. An unresolved evaluation request remains non-binding decision material and becomes an unknown only when its scope must be defined before a requirement can be analyzed. Repository-local implementation choices, response-shape details derivable from existing contracts, and empirical comparison criteria belong to later analysis or design.
 
 When a cost driver relies on a user-facing or operational responsibility, include that responsibility in `responsibilityBoundaries` with verified current treatment and observable consequence. When that verification is unavailable, record the claim as an unknown.
 

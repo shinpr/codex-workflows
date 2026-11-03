@@ -27,7 +27,7 @@ Build one path in this order:
 2. Frontend or fullstack scope inserts UI Spec immediately before the Design Doc.
 3. One or more qualifying ADR decision points insert an ADR batch immediately before the Design Doc. A qualifying decision point sets the scale floor to Medium.
 
-\* A design recipe that does not create PRDs may carry the confirmed convergence record directly only after the user explicitly authorizes proceeding without a PRD.
+\* A design recipe that does not create PRDs may carry the convergence record directly only after the user explicitly authorizes proceeding without a PRD.
 
 ## Structural Scale
 
@@ -43,7 +43,7 @@ A qualifying ADR decision point sets the floor at Medium because it creates a du
 
 ## ADR Creation Conditions
 
-First check accepted ADRs that govern the changed responsibility. Then apply both filters in order for each technical topic within the confirmed implementation scope:
+First check accepted ADRs that govern the changed responsibility. Then apply both filters in order for each technical topic within the implementation scope:
 
 1. **Choice requires judgment** — current requirements, accepted decisions, and representative repository patterns support at least two credible materially distinct options whose selection requires comparison.
 2. **Decision is durable** — choosing among those options materially changes a responsibility, dependency direction, shared contract, persistence model, technology dependency, reversibility, or lifecycle cost that future work must understand or preserve.
@@ -67,11 +67,13 @@ Each document records one class of decision needed by its downstream consumer. P
 
 | Document | Decision it records | Consumer and effect when missing |
 |----------|-------------------|----------------------------------|
-| PRD | Confirmed product outcome, requirements, acceptance criteria, and exclusions | Design and test selection would have to infer product scope |
+| PRD | Product outcome, requirements, acceptance criteria, and exclusions | Design and test selection would have to infer product scope |
 | ADR | One qualifying durable technical choice and the alternatives it resolves | Design and future changes could not distinguish an accepted decision from a local implementation choice |
 | UI Spec | Approved UI structure, states, interactions, and visual acceptance | Frontend design and implementation would have to infer user-interface decisions |
 | Design Doc | Repository-grounded implementation approach, contracts, change surface, and verification strategy | Planning and implementation would have to make technical design decisions locally |
 | Work Plan | Implementation outcome order, dependencies, and executable verification | Task decomposition and execution would have to choose sequencing and proof boundaries locally |
+
+**Work Plan tasks**: Each task is repository work the executor completes and verifies during implementation using repository artifacts and its own output. Write no plan text about governing content that is not such a task: no exclusion notes, external prerequisites, handoff or ownership statements, or completion caveats for it. That content stays in its governing document, which already records it; restated in the plan, it becomes an unreviewed second version that executors and reviewers read as plan scope.
 
 ## Storage Locations
 

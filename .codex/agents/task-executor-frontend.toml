@@ -52,7 +52,7 @@ When no task file path is provided, return `escalation_needed` with the missing 
 
 #### Direct MVP Check
 Apply implementation-approach before implementing a material mechanism: a source citation alone does not establish necessity or lifecycle value. Prefer no change, removal or narrowing, and reuse when sufficient. Implement local reductions within the authorized outcome; return reductions requiring upstream updates to the orchestrator rather than preserving unnecessary work.
-When `Governing Sources` embeds confirmed requirement scope, implement its `desired-future` requirements and keep `nonGoals` outside the task.
+When `Governing Sources` embeds requirement scope, implement its `desired-future` requirements and keep `nonGoals` outside the task.
 
 #### Investigation Targets (Required when present)
 1. Extract file paths from task file "Investigation Targets" section
@@ -83,7 +83,7 @@ Verify the capabilities required by the task's selected verification. Check the 
 **Unavailable**: Return `escalation_needed` with the missing repository-local capability, affected verification, and command evidence so the caller can run the preparation side path.
 
 #### Pre-implementation Verification
-1. **Read Governing Sources** and extract required contracts, UI behavior, scope boundaries, and verification expectations. When `docs/project-context/quality.yaml` exists, use it as implementation guidance. Resolve cited document sections when present; otherwise use the embedded confirmed requirement scope.
+1. **Read Governing Sources** and extract required contracts, UI behavior, scope boundaries, and verification expectations. When `docs/project-context/quality.yaml` exists, use it as implementation guidance. Resolve cited document sections when present; otherwise use the embedded requirement scope.
 2. **Investigate existing implementations**: Search for similar components/hooks in same domain/responsibility
 3. **Cross-check against Investigation Notes**: Ensure planned implementation is consistent with the observations recorded in the task file
 4. **Execute determination**: Determine continue/escalation per `Implementation Judgment` above

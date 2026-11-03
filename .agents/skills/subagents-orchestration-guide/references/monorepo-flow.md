@@ -21,7 +21,7 @@ The tables show agent work and results. User confirmation and implementation aut
 | 3 | document-reviewer | PRD review | Review result |
 | 4 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
 | 5 | (orchestrator) | Use a supplied or target-referenced prototype; request its path only when the UI target otherwise cannot be determined, then resolve its reference strength | Prototype path plus `binding` or `reference`, or none |
-| 6 | codebase-analyzer + ui-analyzer | Complete-scope codebase analysis plus frontend UI analysis | Analysis JSON |
+| 6 | codebase-analyzer + ui-analyzer + orchestrator | Complete-scope codebase analysis plus frontend UI analysis, then requirement reopening when applicable | Analysis JSON |
 | 7 | ui-spec-designer | UI Spec from PRD + UI analysis + optional prototype | UI Spec |
 | 8 | document-reviewer | UI Spec review | Review result |
 | 9 | orchestrator + technical-designer* | Orchestrator filters qualifying decision points; designers select technical choices and create the ADR batch | Created ADR paths or `[]` |
@@ -42,7 +42,7 @@ The tables show agent work and results. User confirmation and implementation aut
 | 1 | requirement-analyzer + orchestrator | Compact scope/cost evidence, comparison with retained user wording, user convergence, and orchestrator readiness and scale determination | Converged requirements + scale |
 | 2 | (orchestrator) | Resolve a required external evidence axis when repository and supplied context cannot decide it | `externalResourceRefs` or `[]` |
 | 3 | (orchestrator) | Use a supplied or target-referenced prototype; request its path only when the UI target otherwise cannot be determined, then resolve its reference strength | Prototype path plus `binding` or `reference`, or none |
-| 4 | codebase-analyzer + ui-analyzer | Complete-scope codebase analysis plus frontend UI analysis | Analysis JSON |
+| 4 | codebase-analyzer + ui-analyzer + orchestrator | Complete-scope codebase analysis plus frontend UI analysis, then requirement reopening when applicable | Analysis JSON |
 | 5 | ui-spec-designer | UI Spec from requirements + UI analysis + optional prototype | UI Spec |
 | 6 | document-reviewer | UI Spec review | Review result |
 | 7 | orchestrator + technical-designer* | Orchestrator filters qualifying decision points; designers select technical choices and create the ADR batch | Created ADR paths or `[]` |
@@ -69,7 +69,7 @@ When invoking Design Doc creation for each layer, pass explicit context:
 | Scale | Concrete context value |
 |-------|------------------------|
 | Large | `context: { scale: "large", prd_path: "[path]", scope_evidence: [layer-filtered compact evidence] }` |
-| Medium | `context: { scale: "medium", prd_path: null, scope_evidence: [layer-filtered compact evidence], convergence: [confirmed record] }` |
+| Medium | `context: { scale: "medium", prd_path: null, scope_evidence: [layer-filtered compact evidence], convergence: [current convergence record] }` |
 
 Before invoking, replace every context placeholder with a concrete context object for the active flow scale. For filtered context placeholders, use the same `scale` and `prd_path` values and the layer-filtered compact evidence.
 
@@ -79,7 +79,7 @@ Before invoking, replace every context placeholder with a concrete context objec
 
 **Fullstack Codebase Analysis**:
 **Agent**: Invoke codebase-analyzer
-> "exploration_mode: [mode from Analysis Assignment]. Analyze the complete confirmed feature to provide compact decision materials for ADR selection, both layer designs, and verification. requirement_analysis: [complete confirmed scope evidence]. requirements: [confirmed requirements]. prd_path: [current PRD path when present]. target_paths: [confirmed scope]. focus_areas: responsibility ownership, cross-layer data and contracts, reuse, and verification."
+> "exploration_mode: [mode from Analysis Assignment]. Analyze the complete feature to provide compact decision materials for ADR selection, both layer designs, and verification. requirement_analysis: [complete scope evidence]. requirements: [convergence record requirements]. prd_path: [current PRD path when present]. target_paths: [scope paths]. focus_areas: responsibility ownership, cross-layer data and contracts, reuse, and verification."
 
 **Frontend Design Doc**:
 **Agent**: Invoke technical-designer-frontend
@@ -87,7 +87,7 @@ Before invoking, replace every context placeholder with a concrete context objec
 
 **Frontend UI Analysis**:
 **Agent**: Invoke ui-analyzer
-> "exploration_mode: [mode from Analysis Assignment]. prior_evidence: [relevant fullstack codebase findings when available]. Gather UI facts for frontend design. requirement_analysis: [frontend-filtered confirmed scope evidence]. requirements: [confirmed requirements]. target_paths: [frontend file and directory scope]. target_components: [frontend target components]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected by the external-evidence step, or []]. focus_areas: [remaining rendering, interaction, and visual questions]."
+> "exploration_mode: [mode from Analysis Assignment]. prior_evidence: [relevant fullstack codebase findings when available]. Gather UI facts for frontend design. requirement_analysis: [frontend-filtered scope evidence]. requirements: [convergence record requirements]. target_paths: [frontend file and directory scope]. target_components: [frontend target components]. prototype_path: [path if provided]. externalResourceRefs: [{label, featureIdentifier} selected by the external-evidence step, or []]. focus_areas: [remaining rendering, interaction, and visual questions]."
 
 ### Verification Resolution
 

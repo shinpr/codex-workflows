@@ -61,7 +61,7 @@ Use the implementation approach and dependency order from the Design Doc. Each p
 
 ## Completion Criteria
 
-- [ ] Every Design Doc obligation needed for implementation is covered by at least one task
+- [ ] Every Design Doc obligation that is repository work is covered by at least one task
 - [ ] Every task cites each directly constraining governing section and its applicable ACs
 - [ ] Every task produces a repository implementation outcome required by the Design Doc
 - [ ] Dependencies permit execution in the listed order

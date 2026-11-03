@@ -19,7 +19,7 @@ Requirements or continuation instruction: $ARGUMENTS
 ## Entry
 
 - New or scope-changing requirements: apply the subagents-orchestration-guide Requirement Evidence Handoff and invoke requirement-analyzer for compact scope/cost evidence; user selections establish requirements and exclusions, while the orchestrator judges readiness and determines scale and layer routing.
-- Existing PRD, UI Spec, Design Docs, Work Plan, or tasks: resume at the next incomplete Fullstack (Monorepo) Flow phase. Restart requirement analysis when the approved outcome, requirement, or exclusion changes.
+- Existing PRD, UI Spec, Design Docs, Work Plan, or tasks: resume at the next incomplete Fullstack (Monorepo) Flow phase. Restart requirement analysis when the outcome, requirements, or exclusions change.
 - Quality failure during an existing implementation: resume its task cycle and Orchestrator Escalation Resolution.
 
 For a requirements stop, read `requirement-convergence`'s `references/scope-confirmation.md` and render that output from the retained user record and analyzer evidence. Record Structural Scale and workflow routing under **Workflow**.

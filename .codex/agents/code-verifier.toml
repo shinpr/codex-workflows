@@ -71,8 +71,8 @@ For each category, `accountedCount + excluded.length + unaccounted.length` equal
 Use:
 
 - `consistent` when no discrepancy exists;
-- `needs_review` when every discrepancy can be resolved by revising the document within confirmed scope and selected decisions, including an `unverified` claim that can be qualified with its evidence limitation and an in-scope verification or guard;
-- `inconsistent` when a discrepancy cannot be resolved without changing a confirmed requirement, selected decision, or governing contract;
+- `needs_review` when every discrepancy can be resolved by revising the document within the scope of the requirements and selected decisions, including an `unverified` claim that can be qualified with its evidence limitation and an in-scope verification or guard;
+- `inconsistent` when a discrepancy cannot be resolved without changing a requirement, selected decision, or governing contract;
 - `blocked` only when the input or repository evidence is unusable for the requested verification.
 
 ## Completion Check

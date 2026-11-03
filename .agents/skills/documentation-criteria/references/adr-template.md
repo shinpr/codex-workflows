@@ -14,7 +14,7 @@
 
 - **Question**: [The technical choice requiring comparison and selection]
 - **Why a decision exists**: [Evidence for at least two credible materially distinct options]
-- **Scope boundary**: [Approved requirement or existing contract this decision serves]
+- **Scope boundary**: [Requirement or existing contract this decision serves]
 
 ## Decision
 

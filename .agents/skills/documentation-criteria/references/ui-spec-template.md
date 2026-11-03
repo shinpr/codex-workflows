@@ -2,9 +2,9 @@
 
 ## Overview
 
-- Outcome: [confirmed user-visible result]
+- Outcome: [user-visible result]
 - Scope: [affected views/components]
-- PRD or requirement carrier: [path or confirmed context]
+- PRD or requirement carrier: [path or requirement context]
 - Explicit exclusions: [non-goals | none]
 
 ## Design Evidence
@@ -51,7 +51,7 @@ Include only sourced states. Omit the section when the primary interaction table
 |---|---|---|---|
 | [element] | [layout, token, breakpoint, or golden state] | [source] | [what must be visible] |
 
-Record token names, browser targets, breakpoints, and visual variants from confirmed requirements or repository evidence. Omit the section when existing component behavior is sufficient.
+Record token names, browser targets, breakpoints, and visual variants from the requirements or repository evidence. Omit the section when existing component behavior is sufficient.
 
 ## Accessibility Requirements (When Applicable)
 
@@ -59,7 +59,7 @@ Record token names, browser targets, breakpoints, and visual variants from confi
 |---|---|---|---|
 | [component] | [required behavior] | [requirement / preserved rule] | [observable check] |
 
-Omit when no confirmed requirement, preserved behavior, or applicable repository/design-system rule supplies an accessibility change.
+Omit when no requirement, preserved behavior, or applicable repository/design-system rule supplies an accessibility change.
 
 ## Acceptance Traceability
 

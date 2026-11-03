@@ -2,7 +2,7 @@
 
 ## Overview
 
-- Outcome: [confirmed observable result]
+- Outcome: [observable result]
 - Scope: [repository responsibility being changed]
 - UI Spec: [path when applicable]
 - Governing ADRs: [paths when applicable]
@@ -88,7 +88,7 @@ For a value crossing multiple serialization boundaries, add its actual propagati
 - Data/persistence boundary: [real boundary used or N/A]
 - Existing observable-output comparison: [representative input and comparison method when behavior, external contract, or persisted shape changes; otherwise omit]
 
-Limit live external services, production access, new dashboards, and new test lanes to confirmed requirements that make them part of repository implementation.
+Limit live external services, production access, new dashboards, and new test lanes to requirements that make them part of repository implementation.
 
 ## Material Risks
 
