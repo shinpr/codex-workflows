@@ -50,14 +50,14 @@ A PRD is both a binding product contract and a Product Context carrier. Downstre
 
 ### Requirement Change Detection During Flow [MANDATORY]
 
-During flow execution, compare a user addition with the approved outcome, requirements, and exclusions:
+During flow execution, compare a user addition with the outcome, requirements, and exclusions:
 
 - A clarification that preserves all three is applied by the orchestrator to the active artifact or task.
-- A change to the approved outcome, requirements, or exclusions returns to Requirement Convergence, then resumes from the earliest affected artifact after confirmation.
+- A change to the outcome, requirements, or exclusions returns to Requirement Convergence, then resumes from the earliest affected artifact after confirmation.
 
 Preserve completed unaffected work on either route.
 
-**Requirement reopening after codebase analysis**: When the first codebase-analyzer result after requirement confirmation shows existing behavior that serves a requirement's need and falls short only of extra behavior that requirement specifies, whichever field reports it, present it with its evidence and cost effect at one requirements stop before UI Spec, ADR, or Design Doc work, and let the user keep or change the requirement. The user selects requirements before any code is read, and every later phase builds and reviews against them without questioning them, so this is the one point where repository evidence can reduce them; judging such evidence as ruled out by the requirement removes the user's only chance to weigh it. Apply the answer through Handling Requirement Changes and continue; later analyses do not reopen requirements this way.
+**Requirement reopening after codebase analysis**: When the first codebase-analyzer result after requirement confirmation shows existing behavior that would serve a requirement's need if the requirement dropped behavior it adds on top, whichever field reports it, present each such requirement with that existing behavior, the added behavior, and its cost effect at one requirements stop before UI Spec, ADR, or Design Doc work, and let the user keep or change it. Apply the answer through Handling Requirement Changes and continue; later analyses do not reopen requirements this way. The user selected the requirements before any code was read, so that selection does not answer this question. Never leave such a requirement out because it can be built as specified, because existing behavior cannot be reused unchanged, or because a design choice not yet made would exclude that behavior: every later phase builds and reviews against the requirement without questioning it, so added behavior left out of this stop becomes implementation, verification, and maintenance cost that nothing downstream removes.
 
 ## Orchestration Principles
 
@@ -107,7 +107,7 @@ Use these stops when the active recipe reaches a user decision or authority not 
 |-------|------------|---------------------|
 | Requirements | After an entry recipe invokes requirement-analyzer | Converge fields below `ready`, then confirm requirements |
 | PRD | After document-reviewer completes PRD review | Confirm the required outcome and continue |
-| Requirement reopening | After the first codebase-analyzer result when it shows existing behavior that falls short of a requirement only by extra behavior that requirement specifies | Keep or change each affected requirement |
+| Requirement reopening | After the first codebase-analyzer result when it shows existing behavior that would serve a requirement's need without behavior the requirement adds on top | Keep or change each affected requirement |
 | UI Spec | After document-reviewer completes UI Spec review (frontend/fullstack) | Confirm the UI outcome and continue |
 | ADR | After document-reviewer completes the complete ADR-batch review (when ADRs were created) | Continue with the current technical choices |
 | Design | After design-sync completes consistency verification | Continue with the current design |
@@ -126,7 +126,7 @@ Use agent statuses as routing signals, not as a parser contract. Prefer `pass` f
 | Status | Scope | Meaning | Next Action |
 |--------|-------|---------|-------------|
 | `pass` (legacy `approved`) | Review/check agents | Current evidence passes this phase | Proceed; technical means remain revisable |
-| `needs_revision` | Review/approval agents | Significant issues repairable within approved repository scope | Resolve through the normal review or verifier-fix cycle |
+| `needs_revision` | Review/approval agents | Significant issues repairable within the repository scope | Resolve through the normal review or verifier-fix cycle |
 | `rejected` | Document agents | Fundamental problems | Apply Orchestrator Escalation Resolution |
 | `blocked` | Agents whose schema permits it | An agent-specific blocking condition prevents a usable result | Apply Orchestrator Escalation Resolution |
 | `skipped` | Review/approval agents whose schema permits skipping | Preconditions not met for this step | Report reason, proceed |
@@ -181,7 +181,7 @@ Agent schemas describe their full internal result. The orchestrator consumes onl
 | Artifact producer | completion or blocked state, plus produced artifact path(s) |
 | Task executor | completion or escalation state, `filesModified`, `requiresTestReview`, and operation-verification evidence |
 | Quality fixer | pass, `stub_detected`, or blocked state; `filesModified`; reason or findings when not passed |
-| Reviewer | decision, actionable findings, governing basis, and whether each finding blocks the approved outcome |
+| Reviewer | decision, actionable findings, governing basis, and whether each finding blocks the outcome |
 | Analyzer | only reuse, invalidation, decision-point, cost, contract, verification, and decision-changing unknown material needed by the next consumer |
 
 Continue through minor optional-field, serialization, or wording differences when the orchestrator can verify the required outcome from the artifact, repository, or command result. Verify claimed paths before passing them onward. Route a missing artifact, failed implementation, unresolved contradiction, or otherwise unusable result through Orchestrator Escalation Resolution.
