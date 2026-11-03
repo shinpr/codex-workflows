@@ -35,7 +35,7 @@ A prototype supplies evidence, not additional product requirements. This UI Spec
 Add a screen, component, interaction, state, responsive rule, visual constraint, or accessibility requirement only when supported by:
 
 - a requirement or PRD AC;
-- approved UI direction or supplied prototype behavior adopted for this change;
+- user-provided UI direction or supplied prototype behavior adopted for this change;
 - preserved existing behavior; or
 - an applicable repository/design-system rule.
 

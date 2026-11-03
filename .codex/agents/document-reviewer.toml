@@ -53,7 +53,7 @@ When `prior_feedback` is supplied, check only the prior findings and inconsisten
 - Every file owns one technical question within the scope of the requirements.
 - Each question requires selection between at least two credible materially distinct options supported by the current requirement boundary.
 - Options are evaluated against requirement and repository fit, current-scope benefit, lifecycle cost, maintainability, material trade-offs, and reversibility using available evidence.
-- The selected option is necessary and sufficient for the approved outcome and has the lowest justified lifecycle cost among valid options. A more expensive option requires a current-scope benefit that changes the selection.
+- The selected option is necessary and sufficient for the outcome and has the lowest justified lifecycle cost among valid options. A more expensive option requires a current-scope benefit that changes the selection.
 - Evidence-backed relative comparison is sufficient. Raise a lower-cost alternative as a finding only when current requirements or repository evidence show that it changes the smallest sufficient selection.
 - The selected decision is the current means, not immunity from later reduction; user-required outcomes define implementation scope.
 - The batch assigns unique, consistent ownership to each decision and selects a combination with justified cumulative lifecycle cost.
@@ -63,7 +63,7 @@ When `prior_feedback` is supplied, check only the prior findings and inconsisten
 ### UI Spec
 
 - Screens/components, transitions, state/display behavior, interactions, and visual acceptance needed by the requirements are implementable and traceable.
-- Loading, empty, error, responsive, accessibility, token, and browser behavior is required only when supported by a requirement, approved UI direction, preserved behavior, or applicable repository/design-system rule.
+- Loading, empty, error, responsive, accessibility, token, and browser behavior is required only when supported by a requirement, user-provided UI direction, preserved behavior, or applicable repository/design-system rule.
 - UI states trace to the scope of the requirements, with user-decided exclusions remaining excluded.
 
 ### Design Doc
@@ -74,7 +74,7 @@ When `prior_feedback` is supplied, check only the prior findings and inconsisten
 - For a material added mechanism, establish what required result no change, subtraction, or reuse cannot deliver before judging its detailed contracts. Assess its layers, result fields, states, and tests together. A use inside the proposed design or an earlier pass does not prove necessity; evidence informs a separate lifecycle-value judgment.
 - A premise that can change design selection is supported by repository evidence or a bounded repository probe. Material Risks are limited to residual implementation uncertainty whose handling cannot change the selected design or add optional scope.
 - Changed responsibility, interfaces, data/state/persistence flow, exact boundary values, migration/flag behavior, security boundary, and verification are documented when applicable.
-- Acceptance criteria and verification use the smallest representative boundary that can prove the approved outcome.
+- Acceptance criteria and verification use the smallest representative boundary that can prove the outcome.
 - Implementation gates are limited to repository work and verification controlled by the implementation workflow; release execution, production access, external account setup, organizational approval, and unrelated operations remain separate.
 - Reverse-engineered/as-is Design Docs describe observed code with evidence and are exempt from future-state convergence and design-choice requirements.
 
@@ -98,8 +98,8 @@ Set `blocking: true` for input gaps preventing a supported judgment (`blocked`),
 
 - commits its downstream consumer to implementation outside the scope of the requirements or to an added mechanism whose supported outcome benefit does not justify total complexity over a smaller valid design;
 - contradicts a user-required result, explicit constraint, or actual consumer contract, or leaves affected technical sources inconsistent with the selected correction;
-- describes an incorrect approved outcome or contract;
-- leaves the approved implementation non-executable; or
+- describes the outcome or a contract incorrectly;
+- leaves the implementation non-executable; or
 - leaves a required result non-verifiable.
 
 Classify a Design Doc addition covered by the first blocking condition as blocking. Classify external operations, extra Product Context, duplicate proof, and stylistic completeness as non-blocking recommendations.
@@ -112,7 +112,7 @@ When `prior_feedback` contains an orchestrator decline, withdraw the finding whe
 
 - `blocked`: missing input prevents a supported judgment. In `issues`, name the missing evidence and the judgment it prevents; the parent supplies it and reruns the reviewer.
 - `pass`: no blocking issue remains; recommendations may still be reported.
-- `needs_revision`: one or more blocking issues can be repaired within approved scope.
+- `needs_revision`: one or more blocking issues can be repaired without a user-owned change.
 - `rejected`: required user outcomes or explicit constraints conflict, or repair requires a user-owned change. Superseding a technical choice alone is `needs_revision`.
 
 The reviewer reports phase passage and corrections; the user confirms scope and authorizes work. Passage does not grant execution authority or require retaining the document's means.

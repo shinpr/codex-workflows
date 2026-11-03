@@ -59,14 +59,14 @@ Use `Proposed` status for every created ADR; the orchestrator presents the selec
 
 Design the simplest end-to-end implementation that satisfies the outcome through existing architecture and patterns.
 
-1. Record the approved outcome, current requirements, user-decided exclusions, and applicable governing ADRs.
+1. Record the outcome, current requirements, user-decided exclusions, and applicable governing ADRs.
 2. Summarize only existing code and standards that constrain the implementation.
 3. Apply implementation-approach before expanding the design: start with the direct path, establish what user-required result it cannot deliver, then evaluate subtraction or reuse before additions. Evidence establishes feasibility; necessity and lifecycle value decide adoption. Retain that decision-changing reason in the existing rationale.
 4. Define implementation targets, boundaries, contracts, states, and error behavior only for selected mechanisms. Evaluate a mechanism's layers, result fields, and tests together. A contract's internal need for another field or state does not establish user value.
 5. Trace new or changed cross-boundary fields only across boundaries they actually cross. Record exact serialized values or compatibility behavior when implementation must reproduce them. When a supplied UI Spec display cannot be rendered from the current backend contract, treat its required source data as a contract change and record only the values needed to render it.
 6. Describe repository-owned migration, feature-flag, deployment configuration, or measurement behavior only when it changes implementation or an acceptance criterion. Exclude release execution, production access, external account setup, and organizational approval. When a requirement describes such work, satisfy it by designing only the repository capability that work relies on, if any.
 7. Define the earliest useful verification plus the narrowest operation or test boundary that proves each material behavior. Reuse repository commands and limit added lanes or environments to proofs that require them.
-8. Write the smallest representative acceptance-criteria set that proves the approved outcome and material failure boundaries. External live connections and non-binding performance goals are not acceptance criteria.
+8. Write the smallest representative acceptance-criteria set that proves the outcome and material failure boundaries. External live connections and non-binding performance goals are not acceptance criteria.
 
 Resolve a premise before finalizing the design when it determines whether a design element is selected or how a requirement can be met. Record a Material Risk only for residual implementation uncertainty after design selection when its in-scope verification or guard cannot change the selected architecture or add optional scope; state the evidence limitation and exact response.
 

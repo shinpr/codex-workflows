@@ -10,7 +10,7 @@ This reference applies to requirements, PRDs, ADRs, design documents, UI specifi
 
 Inspect the smallest decision chain that can establish the problem:
 
-- the governing requirement, approved decision, and explicit non-goals;
+- the governing requirement, the user's decisions, and explicit non-goals;
 - the artifact responsible for the disputed decision;
 - upstream sources and downstream artifacts or executors that consume it;
 - repository or product evidence cited by the decision;
