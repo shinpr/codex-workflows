@@ -38,24 +38,27 @@ Private local implementation details and test fixtures are not new design surfac
 
 ## Repository-Local Choice
 
+Existing code relates to a change in two ways. Code that depends on the change (callers, consumers, configuration) is reached through references to the changed code. Code that already holds the same responsibility, including code added earlier in the same change, may share no name or reference with it; reach it through position and role (sibling features, files with the same role in the same layer, shared layers) and through the input it takes and the purpose it serves, then compare its logic to judge whether the responsibility is the same.
+
 Before adopting a pattern, API, or dependency:
 
-1. Inspect the changed feature and relevant siblings.
+1. Inspect the changed feature, the code that depends on it, and the code that already holds the same responsibility.
 2. Check whether the pattern is representative where alternatives coexist.
 3. Follow the dominant compatible pattern or record why another existing pattern is required.
 4. Escalate dependency/version or architecture choices when repository evidence cannot resolve them.
 
-Nearby code is evidence, not authority by itself.
+Nearby code is evidence, not authority by itself. Stop searching when the candidates that could change the implementation or proof have been read and judged; a search with no match shows only that the search found nothing.
 
-When choosing whether to reuse, extend, or add a data structure, check its semantic meaning, owning responsibility, lifecycle, and boundary or interoperability cost. Reuse or extend it when those dimensions remain compatible; choose a separate structure when sharing would merge responsibilities or lifecycles that can change independently.
+When choosing whether to reuse, extend, or add a data structure, check its semantic meaning, owning responsibility, lifecycle, and boundary or interoperability cost. Reuse or extend it when those dimensions remain compatible; choose a separate structure when evidence shows a different meaning, owner, lifecycle, or change reason.
 
-When the changed behavior implements a runtime rule that exists in multiple locations, inspect the other instances for synchronization impact. Centralize or update them together when they share responsibility and contract; preserve separate implementations when their responsibilities can evolve independently.
+When the changed behavior implements a runtime rule that exists in multiple locations, inspect the other instances for synchronization impact. Centralize or update them together when they share responsibility and contract; preserve separate implementations when evidence shows their contracts or change reasons differ.
 
 ## Change Discipline
 
 - Keep the change within the accepted outcome and responsibility boundary. Treat task target files as the expected set; include an adjacent file when the same outcome requires it and report the expanded write set.
 - Use names and structure that expose domain intent.
 - Remove unused code and obsolete comments in the changed scope.
+- Base comments on stable rationale, limits, and contracts. Keep task, plan, and document-section references out of code comments; those documents change or are removed after the build, leaving the reference without a target.
 - Optimize only from measurements or a sourced requirement.
 - Refactor in reversible increments and run the focused verification after each behavior-affecting step.
 - Report adjacent debt outside scope and expand the change only with an explicit in-scope reason.

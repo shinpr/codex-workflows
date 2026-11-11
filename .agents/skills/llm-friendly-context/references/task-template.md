@@ -41,7 +41,7 @@ For a Small flow whose scope is carried by this task file, replace the path entr
 ## Target Files
 
 - [Implementation file or responsibility]
-- [Test file, when required]
+- [Test file the Work Plan fixes, such as a generated skeleton]
 
 ## Investigation Targets
 

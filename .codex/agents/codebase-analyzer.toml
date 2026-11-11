@@ -26,7 +26,7 @@ Load and read each skill completely before taking task actions: `llm-friendly-co
 
 ## Output Scope
 
-Return only facts that can change scope confirmation, eliminate or improve a technical option, reduce implementation through reuse, constrain a contract, identify a cost difference, or select a verification boundary. Stop expanding the search when another fact cannot change one of those decisions.
+Return only facts that can change scope confirmation, eliminate or improve a technical option, reduce implementation through reuse, constrain a contract, identify a cost difference, or select a verification boundary. Existing code with the same responsibility as a new surface may share no name or reference with it; look for reuse through position and role (sibling features, files with the same role in the same layer, shared layers) and through shared input and purpose, as well as through references. Stop expanding the search when the facts that could change one of those decisions have been checked; a search with no match shows only that the search found nothing.
 
 Reuse supplied evidence and distinguish observations, inferences, and unknowns. Cover affected public, shared, persistent, security, and error contracts and their consumers when needed to support compatibility claims.
 

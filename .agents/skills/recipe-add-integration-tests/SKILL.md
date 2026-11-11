@@ -100,7 +100,7 @@ Inspect the executor result and repository diff, then add its paths to `taskWrit
 
 Execute one task file at a time through Steps 4 -> 5 -> 6 -> 7 before starting the next.
 
-**Expected output**: completion or escalation state, `filesModified`, `testsAdded`, `requiresTestReview`, and operation-verification evidence
+**Expected output**: completion or escalation state, `filesModified`, `testsAdded`, `requiresTestReview`, operation-verification evidence, and `findingsOutsideChange`. Retain its items and list those left unhandled, with location and evidence, in the completion report.
 
 ### Step 5: Test Review
 

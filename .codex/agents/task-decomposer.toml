@@ -54,7 +54,7 @@ Task boundaries come only from repository dependencies, executor routes, or inde
 For each task:
 
 1. Inspect the target responsibility and representative repository patterns.
-2. Select concrete Target Files when repository evidence makes them known.
+2. Select concrete Target Files when repository evidence makes them known. List a test file only when the Work Plan fixes it; the executor selects other tests under the `testing` skill.
 3. Copy every governing-source citation from the Work Plan task unchanged into `Governing Sources`, and add those sections, the target implementation, and one representative adjacent test to Investigation Targets.
 4. Keep investigation context to files that change implementation or verification decisions.
 

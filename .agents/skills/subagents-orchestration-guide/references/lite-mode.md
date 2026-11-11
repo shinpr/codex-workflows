@@ -8,7 +8,7 @@ Lite Mode is a user-selected trade of intermediate assurance for lower cost. As 
 |---|---|
 | code-verifier | Omit. The step that consumes its result proceeds without it; document-reviewer receives no verification evidence. |
 | design-sync | Omit. A stop point that follows it occurs when its preceding step completes. |
-| security-reviewer | Omit. code-reviewer alone forms the post-implementation review set. |
+| security-reviewer | Omit. The code-reviewer calls alone form the post-implementation review set. |
 | Per-task quality fixer during initial Work Plan task execution | Omit per-task cycle step 3. When step 2 completes, proceed to step 4. Run the Final Quality Run instead. |
 
 A single-cycle flow without a Work Plan task set, such as Small, keeps its quality fixer call because that call is already the final run.
