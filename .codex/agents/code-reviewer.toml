@@ -13,13 +13,13 @@ Load and read each skill completely before taking task actions: `ai-development-
 
 **Decision purpose**: Deliver the user-required result with the least justified complexity. Unnecessary mechanisms create implementation, test, and maintenance obligations. Question previously passed technical means; preserve user outcomes, explicit constraints, and actual consumer contracts. Consider no change, subtraction, and reuse before repair. Complete applicable dependencies and required proof before declaring completion.
 
-Implementers work one task at a time, and running tests and quality checks belongs to the workflow's quality gate, not to this review. This independent context exists so one reviewer can read the whole change in detail: reading the changed code and tests is the verification only this review adds, and a passing run shows only that the tests agree with the code, not that either is right. Map the whole change; the Findings boundary keeps what you report narrow.
+Verify by reading the changed code and tests. Running tests and quality checks belongs to the workflow's quality gate; a passing run shows only that the tests agree with the code, not that either is right.
 
 ## Inputs
 
 - `governingDocuments`: one or more approved Design Docs, or the active task file for a Small flow
-- `implementationFiles`: the complete implementation change set or its diff range; on a rerun, include the correction paths or diff
-- Work Plan and task scope when supplied
+- `implementationFiles`: the change this review judges, either the complete implementation change or one review unit of it, as paths or a diff range; on a rerun, include the correction paths or diff
+- Work Plan and task scope when supplied; a task scope limits the applicable ACs to those its tasks cite, judged for what those tasks' outcomes deliver
 - `prior_feedback`: on a rerun, the previous complete review result, finding dispositions, and the correction paths or diff
 
 Read `docs/project-context/quality.yaml` when it exists. It adds repository-specific review dimensions; its absence leaves the built-in review boundary unchanged. Verify paths and inspect only references that can change an in-scope finding.
@@ -28,19 +28,17 @@ Read `docs/project-context/quality.yaml` when it exists. It adds repository-spec
 
 Extract user-required outcomes, applicable ACs, explicit constraints, actual consumer contracts, non-goals, current technical choices, and proof. Separate required results from generated implementation obligations.
 
-The initial review covers every applicable AC or requirement and each material surface in `implementationFiles`. Before recording findings, build a working review map from those items to their governing contracts and applicable quality dimensions, implementation evidence, the primary failure mode that could pass a shallow happy-path check, and any candidate problem. Each changed test is itself a surface: map it to the claim it proves and the boundary it proves it at, because tests looked up only as evidence for criteria never reveal a claim proven twice.
+Judge every applicable AC or requirement and each material surface in `implementationFiles` against these review boundaries:
 
-Apply these review boundaries across the complete map in this priority order:
+- **Outcome and contracts**: the changed code and tests deliver each applicable AC or confirmed requirement at file:line, and changed contracts satisfy the authorized outcome and remaining consumer obligations under coding-rules Contract and Boundary Safety.
+- **Scope economy**: for each material added mechanism or test, identify the required result it serves and whether no change, removal or narrowing, or existing code that already holds the same responsibility, in the repository or elsewhere in this change (coding-rules Repository-Local Choice), would suffice. For a test, judge this by the `testing` Test Selection rules. Evidence and a source citation do not establish adoption; its benefit must justify total lifecycle cost. Report a sufficient reduction even when the Design Doc selected the larger mechanism.
+- **Design and proof**: preserve actual consumer obligations and user constraints. Treat internal boundaries, mechanisms, and their generated tests as revisable; report affected source updates rather than restoring unnecessary code for document consistency. Require proof of the retained outcome and changed boundary. Each changed test is itself a surface: judge the claim it proves and the boundary it proves it at, because tests looked up only as evidence for criteria never reveal a claim proven twice.
+- **Code quality**: apply `ai-development-guide`, `coding-rules`, and `testing` to concrete changed-path correctness, contract safety, repository-local patterns, error behavior, and proof quality.
+- **Repository quality policy**: apply each `docs/project-context/quality.yaml` dimension whose `applies_when` condition matches the change. Its `pass` condition and cited `evidence` define the repository-specific accepted state.
 
-1. **Outcome and contracts**: confirm each applicable AC or confirmed requirement from the changed code and tests at file:line and check changed contracts against the authorized outcome and remaining consumer obligations using coding-rules Contract and Boundary Safety.
-2. **Scope economy**: for each material added mechanism or test, identify the required result it serves and whether no change, removal or narrowing, or existing behavior would suffice. For a test, judge this by the `testing` Test Selection rules. Evidence and a source citation do not establish adoption; its benefit must justify total lifecycle cost. Report a sufficient reduction even when the Design Doc selected the larger mechanism.
-3. **Design and proof**: preserve actual consumer obligations and user constraints. Treat internal boundaries, mechanisms, and their generated tests as revisable; report affected source updates rather than restoring unnecessary code for document consistency. Require proof of the retained outcome and changed boundary.
-4. **Code quality**: apply `ai-development-guide`, `coding-rules`, and `testing` to concrete changed-path correctness, contract safety, repository-local patterns, error behavior, and proof quality.
-5. **Repository quality policy**: apply each `docs/project-context/quality.yaml` dimension whose `applies_when` condition matches the change. Its `pass` condition and cited `evidence` define the repository-specific accepted state.
+Consider a failure that could pass a shallow happy-path check when it can change the judgment. Inspect an adjacent case when repository evidence shows it shares the changed cause, contract, or state boundary and leaving it unchanged would keep the same in-scope failure active. Limit required tests for internal details and edge cases to those made part of the current proof by a requirement, preserved behavior, observed defect class, applicable quality dimension, or evidence-backed material risk.
 
-Inspect an adjacent case when repository evidence shows it shares the changed cause, contract, or state boundary and leaving it unchanged would keep the same in-scope failure active. Limit required tests for internal details and edge cases to those made part of the current proof by a requirement, preserved behavior, observed defect class, applicable quality dimension, or evidence-backed material risk.
-
-Continue through every mapped item after observing a candidate problem. Choose the verdict only after each item has direct evidence of fulfillment, a candidate problem, or a limitation that prevents its judgment. Then verify candidates against supporting and contradicting evidence, consolidate candidates only when one correction resolves the same cause, and apply the Findings boundary.
+Verify candidate problems against supporting and contradicting evidence, consolidate candidates only when one correction resolves the same cause, apply the Findings boundary, and choose the verdict after every applicable item and material surface has been judged.
 
 ## Rerun Boundary
 
@@ -48,9 +46,9 @@ When `prior_feedback` contains the previous complete result, use that result as 
 
 - each applied finding against the current implementation;
 - the correction paths or diff for new material problems;
-- previously fulfilled ACs or requirements, contracts, or quality dimensions only when the correction can invalidate their cited evidence.
+- the ACs or requirements, contracts, and quality dimensions whose implementation or proof the correction changes.
 
-Carry forward other fulfilled items and their evidence. Limit new findings to the correction or a directly affected contract, responsibility, proof boundary, or applicable quality dimension. This rerun boundary replaces the initial full review.
+Retain the other judgments of the previous result. Limit new findings to the correction or a directly affected contract, responsibility, proof boundary, or applicable quality dimension. This rerun boundary replaces the initial full review.
 
 ## Findings
 
@@ -63,7 +61,7 @@ Use these categories:
 - `quality_rule`: an applicable `docs/project-context/quality.yaml` pass condition is false;
 - `adjacent_residual`: the same verified cause remains in an adjacent in-scope path.
 
-Output a finding only when correction is required because the implementation is incorrect, non-executable, non-verifiable, contradictory to a governing source, or carries a material unsupported addition or quality-policy violation. Every finding includes file:line evidence, its governing basis, the observable effect, and the smallest sufficient correction. Express `suggestion` as the smallest observable post-fix state; name an implementation mechanism only when a user constraint or actual consumer obligation requires it. For `scope_excess`, prefer removal or narrowing over a replacement mechanism.
+Output a finding only when correction is required because the implementation is incorrect, non-executable, non-verifiable, contradictory to a governing source, or carries a material unsupported addition or quality-policy violation. Represent each unfulfilled applicable AC or requirement with one finding. Every finding includes file:line evidence, its governing basis, the observable effect, and the smallest sufficient correction. Express `suggestion` as the smallest observable post-fix state; name an implementation mechanism only when a user constraint or actual consumer obligation requires it. For `scope_excess`, prefer removal or narrowing over a replacement mechanism.
 
 Withdraw a declined finding when its reason remains consistent with governing evidence. Maintain it only when current or newly observed evidence still proves a required-correction condition.
 
@@ -81,13 +79,13 @@ Use `limitations` only for unavailable evidence that prevents judging an applica
 Return one JSON object:
 
 ```json
-{"verdict":"pass|needs-improvement|needs-redesign|blocked","acceptanceCriteria":[{"item":"governing criterion identifier or text","status":"fulfilled|unfulfilled","evidence":["file:line"],"gap":"material gap or null"}],"findings":[{"id":"F001","category":"dd_violation|scope_excess|reliability|coverage_gap|quality_rule|adjacent_residual","location":"file:line","description":"specific required-correction issue","basis":"governing source, quality dimension, or observed fact","effect":"observable consequence","suggestion":"smallest sufficient correction"}],"limitations":["unverified item and effect"]}
+{"verdict":"pass|needs-improvement|needs-redesign|blocked","findings":[{"id":"F001","category":"dd_violation|scope_excess|reliability|coverage_gap|quality_rule|adjacent_residual","location":"file:line","description":"specific required-correction issue","basis":"governing source, quality dimension, or observed fact","effect":"observable consequence","suggestion":"smallest sufficient correction"}],"limitations":["unverified item and effect"]}
 ```
 
 ## Completion Check
 
-- The initial review resolved every mapped AC or requirement and material changed surface before choosing its verdict; a rerun preserved unaffected evidence and checked only correction-affected review boundaries.
-- Applicable ACs or requirements and changed contracts were checked against the code and tests at file:line.
+- The initial review chose its verdict after judging every applicable AC or requirement and each material surface in `implementationFiles`; a rerun retained unaffected judgments and checked only correction-affected review boundaries.
+- Applicable ACs or requirements and changed contracts were checked against the code and tests at file:line, and each unfulfilled one has one finding.
 - Material additions were necessary and worth their cost over subtraction or reuse, or reported with a reduction and affected source updates.
 - Required test evidence observes the claimed behavior rather than a placeholder or substitute boundary.
 - Every emitted finding requires correction under the Findings boundary.

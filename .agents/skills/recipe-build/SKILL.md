@@ -71,4 +71,4 @@ Apply a security-reviewer finding only when leaving it unresolved would violate 
 
 Remove the consumed task files after final verification and preserve the Work Plan as the progress record. A cleanup failure is reported with its exact path and leaves completed implementation valid.
 
-Report the Work Plan path, completed tasks, commits, verification results, and any verification limitation that could not be exercised in the available environment.
+Report the Work Plan path, completed tasks, commits, verification results, any verification limitation that could not be exercised in the available environment, and findings outside the change left unhandled.

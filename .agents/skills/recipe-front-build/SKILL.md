@@ -61,4 +61,4 @@ Apply a security-reviewer finding only when leaving it unresolved would violate 
 
 ## 8. Cleanup and Report
 
-Remove consumed task files after final verification and preserve the Work Plan. Report completed tasks, commits, verification results, and any verification limitation that could not be exercised in the available environment.
+Remove consumed task files after final verification and preserve the Work Plan. Report completed tasks, commits, verification results, any verification limitation that could not be exercised in the available environment, and findings outside the change left unhandled.

@@ -84,7 +84,7 @@ Verify the capabilities required by the task's selected verification. Check the 
 
 #### Pre-implementation Verification
 1. **Read Governing Sources** and extract required contracts, UI behavior, scope boundaries, and verification expectations. When `docs/project-context/quality.yaml` exists, use it as implementation guidance. Resolve cited document sections when present; otherwise use the embedded requirement scope.
-2. **Investigate existing implementations**: Search for similar components/hooks in same domain/responsibility
+2. **Investigate existing implementations**: Find the components, hooks, and code that depend on the change and those that already hold the same responsibility, as coding-rules Repository-Local Choice describes
 3. **Cross-check against Investigation Notes**: Ensure planned implementation is consistent with the observations recorded in the task file
 4. **Execute determination**: Determine continue/escalation per `Implementation Judgment` above
 
@@ -107,7 +107,7 @@ During implementation, apply coding-rules Repository-Local Choice before adoptin
 
 #### Implementation Flow
 
-Implement the behaviors the task delivers with repository-local React conventions and prove them under the testing skill and the task's verification methods. When the task has `Verification Focus`, reproduce its Primary failure and exercise its Observable check. Keep each item open in the task file and record the implemented result for the orchestrator; persisted task and Work Plan completion is recorded after the implementation commit. Run added or changed tests and the task's required operation checks.
+Implement the behaviors the task delivers with repository-local React conventions and prove them under the testing skill and the task's verification methods. When the task has `Verification Focus`, reproduce its Primary failure and exercise its Observable check. Keep each item open in the task file and report each Completion Criteria item's evidence in `completionCriteria`; persisted task and Work Plan completion is recorded after the implementation commit. Run added or changed tests and the task's required operation checks.
 
 **Test timing**: Complete each selected skeleton in its assigned task and run its proof at the earliest point its required dependencies are executable, following the task's verification methods. Lane names describe the real boundary under proof, not a final-phase schedule. Determine an unlabeled test's boundary from its actual dependencies; report a required unavailable capability through the existing escalation path.
 
@@ -137,13 +137,17 @@ Return one of the following as the final response (see Structured Response Speci
 
 **requiresTestReview**: Return `true` when this task added or changed integration/E2E tests; otherwise return `false`.
 
+**completionCriteria**: One entry per task-file Completion Criteria item, with the file:line, test, or command result that satisfies it.
+
+**findingsOutsideChange**: Use `[]` when none. Otherwise list problems already observed during this task that the change leaves unhandled, because handling them belongs to another responsibility, would change the outcome or a non-goal, or needs an irreversible external action. Each item gives its location, evidence, and that reason. The field reports observations; it creates no search obligation.
+
 **runnableCheck.result**: A `completed` response uses `passed`. For test evidence, at least one executed assertion must observe the intended behavior; intentional absence is substantive when it is the expected behavior. Build, typecheck, CLI, and artifact checks pass when their named command succeeds. Repair non-substantive verification within the approved task or return `escalation_needed` when repository-local evidence or capability cannot resolve it.
 
 ### 1. Task Completion Response
 Report in the following JSON format upon task completion (**without executing quality checks or commits**, delegating to quality assurance process):
 
 ```json
-{"status":"completed","taskName":"[Exact name of executed task]","changeSummary":"[Specific summary of React component implementation/changes]","filesModified":["src/components/Button/Button.tsx","src/components/Button/index.ts","src/components/Button/Button.test.tsx"],"testsAdded":["src/components/Button/Button.test.tsx"],"requiresTestReview":true,"runnableCheck":{"level":"L1: Unit test (React Testing Library) / L2: Integration test / L3: E2E test","executed":true,"command":"test -- Button.test.tsx","result":"passed","reason":"Test execution evidence"}}
+{"status":"completed","taskName":"[Exact name of executed task]","changeSummary":"[Specific summary of React component implementation/changes]","filesModified":["src/components/Button/Button.tsx","src/components/Button/index.ts","src/components/Button/Button.test.tsx"],"testsAdded":["src/components/Button/Button.test.tsx"],"requiresTestReview":true,"completionCriteria":[{"criterion":"[Completion Criteria item]","evidence":"[file:line, test, or command result]"}],"findingsOutsideChange":[{"location":"[path:symbol]","evidence":"[observed fact]","reason":"[why this change leaves it unhandled]"}],"runnableCheck":{"level":"L1: Unit test (React Testing Library) / L2: Integration test / L3: E2E test","executed":true,"command":"test -- Button.test.tsx","result":"passed","reason":"Test execution evidence"}}
 ```
 
 ### 2. Escalation Response
@@ -161,7 +165,7 @@ Return the smallest self-contained result the caller needs to resolve the interr
 
 ## Completion Gate [BLOCKING]
 
-☐ Every task item implemented with evidence
+☐ Every task item implemented, and each Completion Criteria item has its evidence in `completionCriteria`
 ☐ Investigation Targets were processed, or marked N/A when the task file has no Investigation Targets section
 ☐ Investigation Notes were updated before implementation when Investigation Targets exist
 ☐ Implementation is consistent with the observations recorded in Investigation Notes

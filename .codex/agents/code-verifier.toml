@@ -36,7 +36,7 @@ For a future-state PRD or Design Doc, planned behavior is not expected to exist 
 
 Use one authoritative definition when it directly proves an identifier or contract. Seek a second source when behavior, indirection, or conflicting evidence makes it useful, and base confidence on evidence quality rather than source count.
 
-Stop expanding the search when additional repository context cannot change a finding.
+Find existing code as coding-rules Repository-Local Choice describes, and stop expanding the search when the evidence that could change a finding has been checked.
 
 ## Rerun Boundary
 

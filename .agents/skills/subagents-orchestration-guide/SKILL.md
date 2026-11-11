@@ -179,7 +179,7 @@ Agent schemas describe their full internal result. The orchestrator consumes onl
 | Producer | Consumer-required result |
 |---|---|
 | Artifact producer | completion or blocked state, plus produced artifact path(s) |
-| Task executor | completion or escalation state, `filesModified`, `requiresTestReview`, and operation-verification evidence |
+| Task executor | completion or escalation state, `filesModified`, `requiresTestReview`, operation-verification evidence, `completionCriteria`, and `findingsOutsideChange` |
 | Quality fixer | pass, `stub_detected`, or blocked state; `filesModified`; reason or findings when not passed |
 | Reviewer | decision, actionable findings, governing basis, and whether each finding blocks the outcome |
 | Analyzer | only reuse, invalidation, decision-point, cost, contract, verification, and decision-changing unknown material needed by the next consumer |
@@ -193,7 +193,7 @@ For each implementation task, record `diffBase` and maintain one `taskWriteSet`:
 1. Initialize it from the first executor's `filesModified` and the repository diff from `diffBase`.
 2. Union files changed by executor retries, review fixes, stub repairs, and the quality fixer.
 3. Before quality review and before commit, reconcile it with repository state so earlier changes are retained and unrelated user changes are excluded.
-4. Pass the accumulated `taskWriteSet` to the quality fixer. After quality pass, commit only implementation, test, and required generated files in that set. After that commit succeeds, mark the Task File's satisfied Completion Criteria and the corresponding Work Plan task and phase complete, then update the active execution plan.
+4. Pass the accumulated `taskWriteSet` to the quality fixer. After quality pass, commit only implementation, test, and required generated files in that set. After that commit succeeds, mark the Task File's Completion Criteria that the executor's `completionCriteria` evidence satisfies and the corresponding Work Plan task and phase complete, then update the active execution plan.
 
 Task Files and Work Plans are local workflow state. Exclude both from implementation commits; their checkboxes record completion only after a successful implementation commit.
 
@@ -249,7 +249,7 @@ implementation -> optional integration-test review -> quality-fixer -> commit
 
 Reviewer findings in this mode are candidates, not work orders; create repair work only from the Review Resolution `apply` set.
 
-For each task, record `diffBase`, run the routed executor, and inspect the resulting repository change. Add each execution or repair result to the Per-Task Change Set. Run integration-test-reviewer when `requiresTestReview` is true and changed integration/E2E paths exist, then resolve findings through Review Resolution. Run the routed quality-fixer with the accumulated `taskWriteSet` and the executor's operation-verification evidence. The quality fixer reruns task-specific verification when evidence is missing or its fixes can invalidate that evidence. On quality pass, add its changed paths to the set and commit the reconciled Per-Task Change Set. After the commit succeeds, mark the Task File's satisfied Completion Criteria and the corresponding Work Plan task and phase complete, then update the active execution plan. Repair `stub_detected` through the same implementation owner. Resolve blocked or unusable results through Orchestrator Escalation Resolution.
+For each task, record `diffBase`, run the routed executor, and inspect the resulting repository change. Add each execution or repair result to the Per-Task Change Set. Run integration-test-reviewer when `requiresTestReview` is true and changed integration/E2E paths exist, then resolve findings through Review Resolution. Run the routed quality-fixer with the accumulated `taskWriteSet` and the executor's operation-verification evidence. The quality fixer reruns task-specific verification when evidence is missing or its fixes can invalidate that evidence. On quality pass, add its changed paths to the set and commit the reconciled Per-Task Change Set. After the commit succeeds, mark the Task File's Completion Criteria that the executor's `completionCriteria` evidence satisfies and the corresponding Work Plan task and phase complete, then update the active execution plan. Repair `stub_detected` through the same implementation owner. Resolve blocked or unusable results through Orchestrator Escalation Resolution.
 
 ### Conditions for Stopping Autonomous Execution
 
@@ -279,9 +279,19 @@ Use the task loop defined in the autonomous execution diagram above. The canonic
 | code-reviewer | `verdict` is `pass` | `verdict` is `needs-improvement` or `needs-redesign` | `verdict` is `blocked` |
 | security-reviewer | `status` is `pass` (legacy `approved`) | `status` is `needs_revision` | `status` is `blocked` |
 
-Run code-reviewer against the complete implementation change set and its governing Design Docs, or the active task file for a Small flow. Rerun only unresolved findings and evidence invalidated by corrections, with `prior_feedback` containing the previous result, dispositions, and correction paths or diff. A previous pass preserves only still-valid evidence. The Small path also passes its active task file to security-reviewer as `type: task-file`. Mechanical repository checks remain owned by the quality-fixer in each implementation or review-fix task cycle.
+#### Review Units
+
+One code-reviewer cannot judge every file of a large change at the same depth, so a Medium or Large change is reviewed in units of completed Work Plan tasks. A unit holds a consuming task (one delivering a screen, route, command, or job) together with the tasks it depends on through `Depends on`, so a contract's producer, its consumer, and the tests proving their behavior are reviewed together. Tasks that several units depend on form one shared unit. Each completed task belongs to exactly one unit, and a unit's `implementationFiles` are the files changed by its tasks' implementation commits; a file changed outside the task cycles joins the unit whose behavior it changes. A change whose tasks form one unit has one code-reviewer.
+
+Invoke one code-reviewer per unit with the governing Design Docs, the unit's `implementationFiles`, the Work Plan path, and the unit's tasks as task scope. A Small flow has one code-reviewer with its active task file as the governing source. security-reviewer reviews the complete change once with the same governing sources; the Small path passes its active task file as `type: task-file`. Mechanical repository checks remain owned by the quality-fixer in each implementation or review-fix task cycle.
 
 Apply Review Resolution to reviewer findings. Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
+
+Retain each executor `findingsOutsideChange` item through the completion report. An item the outcome needs enters the per-task cycle of the task that owns it. An item located in code this workflow changed enters Review Resolution with the reviewer findings, and the code-reviewer whose `implementationFiles` contain its location reruns an applied one. List every item left unhandled, with its location and evidence, in the completion report.
+
+#### Reruns
+
+The reviewer that reported a finding reruns it under Review Resolution. After each correction, also compare its actual diff with the scope of every other passed review, because a shared contract corrected for one unit's finding can invalidate another unit's pass. A code-reviewer's scope is its `implementationFiles`, the ACs or requirements its task scope or governing source makes applicable, and the contracts those files provide or consume; security-reviewer's scope is the trust boundaries the complete change touches. Rerun a reviewer whose scope the diff changes in behavior, contract, or proof, with its previous result and that diff as `prior_feedback`, and retain every other passed result; a correction that touches the same file without changing that behavior, contract, or proof reopens nothing.
 
 ## Main Orchestrator Roles
 

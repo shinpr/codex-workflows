@@ -9,10 +9,10 @@ description: "Selects the smallest sufficient implementation strategy and verifi
 
 Use this sequence when a design or task needs an implementation approach:
 
-1. **Current evidence** — inspect the relevant responsibility, data/control path, representative repository pattern, and constraints that can change the choice.
+1. **Current evidence** — inspect the relevant responsibility, existing code that already holds it (coding-rules Repository-Local Choice), data/control path, representative repository pattern, and constraints that can change the choice.
 2. **Direct MVP** — identify the simplest complete path to the user's required result, including no change or removing unnecessary behavior when sufficient. A previously passed design is a revisable starting point.
 3. **Necessity before detail** — establish a concrete required result that this path cannot deliver before designing an extra mechanism. Discovery of a concern or a potential consumer supplies a candidate, not new requirements.
-4. **Selection** — consider subtraction and existing behavior first. Adopt an addition only when those cannot satisfy the requirement and its supported benefit justifies total UX, runtime, implementation, testing, documentation, and maintenance cost. Evidence alone does not select it.
+4. **Selection** — consider subtraction and existing behavior first. A second implementation of a responsibility that already has an owner with the same contract and change reason, including one added earlier in the same change, is an addition; reusing or relocating that owner is existing behavior. Adopt an addition only when those cannot satisfy the requirement and its supported benefit justifies total UX, runtime, implementation, testing, documentation, and maintenance cost. Evidence alone does not select it.
 5. **Detail and stop** — define contracts, states, error handling, and proof only for the selected mechanisms. Stop when the required result and sufficient verification are executable; further technically valid possibilities remain unadopted.
 
 Possible future reuse, generic best practice, speculative edge cases, and optional hardening are not failed items. A path or file count is supporting evidence, not a scale or strategy rule.

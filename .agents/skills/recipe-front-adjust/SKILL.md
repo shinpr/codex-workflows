@@ -13,6 +13,7 @@ Before loading required skills, use `wc -c` to size the files and set both `exec
 2. [LOAD IF NOT ACTIVE] `llm-friendly-context` -- adjustment handoff and verification context
 
 Load `external-resource-context` in Step 1 only when a named external source is required for the requested adjustment.
+Load `coding-rules`, `ai-development-guide`, and `implementation-approach` in Step 4 before planning the first edit, and `testing` before adding or changing tests.
 
 **Invocation rule**: Start each named agent with `spawn_agent` and `fork_turns="none"`. When invoking the same named agent again within this flow, use `followup_task` on its existing instance with the inputs specified for the current invocation.
 

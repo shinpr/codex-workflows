@@ -44,9 +44,10 @@ Before changing code, inspect the target and enough representative callers, cons
 - the contract being changed or preserved;
 - the directly affected responsibility and dependency direction;
 - the observable verification that can prove the outcome;
-- any adjacent file required for the same outcome.
+- any adjacent file required for the same outcome;
+- existing code that already holds a responsibility the change would add; it may share no name or reference with the change, so look through position, role, input, and purpose as well as references.
 
-When the change alters a public, shared, serialized, or persistent contract and its consumers are enumerable, account for every known consumer. For other changes, representative inspection is sufficient. Stop expanding the search when additional context cannot change the implementation or verification decision. Record findings in the active task or response only when another worker needs them.
+When the change alters a public, shared, serialized, or persistent contract and its consumers are enumerable, account for every known consumer. For other changes, representative inspection is sufficient. Stop expanding the search when the candidates that could change the implementation or verification decision have been read and judged; a search with no match shows only that the search found nothing. Record findings in the active task or response only when another worker needs them.
 
 For an observed bug or regression, inspect adjacent cases that share its supported cause, contract, or state boundary. Include an adjacent case in the change only when leaving it unchanged would keep the same in-scope failure active.
 
@@ -55,7 +56,7 @@ For an observed bug or regression, inspect adjacent cases that share its support
 - Treat complexity as cost, never as evidence of value. Additional user decisions, settings, modes, concepts, outputs, persistent state, and implementation paths earn their cost only when a current need in the requirements cannot be served by a smaller existing or default behavior and the observable benefit justifies the total UX and lifecycle burden.
 - Prefer the lowest-total-complexity implementation that satisfies the current outcome.
 - Reuse or extend an existing element when it owns the same responsibility and represents the repository’s current pattern.
-- Keep similar local code separate when its responsibilities may evolve independently or abstraction adds more contract surface than it removes.
+- Keep similar local code separate when evidence shows their contracts or change reasons differ, or abstraction adds more contract surface than it removes.
 - Introduce shared state, public fields, modes, flags, fallbacks, abstractions, services, or dependencies only when current evidence requires them.
 - Resolve technical reductions within the authorized outcome and existing execution authority, updating affected design assumptions and proof. Return changes to user-required outcomes, explicit constraints, actual consumer obligations, or irreversible-action authority to the orchestrator for user approval.
 

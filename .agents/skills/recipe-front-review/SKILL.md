@@ -68,7 +68,6 @@ Report required corrections from both results, then apply Review Resolution befo
 
 ```
 Implementation Review: [verdict]
-  Acceptance Criteria: [fulfilled/unfulfilled items with evidence]
   Findings: [required-correction findings with basis and effect]
 
 Security Review: [status from security-reviewer]
