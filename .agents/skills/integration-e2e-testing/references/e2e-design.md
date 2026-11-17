@@ -37,5 +37,3 @@ Lane: fixture-e2e | service-integration-e2e
 Use the project's existing browser harness, setup, locator, fixture, and cleanup pattern. Introduce page objects or shared helpers only when existing conventions use them or repeated selected journeys need the same stable responsibility.
 
 Test only breakpoints, browser APIs, keyboard behavior, or assistive semantics named by the governing claim. Start from isolated state and leave changed state clean under repository conventions.
-
-The parent skill lane ceilings remain limits, not targets.
