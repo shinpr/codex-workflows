@@ -95,7 +95,7 @@ Apply the Invocation rule above. Resolve missing workflow inputs that affect the
 
 ### Analysis Assignment
 
-For `codebase-analyzer` and `ui-analyzer`, determine the effective child model, including known inheritance. Pass `exploration_mode: autonomous` only for `gpt-6-astra`; pass `guided` for every other or unknown model.
+For `codebase-analyzer` and `ui-analyzer`, determine the effective child model, including known inheritance. Pass `exploration_mode: autonomous` only for `gpt-6.2-astra`; pass `guided` for every other or unknown model.
 
 Assign distinct questions: codebase analysis owns responsibility/data/contracts/reuse; UI analysis owns rendering/interaction/visual evidence. Pass existing relevant findings as `prior_evidence` to reuse them. Carry evidence-backed simplifications as candidates, retaining their conditions; technical choices remain revisable under Purpose and Decision Authority.
 
