@@ -20,15 +20,15 @@ Select an integration or E2E test only when all conditions hold:
 
 When any condition fails, leave the claim to its existing owning test or task verification. An empty integration/E2E selection is a successful result and needs no absence artifact.
 
-## Lanes and Ceilings
+## Lanes
 
-| Lane | Use when | Ceiling per outcome |
-|---|---|---|
-| `integration` | In-process component, persistence, or contract interaction must stay real | 3 |
-| `fixture-e2e` | Browser-visible interaction needs the real UI but controlled backend/fixture state is sufficient | 3 |
-| `service-integration-e2e` | The claim specifically depends on a running local cross-service boundary that other lanes cannot prove | 2 |
+| Lane | Use when |
+|---|---|
+| `integration` | In-process component, persistence, or contract interaction must stay real |
+| `fixture-e2e` | Browser-visible interaction needs the real UI but controlled backend/fixture state is sufficient |
+| `service-integration-e2e` | The claim specifically depends on a running local cross-service boundary that other lanes cannot prove |
 
-Ceilings are limits, not targets or reserved slots. Prefer the lowest-cost lane that proves the named claim. Real external production services are outside these lanes; verify their repository-owned contract instead.
+Prefer the lowest-cost lane that proves the named claim. Real external production services are outside these lanes; verify their repository-owned contract instead.
 
 ## Candidate Selection
 
@@ -56,6 +56,7 @@ Behavior: [trigger] -> [boundary exercised] -> [observable result]
 @real-dependency: [dependencies that must remain real]
 Primary failure mode: [regression this test must detect]
 Proof obligation: [assertions and permitted controlled boundaries]
+Selection evidence: [why existing tests and narrower lanes leave this failure undetected]
 ```
 
 Limit additional verification items to cases where the obligation alone cannot state the proof clearly. Include complexity scores, category taxonomies, or metadata only for a named downstream consumer.
@@ -75,5 +76,5 @@ AAA comments, naming style, extra assertions, and generic readability improvemen
 
 - Every selected case passed the Selection Gate.
 - The selected lane is the lowest-cost boundary that proves the claim.
-- The set stays below the lane ceilings and may be empty.
+- Each claim that passed the Selection Gate is owned by exactly one selected case, and the set may be empty.
 - Each skeleton carries enough proof information for implementation and review without copying the Design Doc.

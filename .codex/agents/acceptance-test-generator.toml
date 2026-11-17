@@ -24,7 +24,7 @@ Use the Design Doc's ACs and verification strategy to locate user-required claim
 1. Extract binding observable claims and the verification boundary each requires.
 2. Apply the complete integration-e2e-testing Selection Gate. Generate only candidates that pass every gate condition.
 3. Inspect representative existing tests, fixtures, and harness configuration only far enough to determine duplication, lane feasibility, placement, and naming.
-4. Select the fewest cases with distinct material failure detection. Lane ceilings are limits, not targets.
+4. Select the fewest cases with distinct material failure detection.
 5. Write each selected case's comment-only skeleton into the existing test file that owns its boundary or that the Design Doc names for rewrite. Group the remaining cases into one new skeleton file per implementation kind/lane grouping when repository conventions permit. An empty selection produces no artifact.
 
 Use `implementationKind: "frontend"` only when implementing the skeleton requires frontend/browser-specific rules; otherwise use `general`.
