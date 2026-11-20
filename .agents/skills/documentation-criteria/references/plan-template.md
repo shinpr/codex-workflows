@@ -35,7 +35,7 @@ Use the implementation approach and dependency order from the Design Doc. Each p
   - **Source**: [every directly constraining Design Doc, ADR, or UI Spec path and section; AC IDs]
   - **Scope**: [responsibility, component, or expected files]
   - **Depends on**: none | [task IDs]
-  - **Verification**: [Design Doc verification method or repository command]
+  - **Verification**: [Governing verification method or repository command]
   - **Primary failure**: [optional: most material false-green state]
   - **Observable check**: [optional: smallest check that detects the primary failure]
 
@@ -51,7 +51,7 @@ Use the implementation approach and dependency order from the Design Doc. Each p
   - **Source**: [every directly constraining Design Doc, ADR, or UI Spec path and section; AC IDs]
   - **Scope**: [responsibility, component, or expected files]
   - **Depends on**: [task IDs]
-  - **Verification**: [Design Doc verification method or repository command]
+  - **Verification**: [Governing verification method or repository command]
   - **Primary failure**: [optional]
   - **Observable check**: [optional]
 

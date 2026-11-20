@@ -81,7 +81,7 @@ For a task whose implementation could appear complete while its cited AC remains
 - **Primary failure**: the most material false-green state
 - **Observable check**: the smallest check that detects it
 
-When a generated test skeleton supplies a Primary failure mode or Proof obligation, carry its relevant wording into the matching task at the same level of detail. Otherwise derive the focus from the cited AC and Design Doc Verification Strategy. Add Verification Focus only when it changes how a material false-green state is detected.
+When a generated test skeleton supplies a Primary failure mode or Proof obligation, carry its relevant wording into the matching task at the same level of detail. Otherwise derive the focus from the task's cited governing sources. Add Verification Focus only when it changes how a material false-green state is detected.
 
 Verification Focus refines the completion check of its implementation task; its scope stays within that task's cited outcome.
 
