@@ -51,14 +51,16 @@ Nearby code is evidence, not authority by itself. Stop searching when the candid
 
 When choosing whether to reuse, extend, or add a data structure, check its semantic meaning, owning responsibility, lifecycle, and boundary or interoperability cost. Reuse or extend it when those dimensions remain compatible; choose a separate structure when evidence shows a different meaning, owner, lifecycle, or change reason.
 
-When the changed behavior implements a runtime rule that exists in multiple locations, inspect the other instances for synchronization impact. Centralize or update them together when they share responsibility and contract; preserve separate implementations when evidence shows their contracts or change reasons differ.
+When the changed behavior implements a runtime rule that exists in multiple locations, inspect the other instances for synchronization impact. Centralize or update them together when they share responsibility and contract; preserve separate implementations when evidence shows their contracts or change reasons differ. Define a fact that several places in this repository must agree on once and have the others refer to it: names, keys, paths, closed sets of values, and data shapes one side writes and another reads.
 
 ## Change Discipline
 
 - Keep the change within the accepted outcome and responsibility boundary. Treat task target files as the expected set; include an adjacent file when the same outcome requires it and report the expanded write set.
 - Use names and structure that expose domain intent.
+- When code branches on the same closed set of values in more than one place, make every branch handle each value explicitly, so a new value is detected at every branch: by an exhaustiveness check where the language has one, otherwise by failing on an unhandled value.
 - Remove unused code and obsolete comments in the changed scope.
 - Base comments on stable rationale, limits, and contracts. Keep task, plan, and document-section references out of code comments; those documents change or are removed after the build, leaving the reference without a target.
+- Take each behavior-setting value, such as a limit, timeout, or threshold, from an existing requirement, contract, measurement, or repository value for the same purpose; when none of these determines it, mark the value as assumed in a comment.
 - Optimize only from measurements or a sourced requirement.
 - Refactor in reversible increments and run the focused verification after each behavior-affecting step.
 - Report adjacent debt outside scope and expand the change only with an explicit in-scope reason.
