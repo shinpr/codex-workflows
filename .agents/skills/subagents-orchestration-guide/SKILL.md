@@ -179,7 +179,7 @@ Agent schemas describe their full internal result. The orchestrator consumes onl
 | Producer | Consumer-required result |
 |---|---|
 | Artifact producer | completion or blocked state, plus produced artifact path(s) |
-| Task executor | completion or escalation state, `filesModified`, `requiresTestReview`, operation-verification evidence, `completionCriteria`, and `findingsOutsideChange` |
+| Task executor | completion or escalation state, `filesModified`, `requiresTestReview`, operation-verification evidence, and `completionCriteria` |
 | Quality fixer | pass, `stub_detected`, or blocked state; `filesModified`; reason or findings when not passed |
 | Reviewer | decision, actionable findings, governing basis, and whether each finding blocks the outcome |
 | Analyzer | only reuse, invalidation, decision-point, cost, contract, verification, and decision-changing unknown material needed by the next consumer |
@@ -286,8 +286,6 @@ One code-reviewer cannot judge every file of a large change at the same depth, s
 Invoke one code-reviewer per unit with the governing Design Docs, the unit's `implementationFiles`, the Work Plan path, and the unit's tasks as task scope. A Small flow has one code-reviewer with its active task file as the governing source. security-reviewer reviews the complete change once with the same governing sources; the Small path passes its active task file as `type: task-file`. Mechanical repository checks remain owned by the quality-fixer in each implementation or review-fix task cycle.
 
 Apply Review Resolution to reviewer findings. Apply a security-reviewer finding only when leaving it unresolved would violate an explicit governing requirement or repository rule, or leave a concrete material security failure in the actual reachable trust model. The violated requirement, rule, or failure defines implementation scope: route the smallest correction that resolves it, treating the reviewer's suggestion as one candidate implementation.
-
-Retain each executor `findingsOutsideChange` item through the completion report. An item the outcome needs enters the per-task cycle of the task that owns it. An item located in code this workflow changed enters Review Resolution with the reviewer findings, and the code-reviewer whose `implementationFiles` contain its location reruns an applied one. List every item left unhandled, with its location and evidence, in the completion report.
 
 #### Reruns
 

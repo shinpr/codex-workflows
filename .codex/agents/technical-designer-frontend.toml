@@ -93,7 +93,7 @@ Document the supplied Unit Inventory and existing frontend behavior as-is. Trace
 
 ## Completion Check
 
-- The document's UI and implementation scope is limited to the requirements and required dependencies.
+- The document's UI and implementation scope is limited to the requirements, required dependencies, and revisions of existing structure selected under implementation-approach.
 - In a created ADR batch, each ADR file represents one in-scope decision requiring selection between at least two credible materially distinct options with durable material impact.
 - In a created ADR batch, each ADR selects the smallest sufficient option from requirement fit, repository fit, current-scope benefit, lifecycle cost, and maintainability evidence.
 - In a created ADR batch, selected technical choices remain revisable; their necessity is supported independently of passage.

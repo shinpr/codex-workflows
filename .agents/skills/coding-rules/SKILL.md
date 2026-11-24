@@ -24,6 +24,8 @@ Use a sourced project contract in preference to generic best practice. When a pl
 
 Deliver the current requirement with the least justified total complexity. Before detailing new state, fields, modes, abstractions, or component splits, establish what required result a direct implementation cannot deliver. Evidence of a possible benefit makes the addition a candidate; retain it only when necessary now and worth its total lifecycle cost over subtraction or reuse.
 
+Measure size, including "smallest" and "smaller" wherever a design, response, or correction is compared, by what remains in the code: concepts, states, modes, paths, and contracts. Lines, files, or edits changed do not measure it.
+
 Private local implementation details and test fixtures are not new design surface. If an element matches both categories, treat it as design surface. If several sufficient options remain, prefer the one with lower lifecycle cost.
 
 ## Contract and Boundary Safety
@@ -63,7 +65,6 @@ When the changed behavior implements a runtime rule that exists in multiple loca
 - Take each behavior-setting value, such as a limit, timeout, or threshold, from an existing requirement, contract, measurement, or repository value for the same purpose; when none of these determines it, mark the value as assumed in a comment.
 - Optimize only from measurements or a sourced requirement.
 - Refactor in reversible increments and run the focused verification after each behavior-affecting step.
-- Report adjacent debt outside scope and expand the change only with an explicit in-scope reason.
 
 ## Completion Gate
 
